@@ -4,7 +4,7 @@ package gov.takx.bootstrap;
  * Constants concerning the flavor of TAKX at runtime.
  * @since 5.2
  */
-public class FlavorConstants
+public final class FlavorConstants
 {
     /**
      * Constant indicating the MIL (Military) flavor.

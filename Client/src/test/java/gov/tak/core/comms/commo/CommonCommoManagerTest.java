@@ -9,6 +9,7 @@ import com.atakmap.commoncommo.StreamingNetInterface;
 import com.atakmap.commoncommo.StreamingTransport;
 import com.atakmap.commoncommo.TcpInboundNetInterface;
 import gov.tak.api.comms.commo.ConnectionConfiguration;
+import gov.tak.api.comms.commo.ICotEventInterceptor;
 import gov.tak.api.comms.commo.ICotSendListener;
 import gov.tak.api.comms.commo.StreamingConnectionConfiguration;
 import gov.tak.api.comms.takserver.ITakServerConnection;
@@ -19,12 +20,14 @@ import gov.tak.core.comms.cot.CotEventReceiver;
 import gov.takx.api.annotation.SuppressLogging;
 import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.test.AContainerTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mockito;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -58,6 +61,12 @@ class CommonCommoManagerTest extends AContainerTest
 {
     @Mocked(methodBehavior = MethodBehavior.RETURN_REAL_METHOD, allowCaching = false)
     CommonCommoManager commonCommoManager;
+
+    @BeforeEach
+    public void beforeEach()
+    {
+        commonCommoManager.cotEventInterceptors = new ArrayList<>();
+    }
 
     @Test
     void whenAddInput_withTcpDevice_addTcpInboundInterfaceCalled(@Mocked(allowCaching = false) Commo commo) throws URISyntaxException, CommoException
@@ -542,7 +551,7 @@ class CommonCommoManagerTest extends AContainerTest
         verify(listener).cotMessageSent(cm4);
     }
 
-    /** @since 5.3 */
+    /** @since 5.8 */
     @Test
     void whenCotMessageSent_unregisteredListenersAreNotNotified(@Mocked(allowCaching = false) Commo commo,
                                                                 @Mocked(allowCaching = false) ICotSendListener listener,
@@ -571,6 +580,56 @@ class CommonCommoManagerTest extends AContainerTest
         when(connection.getUri()).thenReturn(URI.create("tcp://example.com:12345"));
         commonCommoManager.sendCotToMission(connection, cotMessage, "mission");
         verify(listener, never()).cotMessageSent(any());
+    }
+
+    /** @since 5.8 */
+    @Test
+    void whenCotMessageSent_interceptorsAreCalled(@Mocked(allowCaching = false) Commo commo,
+                                                  @Mocked(allowCaching = false) ICotEventInterceptor interceptor,
+                                                  @Mocked Contact contact,
+                                                  @Mocked ITakServerConnection connection)
+            throws CommoException, IOException
+    {
+        commonCommoManager.commo = commo;
+        commonCommoManager.cotEventInterceptors = new CopyOnWriteArrayList<>();
+        commonCommoManager.addCotEventInterceptor(interceptor);
+        assertThat(commonCommoManager.cotEventInterceptors).hasSize(1).containsOnly(interceptor);
+
+        final String cotMessage = getResourceAsString("/cot/marker.cot");
+
+        commonCommoManager.broadcastCoT(cotMessage);
+        verify(interceptor).onSend(any(CotEvent.class));
+        Mockito.reset(interceptor);
+
+        commonCommoManager.broadcastCoT(cotMessage, CoTSendMethod.ANY);
+        verify(interceptor).onSend(any(CotEvent.class));
+        Mockito.reset(interceptor);
+
+        final var contacts = new Vector<Contact>();
+        contacts.add(contact);
+        commonCommoManager.sendCoT(contacts, cotMessage, CoTSendMethod.ANY);
+        verify(interceptor).onSend(any(CotEvent.class));
+        Mockito.reset(interceptor);
+
+        when(connection.getUri()).thenReturn(URI.create("tcp://example.com:12345"));
+        commonCommoManager.sendCotToMission(connection, cotMessage, "mission");
+        verify(interceptor).onSend(any(CotEvent.class));
+        Mockito.reset(interceptor);
+    }
+
+    @Test
+    void whenCotMessageReceived_cotInterceptorsAreCalled(@Mocked(allowCaching = false) Commo commo,
+                                                         @Mocked(allowCaching = false) ICotEventInterceptor interceptor)
+            throws IOException
+    {
+        commonCommoManager.commo = commo;
+        commonCommoManager.cotEventListeners = new ArrayList<>();
+        commonCommoManager.addCotEventInterceptor(interceptor);
+
+        final String cotMessage = getResourceAsString("/cot/marker.cot");
+
+        commonCommoManager.cotMessageReceived(cotMessage, "endpoint");
+        verify(interceptor).onReceive(any(CotEvent.class));
     }
 
     @Test

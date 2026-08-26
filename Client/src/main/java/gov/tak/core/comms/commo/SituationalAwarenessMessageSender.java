@@ -2,6 +2,7 @@ package gov.tak.core.comms.commo;
 
 import com.atakmap.commoncommo.CoTSendMethod;
 import gov.tak.api.comms.commo.ICommonCommoManager;
+import gov.tak.api.comms.commo.ISituationalAwarenessMessageSender;
 import gov.tak.api.cot.CoordinatedTime;
 import gov.tak.api.cot.CotConstants;
 import gov.tak.api.cot.detail.DetailConstants;
@@ -14,6 +15,7 @@ import gov.tak.api.util.AttributeSet;
 import gov.tak.api.util.StandardAttributeNames;
 import gov.tak.platform.comms.commo.DeviceDisplayType;
 import gov.tak.platform.comms.commo.ReportingStrategy;
+import gov.tak.platform.cot.util.AccessUtils;
 import gov.takx.api.annotation.NodeUUID;
 import gov.takx.api.annotation.ProgramPreference;
 import gov.takx.api.event.location.LocationChanged;
@@ -25,6 +27,7 @@ import gov.takx.bootstrap.Version;
 import gov.takx.commons.utils.StringUtils;
 import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.platform.utils.UnitsOfMeasureUtils;
+import jakarta.annotation.Nonnull;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
@@ -35,7 +38,10 @@ import org.slf4j.LoggerFactory;
 import java.lang.invoke.MethodHandles;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
@@ -67,7 +73,7 @@ import static jakarta.enterprise.event.Reception.IF_EXISTS;
  * @since 3.0
  */
 @ApplicationScoped
-public class SituationalAwarenessMessageSender
+public class SituationalAwarenessMessageSender implements ISituationalAwarenessMessageSender
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -102,6 +108,11 @@ public class SituationalAwarenessMessageSender
     private static final String VMF = "vmf";
     private static final String URN = "urn";
 
+    // Detail names not allowed in "additional" details
+    private static final List<String> RESERVED_DETAIL_NAMES = List.of(DetailConstants.CONTACT, DetailConstants.GROUP,
+            DetailConstants.STATUS, DetailConstants.TAKV, DetailConstants.TRACK, DetailConstants.UID, VMF);
+
+    private final Set<CotDetail> additionalDetails = ConcurrentHashMap.newKeySet();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private final Lock readLock = lock.readLock();
     private final Lock writeLock = lock.writeLock();
@@ -163,6 +174,24 @@ public class SituationalAwarenessMessageSender
         return detail;
     }
 
+    @Override
+    public void addAdditionalDetail(@Nonnull CotDetail detail)
+    {
+        final String name = detail.getElementName();
+        if (RESERVED_DETAIL_NAMES.contains(name))
+        {
+            throw new IllegalArgumentException("Invalid additional detail name '" + name + "'; cannot be one of " + RESERVED_DETAIL_NAMES);
+        }
+
+        additionalDetails.add(detail);
+    }
+
+    @Override
+    public void removeAdditionalDetail(@Nonnull CotDetail detail)
+    {
+        additionalDetails.remove(detail);
+    }
+
     /**
      * Start broadcasting our SA messages.
      */
@@ -188,6 +217,8 @@ public class SituationalAwarenessMessageSender
     public void stop()
     {
         stopSenderTask();
+        additionalDetails.clear();
+
         sendLocationMonitor.stop();
         reportingStrategyMonitor.stop();
         callSignMonitor.stop();
@@ -370,14 +401,19 @@ public class SituationalAwarenessMessageSender
 
         detail.addChild(takvDetail);
 
+        additionalDetails.forEach(detail::addChild); // All additional details added by plugins
+
         final CoordinatedTime now = new CoordinatedTime(reportingState.lastTime);
         final CoordinatedTime stale = new CoordinatedTime(reportingState.lastStale);
 
         // Get the CoT type based on the user selected display type
         final String cotType = displayTypeMonitor.getCurrentValue().getCotType();
 
-        return new CotEvent(nodeUuid.toString(), cotType, CotEvent.VERSION_2_0, geoPoint.isValid() ? geoPoint : GeoPoint.ZERO_POINT,
+        final CotEvent cotEvent = new CotEvent(nodeUuid.toString(), cotType, CotEvent.VERSION_2_0,
+                geoPoint.isValid() ? geoPoint : GeoPoint.ZERO_POINT,
                 now, now, stale, how, detail, null, null, null);
+        AccessUtils.setAccessDefault(cotEvent);
+        return cotEvent;
     }
 
     /**

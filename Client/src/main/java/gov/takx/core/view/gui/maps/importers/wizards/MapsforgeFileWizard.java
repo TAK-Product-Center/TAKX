@@ -1,7 +1,7 @@
 package gov.takx.core.view.gui.maps.importers.wizards;
 
 import gov.takx.core.globe.layers.LayerImportParameters;
-import gov.takx.core.view.gui.maps.importers.OverlayImageImporter;
+import gov.takx.core.view.gui.maps.importers.MapsforgeMapFileImporter;
 import jakarta.annotation.Nullable;
 
 import java.io.File;
@@ -53,8 +53,7 @@ public class MapsforgeFileWizard extends AFileImportWizard
 
         if (cancelled) return;
 
-        OverlayImageImporter importer = new OverlayImageImporter(file, new LayerImportParameters(copyToVfs));
-        importer.beginImport();
+        new MapsforgeMapFileImporter(file, new LayerImportParameters(copyToVfs)).beginImport();
     }
 
     @Override

@@ -1,5 +1,6 @@
 package gov.takx.core.view.gui.maps.exporters.dataset;
 
+import com.atakmap.coremap.maps.coords.GeoBounds;
 import com.atakmap.map.layer.control.Controls;
 import com.atakmap.map.layer.raster.DatasetDescriptor;
 import com.atakmap.map.layer.raster.tilematrix.TileClient;
@@ -8,6 +9,7 @@ import gov.tak.api.maps.coords.GeoPoint;
 import gov.takx.api.coordinatesystem.ILocation;
 import gov.takx.api.io.ImportExportResult;
 import gov.takx.api.plugin.io.IImportExportProgressMonitor;
+import gov.takx.api.terrain.experimental.ElevationSourceUtils;
 import gov.takx.commons.file.FileUtils;
 import gov.takx.core.dataset.DataSetBuilderParameters;
 import gov.takx.core.globe.tak.mapsetbuilder.DownloadAndCacheService;
@@ -107,23 +109,26 @@ public class MapSetBuilder
                 }
                 if (parameters.elevationSource() != null)
                 {
-                    if (parameters.elevationSource() instanceof Controls controls)
+                    TileClient tileClient = parameters.elevationSource() instanceof Controls controls ? controls.getControl(TileClient.class) : null;
+                    if (tileClient != null)
                     {
-                        TileClient tileClient = controls.getControl(TileClient.class);
-                        if (tileClient != null)
-                        {
-                            ILocation[] geometry = {
-                                    new GeoPoint(upperLeft),
-                                    new GeoPoint(upperLeft.getLatitude(), lowerRight.getLongitude()),
-                                    new GeoPoint(lowerRight),
-                                    new GeoPoint(lowerRight.getLatitude(), upperLeft.getLongitude()),
-                                    new GeoPoint(upperLeft),
-                            };
-                            String cacheUri = new File(targetDir, FileUtils.sanitizeForFilename(tileClient.getName() + ".sqlite")).getAbsolutePath();
-                            JobStatus status = downloadAndCacheService.startDownload(geometry, tileClient.getName(), tileClient, minRes, maxRes, cacheUri, progressMonitor);
-                            if (status == JobStatus.COMPLETE) successfulImport = true;
-                            if (cancelled) break;
-                        }
+                        ILocation[] geometry = {
+                                new GeoPoint(upperLeft),
+                                new GeoPoint(upperLeft.getLatitude(), lowerRight.getLongitude()),
+                                new GeoPoint(lowerRight),
+                                new GeoPoint(lowerRight.getLatitude(), upperLeft.getLongitude()),
+                                new GeoPoint(upperLeft),
+                        };
+                        String cacheUri = new File(targetDir, FileUtils.sanitizeForFilename(tileClient.getName() + ".sqlite")).getAbsolutePath();
+                        JobStatus status = downloadAndCacheService.startDownload(geometry, tileClient.getName(), tileClient, minRes, maxRes, cacheUri, progressMonitor);
+                        if (status == JobStatus.COMPLETE) successfulImport = true;
+                        if (cancelled) break;
+                    } else if ("DTED".equals(parameters.elevationSource().getName()))
+                    {
+                        File dtedDir = new File(targetDir, "DTED");
+                        GeoBounds geoBounds = new GeoBounds(upperLeft.getLatitude(), upperLeft.getLongitude(), lowerRight.getLatitude(), lowerRight.getLongitude());
+                        ElevationSourceUtils.fillDtedCache(dtedDir, new GeoBounds[]{geoBounds}, null, null, null);
+                        successfulImport = true;
                     }
                 }
                 if (cancelled) break;

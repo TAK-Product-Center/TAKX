@@ -1,5 +1,6 @@
 package gov.takx.core.globe;
 
+import gov.tak.api.cot.CotTypes;
 import gov.tak.api.util.StandardAttributeNames;
 import gov.takx.api.event.StopProjectServices;
 import gov.takx.api.layer.ITakLayerManager;
@@ -144,7 +145,9 @@ public class ViewshedManager implements ViewshedLayer.OnPointOfInterestChangedLi
                 .mapObjectOptions(MAP_OBJECT_OPTIONS)
                 .initializer(mo -> {
                     mo.setMetaBoolean(StandardAttributeNames.VIEWSHED, true);
+                    mo.setMetaBoolean(StandardAttributeNames.NEVER_COT, true);
                     mo.setIconImage(VIEWSHED_ICON_URI);
+                    mo.setCotType(CotTypes.VIEWSHED_MARKER_TYPE);
                     mo.addDeletionHandler(mi -> deleteViewshed(layer, false));
                     mo.addPropertyChangeListener(IMapObject.LOCATION, evt -> mapObjectLocationChanged(layer, mo));
                 })
@@ -158,10 +161,8 @@ public class ViewshedManager implements ViewshedLayer.OnPointOfInterestChangedLi
      */
     private void mapObjectLocationChanged(@Nonnull ViewshedLayer layer, @Nonnull IMapObject mapObject)
     {
-        if (!mapObject.getMetaBoolean(StandardAttributeNames.DRAGGING, false))
-        {
-            layer.setMarkerLocation(mapObject.getLocation());
-        }
+        boolean updating = mapObject.getMetaBoolean(StandardAttributeNames.DRAGGING, false);
+        layer.setMarkerLocation(mapObject.getLocation(), updating);
     }
 
     /**

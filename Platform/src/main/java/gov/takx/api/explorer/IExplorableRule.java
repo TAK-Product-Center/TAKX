@@ -3,6 +3,9 @@ package gov.takx.api.explorer;
 import gov.takx.api.state.IRestorableMapSupport;
 import jakarta.annotation.Nonnull;
 
+import java.util.Collection;
+import java.util.Collections;
+
 /**
  * Interface for explorer rules.  Explorer rules provide an isMatch() method to determine whether a particular
  * explorer object meets the rule's internal logical constraints. Note that the isMatch will only be called internally
@@ -86,4 +89,14 @@ public interface IExplorableRule extends IExplorerEventSupport, IRestorableMapSu
      * @param enabled {@code true} if this rule is to be enabled, or {@code false} otherwise.
      */
     void setEnabled(boolean enabled);
+
+    /**
+     * @return a collection of properties that this rule is sensitive to
+     * @since 5.8
+     */
+    @Nonnull
+    default Collection<String> getSensitiveProperties()
+    {
+        return Collections.emptyList();
+    }
 }

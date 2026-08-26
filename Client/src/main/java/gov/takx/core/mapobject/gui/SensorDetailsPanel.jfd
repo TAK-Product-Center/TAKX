@@ -1,0 +1,68 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow, labelcompgap, default, labelcompgap, default, labelcompgap, default"
+				"$rowSpecs": "default"
+			} ) {
+				name: "panel1"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label1"
+					"text": "Sensor"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JRadioButton" ) {
+					name: "sensorDisabledRadio"
+					"text": "Disabled"
+					"$buttonGroup": new FormReference( "sensorButtonGroup" )
+					"selected": true
+					addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "updateSensorDetails", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JRadioButton" ) {
+					name: "sensorEnabledRadio"
+					"text": "Enabled"
+					"$buttonGroup": new FormReference( "sensorButtonGroup" )
+					addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "updateSensorDetails", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "editSensorButton"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 35 )
+		} )
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "sensorButtonGroup"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 265, 50 )
+		} )
+	}
+}

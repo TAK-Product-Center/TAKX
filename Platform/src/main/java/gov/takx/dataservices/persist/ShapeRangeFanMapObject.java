@@ -1,5 +1,6 @@
 package gov.takx.dataservices.persist;
 
+import gov.tak.api.util.StandardAttributeNames;
 import gov.takx.api.coordinatesystem.ILocation;
 import gov.takx.api.mapobject.IShapeRangeFanMapObject;
 import gov.takx.api.mapobject.MapObjectSpec;
@@ -32,6 +33,8 @@ public class ShapeRangeFanMapObject extends AShapeMapObject<IMutableRangeFan> im
     public ShapeRangeFanMapObject(MapObjectSpec mapObjectSpec, IPluginDefinition<? extends IRaptorPlugin> pluginDefinition)
     {
         super(mapObjectSpec, pluginDefinition);
+
+        setMetaBoolean(StandardAttributeNames.NEVER_COT, true);
     }
 
     @Override

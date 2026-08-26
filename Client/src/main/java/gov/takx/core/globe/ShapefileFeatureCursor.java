@@ -6,7 +6,7 @@ import com.atakmap.map.layer.feature.FeatureCursor;
 import com.atakmap.map.layer.feature.FeatureDataSource;
 import com.atakmap.map.layer.feature.FeatureDataSource.Content;
 import com.atakmap.map.layer.feature.FeatureDataSource.Content.ContentPointer;
-import com.atakmap.map.layer.feature.FeatureDataStore;
+import com.atakmap.map.layer.feature.FeatureDataStore3;
 import com.atakmap.map.layer.feature.FeatureDefinition;
 import com.atakmap.map.layer.feature.FeatureDefinition2;
 import com.atakmap.map.layer.feature.geometry.Envelope;
@@ -91,7 +91,7 @@ class ShapefileFeatureCursor implements FeatureCursor
     @Override
     public long getId()
     {
-        return FeatureDataStore.FEATURE_ID_NONE;
+        return FeatureDataStore3.FEATURE_ID_NONE;
     }
 
     @Override

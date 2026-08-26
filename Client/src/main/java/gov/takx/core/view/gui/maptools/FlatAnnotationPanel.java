@@ -28,7 +28,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextPane;
 import javax.swing.JToggleButton;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.TitledBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -494,15 +493,15 @@ public class FlatAnnotationPanel extends APropertiesEditorPanel<IFlatAnnotationM
         leftAlignment = new JToggleButton();
         centerAlignment = new JToggleButton();
         rightAlignment = new JToggleButton();
-        var editTextPanel = new JPanel();
+        textLabel = new JLabel();
         var scrollPane1 = new JScrollPane();
         textArea = new JTextPane();
-        var propertiesPanel = new JPanel();
         var label8 = new JLabel();
         sizeSpinner = new JSpinner();
         var label1 = new JLabel();
         fontComboBox = new JComboBox<>();
         var label2 = new JLabel();
+        panel1 = new JPanel();
         boldCheckBox = new JCheckBox();
         italicCheckBox = new JCheckBox();
         var label4 = new JLabel();
@@ -526,8 +525,8 @@ public class FlatAnnotationPanel extends APropertiesEditorPanel<IFlatAnnotationM
         //======== this ========
         setName("this");
         setLayout(new FormLayout(
-                "default:grow",
-                "2*(fill:default, $lgap), fill:default"));
+                "right:default, $lcgap, default:grow",
+                "default, $lgap, 70dlu, 11*($lgap, default)"));
 
         //======== toolbar ========
         {
@@ -555,160 +554,155 @@ public class FlatAnnotationPanel extends APropertiesEditorPanel<IFlatAnnotationM
             rightAlignment.addActionListener(e -> rightAlignmentActionPerformed());
             toolbar.add(rightAlignment, cc.xy(5, 1));
         }
-        add(toolbar, cc.xy(1, 1));
+        add(toolbar, cc.xy(3, 1));
 
-        //======== editTextPanel ========
+        //---- textLabel ----
+        textLabel.setText("Text:");
+        textLabel.setName("textLabel");
+        add(textLabel, cc.xy(1, 3));
+
+        //======== scrollPane1 ========
         {
-            editTextPanel.setBorder(new TitledBorder(null, "Edit Text", TitledBorder.LEADING, TitledBorder.TOP));
-            editTextPanel.setName("editTextPanel");
-            editTextPanel.setLayout(new FormLayout(
-                    "default:grow",
-                    "fill:70dlu:grow"));
+            scrollPane1.setName("scrollPane1");
 
-            //======== scrollPane1 ========
-            {
-                scrollPane1.setName("scrollPane1");
-
-                //---- textArea ----
-                textArea.setName("textArea");
-                textArea.addCaretListener(e -> textAreaCaretUpdate());
-                scrollPane1.setViewportView(textArea);
-            }
-            editTextPanel.add(scrollPane1, cc.xy(1, 1));
+            //---- textArea ----
+            textArea.setName("textArea");
+            textArea.addCaretListener(e -> textAreaCaretUpdate());
+            scrollPane1.setViewportView(textArea);
         }
-        add(editTextPanel, cc.xy(1, 3));
+        add(scrollPane1, cc.xy(3, 3, CellConstraints.FILL, CellConstraints.FILL));
 
-        //======== propertiesPanel ========
+        //---- label8 ----
+        label8.setText("Line Height (m):");
+        label8.setName("label8");
+        add(label8, cc.xy(1, 5));
+
+        //---- sizeSpinner ----
+        sizeSpinner.setModel(new SpinnerNumberModel(1000.0, 0.0, null, 100.0));
+        sizeSpinner.setName("sizeSpinner");
+        sizeSpinner.addChangeListener(e -> sizeSpinnerStateChanged());
+        add(sizeSpinner, cc.xy(3, 5));
+
+        //---- label1 ----
+        label1.setText("Font:");
+        label1.setName("label1");
+        add(label1, cc.xy(1, 7));
+
+        //---- fontComboBox ----
+        fontComboBox.setName("fontComboBox");
+        fontComboBox.addActionListener(e -> fontComboBoxActionPerformed());
+        add(fontComboBox, cc.xy(3, 7));
+
+        //---- label2 ----
+        label2.setText("Font Style:");
+        label2.setName("label2");
+        add(label2, cc.xy(1, 9));
+
+        //======== panel1 ========
         {
-            propertiesPanel.setName("propertiesPanel");
-            propertiesPanel.setLayout(new FormLayout(
-                    "right:default, $lcgap, default, $lcgap, default:grow",
-                    "10*(default, $lgap), default"));
-
-            //---- label8 ----
-            label8.setText("Line Height (m):");
-            label8.setName("label8");
-            propertiesPanel.add(label8, cc.xy(1, 1));
-
-            //---- sizeSpinner ----
-            sizeSpinner.setModel(new SpinnerNumberModel(1000.0, 0.0, null, 100.0));
-            sizeSpinner.setName("sizeSpinner");
-            sizeSpinner.addChangeListener(e -> sizeSpinnerStateChanged());
-            propertiesPanel.add(sizeSpinner, cc.xywh(3, 1, 3, 1));
-
-            //---- label1 ----
-            label1.setText("Font:");
-            label1.setName("label1");
-            propertiesPanel.add(label1, cc.xy(1, 3));
-
-            //---- fontComboBox ----
-            fontComboBox.setName("fontComboBox");
-            fontComboBox.addActionListener(e -> fontComboBoxActionPerformed());
-            propertiesPanel.add(fontComboBox, cc.xywh(3, 3, 3, 1));
-
-            //---- label2 ----
-            label2.setText("Font Style:");
-            label2.setName("label2");
-            propertiesPanel.add(label2, cc.xy(1, 5));
+            panel1.setName("panel1");
+            panel1.setLayout(new FormLayout(
+                    "default, $lcgap, default",
+                    "default"));
 
             //---- boldCheckBox ----
             boldCheckBox.setText("Bold");
             boldCheckBox.setName("boldCheckBox");
             boldCheckBox.addActionListener(e -> boldCheckBoxActionPerformed());
-            propertiesPanel.add(boldCheckBox, cc.xy(3, 5));
+            panel1.add(boldCheckBox, cc.xy(1, 1));
 
             //---- italicCheckBox ----
             italicCheckBox.setText("Italic");
             italicCheckBox.setName("italicCheckBox");
             italicCheckBox.addActionListener(e -> italicCheckBoxActionPerformed());
-            propertiesPanel.add(italicCheckBox, cc.xy(5, 5));
-
-            //---- label4 ----
-            label4.setText("Text Color:");
-            label4.setName("label4");
-            propertiesPanel.add(label4, cc.xy(1, 7));
-
-            //---- textColorChooser ----
-            textColorChooser.setColor(Color.black);
-            textColorChooser.setName("textColorChooser");
-            propertiesPanel.add(textColorChooser, cc.xywh(3, 7, 3, 1));
-
-            //---- label7 ----
-            label7.setText("Background Color:");
-            label7.setName("label7");
-            propertiesPanel.add(label7, cc.xy(1, 9));
-
-            //---- backgroundColorChooser ----
-            backgroundColorChooser.setColor(Color.white);
-            backgroundColorChooser.setName("backgroundColorChooser");
-            propertiesPanel.add(backgroundColorChooser, cc.xywh(3, 9, 3, 1));
-
-            //---- label12 ----
-            label12.setText("Fill Opacity:");
-            label12.setName("label12");
-            propertiesPanel.add(label12, cc.xy(1, 11));
-
-            //---- opacitySpinner ----
-            opacitySpinner.setModel(new SpinnerNumberModel(80, 0, 100, 1));
-            opacitySpinner.setName("opacitySpinner");
-            opacitySpinner.addChangeListener(e -> opacitySpinnerStateChanged());
-            propertiesPanel.add(opacitySpinner, cc.xywh(3, 11, 3, 1));
-
-            //---- label11 ----
-            label11.setText("Fill Background:");
-            label11.setName("label11");
-            propertiesPanel.add(label11, cc.xy(1, 13));
-
-            //---- enableBackgroundFillCheckBox ----
-            enableBackgroundFillCheckBox.setText("On");
-            enableBackgroundFillCheckBox.setName("enableBackgroundFillCheckBox");
-            enableBackgroundFillCheckBox.addActionListener(e -> enableBackgroundFillCheckBoxActionPerformed());
-            propertiesPanel.add(enableBackgroundFillCheckBox, cc.xy(3, 13));
-
-            //---- label6 ----
-            label6.setText("Border Color:");
-            label6.setName("label6");
-            propertiesPanel.add(label6, cc.xy(1, 15));
-
-            //---- borderColorChooser ----
-            borderColorChooser.setColor(Color.white);
-            borderColorChooser.setName("backgroundColorChooser");
-            propertiesPanel.add(borderColorChooser, cc.xywh(3, 15, 3, 1));
-
-            //---- label10 ----
-            label10.setText("Border Thickness");
-            label10.setName("label10");
-            propertiesPanel.add(label10, cc.xy(1, 17));
-
-            //---- borderThicknessSpinner ----
-            borderThicknessSpinner.setModel(new SpinnerNumberModel(3.0F, 0.0F, null, 1.0F));
-            borderThicknessSpinner.setName("borderThicknessSpinner");
-            borderThicknessSpinner.addChangeListener(e -> borderThicknessSpinnerStateChanged());
-            propertiesPanel.add(borderThicknessSpinner, cc.xywh(3, 17, 3, 1));
-
-            //---- label9 ----
-            label9.setText("Enable Border:");
-            label9.setName("label9");
-            propertiesPanel.add(label9, cc.xy(1, 19));
-
-            //---- enableBorderCheckBox ----
-            enableBorderCheckBox.setText("On");
-            enableBorderCheckBox.setName("enableBorderCheckBox");
-            enableBorderCheckBox.addActionListener(e -> enableBorderCheckBoxActionPerformed());
-            propertiesPanel.add(enableBorderCheckBox, cc.xy(3, 19));
-
-            //---- orientationLabel ----
-            orientationLabel.setText("Orientation (Deg):");
-            orientationLabel.setName("orientationLabel");
-            propertiesPanel.add(orientationLabel, cc.xy(1, 21));
-
-            //---- orientationSpinner ----
-            orientationSpinner.setModel(new SpinnerNumberModel(0.0, -360.0, 360.0, 1.0));
-            orientationSpinner.setName("orientationSpinner");
-            orientationSpinner.addChangeListener(e -> orientationSpinnerStateChanged());
-            propertiesPanel.add(orientationSpinner, cc.xywh(3, 21, 3, 1));
+            panel1.add(italicCheckBox, cc.xy(3, 1));
         }
-        add(propertiesPanel, cc.xy(1, 5));
+        add(panel1, cc.xy(3, 9));
+
+        //---- label4 ----
+        label4.setText("Text Color:");
+        label4.setName("label4");
+        add(label4, cc.xy(1, 11));
+
+        //---- textColorChooser ----
+        textColorChooser.setColor(Color.black);
+        textColorChooser.setName("textColorChooser");
+        add(textColorChooser, cc.xy(3, 11));
+
+        //---- label7 ----
+        label7.setText("Background Color:");
+        label7.setName("label7");
+        add(label7, cc.xy(1, 13));
+
+        //---- backgroundColorChooser ----
+        backgroundColorChooser.setColor(Color.white);
+        backgroundColorChooser.setName("backgroundColorChooser");
+        add(backgroundColorChooser, cc.xy(3, 13));
+
+        //---- label12 ----
+        label12.setText("Fill Opacity:");
+        label12.setName("label12");
+        add(label12, cc.xy(1, 15));
+
+        //---- opacitySpinner ----
+        opacitySpinner.setModel(new SpinnerNumberModel(80, 0, 100, 1));
+        opacitySpinner.setName("opacitySpinner");
+        opacitySpinner.addChangeListener(e -> opacitySpinnerStateChanged());
+        add(opacitySpinner, cc.xy(3, 15));
+
+        //---- label11 ----
+        label11.setText("Fill Background:");
+        label11.setName("label11");
+        add(label11, cc.xy(1, 17));
+
+        //---- enableBackgroundFillCheckBox ----
+        enableBackgroundFillCheckBox.setText("On");
+        enableBackgroundFillCheckBox.setName("enableBackgroundFillCheckBox");
+        enableBackgroundFillCheckBox.addActionListener(e -> enableBackgroundFillCheckBoxActionPerformed());
+        add(enableBackgroundFillCheckBox, cc.xy(3, 17));
+
+        //---- label6 ----
+        label6.setText("Border Color:");
+        label6.setName("label6");
+        add(label6, cc.xy(1, 19));
+
+        //---- borderColorChooser ----
+        borderColorChooser.setColor(Color.white);
+        borderColorChooser.setName("backgroundColorChooser");
+        add(borderColorChooser, cc.xy(3, 19));
+
+        //---- label10 ----
+        label10.setText("Border Thickness");
+        label10.setName("label10");
+        add(label10, cc.xy(1, 21));
+
+        //---- borderThicknessSpinner ----
+        borderThicknessSpinner.setModel(new SpinnerNumberModel(3.0F, 0.0F, null, 1.0F));
+        borderThicknessSpinner.setName("borderThicknessSpinner");
+        borderThicknessSpinner.addChangeListener(e -> borderThicknessSpinnerStateChanged());
+        add(borderThicknessSpinner, cc.xy(3, 21));
+
+        //---- label9 ----
+        label9.setText("Enable Border:");
+        label9.setName("label9");
+        add(label9, cc.xy(1, 23));
+
+        //---- enableBorderCheckBox ----
+        enableBorderCheckBox.setText("On");
+        enableBorderCheckBox.setName("enableBorderCheckBox");
+        enableBorderCheckBox.addActionListener(e -> enableBorderCheckBoxActionPerformed());
+        add(enableBorderCheckBox, cc.xy(3, 23));
+
+        //---- orientationLabel ----
+        orientationLabel.setText("Orientation (Deg):");
+        orientationLabel.setName("orientationLabel");
+        add(orientationLabel, cc.xy(1, 25));
+
+        //---- orientationSpinner ----
+        orientationSpinner.setModel(new SpinnerNumberModel(0.0, -360.0, 360.0, 1.0));
+        orientationSpinner.setName("orientationSpinner");
+        orientationSpinner.addChangeListener(e -> orientationSpinnerStateChanged());
+        add(orientationSpinner, cc.xy(3, 25));
 
         //---- buttonGroup1 ----
         var buttonGroup1 = new ButtonGroup();
@@ -722,9 +716,11 @@ public class FlatAnnotationPanel extends APropertiesEditorPanel<IFlatAnnotationM
     private JToggleButton leftAlignment;
     private JToggleButton centerAlignment;
     private JToggleButton rightAlignment;
+    private JLabel textLabel;
     private JTextPane textArea;
     private JSpinner sizeSpinner;
     private JComboBox<String> fontComboBox;
+    private JPanel panel1;
     private JCheckBox boldCheckBox;
     private JCheckBox italicCheckBox;
     private ColorChooser textColorChooser;

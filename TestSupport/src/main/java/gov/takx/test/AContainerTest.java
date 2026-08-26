@@ -94,24 +94,31 @@ public abstract class AContainerTest
 
     private static boolean loggerInitialized;
 
+    // The default program root location, set to the current temp directory.
+    public static String DEFAULT_PROGRAM_ROOT = System.getProperty("java.io.tmpdir");
+
     static
     {
         // Configure our custom Preferences factory
         System.setProperty("java.util.prefs.PreferencesFactory", PreferencesFactoryConstants.PREFERENCES_FACTORY_CLASS);
-    }
 
-    // Relative path from execution directory to the desired program root
-    // --
-    // This works fine for our build environment with plugin repos right next to the TAKX repo. But if we are going to
-    // open our unit testing up to the broader community, we should probably rethink our approach here.
-    public static final String DEFAULT_PROGRAM_ROOT = System.getProperty("java.io.tmpdir");
+        try
+        {
+            // Get full path to temp.  This removes the DOS 8.3 use of '~' characters on Windows.
+            // The takkernel reports the use of '~' as a "soft" exception, this quiets those warnings.
+            // This isn't a problem with core tests, but exceptions are reported on plugin tests.
+            DEFAULT_PROGRAM_ROOT = new File(DEFAULT_PROGRAM_ROOT).getCanonicalPath();
+        } catch (IOException ignored)
+        {
+        }
+    }
 
     protected static final String FALLBACK_LOG4J_XML = "/fallback-log4j2.xml";
 
     // The alternatives we want to activate during testing
     protected static final Class<?>[] ALTERNATIVES = {DirectExecutorService.class, TestMapObjectChangeMonitor.class};
 
-    private static boolean initialized = false;
+    private static boolean initialized;
     private static Set<String> initialTestClasses; // Initial set of classes under test
     private static Set<File> initialDeploymentRoots; // Initial set of deployment roots determined from initialTestClasses
     private static String initialTestClass; // Name of test that caused initialization of initialTestClasses

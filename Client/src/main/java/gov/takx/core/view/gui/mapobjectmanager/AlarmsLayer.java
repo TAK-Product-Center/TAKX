@@ -5,7 +5,6 @@ import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.RenderableLayer;
-import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.pick.PickedObjectList;
 import gov.nasa.worldwind.render.DrawContext;
 import gov.nasa.worldwind.render.Size;
@@ -25,9 +24,11 @@ import gov.takx.api.apps.ICoreAppManager;
 import gov.takx.api.event.mapobject.MapObjectAdded;
 import gov.takx.api.event.mapobject.MapObjectRemoved;
 import gov.takx.api.globe.IExtendedGlobeManager;
+import gov.takx.api.globe.IWidgetInstance;
+import gov.takx.api.globe.IWidgetLayerManager;
 import gov.takx.api.globe.IWorldWindowGL;
+import gov.takx.api.globe.WidgetLayoutPosition;
 import gov.takx.api.layer.IRaptorLayer;
-import gov.takx.api.layer.IRaptorLayerManager;
 import gov.takx.api.mapobject.IDataMonitor;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IMapObjectManager;
@@ -39,7 +40,6 @@ import gov.takx.api.plugin.datamonitor.DataMonitorEvent;
 import gov.takx.api.plugin.datamonitor.DataMonitorEventType;
 import gov.takx.commons.constants.State;
 import gov.takx.commons.swing.GraphicsUtils;
-import gov.takx.commons.swing.ImageUtils;
 import gov.takx.core.globe.layers.WWGlobeLayer;
 import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.platform.ui.FontUtils;
@@ -65,7 +65,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
@@ -73,6 +72,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static gov.takx.commons.swing.ImageUtils.DEFAULT_LED_HEIGHT;
 import static gov.takx.commons.swing.ImageUtils.DEFAULT_LED_WIDTH;
@@ -95,11 +95,6 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
      * Root node icon. (Currently, the root node is not visible.)
      */
     private static final URL ALARMS_LAYER_ICON_PATH = UIResources.getUrl(PLATFORM_ICONS, "volume.png"); // TODO KMB: change to alarm/alert icon?
-
-    /**
-     * The name of the layer that may overlay with this layer.
-     */
-    private static final String WORLD_MAP_NAME = "World Overview Map";
 
     /**
      * The default minimum state that a data monitor must reach to be displayed in the HUD.
@@ -131,7 +126,7 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
     private IExtendedGlobeManager globeManager;
 
     @Inject
-    private IRaptorLayerManager layerManager;
+    private IWidgetLayerManager widgetLayerManager;
 
     @Inject
     private StateIconUtils stateIconUtils;
@@ -171,8 +166,8 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
     private BufferedImage muteImage;
 
     /**
-     * Boolean indicating whether or not the user has selected to hide the layer. This needs to be
-     * tracked locally because the layer is also enabled/disabled bases on whether or not there are
+     * Boolean indicating whether the user has selected to hide the layer. This needs to be
+     * tracked locally because the layer is also enabled/disabled bases on whether there are
      * any alarms to display.
      *
      * @since 1.14
@@ -185,34 +180,6 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
      * @since 1.14
      */
     private final TreeNode root;
-
-    /**
-     * A reference to the world map layer, if it exists.
-     *
-     * @since 1.14
-     */
-    private IRaptorLayer worldOverviewRaptorLayer;
-
-    /**
-     * Indicates if the world map layer is currently visible.
-     *
-     * @since 1.14
-     */
-    private boolean worldMapLayerShowing;
-
-    /**
-     * The width of the world map layer.
-     *
-     * @since 1.14
-     */
-    private int worldMapWidth;
-
-    /**
-     * The height of the world map layer.
-     *
-     * @since 1.14
-     */
-    private int worldMapHeight;
 
     /**
      * Lock object used to ensure only one thread is modifying the tree model at a time.
@@ -257,6 +224,8 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
         // all mouse events and will filter them based on event details.
         canvas.addSelectListener(new DataMonitorSelectListener());
 
+        showLayer = raptorLayer.isVisible();
+
         // Start the layer off as disabled. Enable when an alarm is added.
         this.layer.setEnabled(false);
     }
@@ -276,14 +245,6 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
         // Register to receive notifications when the canvas is resized
         // so this layer can be resized accordingly.
         canvas.addComponentListener(new CanvasComponentAdapter());
-
-        startup();
-    }
-
-    private void startup()
-    {
-        // Listen for globe initialization to check for the world map.
-        globeManager.getPrimaryGlobeDelegate().doWhenReady(this::checkWorldMapLayerExistence);
 
         // Add all existing device MOs.
         // Now that the tree is set up, force an update of the visibility of existing data monitor nodes.
@@ -348,12 +309,7 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
     {
         super.render(dc);
 
-        checkWorldMapVisibility(dc);
-
-        if (layer.isEnabled())
-        {
-            layer.render(dc);
-        }
+        if (layer.isEnabled()) layer.render(dc);
     }
 
     /**
@@ -408,6 +364,24 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
         removeOwnerNode(mapObject.getController());
     }
 
+    @SuppressWarnings("unused")
+    private void onWidgetAdded(@Observes IWidgetLayerManager.WidgetInstanceAdded event)
+    {
+        updateLayerSizeAndLocation();
+    }
+
+    @SuppressWarnings("unused")
+    private void onWidgetRemoved(@Observes IWidgetLayerManager.WidgetInstanceRemoved event)
+    {
+        updateLayerSizeAndLocation();
+    }
+
+    @SuppressWarnings("unused")
+    private void onWidgetVisibilityChanged(@Observes IWidgetLayerManager.WidgetVisibilityChanged event)
+    {
+        updateLayerSizeAndLocation();
+    }
+
     /**
      * Listen for {@link IDataMonitor} PropertyChangeEvents. This class is specifically
      * concerned with state change events so that it can update the state tree node that
@@ -450,19 +424,24 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
      */
     private void updateLayerSizeAndLocation()
     {
-        // Adjust the max size of the tree frame depending on whether or no the world map is showing and the size of
-        // the viewport size.
-        layout.getFrame().setMaxSize(new Size(Size.EXPLICIT_DIMENSION, 0.5, AVKey.FRACTION, Size.EXPLICIT_DIMENSION, calculateMaxHeightPercentage(), AVKey.FRACTION));
+        final var globe = globeManager.getPrimaryGlobeDelegate();
 
-        // Place in upper-left portion of screen, offset 20 pixels from the top and left.
-        // If the world map is visible, increase the offset from the top by the height of the world map, its
-        // padding from the top of the viewport, and padding between the map and the alarms layer.
-        layout.setScreenLocation(
-                new Point(
-                        20,                                  // Offset by 20 pixels from left of viewport.
-                        worldMapLayerShowing ?                  // If the map is showing,
-                                (int) calculateWorldMapHeight() + 45 :  // offset by the height of the map + padding.
-                                20));                                   // Otherwise, just offset by the standard 20 pixels.
+        // Adjust the max size of the tree frame based on the size of the viewport
+        final int height = globe.getWorldWindow().getComponent().getSize().height;
+        final double heightFraction = (height - 40.0) / height; // 20 pixels padding on top and bottom = 40
+        layout.getFrame().setMaxSize(new Size(Size.EXPLICIT_DIMENSION, 0.5, AVKey.FRACTION,
+                Size.EXPLICIT_DIMENSION, heightFraction, AVKey.FRACTION));
+
+        // Calculate extra padding for widgets
+        final var padding = Stream.of(widgetLayerManager.getWidgetsAtPosition(globe, WidgetLayoutPosition.TOP_LEFT).stream(),
+                widgetLayerManager.getWidgetsAtPosition(globe, WidgetLayoutPosition.LEFT_EDGE).stream())
+                .flatMap(stream -> stream)
+                .filter(IWidgetInstance::isVisible)
+                .map(widget -> (int) widget.getSize(true, true)[0])
+                .max(Integer::compare)
+                .orElse(0);
+
+        layout.setScreenLocation(new Point(20 + padding, 20));
     }
 
     /**
@@ -555,20 +534,18 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
      * Add all the {IDataMonitor}s associated with a parent.
      *
      * @param dataMonitorServices A reference to the owner services.
-     * @return The node created to represent the owner.
      */
-    private OwnerNode addOwnerNode(IDataMonitorServices dataMonitorServices)
+    private void addOwnerNode(IDataMonitorServices dataMonitorServices)
     {
-        return addOwnerNode(dataMonitorServices, null);
+        addOwnerNode(dataMonitorServices, null);
     }
 
     /**
      * Add all the {IDataMonitor}s associated with a parent.
      *
      * @param dataMonitorServices A reference to the owner services.
-     * @return The node created to represent the owner.
      */
-    private OwnerNode addOwnerNode(IDataMonitorServices dataMonitorServices, IMapObject mapObject)
+    private void addOwnerNode(IDataMonitorServices dataMonitorServices, IMapObject mapObject)
     {
         // Get a node for map object.
         OwnerNode ownerNode = mapObject != null ? new MapObjectNode(dataMonitorServices, mapObject) : new OwnerNode(dataMonitorServices);
@@ -587,8 +564,6 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
 
         // Update data monitors
         ownerNode.dataMonitorServices.getDataMonitors().forEach(this::updateDataMonitor);
-
-        return ownerNode;
     }
 
     /**
@@ -918,96 +893,6 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
     }
 
     /**
-     * Check to see if the world map layer exists. If it does, get its original width and height. These values will be
-     * used to calculate the location of this alarms layer while the world map layer is showing.
-     *
-     * @since 1.14
-     */
-    private void checkWorldMapLayerExistence()
-    {
-        // We must check to verify that the globe layer manager is ready. It
-        // will be accessed by the call to IRaptorLayer.getLayer() below.
-        if (globeManager.getPrimaryGlobeDelegate().getGlobeLayerManager() != null)
-        {
-            // If it exists, capture its current configuration details.
-            if ((worldOverviewRaptorLayer = layerManager.getLayer(WORLD_MAP_NAME)) != null)
-            {
-                // Get the image used for the world map layer to determine the original height and width.
-                // These values will be used in conjunction with the scaling factor to determine the current
-                // size of the world map layer.
-                BufferedImage image = ImageUtils.getImage(new File(worldOverviewRaptorLayer.getIconPath()), false);
-                if (image == null) logger.warn("Could not get World Map Layer dimensions; using defaults");
-                worldMapWidth = image != null ? image.getWidth() : 256;
-                worldMapHeight = image != null ? image.getHeight() : 128;
-            }
-        }
-    }
-
-    private void checkWorldMapVisibility(DrawContext dc)
-    {
-        if (worldOverviewRaptorLayer != null)
-        {
-            boolean isVisible = worldOverviewRaptorLayer.isVisible() && worldOverviewRaptorLayer.getLayer().isLayerActive(dc);
-
-            if (isVisible != worldMapLayerShowing)
-            {
-                worldMapLayerShowing = isVisible;
-                updateLayerSizeAndLocation();
-            }
-        }
-    }
-
-    /**
-     * Calculate the current height of the world map.
-     *
-     * @return The current height of the world map, in pixels.
-     * @since 1.14
-     */
-    private double calculateWorldMapHeight()
-    {
-        // Get the scale of the map layer relative to the viewport.
-        double worldMapLayerToViewportScale = ((WorldMapLayer) worldOverviewRaptorLayer.getLayer()).getToViewportScale();
-
-        // Current width of globe view.
-        int width = globeManager.getPrimaryGlobeDelegate().getWorldWindow().getComponent().getSize().width;
-
-        // Percentage of icon.
-        double scale = Math.min(1d, (worldMapLayerToViewportScale * width) / worldMapWidth);
-
-        // Return the actual height of the World Map Layer.
-        return worldMapHeight * scale;
-    }
-
-    /**
-     * Calculate the max percentage of the screen's height that this layer should be allowed to consume.
-     * The percentage is based on the height of the viewport, less 40 pixels (20 pixels of padding on the
-     * top and bottom of the frame).
-     * <p>
-     * If the world map is showing, the pixels being used by the map and its padding are also subtracted from
-     * the viewport's pixel height before calculating the percentage.
-     *
-     * @return The percentage of the screen the alarms layer will be allowed to take up (vertically).
-     * @since 1.14
-     */
-    private double calculateMaxHeightPercentage()
-    {
-        int height = globeManager.getPrimaryGlobeDelegate().getWorldWindow().getComponent().getSize().height;
-
-        if (worldMapLayerShowing)
-        {
-            // Add top padding (20), map height (calculated), padding between map and alarms layer (25)
-            // and bottom padding (20).
-            double mapAndPaddingHeight = 20 + calculateWorldMapHeight() + 25 + 20;
-
-            return 1.0 - (mapAndPaddingHeight / height);
-        } else
-        {
-            // 20 pixels padding on top and bottom = 40
-            return (height - 40.0) / height;
-        }
-    }
-
-    /**
      * Generate a status image for a data monitor based on the user's status image preferences. If the
      * user's status image preferences are not available, use the default values.
      *
@@ -1159,9 +1044,15 @@ public class AlarmsLayer extends WWGlobeLayer implements IAppListener
                     else if (obj instanceof MapObjectNode && e.getButton() != 1)
                     {
                         final var moc = mapObjectManager.getMapObjectController(((OwnerNode) obj).getKey());
-                        // center the globe on the selected object
-                        globeManager.getLastFocusedGlobe().goToAndTranslateMouseEvent(moc.getLocationOnGlobe(), e);
-                        moc.createPopupMenu(e);
+                        final var location = moc != null ? moc.getLocationOnGlobe() : null;
+
+                        // Center the globe on the selected object and open menu
+                        if (location != null)
+                        {
+                            //noinspection DataFlowIssue
+                            globeManager.getLastFocusedGlobe().goToAndTranslateMouseEvent(location, e);
+                            moc.createPopupMenu(e);
+                        }
                     }
                 }
             }

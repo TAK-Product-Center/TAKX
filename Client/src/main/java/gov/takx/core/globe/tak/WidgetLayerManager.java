@@ -1,6 +1,8 @@
 package gov.takx.core.globe.tak;
 
 import com.atakmap.map.layer.MultiLayer;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.annotations.VisibleForTesting;
 import com.jogamp.opengl.GLAutoDrawable;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
@@ -11,9 +13,6 @@ import gov.tak.api.widgets.IMapWidget;
 import gov.tak.api.widgets.IMenuLayoutWidget;
 import gov.tak.api.widgets.IParentWidget;
 import gov.tak.api.widgets.opengl.IGLWidget;
-import gov.tak.core.map.layer.IPickContext;
-import gov.tak.core.map.layer.IPickedObjectProvider;
-import gov.tak.core.map.layer.PickedObject;
 import gov.tak.platform.commons.opengl.GLES30;
 import gov.tak.platform.commons.opengl.Matrix;
 import gov.tak.platform.graphics.PointF;
@@ -38,9 +37,12 @@ import gov.tak.platform.widgets.opengl.GLWidget;
 import gov.tak.platform.widgets.opengl.GLWidgetFactory;
 import gov.takx.api.annotation.Headless;
 import gov.takx.api.annotation.InvokeOnEDT;
+import gov.takx.api.annotation.VFSManagerScope;
 import gov.takx.api.event.ShuttingDown;
 import gov.takx.api.event.StartProjectServices;
 import gov.takx.api.event.StopProjectServices;
+import gov.takx.api.filesystem.IVirtualFileSystemManager;
+import gov.takx.api.filesystem.VFSScope;
 import gov.takx.api.globe.IApplicationGlobe;
 import gov.takx.api.globe.IExtendedGlobeManager;
 import gov.takx.api.globe.IGlobeDelegate;
@@ -50,6 +52,9 @@ import gov.takx.api.globe.IWidgetInstance;
 import gov.takx.api.globe.IWidgetLayerManager;
 import gov.takx.api.globe.IWorldWindowGL;
 import gov.takx.api.globe.WidgetLayoutPosition;
+import gov.takx.api.layer.pick.IPickContext;
+import gov.takx.api.layer.pick.IPickedObjectProvider;
+import gov.takx.api.layer.pick.PickedObject;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.commons.lang.ExceptionUtils;
 import gov.takx.core.globe.tak.layer.WidgetLayer;
@@ -58,6 +63,7 @@ import gov.takx.core.globe.widgets.BloodhoundWidget;
 import gov.takx.core.globe.widgets.CompassWidget;
 import gov.takx.core.globe.widgets.EmergencyAlertsWidget;
 import gov.takx.core.globe.widgets.GeoFenceAlertsWidget;
+import gov.takx.core.globe.widgets.IsoKeyWidget;
 import gov.takx.core.globe.widgets.MessageOverlayWidget;
 import gov.takx.core.globe.widgets.NavigationWidget;
 import gov.takx.core.globe.widgets.PositionWidget;
@@ -87,9 +93,13 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,34 +108,41 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * A service that manages Widgets and is responsible for rendering and handling mouse events
  *
  * @since 3.5
  */
-@SuppressWarnings("removal")
 @ApplicationScoped
 public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayerManager, IPickedObjectProvider
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final String WIDGETS_VFS_NS = "widgets";
+    private static final String WIDGET_STATES_FILE_NAME = "widget_manager.json";
+    private static final List<String> EXCLUDED_WIDGETS = List.of("LabelWidget", "MessageOverlayWidget", "IsoKeyWidget");
+
     private final float[] proj = new float[16];
     private final float[] model = new float[16];
 
     private final boolean headless;
     private final ProjectLabelWidgetManager projectLabelWidgetManager;
-    private final Event<WidgetAdded> widgetAddedEvent;
-    private final Event<WidgetRemoved> widgetRemovedEvent;
     private final Event<WidgetInstanceAdded> widgetInstanceAddedEvent;
     private final Event<WidgetInstanceRemoved> widgetInstanceRemovedEvent;
     private final Event<WidgetVisibilityChanged> widgetVisibilityChangedEvent;
     private final IExtendedGlobeManager globeManager;
 
     private final List<IRadialMenuListener> radialMenuListeners = new CopyOnWriteArrayList<>();
-    private final IdentityHashMap<IApplicationGlobe, GlobeRegistration> globeRegistrations = new IdentityHashMap<>();
+    private final IdentityHashMap<IGlobeDelegate, GlobeRegistration> globeRegistrations = new IdentityHashMap<>();
     private final IdentityHashMap<IWidgetFactory, WidgetLayoutPosition> widgetLayoutPositions = new IdentityHashMap<>();
     private final List<IWidgetFactory> widgetFactoryOrder = new ArrayList<>();
     private final MultiLayer layer = new MultiLayer("Widget Layers");
+    private final Path stateFilePath;
+    @VisibleForTesting
+    final Map<String, List<WidgetState>> widgetStateMap = new HashMap<>();
 
     static
     {
@@ -141,23 +158,21 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
         GLWidgetFactory.registerSpi(GLButtonWidget.SPI);
     }
 
-    @SuppressWarnings("removal")
     @Inject
     WidgetLayerManager(IExtendedGlobeManager globeManager, @Headless boolean headless, ProjectLabelWidgetManager projectLabelWidgetManager,
-                       Event<WidgetAdded> widgetAddedEvent, Event<WidgetRemoved> widgetRemovedEvent,
                        Event<WidgetInstanceAdded> widgetInstanceAddedEvent, Event<WidgetInstanceRemoved> widgetInstanceRemovedEvent,
-                       Event<WidgetVisibilityChanged> widgetVisibilityChangedEvent)
+                       Event<WidgetVisibilityChanged> widgetVisibilityChangedEvent,
+                       @VFSManagerScope(VFSScope.Global) IVirtualFileSystemManager vfsManager)
     {
         this.headless = headless;
         this.projectLabelWidgetManager = projectLabelWidgetManager;
-        this.widgetAddedEvent = widgetAddedEvent;
-        this.widgetRemovedEvent = widgetRemovedEvent;
         this.globeManager = globeManager;
         this.widgetInstanceAddedEvent = widgetInstanceAddedEvent;
         this.widgetInstanceRemovedEvent = widgetInstanceRemovedEvent;
         this.widgetVisibilityChangedEvent = widgetVisibilityChangedEvent;
         layer.addLayer(new WidgetLayer());
         globeManager.addGlobeLifeCycleListener(this);
+        stateFilePath = vfsManager.getVirtualFileSystem(WIDGETS_VFS_NS).getRootDir().toPath().resolve(WIDGET_STATES_FILE_NAME);
     }
 
     /**
@@ -191,6 +206,9 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
         addWidgetFactory(EmergencyAlertsWidget::new, WidgetLayoutPosition.BOTTOM_LEFT);
         addWidgetFactory(TerrainProfilerWidget::new, WidgetLayoutPosition.BOTTOM_LEFT);
         addWidgetFactory(BloodhoundWidget::new, WidgetLayoutPosition.BOTTOM_LEFT);
+        addWidgetFactory(IsoKeyWidget::new, WidgetLayoutPosition.BOTTOM_LEFT);
+
+        restoreState();
     }
 
     /**
@@ -200,6 +218,9 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
     private void stopService(@Observes @Priority(ServiceOrdering.STOP_TAKLayers) StopProjectServices ignored)
     {
         radialMenuListeners.clear();
+
+        widgetStateMap.clear();
+        storeState(getWidgetList());
 
         synchronized (globeRegistrations)
         {
@@ -221,20 +242,17 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
     @Override
     public void globeCreated(IGlobeDelegate globe)
     {
-        if (globe instanceof IApplicationGlobe applicationGlobe)
-        {
-            register(createRegistration(applicationGlobe), applicationGlobe);
-        }
+        register(createRegistration(globe), globe);
     }
 
     @Override
     public void globeAboutToBeRemoved(IGlobeDelegate globe)
     {
-        final var globeRegistration = getGlobeRegistration((IApplicationGlobe) globe);
-        if (globeRegistration != null) unregister(globeRegistration, (IApplicationGlobe) globe);
+        final var globeRegistration = getGlobeRegistration(globe);
+        if (globeRegistration != null) unregister(globeRegistration, globe);
     }
 
-    private GlobeRegistration createRegistration(IApplicationGlobe globe)
+    private GlobeRegistration createRegistration(IGlobeDelegate globe)
     {
         final var root = new RootLayoutWidget();
 
@@ -289,7 +307,7 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
         }
     }
 
-    private void addWidgetToGlobe(@Nonnull IWidget widget, @Nonnull IApplicationGlobe globeDelegate, GlobeRegistration globeRegistration, WidgetLayoutPosition layoutPosition)
+    private void addWidgetToGlobe(@Nonnull IWidget widget, @Nonnull IGlobeDelegate globeDelegate, GlobeRegistration globeRegistration, WidgetLayoutPosition layoutPosition)
     {
         getLayoutWidget(globeRegistration, layoutPosition).addChildWidget(widget);
         globeRegistration.widgetRegistrations.put(widget, new WidgetRegistration(layoutPosition));
@@ -300,7 +318,6 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
         widget.addOnVisibleChangedListener(w -> widgetVisibilityChangedEvent.fire(new WidgetVisibilityChanged(widgetInstance)));
 
         widgetInstanceAddedEvent.fire(new WidgetInstanceAdded(widgetInstance, layoutPosition));
-        widgetAddedEvent.fire(new WidgetAdded(widget, globeDelegate));
     }
 
     @Override
@@ -373,6 +390,20 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
         radialMenuListeners.remove(listener);
     }
 
+    @Nonnull
+    @Override
+    public List<IWidgetInstance> getWidgetsAtPosition(@Nonnull IGlobeDelegate globe, @Nonnull WidgetLayoutPosition layoutPosition)
+    {
+        final var registration = getGlobeRegistration(globe);
+
+        return registration != null
+                ? registration.widgetRegistrations.entrySet().stream()
+                        .filter(entry -> layoutPosition.equals(entry.getValue().layoutPosition))
+                        .map(entry -> (IWidgetInstance) new WidgetInstance(entry.getKey(), globe))
+                        .toList()
+                : Collections.emptyList();
+    }
+
     private void notifyRadialMenuListeners(Consumer<IRadialMenuListener> consumer)
     {
         ExceptionUtils.safeDoOperation(radialMenuListeners, consumer);
@@ -410,7 +441,7 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
         }
     }
 
-    private void removeWidgetFromGlobe(@Nonnull IWidget widget, @Nonnull IApplicationGlobe globeDelegate, GlobeRegistration globeRegistration)
+    private void removeWidgetFromGlobe(@Nonnull IWidget widget, @Nonnull IGlobeDelegate globeDelegate, GlobeRegistration globeRegistration)
     {
         WidgetRegistration widgetRegistration = globeRegistration.widgetRegistrations.remove(widget);
         if (widgetRegistration != null)
@@ -418,7 +449,6 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
             getLayoutWidget(globeRegistration, widgetRegistration.layoutPosition).removeChildWidget(widget);
 
             widgetInstanceRemovedEvent.fire(new WidgetInstanceRemoved(new WidgetInstance(widget, globeDelegate)));
-            widgetRemovedEvent.fire(new WidgetRemoved(widget, globeDelegate));
         }
         widget.releaseResources();
     }
@@ -437,7 +467,7 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
                 : globeRegistration.absolutePositionLayout;
     }
 
-    private void register(GlobeRegistration globeRegistration, IApplicationGlobe globe)
+    private void register(GlobeRegistration globeRegistration, IGlobeDelegate globe)
     {
         IWorldWindowGL wwd = globe.getWorldWindow();
         Component wwdComponent = wwd.getComponent();
@@ -458,10 +488,21 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
                     if (widget != null)
                     {
                         addWidgetToGlobe(widget, globe, globeRegistration, widgetLayoutPositions.get(factory));
-                        getWidgetList().stream()
-                                .filter(widget::sameKindAs)
-                                .findFirst()
-                                .ifPresent(existingWidget -> widget.setVisible(existingWidget.isVisible()));
+
+                        // Use stored state if available
+                        final var state = getState(widget, globe.getGlobeId());
+                        if (state != null)
+                        {
+                            widget.setVisible(state.visible);
+                        }
+                        // Copy state of existing widget
+                        else
+                        {
+                            getWidgetList().stream()
+                                    .filter(widget::sameKindAs)
+                                    .findFirst()
+                                    .ifPresent(existingWidget -> widget.setVisible(existingWidget.isVisible()));
+                        }
                     }
                 } catch (Exception e)
                 {
@@ -478,7 +519,7 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
         globeRegistration.menuLayoutWidget.addOnWidgetListChangedListener(new TooltipHandler(globe));
     }
 
-    private void unregister(GlobeRegistration globeRegistration, IApplicationGlobe globe)
+    private void unregister(GlobeRegistration globeRegistration, IGlobeDelegate globe)
     {
         globeRegistration.impl.stop();
         globeRegistration.widgetRegistrations.keySet().forEach(IWidget::releaseResources);
@@ -499,7 +540,7 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
      * render all widgets
      * @param globe the globe
      */
-    public void render(@Nonnull IApplicationGlobe globe)
+    public void render(@Nonnull IGlobeDelegate globe)
     {
         GlobeRegistration globeRegistration = getGlobeRegistration(globe);
         if (globeRegistration != null)
@@ -555,11 +596,11 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
     }
 
     /**
-     * Get the {@link IMenuLayoutWidget} for the provided {@link IApplicationGlobe}.
+     * Get the {@link IMenuLayoutWidget} for the provided {@link IGlobeDelegate}.
      * @param globe the globe delegate
      * @return the menu layout widget or null if there is none
      */
-    private IMenuLayoutWidget getMenuLayoutWidget(IApplicationGlobe globe)
+    private IMenuLayoutWidget getMenuLayoutWidget(IGlobeDelegate globe)
     {
         GlobeRegistration globeRegistration = getGlobeRegistration(globe);
         return globeRegistration != null ? globeRegistration.menuLayoutWidget : null;
@@ -575,7 +616,7 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
      * @param y Y screen coordinate at which to show the menu
      * @since 5.6
      */
-    public void showRadialMenu(@Nonnull IApplicationGlobe globe, @Nullable IMapObject mapObject, @Nonnull JPopupMenu popupMenu, int x, int y)
+    public void showRadialMenu(@Nonnull IGlobeDelegate globe, @Nullable IMapObject mapObject, @Nonnull JPopupMenu popupMenu, int x, int y)
     {
         final var menuLayoutWidget = getMenuLayoutWidget(globe);
         final var point = new PointF(x, y);
@@ -632,7 +673,7 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
         return layer;
     }
 
-    private GlobeRegistration getGlobeRegistration(IApplicationGlobe globeDelegate)
+    private GlobeRegistration getGlobeRegistration(IGlobeDelegate globeDelegate)
     {
         synchronized (globeRegistrations)
         {
@@ -653,13 +694,104 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
     }
 
     /**
+     * Stores the manager's state in the VFS file {@link #WIDGET_STATES_FILE_NAME}.
+     *
+     * @since 5.8
+     */
+    @VisibleForTesting
+    void storeState(List<IWidget> widgets)
+    {
+        try
+        {
+            final var widgetStates = widgets.stream()
+                    .filter(w -> !EXCLUDED_WIDGETS.contains(w.getClass().getSimpleName()))
+                    .map(w -> new WidgetState(getWidgetStateKey(w), w.isVisible(), 1)) // TODO: use real id when supported
+                    .toList();
+            final var json = OBJECT_MAPPER.writeValueAsString(new WidgetsManagerState(widgetStates.toArray(new WidgetState[0])));
+
+            Files.createDirectories(stateFilePath.getParent());
+            Files.writeString(stateFilePath, json);
+        } catch (IOException e)
+        {
+            logger.error("Error storing widget state", e);
+        }
+    }
+
+    /**
+     * Restores the manager's state from the VFS file {@link #WIDGET_STATES_FILE_NAME}.
+     *
+     * @since 5.8
+     */
+    @VisibleForTesting
+    void restoreState()
+    {
+        if (!Files.exists(stateFilePath)) return;
+
+        String json = null;
+
+        try
+        {
+            json = Files.readString(stateFilePath);
+            final var state = OBJECT_MAPPER.readValue(json, WidgetsManagerState.class);
+            Stream.of(state.widgetStates).forEach(ws -> widgetStateMap.computeIfAbsent(ws.className, k -> new ArrayList<>()).add(ws));
+        } catch (IOException e)
+        {
+            logger.error("Error reading widget state from JSON: {}", json, e);
+        }
+    }
+
+    /**
+     * @param widget The widget
+     * @param globeId The globe id
+     * @return The widget's state or {@code null} if a state does not exist for the widget/globe combination
+     * @since 5.8
+     */
+    @Nullable
+    private WidgetState getState(@Nonnull IWidget widget, int globeId)
+    {
+        final var states = widgetStateMap.get(getWidgetStateKey(widget));
+
+        return states != null
+                ? states.stream().filter(ws -> ws.globeId == globeId).findFirst().orElse(null)
+                : null;
+    }
+
+    @VisibleForTesting
+    static String getWidgetStateKey(@Nonnull IWidget widget)
+    {
+        return widget.getClass().getName();
+    }
+
+    /**
+     * Holds information about a widget's state that will be persisted to JSON.
+     *
+     * @param className The widget's FQ class name
+     * @param visible {@code true} if the widget is visible
+     * @param globeId The globe id with which the widget is associated (to be used when per-globe visibility is supported)
+     * @since 5.8
+     */
+    @VisibleForTesting
+    record WidgetState(@Nonnull String className, boolean visible, int globeId)
+    {
+    }
+
+    /**
+     * Holds information about this manager that will be persisted to JSON.
+     *
+     * @param widgetStates The widget states
+     */
+    private record WidgetsManagerState(@Nonnull WidgetState[] widgetStates)
+    {
+    }
+
+    /**
      * Handles tooltip display based on widget hover events. Tooltip handling is dynamically
      * managed in the widget hierarchy based on add/remove of children.
      */
     private final class TooltipHandler implements IParentWidget.OnWidgetListChangedListener,
             IMapWidget.OnHoverListener, IMapWidget.OnVisibleChangedListener
     {
-        final IApplicationGlobe globe;
+        final IGlobeDelegate globe;
         final TextWidget tooltipWidget;
 
         /**
@@ -667,7 +799,7 @@ public class WidgetLayerManager implements IGlobeLifeCycleListener, IWidgetLayer
          */
         IMapWidget hoveredWidget;
 
-        TooltipHandler(IApplicationGlobe globe)
+        TooltipHandler(IGlobeDelegate globe)
         {
             this.globe = globe;
             tooltipWidget = new TextWidget();

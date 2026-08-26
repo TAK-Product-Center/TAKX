@@ -3,6 +3,7 @@ package gov.takx.core.globe;
 import com.atakmap.map.CameraController;
 import com.atakmap.map.LegacyAdapters;
 import com.atakmap.map.MapRenderer3;
+import com.atakmap.map.layer.feature.geometry.Envelope;
 import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -18,6 +19,7 @@ import gov.tak.api.engine.map.IMapRendererEnums.CameraCollision;
 import gov.tak.api.engine.map.MapRenderer;
 import gov.tak.api.engine.map.MapSceneModel;
 import gov.tak.api.engine.map.coords.GeoPoint;
+import gov.tak.api.engine.math.PointD;
 import gov.tak.platform.graphics.PointF;
 import gov.tak.platform.marshal.MarshalManager;
 import gov.takx.api.annotation.Headless;
@@ -29,6 +31,7 @@ import gov.takx.api.layer.IRaptorLayer;
 import gov.takx.core.globe.tak.animation.IAnimation;
 import gov.takx.core.globe.tak.animation.IAnimationFactory;
 import gov.takx.core.globe.tak.animation.IAnimationService;
+import gov.takx.core.view.gui.maptools.elevationtools.contour.EnvelopeUtils;
 import gov.takx.platform.globe.CameraEyeFactory;
 import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
@@ -180,6 +183,12 @@ public class GlobeViewController implements IGlobeViewController
     }
 
     @Override
+    public void goTo(@Nonnull Envelope envelope)
+    {
+        goTo(EnvelopeUtils.toSector(envelope));
+    }
+
+    @Override
     public void goTo(@Nonnull Sector sector)
     {
         if (!sector.equals(Sector.EMPTY_SECTOR))
@@ -302,7 +311,7 @@ public class GlobeViewController implements IGlobeViewController
         animationService.stopAllAnimations(renderer);
         MapSceneModel mapSceneModel = renderer.getMapSceneModel(false, IMapRendererEnums.DisplayOrigin.UpperLeft);
         GeoPoint geoPoint = GeoPoint.createMutable();
-        if (mapSceneModel.inverse(new PointF(mapSceneModel.focusx, mapSceneModel.focusy), geoPoint))
+        if (renderer.inverse(new PointD(mapSceneModel.focusx, mapSceneModel.focusy, 0), geoPoint, IMapRendererEnums.InverseMode.RayCast, 0, IMapRendererEnums.DisplayOrigin.UpperLeft) != IMapRendererEnums.InverseResult.None)
         {
             double tiltBy = (90d + mapSceneModel.camera.elevation) - limitPitch(tilt);
             // stop tilting towards surface when a collision occurs

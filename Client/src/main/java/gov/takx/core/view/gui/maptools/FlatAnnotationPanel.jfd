@@ -1,13 +1,21 @@
-JFDML JFormDesigner: "7.0.7.0.1134" Java: "11.0.12" encoding: "UTF-8"
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "buttonGroup1"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 325, 655 )
+		} )
 		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-			"$columnSpecs": "default:grow"
-			"$rowSpecs": "fill:default, linegap, fill:default, linegap, fill:default"
+			"$columnSpecs": "right:default, labelcompgap, default:grow"
+			"$rowSpecs": "default, linegap, 70dlu, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default"
 		} ) {
 			name: "this"
+			auxiliary() {
+				"JavaCodeGenerator.variableLocal": true
+			}
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
 				"$columnSpecs": "default, labelcompgap, default, labelcompgap, default"
 				"$rowSpecs": "fill:default"
@@ -45,266 +53,243 @@ new FormModel {
 					"gridY": 1
 				} )
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-				"gridX": 1
-				"gridY": 1
+				"gridX": 3
 			} )
-			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-				"$columnSpecs": "default:grow"
-				"$rowSpecs": "fill:70dlu:grow"
-			} ) {
-				name: "editTextPanel"
-				"border": new javax.swing.border.TitledBorder( null, "Edit Text", 4, 2 )
-				auxiliary() {
-					"JavaCodeGenerator.variableLocal": true
-				}
-				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-					name: "scrollPane1"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-					add( new FormComponent( "javax.swing.JTextPane" ) {
-						name: "textArea"
-						addEvent( new FormEvent( "javax.swing.event.CaretListener", "caretUpdate", "textAreaCaretUpdate", false ) )
-					} )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 1
-					"gridY": 1
-				} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "textLabel"
+				"text": "Text:"
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 				"gridX": 1
 				"gridY": 3
 			} )
-			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-				"$columnSpecs": "right:default, labelcompgap, default, labelcompgap, default:grow"
-				"$rowSpecs": "default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default"
-			} ) {
-				name: "propertiesPanel"
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane1"
 				auxiliary() {
 					"JavaCodeGenerator.variableLocal": true
 				}
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label8"
-					"text": "Line Height (m):"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 1
-					"gridY": 1
+				add( new FormComponent( "javax.swing.JTextPane" ) {
+					name: "textArea"
+					addEvent( new FormEvent( "javax.swing.event.CaretListener", "caretUpdate", "textAreaCaretUpdate", false ) )
 				} )
-				add( new FormComponent( "javax.swing.JSpinner" ) {
-					name: "sizeSpinner"
-					"model": new javax.swing.SpinnerNumberModel {
-						minimum: 0.0
-						stepSize: 100.0
-						value: 1000.0
-					}
-					addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "sizeSpinnerStateChanged", false ) )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridWidth": 3
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label1"
-					"text": "Font:"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 3
-				} )
-				add( new FormComponent( "javax.swing.JComboBox" ) {
-					name: "fontComboBox"
-					auxiliary() {
-						"JavaCodeGenerator.typeParameters": "String"
-					}
-					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "fontComboBoxActionPerformed", false ) )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridY": 3
-					"gridWidth": 3
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label2"
-					"text": "Font Style:"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 5
-				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label8"
+				"text": "Line Height (m):"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JSpinner" ) {
+				name: "sizeSpinner"
+				"model": new javax.swing.SpinnerNumberModel {
+					minimum: 0.0
+					stepSize: 100.0
+					value: 1000.0
+				}
+				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "sizeSpinnerStateChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label1"
+				"text": "Font:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 7
+			} )
+			add( new FormComponent( "javax.swing.JComboBox" ) {
+				name: "fontComboBox"
+				auxiliary() {
+					"JavaCodeGenerator.typeParameters": "String"
+				}
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "fontComboBoxActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 7
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label2"
+				"text": "Font Style:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 9
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default"
+				"$rowSpecs": "default"
+			} ) {
+				name: "panel1"
 				add( new FormComponent( "javax.swing.JCheckBox" ) {
 					name: "boldCheckBox"
 					"text": "Bold"
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "boldCheckBoxActionPerformed", false ) )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridY": 5
-				} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
 				add( new FormComponent( "javax.swing.JCheckBox" ) {
 					name: "italicCheckBox"
 					"text": "Italic"
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "italicCheckBoxActionPerformed", false ) )
 				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 5
-					"gridY": 5
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label4"
-					"text": "Text Color:"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 7
-				} )
-				add( new FormComponent( "net.java.dev.colorchooser.ColorChooser" ) {
-					name: "textColorChooser"
-					"color": sfield java.awt.Color black
-					"name": "textColorChooser"
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 					"gridX": 3
-					"gridY": 7
-					"gridWidth": 3
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label7"
-					"text": "Background Color:"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 9
-				} )
-				add( new FormComponent( "net.java.dev.colorchooser.ColorChooser" ) {
-					name: "backgroundColorChooser"
-					"color": sfield java.awt.Color white
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridY": 9
-					"gridWidth": 3
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label12"
-					"text": "Fill Opacity:"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 11
-				} )
-				add( new FormComponent( "javax.swing.JSpinner" ) {
-					name: "opacitySpinner"
-					"model": new javax.swing.SpinnerNumberModel( 80, 0, 100, 1 )
-					addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "opacitySpinnerStateChanged", false ) )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridY": 11
-					"gridWidth": 3
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label11"
-					"text": "Fill Background:"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 13
-				} )
-				add( new FormComponent( "javax.swing.JCheckBox" ) {
-					name: "enableBackgroundFillCheckBox"
-					"text": "On"
-					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "enableBackgroundFillCheckBoxActionPerformed", false ) )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridY": 13
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label6"
-					"text": "Border Color:"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 15
-				} )
-				add( new FormComponent( "net.java.dev.colorchooser.ColorChooser" ) {
-					name: "borderColorChooser"
-					"color": sfield java.awt.Color white
-					"name": "backgroundColorChooser"
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridY": 15
-					"gridWidth": 3
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label10"
-					"text": "Border Thickness"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 17
-				} )
-				add( new FormComponent( "javax.swing.JSpinner" ) {
-					name: "borderThicknessSpinner"
-					"model": new javax.swing.SpinnerNumberModel {
-						minimum: 0.0f
-						stepSize: 1.0f
-						value: 3.0f
-					}
-					addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "borderThicknessSpinnerStateChanged", false ) )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridY": 17
-					"gridWidth": 3
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label9"
-					"text": "Enable Border:"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 19
-				} )
-				add( new FormComponent( "javax.swing.JCheckBox" ) {
-					name: "enableBorderCheckBox"
-					"text": "On"
-					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "enableBorderCheckBoxActionPerformed", false ) )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridY": 19
-				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "orientationLabel"
-					"text": "Orientation (Deg):"
-					auxiliary() {
-						"JavaCodeGenerator.variableLocal": true
-					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 21
-				} )
-				add( new FormComponent( "javax.swing.JSpinner" ) {
-					name: "orientationSpinner"
-					"model": new javax.swing.SpinnerNumberModel( 0.0, -360.0, 360.0, 1.0 )
-					addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "orientationSpinnerStateChanged", false ) )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridY": 21
-					"gridWidth": 3
 				} )
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-				"gridY": 5
+				"gridX": 3
+				"gridY": 9
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label4"
+				"text": "Text Color:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 11
+			} )
+			add( new FormComponent( "net.java.dev.colorchooser.ColorChooser" ) {
+				name: "textColorChooser"
+				"color": sfield java.awt.Color black
+				"name": "textColorChooser"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 11
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label7"
+				"text": "Background Color:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 13
+			} )
+			add( new FormComponent( "net.java.dev.colorchooser.ColorChooser" ) {
+				name: "backgroundColorChooser"
+				"color": sfield java.awt.Color white
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 13
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label12"
+				"text": "Fill Opacity:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 15
+			} )
+			add( new FormComponent( "javax.swing.JSpinner" ) {
+				name: "opacitySpinner"
+				"model": new javax.swing.SpinnerNumberModel( 80, 0, 100, 1 )
+				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "opacitySpinnerStateChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 15
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label11"
+				"text": "Fill Background:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 17
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "enableBackgroundFillCheckBox"
+				"text": "On"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "enableBackgroundFillCheckBoxActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 17
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label6"
+				"text": "Border Color:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 19
+			} )
+			add( new FormComponent( "net.java.dev.colorchooser.ColorChooser" ) {
+				name: "borderColorChooser"
+				"color": sfield java.awt.Color white
+				"name": "backgroundColorChooser"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 19
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label10"
+				"text": "Border Thickness"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 21
+			} )
+			add( new FormComponent( "javax.swing.JSpinner" ) {
+				name: "borderThicknessSpinner"
+				"model": new javax.swing.SpinnerNumberModel {
+					minimum: 0.0f
+					stepSize: 1.0f
+					value: 3.0f
+				}
+				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "borderThicknessSpinnerStateChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 21
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label9"
+				"text": "Enable Border:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 23
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "enableBorderCheckBox"
+				"text": "On"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "enableBorderCheckBoxActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 23
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "orientationLabel"
+				"text": "Orientation (Deg):"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 25
+			} )
+			add( new FormComponent( "javax.swing.JSpinner" ) {
+				name: "orientationSpinner"
+				"model": new javax.swing.SpinnerNumberModel( 0.0, -360.0, 360.0, 1.0 )
+				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "orientationSpinnerStateChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 25
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 5, 0 )
-			"size": new java.awt.Dimension( 305, 580 )
-		} )
-		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
-			name: "buttonGroup1"
-		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 325, 655 )
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 470, 575 )
 		} )
 	}
 }

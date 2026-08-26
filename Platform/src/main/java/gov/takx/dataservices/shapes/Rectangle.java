@@ -19,6 +19,7 @@ import javax.naming.OperationNotSupportedException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -29,10 +30,18 @@ public class Rectangle extends ARegularShape implements IMutableRectangle, Seria
 {
     private static final double ROUND_PLACES = 1e5;
     private static final double MAX_DELTA_LON_DEGREES = 45;
+
+    // Legacy Ordering: LL, LR, UR, UL
     private static final int SW = 0;
     private static final int SE = 1;
     private static final int NE = 2;
     private static final int NW = 3;
+
+    // CoT/Kernel Ordering: UL, LL, LR, UR. 
+    private static final int UL = NW;
+    private static final int LL = SW;
+    private static final int LR = SE;
+    private static final int UR = NE;
 
     private List<ILocation> vertices;
     private double width;
@@ -101,9 +110,10 @@ public class Rectangle extends ARegularShape implements IMutableRectangle, Seria
     }
 
     @Override
-    public List<ILocation> getVertices()
+    public List<ILocation> getVertices(boolean takOrder)
     {
-        return vertices != null ? new ArrayList<>(vertices) : null;
+        if (vertices == null) return null;
+        return !takOrder ? new ArrayList<>(vertices) : Arrays.asList(vertices.get(UL), vertices.get(LL), vertices.get(LR), vertices.get(UR));
     }
 
     @Override

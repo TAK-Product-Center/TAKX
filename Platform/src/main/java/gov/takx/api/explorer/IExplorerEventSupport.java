@@ -1,5 +1,6 @@
 package gov.takx.api.explorer;
 
+import gov.takx.commons.lang.IPropertyChangeListenerSupport;
 import jakarta.annotation.Nonnull;
 
 import java.beans.PropertyChangeListener;
@@ -9,7 +10,7 @@ import java.beans.PropertyChangeListener;
  *
  * @since 1.48
  */
-public interface IExplorerEventSupport
+public interface IExplorerEventSupport extends IPropertyChangeListenerSupport
 {
     /**
      * Add a listener to this object's property change events.

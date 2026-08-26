@@ -10,8 +10,6 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.PostConstruct;
 
-import javax.swing.border.EmptyBorder;
-
 import java.beans.PropertyChangeEvent;
 
 /**
@@ -37,7 +35,7 @@ public class IconPropertiesEditorPanel extends APropertiesEditorPanel<IIconMapOb
      */
     public IconPropertiesEditorPanel(@Nonnull IIconMapObject icon, boolean directActionMode, @Nullable IPanelStateListener panelListener)
     {
-        super("title", icon, directActionMode, panelListener);
+        super("Icon", icon, directActionMode, panelListener);
 
         initComponents();
 
@@ -93,7 +91,6 @@ public class IconPropertiesEditorPanel extends APropertiesEditorPanel<IIconMapOb
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
 
         //======== this ========
-        setBorder(new EmptyBorder(10, 5, 10, 5));
         setName("this");
         setLayout(new FormLayout(
                 "default:grow",

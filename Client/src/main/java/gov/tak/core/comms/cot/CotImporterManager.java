@@ -84,6 +84,7 @@ public class CotImporterManager implements ICotImporterManager
 
         FILTERED_TYPE_PREFIXES.add("a-f-G-E-S-rad"); // Friendly RAD sensors
         FILTERED_TYPE_PREFIXES.add("y"); // Task responses
+        FILTERED_TYPE_PREFIXES.add("c"); // Capabilities
         FILTERED_TYPE_PREFIXES.add(CotTypes.PREFIX_FREE_TEXT); // Chat messages
     }
 

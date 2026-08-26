@@ -79,10 +79,12 @@ public class CotDetailManager implements ICotDetailManager
         registerHandler(new MedicalDetailHandler());
         registerHandler(new PrecisionLocationDetailHandler());
         registerHandler(new RemarksDetailHandler());
+        registerHandler(new SensorDetailHandler());
         registerHandler(new StatusDetailHandler());
         registerHandler(new StrokeFillDetailHandler());
         registerHandler(new TrackDetailHandler());
         registerHandler(new UserIconDetailHandler());
+        registerHandler(new VehicleModelDetailHandler());
         registerHandler(new VideoDetailHandler());
     }
 }

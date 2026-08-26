@@ -1,29 +1,39 @@
 package gov.takx.core.view.gui.maptools.elevationtools.viewshed;
 
+import com.atakmap.coremap.maps.coords.GeoBounds;
 import com.atakmap.coremap.maps.coords.GeoPoint;
 import com.atakmap.map.elevation.ElevationManager;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import gov.tak.api.engine.map.coords.GeoCalculations;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.PseudoBean;
+import gov.takx.api.coordinatesystem.ILocation;
 import gov.takx.api.notification.INotificationService;
 import gov.takx.api.notification.Notification;
+import gov.takx.api.platform.ICoreExecutorService;
+import gov.takx.api.platform.IProgressMonitor;
+import gov.takx.api.terrain.experimental.ElevationSourceUtils;
 import gov.takx.api.ui.IResourceCleaner;
 import gov.takx.commons.swing.entity.EntityTableModel;
 import gov.takx.commons.swing.entity.common.CommonEntityTable;
 import gov.takx.core.globe.GlobeClickService;
 import gov.takx.core.globe.ViewshedManager;
+import gov.takx.core.globe.tak.elevation.ElevationDownloaderManager;
 import gov.takx.core.globe.tak.layer.ViewshedLayer;
+import gov.takx.core.view.gui.ProgressDialog;
 import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
-import org.jdesktop.swingx.table.TableColumnExt;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
+
+import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * An elevation tool panel specific to displaying and editing {@link ViewshedLayer Viewsheds}
@@ -32,8 +42,6 @@ import javax.swing.ListSelectionModel;
 @PseudoBean
 public class ViewshedPanel extends JPanel implements ViewshedManager.ViewshedListener, IResourceCleaner
 {
-    private static final int ROW_HEIGHT = UIResources.ACTION_BUTTON_IMAGE_SIZE.height + 15;
-
     private final ViewshedEntity entityDefinition = new ViewshedEntity();
     private final EntityTableModel<ViewshedLayer> tableModel = new EntityTableModel<>(entityDefinition);
 
@@ -46,6 +54,12 @@ public class ViewshedPanel extends JPanel implements ViewshedManager.ViewshedLis
     @Inject
     private INotificationService notificationService;
 
+    @Inject
+    private ElevationDownloaderManager elevationDownloaderManager;
+
+    @Inject
+    private ICoreExecutorService executorService;
+
     public ViewshedPanel()
     {
         initComponents();
@@ -53,27 +67,17 @@ public class ViewshedPanel extends JPanel implements ViewshedManager.ViewshedLis
         viewshedTable.setModel(tableModel);
         viewshedTable.setRowSelectionAllowed(true);
         viewshedTable.getTableHeader().setSortButtonVisible(false);
-
-        TableColumnExt actionsColumn = viewshedTable.getActionsColumn();
-        actionsColumn.setSortable(false);
-        actionsColumn.setVisible(true);
-        TableColumnExt nameColumn = viewshedTable.getNameColumn();
-        nameColumn.setSortable(false);
-        nameColumn.setVisible(true);
+        viewshedTable.getActionsColumn().setVisible(true);
+        viewshedTable.getNameColumn().setVisible(true);
 
         final var newViewshedButton = new JButton("Add", UIResources.ADD_ICON);
         newViewshedButton.setToolTipText("Create a new viewshed");
         newViewshedButton.addActionListener(e -> newViewshed());
         viewshedTable.getTableHeader().addActionButton(newViewshedButton);
 
-        viewshedTable.setRowHeight(ROW_HEIGHT);
-        scrollPane1.getVerticalScrollBar().setUnitIncrement(ROW_HEIGHT);
-
         viewshedTable.getSelectionModel().addListSelectionListener(e -> {
             if (e.getValueIsAdjusting()) return;
-            int selectedRow = viewshedTable.getSelectedRow();
-            ViewshedLayer layer = selectedRow > -1 ? tableModel.getRow(viewshedTable.convertRowIndexToModel(selectedRow)) : null;
-            viewshedEditorPanel.setViewshed(layer);
+            viewshedEditorPanel.setViewshed(viewshedTable.getSelectedEntity());
         });
     }
 
@@ -87,18 +91,59 @@ public class ViewshedPanel extends JPanel implements ViewshedManager.ViewshedLis
     {
         globeClickService.activate("Click to place a viewshed", location -> {
             globeClickService.deactivate();
-            // TODO: TAKX-4380, determine how to download the elevation data here
-            double elevation = ElevationManager.getElevation(new GeoPoint(location), null);
-            if (Double.isNaN(elevation))
+            ViewshedLayer viewshedLayer = viewshedTable.getSelectedEntity();
+            double radius = viewshedLayer != null ? viewshedLayer.getRadius() : ViewshedLayer.DEFAULT_VIEWSHED_RADIUS;
+            if (viewshedHasMissingElevationData(location, radius))
             {
-                notificationService.show(Notification.builder("Cannot create a Viewshed, invalid/missing elevation data at selected location. Zoom into or import elevation data for the desired location.", Notification.Type.Error).build());
-            } else
-            {
-                final var viewshed = viewshedManager.createViewshed(false);
-                viewshed.setMarkerLocation(location);
-                viewshed.setVisible(true);
+                downloadElevationData(location, radius);
+                double elevation = ElevationManager.getElevation(new GeoPoint(location), null);
+                location = new gov.tak.api.maps.coords.GeoPoint(location.getLatitude(), location.getLongitude(), elevation);
+                if (viewshedHasMissingElevationData(location, radius))
+                {
+                    notificationService.show(Notification.builder("Cannot create a Viewshed, invalid/missing elevation data at selected location. Zoom into or import elevation data for the desired location.", Notification.Type.Error).build());
+                    return;
+                }
             }
+
+            final var viewshed = viewshedManager.createViewshed(false);
+            viewshed.setMarkerLocation(location, false);
+            viewshed.setVisible(true);
         });
+    }
+
+    private GeoPoint[] getViewshedBoundaryLocations(ILocation location, double radius)
+    {
+        GeoPoint[] locations = new GeoPoint[4];
+        locations[0] = new GeoPoint(GeoCalculations.pointAtDistance(location, 0, radius));
+        locations[1] = new GeoPoint(GeoCalculations.pointAtDistance(location, 90, radius));
+        locations[2] = new GeoPoint(GeoCalculations.pointAtDistance(location, 180, radius));
+        locations[3] = new GeoPoint(GeoCalculations.pointAtDistance(location, 270, radius));
+        return locations;
+    }
+
+    private boolean viewshedHasMissingElevationData(ILocation location, double radius)
+    {
+        return !location.hasElevation() ||
+                Arrays.stream(getViewshedBoundaryLocations(location, radius)).anyMatch(l -> Double.isNaN(ElevationManager.getElevation(new GeoPoint(l), null)));
+    }
+
+    private void downloadElevationData(ILocation location, double radius)
+    {
+        AtomicBoolean cancelSignal = new AtomicBoolean(false);
+        ProgressDialog progressDialog = new ProgressDialog(null);
+        progressDialog.setModal(true);
+        progressDialog.setAlwaysOnTop(true);
+        progressDialog.setText("Please wait...");
+        progressDialog.setSubstatus("Downloading elevation data");
+        progressDialog.setMaximum(IProgressMonitor.INDETERMINATE);
+        progressDialog.showCancelButton(() -> cancelSignal.set(true));
+
+        GeoPoint[] locations = getViewshedBoundaryLocations(location, radius);
+        ElevationSourceUtils.fillDtedCache(elevationDownloaderManager.getDtedDir(), new GeoBounds[]{GeoBounds.createFromPoints(locations)}, () -> {
+            progressDialog.setVisible(false);
+        }, executorService, cancelSignal);
+
+        progressDialog.setVisible(true);
     }
 
     @Override
@@ -109,8 +154,7 @@ public class ViewshedPanel extends JPanel implements ViewshedManager.ViewshedLis
 
         // Add the new layer and select it
         tableModel.addEntity(layer);
-        final int index = tableModel.indexOf(layer);
-        viewshedTable.setRowSelectionInterval(index, index);
+        viewshedTable.setSelectedEntity(layer);
     }
 
     @Override
@@ -159,6 +203,7 @@ public class ViewshedPanel extends JPanel implements ViewshedManager.ViewshedLis
             viewshedTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             viewshedTable.setPreferredScrollableViewportSize(null);
             viewshedTable.setPreferredSize(null);
+            viewshedTable.setFocusable(false);
             viewshedTable.setName("viewshedTable");
             scrollPane1.setViewportView(viewshedTable);
         }

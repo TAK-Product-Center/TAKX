@@ -16,7 +16,7 @@ import gov.takx.api.annotation.NodeUUID;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.annotation.SuppressLogging;
 import gov.takx.api.notification.INotificationService;
-import gov.takx.platform.utils.ErrorThrowingFunction;
+import gov.takx.commons.lang.ErrorThrowingFunction;
 import gov.takx.test.AIntegrationTest;
 import gov.takx.test.utils.CdiTestUtils;
 import jakarta.annotation.Nonnull;
@@ -235,7 +235,7 @@ public class ChatDataPackageServiceTest extends AIntegrationTest
     {
         when(contact.getName()).thenReturn(uid);
         when(contact.getUid()).thenReturn(uid);
-        if (commoContact != null ) when(contactManager.findContactByUid(uid)).thenReturn(commoContact);
+        if (commoContact != null) when(contactManager.findContactByUid(uid)).thenReturn(commoContact);
     }
 
     private void verifyChatMessage(@Nonnull ArgumentCaptor<IChatMessage> captor, @Nonnull String contactUid)

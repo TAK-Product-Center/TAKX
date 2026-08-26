@@ -109,7 +109,15 @@ public interface IMenuSpaceManager extends ITerrainMenuSpaceManager
         BREADCRUMBS("Breadcrumbs", false, takAssetIcon("Breadcrumbs_32x32.png")),
 
         /** @since 5.6 */
-        DRIFTER(Objects.requireNonNull(ButtonType.DRIFTER.getDisplayText()), false, ButtonType.DRIFTER.getImageUrl().toString());
+        DRIFTER(Objects.requireNonNull(ButtonType.DRIFTER.getDisplayText()), false, ButtonType.DRIFTER.getImageUrl().toString()),
+
+        /** @since 5.8 */
+        SENSOR("Sensor", false, takAssetSvg("Video-Player.svg")),
+        /** @since 5.8 */
+        SENSOR_DIRECTION("Sensor Direction", false, takAssetSvg("Fov-Direction.svg")),
+        /** @since 5.8 */
+        SENSOR_VISIBILITY("Sensor Visibility", false, takAssetSvg("Fov-Visibility.svg")),
+        ;
 
         /**
          * @return String form of a URL referring to the given named file in {@link ResourceDirectory#PLATFORM_ICONS}
@@ -136,6 +144,15 @@ public interface IMenuSpaceManager extends ITerrainMenuSpaceManager
         private static String takAssetIcon(@Nonnull String name)
         {
             return UIResources.getUrl(ResourceDirectory.TAK_ASSETS_PNG, name).toString();
+        }
+
+        /**
+         * @return String form of a URL referring to the given named file in {@link ResourceDirectory#TAK_ASSETS_SVG}
+         * @since 5.8
+         */
+        private static String takAssetSvg(@Nonnull String name)
+        {
+            return UIResources.getUrl(ResourceDirectory.TAK_ASSETS_SVG, name).toString();
         }
 
         private final String name;

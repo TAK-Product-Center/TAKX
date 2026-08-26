@@ -1,6 +1,5 @@
 package gov.takx.api.plugin;
 
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.annotation.NoPluginImplementations;
 import gov.takx.api.filesystem.IVirtualFileSystem;
 import gov.takx.api.filesystem.VFSScope;
@@ -9,9 +8,7 @@ import gov.takx.api.globe.IGlobeNavigationService;
 import gov.takx.api.media.IMediaManager;
 import gov.takx.api.persist.IPersistableState;
 import gov.takx.api.ping.IGeoPingService;
-import gov.takx.api.platform.IExperimentalServices;
 import gov.takx.api.project.IProjectAssistant;
-import gov.takx.api.propertymanager.ISystemPropertyManager;
 import gov.takx.api.registry.IPluginInspector;
 import gov.takx.api.tasks.ITaskRunnable;
 import gov.takx.api.timer.ITimerService;
@@ -43,17 +40,6 @@ public interface IPluginDelegate extends IGlobeNavigationService
      * @since 5.0
      */
     PlatformVersion getPlatformVersion();
-
-    /**
-     * Get the system property manager.
-     *
-     * @return system property manager
-     * @deprecated Use {@link gov.takx.platform.preferences.PreferenceEntry} and
-     * {@link gov.takx.platform.preferences.UserPreferenceEntry} directly instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    ISystemPropertyManager getSystemPropertyManager();
 
     /**
      * Access read-only metadata about installed TAKX plugins. This service does not provide any means of editing
@@ -181,18 +167,6 @@ public interface IPluginDelegate extends IGlobeNavigationService
      * @since 1.14
      */
     String getProgramDataDirectory();
-
-    /**
-     * Return the experimental services available.  These services are not guaranteed to be stable and should not be
-     * used in a production environment.  The services are not guaranteed to be present in the next version.
-     *
-     * @return IExperimentalServices
-     * @since 1.35
-     * @deprecated Inject services directly instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    IExperimentalServices getExperimentalServices();
 
     /**
      * Register a process that should be killed if it's orphaned after an application crash.

@@ -2,9 +2,9 @@ package gov.takx.core.view.gui.explorer.view;
 
 import gov.takx.api.explorer.IExplorable;
 import gov.takx.api.explorer.IExplorableGroup;
-import gov.takx.commons.swing.entity.EntitySelectionEvent;
-import gov.takx.commons.swing.entity.EntitySelectionListener;
 import gov.takx.commons.swing.entity.EntityTreeTableSelectionModel;
+import gov.takx.commons.swing.entity.SelectColumnSelectionEvent;
+import gov.takx.commons.swing.entity.SelectColumnSelectionListener;
 import gov.takx.core.explorer.controller.IExplorerController;
 import gov.takx.core.explorer.model.IExplorerModel;
 import jakarta.annotation.Nonnull;
@@ -24,7 +24,7 @@ import java.util.List;
 public class SelectionExplorerPanel extends ExplorerPanel
 {
     private final EntityTreeTableSelectionModel<IExplorable> selectionModel;
-    private final EntitySelectionListener<IExplorable> tableSelectionListener = this::tableSelection;
+    private final SelectColumnSelectionListener<IExplorable> tableSelectionListener = this::tableSelection;
 
     /**
      * Construct a new instance from the given model and controller.
@@ -55,7 +55,7 @@ public class SelectionExplorerPanel extends ExplorerPanel
      */
     public void setSelectedExplorables(List<IExplorable> explorables)
     {
-        var tableSelectionModel = explorerTable.getEntitySelectionModel();
+        var tableSelectionModel = explorerTable.getSelectColumnSelectionModel();
         tableSelectionModel.removeSelectionListener(tableSelectionListener);
         // Convert explorables to their respective paths
         var treePaths = explorables.stream()
@@ -110,7 +110,7 @@ public class SelectionExplorerPanel extends ExplorerPanel
     protected void explorerTreeSelectionChanged(TreeSelectionEvent treeSelectionEvent)
     {
         selectionModel.setCurrentParentPath(treeSelectionEvent.getPath());
-        var tableSelectionModel = explorerTable.getEntitySelectionModel();
+        var tableSelectionModel = explorerTable.getSelectColumnSelectionModel();
         tableSelectionModel.removeSelectionListener(tableSelectionListener);
         tableSelectionModel.clearSelection();
         super.explorerTreeSelectionChanged(treeSelectionEvent);
@@ -120,12 +120,12 @@ public class SelectionExplorerPanel extends ExplorerPanel
 
     private void applySelectionToTable()
     {
-        var tableSelectionModel = explorerTable.getEntitySelectionModel();
+        var tableSelectionModel = explorerTable.getSelectColumnSelectionModel();
         var explorables = tableModel.getEntities();
         explorables.forEach(explorable -> tableSelectionModel.setSelectionState(explorable, selectionModel.getSelectionState(explorable)));
     }
 
-    private void tableSelection(EntitySelectionEvent<IExplorable> event)
+    private void tableSelection(SelectColumnSelectionEvent<IExplorable> event)
     {
         switch (event.getState())
         {

@@ -128,10 +128,13 @@ public class VideoConnectionManager implements IVideoConnectionManager
         // Only create new media if the connection address is not empty
         if (!StringUtils.isEmpty(connectionEntry.getAddress(), true))
         {
-            final String url = ConnectionEntry.getURL(connectionEntry, false);
+            String url = ConnectionEntry.getURL(connectionEntry, false);
             final URI sourceUri;
             try
             {
+                ConnectionEntry.Protocol protocol = connectionEntry.getProtocol();
+                // needed because ConnectionEntry.getUrl(...) explicitly will not put the protocol in front of the address if RTSP/UDP/FILE, but the URI needs it
+                if (protocol != ConnectionEntry.Protocol.RAW && !url.startsWith(protocol.toURL())) url = protocol.toURL() + url;
                 sourceUri = new URI(url);
             } catch (URISyntaxException e)
             {

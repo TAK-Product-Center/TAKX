@@ -142,7 +142,7 @@ import java.util.Map;
  * @implNote Last updated 1/13/2026 reflecting TAK Server 5.7 API
  * @since 3.5
  */
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "PMD.AvoidDuplicateLiterals"})
 @NoPluginImplementations
 public interface FeignMissionApi
 {

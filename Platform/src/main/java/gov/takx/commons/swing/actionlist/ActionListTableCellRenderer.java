@@ -21,12 +21,12 @@ import javax.swing.JTable;
 import javax.swing.plaf.UIResource;
 import javax.swing.table.TableCellRenderer;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 
 /**
  * Extension of {@link DefaultJPanelTableCellRenderer} that handles rendering for the
@@ -82,14 +82,14 @@ public class ActionListTableCellRenderer extends DefaultJPanelTableCellRenderer 
     }
 
     /**
-     * Creates a new {@link JButton} for the specified action.
+     * Creates a new {@link AbstractButton} for the specified action.
      *
      * @param table the Table that this button will be rendered in
      * @param action the Action that this button will trigger
-     * @return the JButton
+     * @return the AbstractButton
      */
     @Nonnull
-    protected JButton createButton(@Nonnull JTable table, @Nonnull Action action)
+    AbstractButton createButton(@Nonnull JTable table, @Nonnull Action action)
     {
         var button = new JButton();
         button.setOpaque(true);
@@ -106,32 +106,28 @@ public class ActionListTableCellRenderer extends DefaultJPanelTableCellRenderer 
      * @since 5.7
      */
     @SuppressWarnings("unchecked")
-    protected void configureButton(AbstractButton button, Action action, Object value, int row)
+    void configureButton(AbstractButton button, Action action, Object value, int row)
     {
         button.setEnabled(action.isEnabled());
         button.setVisible(true);
         button.setSelected(false);
         button.setForeground(getForeground());
 
-        var background = getBackground();
+        // Default background to null so that table color can show through
+        Color background = null;
         var description = action.getValue(Action.SHORT_DESCRIPTION);
         var name = action.getValue(Action.NAME);
         var icon = (Icon) action.getValue(Action.SMALL_ICON);
         var text = description != null ? description : name;
 
-        if (action instanceof ActionListToggleAction<?> toggleAction)
+        if (action instanceof ActionListAction<?> actionListAction)
         {
-            var selectedFunction = (Function<Object, Boolean>) toggleAction.getSelectedFunction();
-            var selected = selectedFunction.apply(value);
-            button.setSelected(selected); // Remember that this changes the background based on L&F
-            if (selected)
+            button.setSelected(actionListAction.isSelected());
+            if (actionListAction.isSelected())
             {
-                var selectedBackground = toggleAction.getSelectedBackground();
-                var selectedIcon = toggleAction.getSelectedIcon();
-                var selectedName = toggleAction.getSelectedName();
-                if (selectedIcon != null) icon = selectedIcon;
-                if (selectedName != null) text = selectedName;
-                if (selectedBackground != null) background = selectedBackground;
+                if (actionListAction.getSelectedIcon() != null) icon = actionListAction.getSelectedIcon();
+                if (actionListAction.getSelectedBackground() != null) background = actionListAction.getSelectedBackground();
+                if (actionListAction.getSelectedName() != null) text = actionListAction.getSelectedName();
             }
         }
         button.setBackground(background);

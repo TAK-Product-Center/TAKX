@@ -1,11 +1,10 @@
 package gov.takx.commons.swing.entity;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import gov.tak.api.annotation.IncubatingApi;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.explorer.ILazyLoadingExplorable;
 import gov.takx.commons.lang.FastIndexList;
+import gov.takx.commons.lang.ListenerManager;
 import gov.takx.commons.swing.TreeModelIterator;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -39,12 +38,16 @@ import java.util.Set;
 public class EntityTreeTableModel<E> extends AbstractTreeTableModel
 {
     protected final EntityColumnData<E> entityColumnData = new EntityColumnData<>();
+    /**
+     * @since 5.8
+     */
+    protected final ListenerManager listenerManager = new ListenerManager();
     protected final EntityTreeModelSupport<E> modelSupport;
 
     private final Map<E, FastIndexList<E>> children = new HashMap<>();
     private final Map<E, List<E>> parents = new HashMap<>();
     private final Set<E> entities = new HashSet<>();
-    private final Map<E, Multimap<String, PropertyChangeListener>> listenerMaps = new HashMap<>();
+
     private final String childAddedRemovedProperty;
     private final EntityColumn<E, ?> hierarchicalColumn;
     private final EntityDefinition<E> entityDefinition;
@@ -96,7 +99,7 @@ public class EntityTreeTableModel<E> extends AbstractTreeTableModel
             parents.remove(parent);
             if (entities.contains(entity) && parents.isEmpty())
             {
-                removeListeners(entity);
+                listenerManager.unregister(entity);
                 entities.remove(entity);
             }
             modelSupport.fireEntityRemoved(parent, entity, index);
@@ -429,28 +432,16 @@ public class EntityTreeTableModel<E> extends AbstractTreeTableModel
     }
 
     /**
-     * @param entity An object within this model
-     * @return the live Map of listeners that the model has attached to the object
-     */
-    @Nonnull
-    protected Multimap<String, PropertyChangeListener> getListenerMap(@Nonnull E entity)
-    {
-        return listenerMaps.computeIfAbsent(entity, k -> ArrayListMultimap.create());
-    }
-
-    /**
      *  Attaches appropriate listeners to the given object.
      *
      * @param entity An object within this model
      */
     protected void addListeners(@Nonnull E entity)
     {
-        var listeners = getListenerMap(entity);
         if (childAddedRemovedProperty != null)
         {
             var listener = (PropertyChangeListener) event -> entityChildPropertyChanged(event, entity);
-            entityDefinition.addPropertyChangeListener(entity, childAddedRemovedProperty, listener);
-            listeners.put(childAddedRemovedProperty, listener);
+            entityDefinition.addPropertyChangeListener(listenerManager, entity, childAddedRemovedProperty, listener);
         }
         var entityPropertyChangeMap = entityDefinition.getPropertyChangeMap();
         entityPropertyChangeMap.keySet().forEach(prop -> {
@@ -458,19 +449,8 @@ public class EntityTreeTableModel<E> extends AbstractTreeTableModel
             var columns = entityPropertyChangeMap.get(prop);
             var columnIndexes = columns.stream().mapToInt(this::getColumnIndex).filter(i -> i > -1).toArray();
             var listener = (PropertyChangeListener) event -> entityPropertyChanged(event, entity, columnIndexes);
-            entityDefinition.addPropertyChangeListener(entity, prop, listener);
-            listeners.put(prop, listener);
+            entityDefinition.addPropertyChangeListener(listenerManager, entity, prop, listener);
         });
-    }
-
-    /**
-     * Removes listeners that this model has attached.
-     *
-     * @param entity An object within this model
-     */
-    protected void removeListeners(@Nonnull E entity)
-    {
-        getListenerMap(entity).forEach((prop, listener) -> entityDefinition.removePropertyChangeListener(entity, prop, listener));
     }
 
     @SuppressWarnings("unused")

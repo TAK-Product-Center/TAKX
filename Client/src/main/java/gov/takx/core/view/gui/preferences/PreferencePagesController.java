@@ -1,10 +1,13 @@
 package gov.takx.core.view.gui.preferences;
 
+import gov.takx.api.event.StopProjectServices;
 import gov.takx.api.ui.IUISpaceManager;
 import gov.takx.commons.swing.MouseButtonUtils;
 import gov.takx.core.view.gui.ATitledPanel;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
 import javax.swing.SwingUtilities;
@@ -18,6 +21,9 @@ import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+
+import static gov.takx.core.project.ServiceOrdering.STOP_GenericCoreService;
 
 /**
  * Controller for preference pages and their navigation stack.
@@ -42,6 +48,28 @@ public class PreferencePagesController
 
         Toolkit.getDefaultToolkit().addAWTEventListener(new NavigationAndHighlightHandler(),
                 AWTEvent.MOUSE_EVENT_MASK | AWTEvent.MOUSE_MOTION_EVENT_MASK);
+    }
+
+    /**
+     * @since 5.8
+     */
+    private void stopService(@Observes @Priority(STOP_GenericCoreService) StopProjectServices ignored)
+    {
+        if (mainPreferencesPage != null)
+        {
+            releasePages(1);
+            pageIndex = 0;
+            showPage(mainPreferencesPage);
+        }
+    }
+
+    /**
+     * Remove all pages in the list after {@code start}, and release their resources.
+     * @since 5.8
+     */
+    private void releasePages(int start)
+    {
+        while (start < pageList.size()) pageList.remove(start).releaseResources();
     }
 
     /**
@@ -75,8 +103,7 @@ public class PreferencePagesController
     {
         pageIndex += 1;
 
-        // trim previous forward pages
-        while (pageIndex < pageList.size()) pageList.remove(pageIndex).releaseResources();
+        releasePages(pageIndex); // trim previous forward pages
 
         pageList.add(page);
         showPage(page);
@@ -104,6 +131,39 @@ public class PreferencePagesController
             pageHolder.revalidate();
             pageHolder.repaint();
         });
+    }
+
+    /**
+     * Remove any instances of preference pages that are matched by the given predicate.
+     *
+     * @param pageMatcher Predicate to match
+     * @since 5.8
+     */
+    public void removePages(@Nonnull Predicate<APreferencesPage> pageMatcher)
+    {
+        final var currentPage = pageHolder.page;
+
+        int i = 0;
+        while (i < pageList.size() - 1)
+        {
+            final var page = pageList.get(i);
+
+            // Skip the currently showing page, we'll handle that after this loop
+            if (page != currentPage && pageMatcher.test(page))
+            {
+                pageList.remove(i).releaseResources();
+                if (i <= pageIndex) pageIndex--;
+            } else
+            {
+                i++;
+            }
+        }
+
+        if (pageMatcher.test(currentPage))
+        {
+            pageList.remove(pageIndex).releaseResources();
+            goBackward();
+        }
     }
 
     /**

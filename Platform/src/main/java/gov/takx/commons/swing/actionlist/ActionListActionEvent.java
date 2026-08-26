@@ -1,6 +1,7 @@
 package gov.takx.commons.swing.actionlist;
 
 import gov.tak.api.annotation.IncubatingApi;
+import gov.takx.commons.lang.ObjectUtils;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -16,9 +17,9 @@ import java.awt.event.ActionEvent;
 @IncubatingApi(since = "5.3")
 public class ActionListActionEvent<T> extends ActionEvent
 {
-    protected final ActionEvent sourceEvent;
-    protected final int row;
-    protected final ActionList<T> actionList;
+    private final ActionEvent sourceEvent;
+    private final int row;
+    private final ActionList<T> actionList;
 
     /**
      * Construct a new instance for the given source event, for an action that occurred on the given row and for the given
@@ -64,5 +65,26 @@ public class ActionListActionEvent<T> extends ActionEvent
     public T getValue()
     {
         return actionList != null ? actionList.value() : null;
+    }
+
+    /**
+     * @return the source event
+     * @since 5.8
+     */
+    @Nonnull
+    public ActionEvent getSourceEvent()
+    {
+        return sourceEvent;
+    }
+
+    /**
+     * @return the value that the action was performed on
+     * @since 5.8
+     * @throws IllegalStateException if action list or value is {@code null}
+     */
+    @Nonnull
+    public T requireValue()
+    {
+        return ObjectUtils.requireNonNullState(getValue(), "No value for action event");
     }
 }

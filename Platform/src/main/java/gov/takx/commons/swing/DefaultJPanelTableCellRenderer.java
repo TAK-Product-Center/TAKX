@@ -2,7 +2,6 @@ package gov.takx.commons.swing;
 
 import gov.tak.api.annotation.IncubatingApi;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -37,8 +36,6 @@ public class DefaultJPanelTableCellRenderer extends JPanel implements TableCellR
 
     protected static Border noFocusBorder = DEFAULT_NO_FOCUS_BORDER;
 
-    private Color unselectedForeground;
-    private Color unselectedBackground;
     private int toolTipRow = -1;
 
     /**
@@ -67,20 +64,6 @@ public class DefaultJPanelTableCellRenderer extends JPanel implements TableCellR
             }
         }
         return noFocusBorder;
-    }
-
-    @Override
-    public void setForeground(@Nullable Color c)
-    {
-        super.setForeground(c);
-        unselectedForeground = c;
-    }
-
-    @Override
-    public void setBackground(@Nullable Color c)
-    {
-        super.setBackground(c);
-        unselectedBackground = c;
     }
 
     @Override
@@ -119,13 +102,11 @@ public class DefaultJPanelTableCellRenderer extends JPanel implements TableCellR
 
         if (isSelected)
         {
-            super.setForeground(fg == null ? table.getSelectionForeground() : fg);
-            super.setBackground(bg == null ? table.getSelectionBackground() : bg);
+            setForeground(fg == null ? table.getSelectionForeground() : fg);
+            setBackground(bg == null ? table.getSelectionBackground() : bg);
         } else
         {
-            Color background = unselectedBackground != null
-                    ? unselectedBackground
-                    : table.getBackground();
+            Color background = table.getBackground();
             if (background == null || background instanceof javax.swing.plaf.UIResource)
             {
                 Color alternateColor = UIManager.getColor("Table.alternateRowColor");
@@ -134,10 +115,8 @@ public class DefaultJPanelTableCellRenderer extends JPanel implements TableCellR
                     background = alternateColor;
                 }
             }
-            super.setForeground(unselectedForeground != null
-                    ? unselectedForeground
-                    : table.getForeground());
-            super.setBackground(background);
+            setForeground(table.getForeground());
+            setBackground(background);
         }
 
         setFont(table.getFont());
@@ -161,12 +140,12 @@ public class DefaultJPanelTableCellRenderer extends JPanel implements TableCellR
                 col = UIManager.getColor("Table.focusCellForeground");
                 if (col != null)
                 {
-                    super.setForeground(col);
+                    setForeground(col);
                 }
                 col = UIManager.getColor("Table.focusCellBackground");
                 if (col != null)
                 {
-                    super.setBackground(col);
+                    setBackground(col);
                 }
             }
         } else

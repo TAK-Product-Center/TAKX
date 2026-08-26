@@ -16,9 +16,10 @@ import gov.takx.api.ui.ComponentPosition;
 import gov.takx.api.ui.IUISpaceManager;
 import gov.takx.commons.swing.ComponentUtils;
 import gov.takx.core.media.FfmpegLog;
+import gov.takx.core.media.MediaPlayer;
 import gov.takx.core.project.ServiceOrdering;
-import gov.takx.platform.ui.ComponentDescriptor;
 import gov.takx.platform.ui.ComponentDescriptorBuilder;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -29,16 +30,13 @@ import org.slf4j.LoggerFactory;
 import javax.swing.JPanel;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.lang.invoke.MethodHandles;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Predicate;
 
 import static org.bytedeco.ffmpeg.global.avformat.avformat_network_init;
 import static org.bytedeco.ffmpeg.global.avutil.AV_LOG_ERROR;
@@ -64,7 +62,7 @@ public class MediaPlayerManager implements IMediaPlayerManager
     private final IUISpaceManager uiSpaceManager;
     private final boolean headless;
 
-    private final Map<String, MediaPanel> panelMap = new HashMap<>();
+    private final Map<String, MediaPanel> panelMap = new ConcurrentHashMap<>();
     private final List<IMediaPlayerManagerListener> mediaPlayerManagerListeners = new CopyOnWriteArrayList<>();
 
     @Inject
@@ -76,13 +74,13 @@ public class MediaPlayerManager implements IMediaPlayerManager
     }
 
     @Override
-    public void addMediaPlayerManagerListener(IMediaPlayerManagerListener mediaManagerListener)
+    public void addMediaPlayerManagerListener(@Nonnull IMediaPlayerManagerListener mediaManagerListener)
     {
         mediaPlayerManagerListeners.add(mediaManagerListener);
     }
 
     @Override
-    public void removeMediaPlayerManagerListener(IMediaPlayerManagerListener mediaManagerListener)
+    public void removeMediaPlayerManagerListener(@Nonnull IMediaPlayerManagerListener mediaManagerListener)
     {
         mediaPlayerManagerListeners.remove(mediaManagerListener);
     }
@@ -113,19 +111,16 @@ public class MediaPlayerManager implements IMediaPlayerManager
         logger.debug("Stopping media player manager service");
 
         // Get the players to unload any playing media and shutdown
-        for (MediaPanel panel : panelMap.values())
-        {
-            panel.getPlayer().unloadMedia();
-        }
+        panelMap.values().stream().map(MediaPanel::getPlayer).forEach(this::removeMediaPlayer);
 
         mediaPlayerManagerListeners.clear();
     }
 
     @Override
-    public IMediaPlayer createDefaultPlayer(IMedia media)
+    @Nonnull
+    public IMediaPlayer createDefaultPlayer(@Nonnull IMedia media)
     {
-        MediaPlayerOptions options = new MediaPlayerOptions(media.getName());
-        return createMediaPlayer(options, media);
+        return createMediaPlayer(new MediaPlayerOptions(media.getName()), media);
     }
 
     /**
@@ -136,7 +131,8 @@ public class MediaPlayerManager implements IMediaPlayerManager
      */
     @InvokeAndWaitOnEDT
     @Override
-    public IMediaPlayer createMediaPlayer(MediaPlayerOptions options, IMedia media)
+    @Nonnull
+    public IMediaPlayer createMediaPlayer(@Nonnull MediaPlayerOptions options, @Nonnull IMedia media)
     {
         AMediaPlayer player = new MediaPlayer(options, media);
         createMediaPlayer(options, media, player);
@@ -144,46 +140,24 @@ public class MediaPlayerManager implements IMediaPlayerManager
     }
 
     @Override
-    public void createMediaPlayer(MediaPlayerOptions options, IMedia media, IMediaPlayer player)
+    public void createMediaPlayer(@Nonnull MediaPlayerOptions options, @Nonnull IMedia media, @Nonnull IMediaPlayer player)
     {
         if (headless) throw new UnsupportedOperationException("Can not create a media player in headless mode");
 
-        // [KEYMAKER-104] - Externalized media windows should be smaller when first popped out, so
-        // they won't obscure too much of the application window. Also make sure they are centered.
+        final String mediaKey = getMediaKey(options, media);
 
-        Dimension windowSize = new Dimension(320, 240);
-        Dimension screenSize = ComponentUtils.getActiveMonitorScreenSize();
-        Rectangle rect = new Rectangle((screenSize.width - windowSize.width) / 2,
-                (screenSize.height - windowSize.height) / 2, windowSize.width, windowSize.height);
-
-        // TODO: i think we need to seriously rethink this. At some point we will want to incorporate Media Analysis
-        //  into the core and at that point having a one-to-one relationship with the media will be problematic.
-        String key = media.getKey();
-        String uuid = options.getUUID();
-        if (uuid == null)
-        {
-            options.setUUID(key);
-        } else
-        {
-            // Internally TAKX will not populate the uuid, even though it will use it later for mapping things
-            // in the MediaPlayerManager. So if we have a uuid here we know the player is being managed externally
-            // by something like media analysis.
-            key = uuid;
-        }
-
-        ComponentDescriptor descriptor = new ComponentDescriptorBuilder(MediaPanel.class, options.getTitle())
+        final var descriptor = new ComponentDescriptorBuilder(MediaPanel.class, options.getTitle())
                 .setComponentPosition(ComponentPosition.CENTER)
                 .setToolbarButtonVisible(true)
-                .setExternalizedRect(rect)
+                .setExternalizedRect(getExternalizedRectangle())
                 .build();
 
-        MediaPanel panel = new MediaPanel(player, descriptor);
-        String finalKey = key;
+        final var panel = new MediaPanel(player);
 
         // Since we're adding this component to the CENTER, the globe must be ready before we can do this
         globeManager.getPrimaryGlobeDelegate().doWhenReady(() -> {
             uiSpaceManager.addComponent(descriptor, panel);
-            panelMap.put(finalKey, panel);
+            panelMap.put(mediaKey, panel);
         });
 
         // Load the media if it was specified
@@ -201,82 +175,102 @@ public class MediaPlayerManager implements IMediaPlayerManager
         mediaPlayerManagerListeners.forEach(listener -> listener.playerAdded(player));
     }
 
-    @Override
-    public void setMediaPlayer(String uuid, IMediaPlayer player)
+    @Nonnull
+    private static String getMediaKey(@Nonnull MediaPlayerOptions options, @Nonnull IMedia media)
     {
-        MediaPanel panel = panelMap.get(uuid);
+        // TODO: i think we need to seriously rethink this. At some point we will want to incorporate Media Analysis
+        //  into the core and at that point having a one-to-one relationship with the media will be problematic.
+        String key = media.getKey();
+        String uuid = options.getUUID();
+        if (uuid == null)
+        {
+            options.setUUID(key);
+        } else
+        {
+            // Internally TAKX will not populate the uuid, even though it will use it later for mapping things
+            // in the MediaPlayerManager. So if we have a uuid here we know the player is being managed externally
+            // by something like media analysis.
+            key = uuid;
+        }
+        return key;
+    }
+
+    /**
+     * @return Rectangle for location/size of this player when externalized
+     * 
+     * @implNote [KEYMAKER-104] - Externalized media windows should be smaller when first popped out, so
+     *           they won't obscure too much of the application window. Also make sure they are centered.
+     */
+    @Nonnull
+    private Rectangle getExternalizedRectangle()
+    {
+        final var windowSize = new Dimension(320, 240);
+        final var screenSize = ComponentUtils.getActiveMonitorScreenSize();
+        return new Rectangle((screenSize.width - windowSize.width) / 2,
+                (screenSize.height - windowSize.height) / 2, windowSize.width, windowSize.height);
+    }
+
+    @Override
+    public void setMediaPlayer(@Nonnull String uuid, @Nonnull IMediaPlayer player)
+    {
+        final var panel = panelMap.get(uuid);
         if (panel != null) panel.setPlayer(player);
     }
 
     @InvokeOnEDT
     @Override
-    public void removeMediaPlayer(IMediaPlayer mediaPlayer)
+    public void removeMediaPlayer(@Nonnull IMediaPlayer mediaPlayer)
     {
         // This method may be explicitly called by the plugin, or when a user closes a media player window. In either
         // case, it should clean up all resources, and notify listeners that the player has closed.
-        String key = null;
-        if (mediaPlayer.getOptions().isPresent())
-        {
-            key = mediaPlayer.getOptions().get().getUUID();
-        }
-        MediaPanel panel = panelMap.get(key);
+        final String key = mediaPlayer.getOptions().map(MediaPlayerOptions::getUUID).orElse(null);
+
+        final var panel = panelMap.remove(key);
         if (panel != null)
         {
             uiSpaceManager.removeComponent(panel);
-            panelMap.remove(key);
-
-            if (mediaPlayer instanceof MediaPlayer)
-            {
-                ((MediaPlayer) mediaPlayer).destroy();
-            }
-
             mediaPlayerManagerListeners.forEach(listener -> listener.playerRemoved(mediaPlayer));
+            mediaPlayer.destroy();
         }
     }
 
     @InvokeOnEDT
     @Override
-    public void removeMediaPlayer(IMedia media)
+    public void removeMediaPlayer(@Nonnull IMedia media)
     {
-        Predicate<MediaPanel> predicate = panel -> {
-            Optional<IMedia> pm = panel.getPlayer().getMedia();
-            return pm.filter(filteredMedia -> filteredMedia == media).isPresent();
-        };
-        Optional<MediaPanel> panel = panelMap.values().stream().filter(predicate).findFirst();
-        panel.ifPresent(p -> removeMediaPlayer(p.getPlayer()));
+        panelMap.values().stream()
+                .map(MediaPanel::getPlayer)
+                .filter(player -> player.getMedia().map(m -> m == media).orElse(false))
+                .findFirst()
+                .ifPresent(this::removeMediaPlayer);
     }
 
     /**
      * This panel is used so that the player can be swapped out while maintaining the docking layout. This is used
-     * particularly for the custom players
+     * particularly for the custom players.
      *
      * @since 2.37
      */
     private static class MediaPanel extends JPanel
     {
-        ComponentDescriptor descriptor;
-
-        MediaPanel(IMediaPlayer player, ComponentDescriptor descriptor)
+        MediaPanel(@Nonnull IMediaPlayer player)
         {
-            super();
-
-            this.descriptor = descriptor;
             BorderLayout layout = new BorderLayout();
             setLayout(layout);
             add(player.getComponent(), BorderLayout.CENTER);
         }
 
         @InvokeOnEDT
-        void setPlayer(IMediaPlayer player)
+        void setPlayer(@Nonnull IMediaPlayer player)
         {
             remove(0);
             add(player.getComponent(), BorderLayout.CENTER);
         }
 
+        @Nonnull
         IMediaPlayer getPlayer()
         {
-            Component component = getComponent(0);
-            return component instanceof IMediaPlayer ? (IMediaPlayer) component : null;
+            return (IMediaPlayer) getComponent(0);
         }
     }
 }

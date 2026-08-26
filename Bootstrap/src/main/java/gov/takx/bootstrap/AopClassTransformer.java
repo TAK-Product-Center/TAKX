@@ -41,12 +41,12 @@ public final class AopClassTransformer implements ClassFileTransformer
     private static final String PACKAGE_PREFIX_SEPARATOR = ";";
     private static final String AOP_RESOURCE_DIR_PROP = "org.aspectj.weaver.loadtime.configuration";
     private static final String AOP_RESOURCE_DIR = "aop/aop.xml";
-    private static final String JACOCO_DATA_FIELD_NAME = "$jacocoData";
+    private static final String JACOCO_DATA_FIELD_NAME = "$jacocoData"; // NOPMD
 
     // Comment out the previous line and uncomment this one to install custom weaver options
 //    private static final String AOP_RESOURCE_DIR = "aop/aop.xml;aop/debug_weaver_options.xml";
 
-    private static boolean testMode = false; // Are we running the tests?
+    private static boolean testMode; // Are we running the tests?
     private static final ClassPreProcessor AOP_PRE_PROCESSOR;
 
     // The set of package prefixes that will be woven when running tests

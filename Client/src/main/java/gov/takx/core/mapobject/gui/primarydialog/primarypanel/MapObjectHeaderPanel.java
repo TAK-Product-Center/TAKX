@@ -2,7 +2,6 @@ package gov.takx.core.mapobject.gui.primarydialog.primarypanel;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import gov.tak.api.location.ILocationTracker;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.coordinatesystem.CoordinateSystem;
@@ -14,11 +13,9 @@ import gov.takx.commons.swing.ImageUtils;
 import gov.takx.commons.swing.documents.LimitedDocument;
 import gov.takx.platform.preferences.UserPreferenceEntry;
 import gov.takx.platform.ui.location.LocationField;
-import gov.takx.platform.ui.location.RangeAndBearingDetailsPanel;
 import gov.takx.platform.utils.units.AltitudeUnits;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
 import org.jdesktop.swingx.JXTextField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +44,6 @@ public class MapObjectHeaderPanel extends AMapObjectPanel
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final List<String> propertyList = Arrays.asList(IMapObject.ICON, IMapObject.LOCATION, IMapObject.NAME, IMapObject.DESCRIPTION);
-
-    @Inject
-    private ILocationTracker locationTracker;
 
     private final IPreferenceMonitor<AltitudeUnits> altitudeUnitsMonitor =
             UserPreferenceEntry.DISPLAY_ALTITUDE_UNITS.newMonitor(AltitudeUnits.class, u -> setLocation());
@@ -148,9 +142,6 @@ public class MapObjectHeaderPanel extends AMapObjectPanel
     @InvokeOnEDT
     public void setLocation()
     {
-        fromYouField.setTarget(mapObject);
-        fromYouField.setSource(locationTracker.getMarkerMapObject());
-
         final ILocation loc = mapObject != null ? mapObject.getLocation() : null;
         locationField.setLocationValue(loc);
     }
@@ -165,16 +156,6 @@ public class MapObjectHeaderPanel extends AMapObjectPanel
         descriptionText.setSelectionStart(0);
         descriptionText.setSelectionEnd(0);
         nameField.setText(getMapObject().getName());
-    }
-
-    /**
-     * @return the "From You" details panel
-     * @since 5.7
-     */
-    @Nonnull
-    public RangeAndBearingDetailsPanel getFromYouField()
-    {
-        return fromYouField;
     }
 
     private void locationFieldChanged()
@@ -192,14 +173,13 @@ public class MapObjectHeaderPanel extends AMapObjectPanel
         var descriptionPane = new JScrollPane();
         descriptionText = new JTextPane();
         locationField = new LocationField();
-        fromYouField = new RangeAndBearingDetailsPanel();
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
         setName("this");
         setLayout(new FormLayout(
                 "2*(default, $lcgap), default:grow",
-                "2*(default, $lgap), fill:default, $lgap, default"));
+                "2*(default, $lgap), fill:default"));
 
         //---- iconLabel ----
         iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -237,10 +217,6 @@ public class MapObjectHeaderPanel extends AMapObjectPanel
         locationField.setName("locationField");
         locationField.addChangeListener(e -> locationFieldChanged());
         add(locationField, cc.xywh(1, 5, 5, 1));
-
-        //---- fromYouField ----
-        fromYouField.setName("fromYouField");
-        add(fromYouField, cc.xywh(1, 7, 5, 1));
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
@@ -250,6 +226,5 @@ public class MapObjectHeaderPanel extends AMapObjectPanel
     private JLabel descriptionLabel;
     private JTextPane descriptionText;
     private LocationField locationField;
-    private RangeAndBearingDetailsPanel fromYouField;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

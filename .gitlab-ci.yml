@@ -41,9 +41,20 @@ stages:
   - generate
   - downstream
 
+# TAK Forge runners have no IPv6 egress, and glibc returns AAAA records ahead of A records,
+# so connections stall until they time out. Has no effect on musl/alpine images.
+.force_ipv4:
+  before_script:
+    - printf 'precedence ::ffff:0:0/96  100\n' >> /etc/gai.conf
+    - mkdir -p /etc/apt/apt.conf.d
+    - printf 'Acquire::ForceIPv4 "true";\nAcquire::Retries "3";\n' > /etc/apt/apt.conf.d/99-tak-forge
+
 before_script:
-  - !reference [ .proxy_gradle_dependencies, before_script ]
+  - !reference [ .force_ipv4, before_script ]
+  # Must precede .proxy_gradle_dependencies: that template drops the init script into
+  # $GRADLE_USER_HOME/init.d, and Gradle only auto-applies scripts from the final value.
   - export GRADLE_USER_HOME=/cache/.gradle # Cache within the "shared" cache mount so it can be used across stages
+  - !reference [ .proxy_gradle_dependencies, before_script ]
   - if [[ $CI_COMMIT_BRANCH =~ $DEV_REGEX ]]; then IS_DEV_BRANCH="true"; else IS_DEV_BRANCH=""; fi
   - if [[ $CI_COMMIT_BRANCH =~ $RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
   - if [[ ! $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX ]]; then IS_FEATURE_BRANCH="true"; else IS_FEATURE_BRANCH=""; fi
@@ -157,6 +168,79 @@ fortifyGenerateMergedPdfFromScan:
     - if: $CI_COMMIT_TAG
       when: never
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
+
+cyclonedx_sbom:
+  stage: scan
+  script:
+    - ./gradlew -Pci --console=plain cyclonedxBom
+    - mv build/reports/cyclonedx/bom.json build/reports/cyclonedx/takx-${CI_COMMIT_REF_NAME//\//-}-bom.json
+  artifacts:
+    paths:
+      - build/reports/cyclonedx
+
+vulnerability_scan:
+  image:
+    name: ${TAK_REGISTRY_HOST}/aquasec/trivy:${TRIVY_TAG}
+    entrypoint: [""]
+  stage: scan
+  variables:
+    TRIVY_CACHE_DIR: '.trivycache/'
+    GIT_STRATEGY: none
+    WARN_ON_SCAN_FAIL: 'true'
+  needs:
+    - job: cyclonedx_sbom
+      artifacts: true
+  before_script:
+    - git clone --depth 1 https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/devsecops/trivy-report-templates.git report-templates
+    # warn on tag and pipeline triggers other than push
+    - if [ "${CI_COMMIT_TAG}" != "" ] ; then WARN_ON_SCAN_FAIL=true; fi
+    - if [ "${CI_PIPELINE_SOURCE}" != "push" ] ; then WARN_ON_SCAN_FAIL=true; fi
+  script:
+    - SCAN_ERRORS=0
+    - mv build/reports/cyclonedx/*.json .
+    - |
+      for sbom_to_scan in *.json; do
+        # scan the image
+        echo "scanning ${sbom_to_scan}"
+        trivy sbom --vuln-severity-source nvd,auto --format json --output ${sbom_to_scan/.json/}-scan-result.json ${sbom_to_scan}
+        # convert the results
+        trivy convert --format template --template @${CI_PROJECT_DIR}/report-templates/html_update.tpl --output ${sbom_to_scan/.json/}-scan-result.html ${sbom_to_scan/.json/}-scan-result.json
+        # capture any detected critical or high to fail the job
+        trivy sbom --vuln-severity-source nvd,auto --exit-code 1 --severity HIGH,CRITICAL --format json --output /dev/null ${sbom_to_scan} || SCAN_ERRORS=1
+      done
+      if [ "${SCAN_ERRORS}" != "0" ] ; then
+        echo "CRITICAL and/or HIGH vulnerabilities found"
+        # when high/critical vulnerabilities are found, set the exit code based on `WARN_ON_SCAN_FAIL` to signal either
+        # job failure or warning. a known but unexpected-during-normal-operation exit code (6) is used to trigger the
+        # `allow_failure` YAML
+        if [ "${WARN_ON_SCAN_FAIL}" != "true" ] ; then
+          exit ${SCAN_ERRORS};
+        else
+          exit 6;
+        fi
+      fi
+  after_script:
+    - SCAN_REPORTS=$(ls *.html 2>/dev/null)
+    - echo "View Scan Reports"
+    - |
+      for scan_report in ${SCAN_REPORTS}; do
+        echo "* https://${CI_PROJECT_NAMESPACE}.${CI_PAGES_DOMAIN}/-/${CI_PROJECT_NAME}/-/jobs/${CI_JOB_ID}/artifacts/${scan_report}"
+      done
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
+    - when: on_success
+  artifacts:
+    when: always
+    paths:
+      - ./*.json
+      - ./*.html
+  allow_failure:
+  # specify custom exit codes that will report the job as a _warning_ rather than a _failure_. this will allow the job
+  # to fail as a warning without failing the pipeline.
+    exit_codes:
+      - 6
+
 
 release_build:
   stage: build
@@ -286,7 +370,8 @@ branch-and-roll:
 pipeline_generator:
   stage: generate
   image: ${TAK_REGISTRY_HOST}/python:3.8.2
-  before_script: []
+  before_script:
+    - !reference [ .force_ipv4, before_script ]
   script:
     - pip3 install requests
     - python3 pipeline/generate_downstream_pipelines.py

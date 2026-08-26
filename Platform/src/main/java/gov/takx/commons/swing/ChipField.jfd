@@ -1,0 +1,26 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) {
+				"alignment": 0
+			} ) {
+				name: "listPanel"
+				"border": new javax.swing.border.LineBorder( new com.jformdesigner.model.SwingColor( "Component.borderColor" ), 1, false )
+				"background": new com.jformdesigner.model.SwingColor( "Panel.background" )
+				auxiliary() {
+					"JavaCodeGenerator.variableModifiers": 0
+					"JavaCodeGenerator.variableAnnotations": "@VisibleForTesting"
+				}
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 10, 0 )
+			"size": new java.awt.Dimension( 400, 60 )
+		} )
+	}
+}

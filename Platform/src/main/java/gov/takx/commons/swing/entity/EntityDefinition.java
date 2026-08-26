@@ -3,6 +3,8 @@ package gov.takx.commons.swing.entity;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import gov.tak.api.annotation.IncubatingApi;
+import gov.takx.commons.lang.IPropertyChangeListenerSupport;
+import gov.takx.commons.lang.ListenerManager;
 import jakarta.annotation.Nonnull;
 
 import java.beans.PropertyChangeListener;
@@ -92,26 +94,18 @@ public class EntityDefinition<E>
     }
 
     /**
-     * Add a property change listener to an entity. Subclasses should override to call the proper method for the generic type
+     * Add a property change listener for an entity of this definition to a {@link ListenerManager} instance.
      * {@code <E>}.
      *
+     * @implNote This must be overridden by definitions for entities that are not of type {@link IPropertyChangeListenerSupport}.
      * @param entity the model entity
      * @param propertyName the property name
      * @param listener the listener that will change events
+     * @since 5.8
      */
-    protected void addPropertyChangeListener(@Nonnull E entity, @Nonnull String propertyName, @Nonnull PropertyChangeListener listener)
+    protected void addPropertyChangeListener(@Nonnull ListenerManager listenerManager, @Nonnull E entity, @Nonnull String propertyName, @Nonnull PropertyChangeListener listener)
     {
-    }
-
-    /**
-     * Remove a property change listener from an entity. Subclasses should override to call the proper method for the
-     * generic type {@code <E>}.
-     *
-     * @param entity the model entity
-     * @param propertyName the property name
-     * @param propertyChangeListener the listener that should longer receive change events
-     */
-    protected void removePropertyChangeListener(@Nonnull E entity, @Nonnull String propertyName, @Nonnull PropertyChangeListener propertyChangeListener)
-    {
+        if (!(entity instanceof IPropertyChangeListenerSupport listenerSupport)) throw new IllegalStateException("EntityDefinition must override this method if entity is not IPropertyChangeListenerSupport");
+        listenerManager.addPropertyChangeListener(listenerSupport, List.of(propertyName), listener);
     }
 }

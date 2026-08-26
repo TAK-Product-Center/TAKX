@@ -1,5 +1,6 @@
 package gov.takx.api.explorer;
 
+import jakarta.annotation.Nonnull;
 import org.junit.jupiter.api.Test;
 
 import static gov.takx.test.utils.ExplorerTestConstants.GROUP_1;
@@ -33,6 +34,7 @@ public class AExplorableRuleTest
                 return false;
             }
 
+            @Nonnull
             @Override
             public IExplorableRuleViewComponent createViewComponent()
             {

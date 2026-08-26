@@ -337,9 +337,9 @@ public class ApplicationSceneController extends AbstractSceneController
         super.doNonTerrainPick(dc);
 
         // Push TAKX picks back into draw context until we extract selection logic
-        for (gov.tak.core.map.layer.PickedObject pickedObject : pickedObjectManager.getPickedObjectList())
+        for (gov.takx.api.layer.pick.PickedObject pickedObject : pickedObjectManager.getPickedObjectList())
         {
-            gov.nasa.worldwind.pick.PickedObject wwObject = PickUtils.createPickedObject(dc, pickedObject.userObject(), Color.BLACK);
+            PickedObject wwObject = PickUtils.createPickedObject(dc, pickedObject.userObject(), Color.BLACK);
             dc.addPickedObject(wwObject);
         }
 

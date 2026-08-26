@@ -26,8 +26,8 @@ import static gov.takx.bootstrap.ApplicationModuleFinder.CLIENT_MODULE_ID;
  * Bootstrap is also responsible for validating that appropriate signatures are in place before allowing the
  * overall application to run in {@code MIL} mode.
  */
-@SuppressWarnings("UseOfSystemOutOrSystemErr")
-public class Bootstrap
+@SuppressWarnings({"UseOfSystemOutOrSystemErr", "PMD.LooseCoupling"})
+public final class Bootstrap
 {
     private static final String DEFAULT_FLAVOR = FlavorConstants.CIV;
 
@@ -36,7 +36,7 @@ public class Bootstrap
 
     private static String flavor;
 
-    private static boolean developerMode = false;
+    private static boolean developerMode;
 
     /**
      * Main entry point, called by JBoss modules.
@@ -45,7 +45,7 @@ public class Bootstrap
     {
         initLogging();
 
-        final StartupArgs startupArgs = new StartupArgs(args);
+        final var startupArgs = new StartupArgs(args);
 
         closeSplashScreen(startupArgs);
 
@@ -192,7 +192,7 @@ public class Bootstrap
 
                     Note: for JVM options run "java -help\"""";
 
-            System.out.println(helpMessage);
+            System.out.println(helpMessage); // NOPMD
         }
 
         return wantsHelp;

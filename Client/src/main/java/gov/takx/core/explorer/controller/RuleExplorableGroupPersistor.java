@@ -50,6 +50,7 @@ public class RuleExplorableGroupPersistor implements IExplorablePersistor
                 .stream()
                 .filter(IRuleGroupController.class::isInstance)
                 .map(IRuleGroupController.class::cast)
+                .filter(IRuleGroupController::isPersist)
                 .sorted(Comparator.comparing(IRuleGroupController::getDepth))
                 .toList();
         map.setRestorableMapList(ExplorerStateKeys.RULE_GROUPS_KEY, JSONMapUtils.createNewRestoreMapList(ruleGroups));

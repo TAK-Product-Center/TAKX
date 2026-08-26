@@ -96,11 +96,25 @@ public interface IExtendedDataPackageManager extends IDataPackageManager
      * @param packageFile Path to package file.
      * @param from The origin of the file. {@code null} if we are the sender.
      * @param to The contact receiving the file. {@code null} if we are the receiver.
+     * @param fileSize the size of the packageFile, calculated if not using the full constructor.
+     * @param lastModified the last modified time of the packageFile, calculated if not using the full constructor.
      *
-     * @since 5.0
+     * @since 5.0 (5.8 added fileSize and lastModified)
      */
-    record TransferLogItem(@Nonnull File packageFile, @Nullable String from, @Nullable String to)
+    record TransferLogItem(@Nonnull File packageFile, @Nullable String from, @Nullable String to, long fileSize, long lastModified)
     {
+        /**
+         * Wrapper of a single transfer that calculates file size and last modified time automatically.
+         * @param packageFile Path to package file.
+         * @param from The origin of the file. {@code null} if we are the sender.
+         * @param to The contact receiving the file. {@code null} if we are the receiver.
+         * @since 5.8
+         */
+        public TransferLogItem(@Nonnull File packageFile, @Nullable String from, @Nullable String to)
+        {
+            this(packageFile, from, to, packageFile.length(), packageFile.lastModified());
+        }
+
         /**
          * @return The callsign of the other person involved in the transfer.
          */

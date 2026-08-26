@@ -1,11 +1,12 @@
 package gov.takx.api.media;
 
 import gov.takx.api.annotation.Experimental;
+import jakarta.annotation.Nonnull;
 
 import java.util.Optional;
 
 /**
- * Represents a discrete frame of media
+ * Represents a discrete frame of media.
  *
  * @since 2.8
  */
@@ -13,30 +14,26 @@ import java.util.Optional;
 public interface IMediaFrame
 {
     /**
-     * Access the presentation timestamp (PTS)
-     *
-     * @return The PTS
+     * @return The presentation timestamp (PTS)
+     * @since 5.8
      */
-    double getPts();
+    double getPresentationTimeStamp();
 
     /**
-     * Access the video frame
-     *
      * @return Get the video frame, if present
      */
+    @Nonnull
     Optional<IVideoFrame> getVideoFrame();
 
     /**
-     * Access the audio frame
-     *
      * @return The audio frame, if present
      */
+    @Nonnull
     Optional<IAudioFrame> getAudioFrame();
 
     /**
-     * Access the data frame
-     *
      * @return The data frame, if present
      */
+    @Nonnull
     Optional<IDataFrame> getDataFrame();
 }

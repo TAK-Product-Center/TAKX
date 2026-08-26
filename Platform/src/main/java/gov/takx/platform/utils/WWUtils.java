@@ -1,26 +1,22 @@
 package gov.takx.platform.utils;
 
 import com.atakmap.map.elevation.ElevationManager;
-import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.pick.PickedObject;
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.tak.api.engine.map.coords.GeoCalculations;
 import gov.tak.api.maps.coords.GeoPoint;
 import gov.takx.api.coordinatesystem.ILocation;
 import gov.takx.api.coordinatesystem.RaptorLocation;
-import gov.takx.api.globe.IGlobeManager;
 import gov.takx.platform.cdi.InjectableContainerSupport;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.Point;
 import java.lang.invoke.MethodHandles;
 import java.util.Collection;
 import java.util.List;
@@ -232,31 +228,6 @@ public class WWUtils
     {
         final double elevation = ElevationManager.getElevation(latitude.degrees, longitude.degrees, null);
         return GeoCalculations.haeToMsl(latitude.degrees, longitude.degrees, elevation);
-    }
-
-    /**
-     * Compute the position of a given screen coordinate using the current view of the globe associated with the given
-     * world window. This method should provide more accurate results than just calling
-     * {@link View#computePositionFromScreenPoint(double, double)} because it attempts to intersect against the
-     * terrain model.
-     *
-     * @param wwd World window to locate globe instance
-     * @param x   Screen X coordinate
-     * @param y   Screen Y coordinate
-     * @return Position of screen point on globe, {@code null} if calculations fail
-     * @since 1.49
-     * @deprecated at 5.4, use {@link gov.takx.api.globe.IGlobeDelegate#getGlobeLocationFromPoint(Point)} instead
-     */
-    @Nullable
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
-    public static Position computePositionFromScreenPoint(@Nonnull WorldWindow wwd, double x, double y)
-    {
-        //noinspection DataFlowIssue
-        final var geoPoint = BEAN_ACCESSOR.getBean(IGlobeManager.class).getGlobeForComponent(wwd)
-                .getGlobeLocationFromPoint(new Point((int) x, (int) y));
-
-        return geoPoint == null ? null : Position.fromDegrees(geoPoint.getLatitude(), geoPoint.getLongitude(), geoPoint.getElevation());
     }
 
     /**

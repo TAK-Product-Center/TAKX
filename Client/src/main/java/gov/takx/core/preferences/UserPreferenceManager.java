@@ -13,7 +13,6 @@ import gov.takx.commons.media.AudioAlert;
 import gov.takx.platform.preferences.PreferencesNode;
 import gov.takx.platform.preferences.UserPreferenceEntry;
 import gov.takx.platform.utils.InjectionUtils;
-import gov.takx.platform.utils.UnitsFormat;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.Dependent;
 import jakarta.enterprise.inject.Produces;
@@ -70,7 +69,6 @@ public class UserPreferenceManager extends APreferenceManager implements IUserPr
     static
     {
         TYPE_CONVERTERS.put(CoordinateSystem.class, v -> CoordinateSystem.getCoordinateSystem(v, CoordinateSystem.DECIMAL_DEGREES));
-        TYPE_CONVERTERS.put(UnitsFormat.class, UnitsFormat::toUnits);
         TYPE_CONVERTERS.put(AudioAlert.class, AudioAlert::getAudioAlert);
     }
 
@@ -95,12 +93,6 @@ public class UserPreferenceManager extends APreferenceManager implements IUserPr
     public IPreferenceMonitor<CoordinateSystem> newCoordinateSystemMonitor(Consumer<CoordinateSystem> changeHandler)
     {
         return UserPreferenceEntry.COORDINATE_SYSTEM.newMonitor(CoordinateSystem.class, changeHandler);
-    }
-
-    @Override
-    public IPreferenceMonitor<UnitsFormat> newUnitsFormatMonitor(Consumer<UnitsFormat> changeHandler)
-    {
-        return UserPreferenceEntry.DISPLAY_UNIT_OF_MEASURE.newMonitor(UnitsFormat.class, changeHandler);
     }
 
     @Override

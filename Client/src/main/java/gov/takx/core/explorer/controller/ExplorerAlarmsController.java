@@ -14,16 +14,17 @@ import gov.takx.core.explorer.common.DataMonitorAlarmExplorable;
 import gov.takx.core.explorer.common.IAlarmExplorable;
 import gov.takx.core.explorer.common.IDataMonitorAlarmExplorable;
 import gov.takx.core.explorer.common.IPathExplorableGroup;
+import gov.takx.core.explorer.common.events.ExplorableLifecycleEvent;
 import gov.takx.platform.utils.TimeBoundedTask;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import jakarta.inject.Inject;
-import org.greenrobot.eventbus.EventBus;
+import jakarta.enterprise.event.Observes;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -46,8 +47,6 @@ public class ExplorerAlarmsController implements IExplorerAlarmsController
     private final Map<IExplorable, List<IDataMonitorAlarmExplorable>> alarmsMap = new HashMap<>();
     private final State minAlarmState = State.Active;
 
-    @Inject
-    private EventBus eventBus;
     // Our "update" task, performed on a timed basis no matter how often requested
     private final TimeBoundedTask updateTask =
             new TimeBoundedTask("Explorer Alarm Updater", MIN_DELAY, MAX_DELAY, this::performUpdate);
@@ -72,7 +71,6 @@ public class ExplorerAlarmsController implements IExplorerAlarmsController
         alertsRootAlarm = new DataMonitorAlarmExplorable(internalMonitor, rootAlertsGroup, highestState);
     }
 
-    @SuppressWarnings("removal")
     @Nonnull
     @Override
     public IExplorableGroup getAlertsRoot()
@@ -158,7 +156,7 @@ public class ExplorerAlarmsController implements IExplorerAlarmsController
     {
         synchronized (alarmsMap)
         {
-            return alarmsMap.get(explorable).stream().map(IDataMonitorAlarmExplorable.class::cast).toList();
+            return alarmsMap.get(explorable).stream().toList();
         }
     }
 
@@ -178,16 +176,25 @@ public class ExplorerAlarmsController implements IExplorerAlarmsController
         updateTask.request(); // Just request an update, gathering multiple requests on a timed basis
     }
 
+    private void onExplorableLifecycleEvent(@Observes ExplorableLifecycleEvent event)
+    {
+        if (controller.equals(event.source())) update(); // Only fire the event if the life cycle event occurred on this explorer
+    }
+
     /**
      * Update state with current alarm status.
      */
     private void performUpdate()
     {
         State nextHighestState = State.Unknown;
-        for (IExplorable explorable : controller.getExplorables())
+        var controllerExplorables = controller.getExplorables();
+        var explorablesToCheck = new HashSet<>(alarmsMap.keySet());
+        explorablesToCheck.addAll(controllerExplorables);
+        for (var explorable : explorablesToCheck)
         {
             // Don't look for alarms on alarms
             if (explorable instanceof IAlarmExplorable) continue;
+            var removed = !controllerExplorables.contains(explorable);
 
             List<IDataMonitorAlarmExplorable> currentAlarms;
             synchronized (alarmsMap)
@@ -197,27 +204,28 @@ public class ExplorerAlarmsController implements IExplorerAlarmsController
             List<IDataMonitorAlarmExplorable> toRemoveAlarms = new ArrayList<>(currentAlarms);
             List<IDataMonitorAlarmExplorable> toAddAlarms = new ArrayList<>();
             List<IDataMonitorAlarmExplorable> nextAlarms = new ArrayList<>();
-            for (IDataMonitor dataMonitor : getDataMonitors(explorable))
+
+            if (!removed) // Only grab alarms for explorables that still exist
             {
-                // Don't create alarms for states below the min
-                State state = dataMonitor.getCurrentState();
-                nextHighestState = state.ordinal() > nextHighestState.ordinal() ? state : nextHighestState;
-                IDataMonitorAlarmExplorable alarm = currentAlarms
-                        .stream()
-                        .filter(a -> a.getDataMonitor().equals(dataMonitor))
-                        .findFirst().orElse(null);
-                if (alarm == null && state.ordinal() >= minAlarmState.ordinal())
+                for (IDataMonitor dataMonitor : getDataMonitors(explorable))
                 {
-                    alarm = new DataMonitorAlarmExplorable(dataMonitor, explorable, state);
-                    toAddAlarms.add(alarm);
-                    nextAlarms.add(alarm);
-                } else if (alarm != null)
-                {
-                    alarm.setAlarmState(state);
-                    if (state.ordinal() >= minAlarmState.ordinal())
-                    { // Only retain alarm explorables above the min sate
-                        toRemoveAlarms.remove(alarm);
+                    // Don't create alarms for states below the min
+                    State state = dataMonitor.getCurrentState();
+                    nextHighestState = state.ordinal() > nextHighestState.ordinal() ? state : nextHighestState;
+                    IDataMonitorAlarmExplorable alarm = currentAlarms.stream().filter(a -> a.getDataMonitor().equals(dataMonitor)).findFirst().orElse(null);
+                    if (alarm == null && state.ordinal() >= minAlarmState.ordinal())
+                    {
+                        alarm = new DataMonitorAlarmExplorable(dataMonitor, explorable, state);
+                        toAddAlarms.add(alarm);
                         nextAlarms.add(alarm);
+                    } else if (alarm != null)
+                    {
+                        alarm.setAlarmState(state);
+                        if (state.ordinal() >= minAlarmState.ordinal())
+                        { // Only retain alarm explorables above the min sate
+                            toRemoveAlarms.remove(alarm);
+                            nextAlarms.add(alarm);
+                        }
                     }
                 }
             }
@@ -225,7 +233,13 @@ public class ExplorerAlarmsController implements IExplorerAlarmsController
             // Set state
             synchronized (alarmsMap)
             {
-                alarmsMap.put(explorable, nextAlarms);
+                if (removed)
+                {
+                    alarmsMap.remove(explorable); // Just remove from map completely if explorable is gone
+                } else
+                {
+                    alarmsMap.put(explorable, nextAlarms);
+                }
             }
 
             // Add new alarms to group

@@ -37,7 +37,7 @@ public class LayerService implements ILayerService
         {
             case Elevation, Wcs -> ElevationLayer.class.getName();
             case GenericLayer -> Layer.class.getName();
-            case LocalImagery -> ImageryLayerManager.NATIVE_IMAGERY_RASTER_CLASS;
+            case LocalImagery -> ImageryLayerManager.IMAGERY_LAYER_MANAGER_CLASS;
             case OnlineImagery -> DatasetRasterLayer2.class.getName();
             case Model, LegacyModel -> ModelLayerManager.SCENE_LAYER_CLASS;
         };

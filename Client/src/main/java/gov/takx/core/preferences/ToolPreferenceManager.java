@@ -11,6 +11,7 @@ import gov.takx.api.preferences.PreferenceEntryChange;
 import gov.takx.api.preferences.tool.IToolPreference;
 import gov.takx.core.preferences.tool.ToolPreferenceAdded;
 import gov.takx.core.preferences.tool.ToolPreferenceRemoved;
+import gov.takx.core.view.gui.preferences.ToolPreferencesPagesController;
 import gov.takx.core.view.gui.preferences.tools.ToolPreferenceEntry;
 import gov.takx.platform.utils.InjectionUtils;
 import jakarta.annotation.Nonnull;
@@ -63,6 +64,7 @@ public class ToolPreferenceManager extends APreferenceManager implements IToolPr
     // Map from preference entry to event qualifier
     private static final Map<IPreferenceEntry, ToolPreferenceType> ENTRY_TO_QUALIFIER = new ConcurrentHashMap<>();
 
+    private final ToolPreferencesPagesController preferencesPagesController;
     private final Event<ToolPreferenceAdded> toolPreferenceAddedEvent;
     private final Event<ToolPreferenceRemoved> toolPreferenceRemovedEvent;
 
@@ -96,10 +98,12 @@ public class ToolPreferenceManager extends APreferenceManager implements IToolPr
     }
 
     @Inject
-    ToolPreferenceManager(Event<ToolPreferenceAdded> toolPreferenceAddedEvent, Event<ToolPreferenceRemoved> toolPreferenceRemovedEvent)
+    ToolPreferenceManager(ToolPreferencesPagesController preferencesPagesController,
+                          Event<ToolPreferenceAdded> toolPreferenceAddedEvent, Event<ToolPreferenceRemoved> toolPreferenceRemovedEvent)
     {
         super(NODE_KEY, DEFAULT_PREFERENCES_XML);
 
+        this.preferencesPagesController = preferencesPagesController;
         this.toolPreferenceAddedEvent = toolPreferenceAddedEvent;
         this.toolPreferenceRemovedEvent = toolPreferenceRemovedEvent;
     }
@@ -227,6 +231,19 @@ public class ToolPreferenceManager extends APreferenceManager implements IToolPr
     public List<ToolDefinition> getToolDefinitions()
     {
         return List.copyOf(toolDefinitionsMap.values());
+    }
+
+    @Override
+    public void showToolSettings(@Nonnull String toolUid)
+    {
+        final var toolDefinition = toolDefinitionsMap.get(toolUid);
+        if (toolDefinition != null)
+        {
+            preferencesPagesController.showToolPage(toolDefinition);
+        } else
+        {
+            logger.warn("Attempting to open settings for a tool that does not exist. Tool UID: {}", toolUid);
+        }
     }
 
     /** @since 5.5.1 */

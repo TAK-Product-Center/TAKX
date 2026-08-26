@@ -45,6 +45,13 @@ public interface IRuleGroupController extends IUserExplorableGroup, IRestorableM
     boolean hasNameSensitiveRules();
 
     /**
+     * @param property the property to check
+     * @return {@code true} if this rule group is sensitive to the given property, otherwise {@code false}
+     * @since 5.8
+     */
+    boolean isSensitiveTo(@Nonnull String property);
+
+    /**
      * Get the match-all flag.
      *
      * @return the match-all flag value.

@@ -1,6 +1,5 @@
 package gov.takx.api.mapobject;
 
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.annotation.InjectableService;
 import gov.takx.api.annotation.NoPluginImplementations;
 import gov.takx.api.plugin.IPluginDefinition;
@@ -9,7 +8,6 @@ import jakarta.annotation.Nullable;
 
 import java.awt.image.BufferedImage;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -31,44 +29,6 @@ public interface IMapObjectImageUtils
      * @since 5.1
      */
     boolean isSyntheticDefaultIcon(IPluginDefinition<?> pluginDefinition);
-
-    /**
-     * Take a fully qualified URI and pare it down to a URI which will be transportable
-     * across machines using the packaging method.
-     *
-     * @param uri URI to process
-     * @return String form for storage in persistence
-     * @deprecated No longer used for persistence of MO URIs
-     */
-    @Deprecated(since = "5.5.1", forRemoval = true)
-    @DeprecatedApi(since = "5.5.1", forRemoval = true, removeAt = "5.8")
-    @Nullable
-    default String deflateURI(@Nonnull URI uri)
-    {
-        return uri.toString();
-    }
-
-    /**
-     * Inflate the URL (as a String) from a "compressed" version found in the package portable data up
-     * to a URI which has absolute reference and is locatable on the running application.
-     *
-     * @param sourceUrl Source URL to inflate
-     * @return Absolute URI for the URL
-     * @deprecated No longer used for persistence of MO URIs
-     */
-    @Deprecated(since = "5.5.1", forRemoval = true)
-    @DeprecatedApi(since = "5.5.1", forRemoval = true, removeAt = "5.8")
-    @Nullable
-    default URI inflateURI(@Nonnull String sourceUrl)
-    {
-        try
-        {
-            return new URI(sourceUrl);
-        } catch (URISyntaxException e)
-        {
-            return null;
-        }
-    }
 
     /**
      * Load an image from the given URI.

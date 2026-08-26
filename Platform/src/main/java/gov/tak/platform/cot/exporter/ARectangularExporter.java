@@ -23,10 +23,6 @@ import static gov.tak.api.cot.detail.DetailConstants.LINK;
  */
 public abstract class ARectangularExporter extends AShapeExporter
 {
-    // CoT requires this order: UL, LL, LR, UR (CCW from UL)
-    // But getVertices returns: LL, LR, UR, UL
-    private static final int[] VERTEX_ORDER = {3, 0, 1, 2};
-
     private final Class<? extends MapObject> mapObjectType;
 
     protected ARectangularExporter(Class<? extends MapObject> mapObjectType)
@@ -46,16 +42,13 @@ public abstract class ARectangularExporter extends AShapeExporter
     {
         final CotEvent event = createBasicEvent(mapObject, ONE_DAY_SECONDS);
         final CotDetail detail = event.getDetail();
-
         final IRectangle rectangle = (IRectangle) mapObject;
 
         // Add in all the corners as 'link' details, in required CoT order.
-        final List<ILocation> vertices = rectangle.getVertices();
-
-        for (int i : VERTEX_ORDER) detail.addChild(new CotDetail(LINK, ATTR_POINT, new GeoPoint(vertices.get(i)).toString()));
-
+        final List<ILocation> vertices = rectangle.getVertices(true);
+        // noinspection DataFlowIssue vertices shouldn't be null here
+        for (ILocation location : vertices) detail.addChild(new CotDetail(LINK, ATTR_POINT, new GeoPoint(location).toString()));
         handleBattlePositionHoldingArea(mapObject, event);
-
         return event;
     }
 }

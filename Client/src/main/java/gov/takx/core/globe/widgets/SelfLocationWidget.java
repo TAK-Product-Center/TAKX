@@ -204,8 +204,8 @@ public class SelfLocationWidget extends AWidget
         final float accuracyWidth = FONT_METRICS.measureTextWidth(accuracyString);
 
         final float maxWidth = Collections.max(List.of(callsignWidth, locationWidth, altWidth + headingWidth, speedWidth + accuracyWidth));
-        final int pad1 = (int) ((maxWidth - altWidth - headingWidth) / SPACE_WIDTH);
-        final int pad2 = (int) ((maxWidth - speedWidth - accuracyWidth) / SPACE_WIDTH);
+        final int pad1 = (int) Math.max(1, (maxWidth - altWidth - headingWidth) / SPACE_WIDTH);
+        final int pad2 = (int) Math.max(1, (maxWidth - speedWidth - accuracyWidth) / SPACE_WIDTH);
 
         final var locationText = new StringBuilder(512);
         final int[] lineColors;

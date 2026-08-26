@@ -74,7 +74,6 @@ public class LayerInstallerManager
         takLayerManager.addLayer(takLayerManager.getShapeFileLayers());
         takLayerManager.addLayer(takLayerManager.getKmlOverlayLayers());
         takLayerManager.addLayer(takLayerManager.getUncategorizedLayers());
-        takLayerManager.addLayer(layerBoundsManager.getLayer());
         takLayerManager.addLayer(takLayerManager.getPluginLayers());
         takLayerManager.addLayer(takLayerManager.getMapDataLayers());
         takLayerManager.addLayer(renderableFeatureManager.getLayer());

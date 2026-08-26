@@ -26,7 +26,7 @@ public class ControllerExplorableGroup extends Explorable implements IController
      * @param displayName the display name of the group
      * @param uniqueKey the unique key
      * @param parentPath the parent path list
-     * @param iconImage the icon for the group, no {@code null} for no icon
+     * @param iconImage the icon for the group, or {@code null} for no icon
      */
     public ControllerExplorableGroup(@Nonnull IExplorerController controller,
                                      @Nonnull String displayName,
@@ -36,7 +36,7 @@ public class ControllerExplorableGroup extends Explorable implements IController
     {
         super(controller, displayName, uniqueKey, parentPath, iconImage, true);
         this.controller = controller;
-        this.supportsVisibility = false;
+        supportsVisibility = false;
     }
 
     @Nonnull

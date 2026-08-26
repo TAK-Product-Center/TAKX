@@ -1,5 +1,6 @@
 package gov.takx.core.navigation;
 
+import gov.tak.api.cot.route.RouteMethod;
 import gov.tak.api.icons.TakColor;
 import gov.tak.api.maps.coords.GeoPointMetaData;
 import gov.tak.api.util.StandardAttributeNames;
@@ -22,6 +23,7 @@ import gov.takx.commons.swing.ActionPopupFactory;
 import gov.takx.core.view.gui.IExtendedUISpaceManager;
 import gov.takx.core.view.gui.navigation.NavigationPanel;
 import gov.takx.platform.KeyUtils;
+import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.platform.ui.ComponentDescriptor;
 import gov.takx.platform.ui.ComponentDescriptorBuilder;
 import gov.takx.platform.ui.ResourceDirectory;
@@ -357,15 +359,14 @@ public class NavigationManager // TODO DCW TAKX-4314 expose as interface and dep
     /**
      * Creates an intercept point for the given source and target object.
      *
-     * @param source the source object
      * @param target the target object
      * @return the created marker
-     * @since 5.7
+     * @since 5.7 (Removed source parameter in 5.8)
      */
     @Nonnull
-    public IMarkerMapObject createInterceptPoint(@Nonnull IMapObject source, @Nonnull IMapObject target)
+    public IMarkerMapObject createInterceptPoint(@Nonnull IMapObject target)
     {
-        var interceptPointSpec = MapObjectSpec.builder(source.getFamily(), source.getType())
+        var interceptPointSpec = MapObjectSpec.builder(KeyUtils.TOOL_FAMILY, IPointMapObject.POINT_TYPE)
                 .location(target.getLocation())
                 .name(target.getName())
                 .initializer(mo -> {
@@ -458,6 +459,23 @@ public class NavigationManager // TODO DCW TAKX-4314 expose as interface and dep
     {
         getNavigationPanel().setNavigation(null);
         uiSpaceManager.removeComponent(getNavigationPanel());
+    }
+
+    /**
+     * @param method a route method
+     * @return the radius in meters that constitutes arrival at a waypoint
+     * @since 5.8
+     */
+    public int getArrivalRadius(@Nonnull RouteMethod method)
+    {
+        return switch (method)
+        {
+            case DRIVING -> PreferenceEntry.ROUTE_DRIVING_CHECKPOINT_RADIUS.getIntegerValue();
+            case WALKING -> PreferenceEntry.ROUTE_WALKING_CHECKPOINT_RADIUS.getIntegerValue();
+            case FLYING -> PreferenceEntry.ROUTE_FLYING_CHECKPOINT_RADIUS.getIntegerValue();
+            case SWIMMING -> PreferenceEntry.ROUTE_SWIMMING_CHECKPOINT_RADIUS.getIntegerValue();
+            case WATERCRAFT -> PreferenceEntry.ROUTE_WATERCRAFT_CHECKPOINT_RADIUS.getIntegerValue();
+        };
     }
 
     @Nonnull

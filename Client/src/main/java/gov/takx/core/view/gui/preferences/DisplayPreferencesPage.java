@@ -1,14 +1,17 @@
 package gov.takx.core.view.gui.preferences;
 
 import com.atakmap.coremap.maps.coords.NorthReference;
+import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.coordinatesystem.CoordinateSystem;
 import gov.takx.api.globe.GlobeNavigationStyle;
+import gov.takx.core.view.gui.docking.DockingManager;
 import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.platform.preferences.UserPreferenceEntry;
 import gov.takx.platform.utils.units.AltitudeUnits;
 import gov.takx.platform.utils.units.BearingUnits;
 import gov.takx.platform.utils.units.RangeUnits;
 import gov.takx.platform.utils.units.SpeedUnits;
+import jakarta.inject.Inject;
 
 import javax.swing.ImageIcon;
 
@@ -19,11 +22,16 @@ import java.util.List;
  *
  * @since 5.4
  */
+@PseudoBean
 public class DisplayPreferencesPage extends APreferencesPage
 {
     private static final ImageIcon OVERLAYS_ICON = assetIcon("Overlays_32x32.png");
     private static final ImageIcon UNITS_ICON = assetIcon("Range-And-Bearing_32x32.png");
     private static final ImageIcon TOOLBAR_CONFIG_ICON = platformIcon("toolbar_config.png");
+    private static final ImageIcon RE_DOCK_PANELS_ICON = platformIcon("unexternalize_all.svg");
+
+    @Inject
+    private DockingManager dockingManager;
 
     public DisplayPreferencesPage()
     {
@@ -35,6 +43,9 @@ public class DisplayPreferencesPage extends APreferencesPage
         // Toolbar config is too complicated for simple preferences page, so put it in a dialog
         addAction(TOOLBAR_CONFIG_ICON, "Toolbar Configuration", "Define/load/save Toolbar configurations",
                 () -> new StandalonePreferencesDialog("Toolbar Configuration", new UIConfigurationPreferencesPanel()).setVisible(true));
+
+        addAction(RE_DOCK_PANELS_ICON, "Re-dock panels", "Force re-dock all undocked/floating panels",
+                () -> dockingManager.reDockAllExternalizedComponents());
 
         addSectionHeader("Map");
         addCheckboxEditor(UserPreferenceEntry.RESTORE_LAST_VIEW);

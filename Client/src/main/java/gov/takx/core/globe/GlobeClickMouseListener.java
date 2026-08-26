@@ -44,14 +44,6 @@ public class GlobeClickMouseListener extends MouseAdapter
     }
 
     @Override
-    public void mousePressed(MouseEvent e)
-    {
-        // Prevent other listeners from responding to the event; otherwise, AbstractViewInputHandler will update its
-        // state but won't be cleared b/c we consume the mouseReleased event
-        e.consume();
-    }
-
-    @Override
     public void mouseDragged(MouseEvent mouseEvent)
     {
         if (!mouseEvent.isConsumed()) isDrag = true;
@@ -71,7 +63,9 @@ public class GlobeClickMouseListener extends MouseAdapter
                 final WorldWindow wwd = (WorldWindow) mouseEvent.getSource();
                 final ILocation location = globeManager.getGlobeForComponent(wwd).getGlobeLocationFromPoint(mouseEvent.getPoint());
                 if (location != null) callback.accept(location); // Location may be null if user clicks outside of globe
-                mouseEvent.consume();
+
+                // Note: don't consume the click; we need the BasicViewInputHandler to respond to both the mousePressed
+                // and mouseReleased events for drags to work properly
             }
 
             isDrag = false;

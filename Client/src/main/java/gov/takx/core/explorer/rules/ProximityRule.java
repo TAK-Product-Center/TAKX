@@ -9,6 +9,8 @@ import gov.takx.api.explorer.IExplorableRuleFactory;
 import gov.takx.api.explorer.IExplorableRuleViewComponent;
 import gov.takx.api.explorer.IExplorerDelegateListener;
 import gov.takx.api.explorer.IProximityRule;
+import gov.takx.api.mapobject.IMapObject;
+import gov.takx.api.shapes.ShapeProperties;
 import gov.takx.api.state.IRestorableMap;
 import gov.takx.commons.utils.StringUtils;
 import gov.takx.core.explorer.IExplorerManager;
@@ -25,6 +27,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -42,6 +45,7 @@ public class ProximityRule extends AExplorableRule implements IProximityRule
 
     public static final String TYPE = "Proximity";
 
+    private static final Set<String> SENSITIVE_PROPERTIES = Set.of(IMapObject.LOCATION, ShapeProperties.LOCATIONS);
     private static final String SELECTED_EXPLORABLE_KEY = "selectedExplorable";
     private static final String MAX_DISTANCE_KEY = "maxDistance";
     private final AtomicReference<IExplorable> selectedExplorable;
@@ -108,6 +112,13 @@ public class ProximityRule extends AExplorableRule implements IProximityRule
     public int getMaxDistanceMeters()
     {
         return maxDistanceMeters.get();
+    }
+
+    @Nonnull
+    @Override
+    public Collection<String> getSensitiveProperties()
+    {
+        return SENSITIVE_PROPERTIES;
     }
 
     @Override
@@ -198,8 +209,7 @@ public class ProximityRule extends AExplorableRule implements IProximityRule
         public void onExplorerEvent(String eventName, IExplorable affectedExplorable, Object oldValue, Object newValue,
                                     boolean isGroupTreeSource)
         {
-            if (eventName.equals(IExplorerDelegateListener.EXPLORABLE_ADDED_EVENT) &&
-                    affectedExplorable.getUniqueKey().equals(selectedExplorableKey))
+            if (eventName.equals(EXPLORABLE_ADDED_EVENT) && affectedExplorable.getUniqueKey().equals(selectedExplorableKey))
             {
                 if (logger.isDebugEnabled()) logger.debug("Explorable recreated (restore complete): {}", affectedExplorable);
 

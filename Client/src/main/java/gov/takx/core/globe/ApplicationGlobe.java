@@ -115,6 +115,7 @@ import gov.takx.platform.logging.NullProgressMonitor;
 import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.platform.preferences.PreferencesNode;
 import gov.takx.platform.preferences.UserPreferenceEntry;
+import gov.takx.platform.ui.UIResources;
 import gov.takx.platform.utils.TimeBoundedTask;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -614,7 +615,7 @@ public class ApplicationGlobe implements IApplicationGlobe, RenderingListener, P
             MapRenderer<?> renderer = getPortableMapRenderer();
             if (renderer != null)
             {
-                renderer.getRenderContext().queueEvent(() -> renderer.visitControl(null, SurfaceRendererControl::markDirty, SurfaceRendererControl.class));
+                renderer.getRenderContext().queueEvent(() -> renderer.getControl(SurfaceRendererControl.class).markDirty());
             }
         }
     }
@@ -2077,7 +2078,7 @@ public class ApplicationGlobe implements IApplicationGlobe, RenderingListener, P
             @Override
             public void focusGained(FocusEvent e)
             {
-                setBackground(Color.CYAN); // Add the visual cue
+                setBackground(UIResources.BORDER_HIGHLIGHT_COLOR); // Add the visual cue
             }
 
             @Override

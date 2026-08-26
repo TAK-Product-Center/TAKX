@@ -9,8 +9,6 @@ import com.atakmap.lang.Unsafe;
 import com.atakmap.map.MapRenderer;
 import com.atakmap.map.elevation.ElevationData;
 import com.atakmap.map.elevation.ElevationManager;
-import com.atakmap.map.elevation.ElevationSource;
-import com.atakmap.map.elevation.ElevationSourceManager;
 import com.atakmap.map.layer.opengl.GLAsynchronousLayer;
 import com.atakmap.map.layer.raster.DatasetDescriptor;
 import com.atakmap.map.layer.raster.DefaultDatasetProjection2;
@@ -49,7 +47,6 @@ public class GLHeatMap extends GLAsynchronousLayer<GLHeatMap.HeatMapParams>
         implements HeatMapLayer.OnHeatMapResolutionChangedListener
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
-
     private static final int QUICK_FACTOR = 5;
     static final float DEFAULT_MIN_ELEVATION = (float) ConversionFactors.FEET_TO_METERS * -900;
     static final float DEFAULT_MAX_ELEVATION = (float) ConversionFactors.FEET_TO_METERS * 19000;
@@ -98,7 +95,7 @@ public class GLHeatMap extends GLAsynchronousLayer<GLHeatMap.HeatMapParams>
             fullResolutionX = resolutionX;
             fullResolutionY = resolutionY;
 
-            elevationModel = this.layer.getElevationModel();
+            elevationModel = layer.getElevationModel();
 
             quickResolutionX = Math.max(fullResolutionX / QUICK_FACTOR, 14);
             quickResolutionY = Math.max(fullResolutionY / QUICK_FACTOR, 10);
@@ -333,9 +330,9 @@ public class GLHeatMap extends GLAsynchronousLayer<GLHeatMap.HeatMapParams>
 
             for (int i = 0; i < result.hsvLut.length; i++)
             {
-                final var hue = (1.0f - (float) i / (float) (result.hsvLut.length - 1)) * 255f;
+                final var hue = (1.0f - (float) i / (float) (result.hsvLut.length - 1));
                 final var color = Color.getHSBColor(hue, state.saturation, state.value);
-                result.hsvLut[i] = new Color(color.getRed(), color.getGreen(), color.getGreen(), alpha).getRGB();
+                result.hsvLut[i] = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha).getRGB();
             }
         }
     }
@@ -400,7 +397,7 @@ public class GLHeatMap extends GLAsynchronousLayer<GLHeatMap.HeatMapParams>
      */
     private static class GLHeatMapTexture implements GLMapRenderable
     {
-        private final CornerCoords cornerCoords = new CornerCoords();;
+        private final CornerCoords cornerCoords = new CornerCoords();
 
         private boolean dirty;
         private int height;
@@ -608,9 +605,6 @@ public class GLHeatMap extends GLAsynchronousLayer<GLHeatMap.HeatMapParams>
 
         public void query()
         {
-            Collection<ElevationSource> sources = new LinkedList<>();
-            ElevationSourceManager.getSources(sources);
-
             // Perform an initial pass against user registered elevation sources clamp so the value is greater than 0.
             final int maxSamples = 150; // todo: make configurable for developers?
 
@@ -736,7 +730,7 @@ public class GLHeatMap extends GLAsynchronousLayer<GLHeatMap.HeatMapParams>
                 if (Double.isNaN(elevationSamples[i])) continue;
 
                 img.x = i % result.sampleResolutionX;
-                img.y = i / result.sampleResolutionX;
+                img.y = (double) i / result.sampleResolutionX;
                 img2geo.transform(img, geo);
 
                 final double altMSL = EGM96.getMSL(geo.y, geo.x, elevationSamples[i]);

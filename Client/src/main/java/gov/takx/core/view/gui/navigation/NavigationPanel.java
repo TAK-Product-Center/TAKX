@@ -120,11 +120,11 @@ public class NavigationPanel extends ATitledPanel implements IResourceCleaner, N
         if (navigation == null)
         {
             navigationHeaderPanel.setTarget(null);
-            actionButtonPanel.setEnabled(false);
+            actionButtonPanel.setButtonsEnabled(false);
             keepInViewButton.setSelected(false);
         } else
         {
-            actionButtonPanel.setEnabled(true);
+            actionButtonPanel.setButtonsEnabled(true);
             listenerManager.addPropertyChangeListener(navigation, List.of(ShapeProperties.LOCATIONS, NavigationConfiguration.REVERSED), ignored -> createWaypointRowPanels());
             listenerManager.addPropertyChangeListener(navigation, List.of(NavigationConfiguration.CURRENT_TARGET), ignored -> navigationHeaderPanel.setTarget(currentConfiguration.getCurrentTarget()));
             if (navigation.getTargets().size() > 1) createWaypointRowPanels();

@@ -229,19 +229,24 @@ public class GeoChatProtocolHandler implements IChatProtocolHandler
     @Override
     public ChatOperationResult updateGroup(@Nonnull IGroupContact groupContact, @Nonnull Set<IContact> groupMembers)
     {
-        // Before updating the group's members, look for ones that have been removed
-        Set<IContact> removedMembers = groupContact.getGroupMembers().stream()
+        final Set<IContact> currentGroupMembers = groupContact.getGroupMembers();
+
+        final var addedMembers = groupMembers.stream()
+                .filter(contact -> !currentGroupMembers.contains(contact))
+                .collect(Collectors.toSet());
+
+        final var removedMembers = currentGroupMembers.stream()
                 .filter(contact -> !groupMembers.contains(contact))
                 .collect(Collectors.toSet());
 
         groupContact.setGroupMembers(groupMembers);
 
-        ChatOperationResult.Status status = ChatOperationResult.Status.SUCCESS;
+        var status = ChatOperationResult.Status.SUCCESS;
         String resultMessage = null;
 
         try
         {
-            geoChatMessageSender.sendGroupUpdateNotifications(groupContact);
+            geoChatMessageSender.sendGroupUpdateNotifications(groupContact, addedMembers, removedMembers);
             geoChatMessageSender.sendGroupEvictionNotifications(groupContact, removedMembers);
             geoChatContactProvider.updateContact(groupContact); // triggers database update
         } catch (CommoException e)

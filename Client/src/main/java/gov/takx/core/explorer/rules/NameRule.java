@@ -5,10 +5,13 @@ import gov.takx.api.explorer.IExplorable;
 import gov.takx.api.explorer.IExplorableRuleFactory;
 import gov.takx.api.explorer.IExplorableRuleViewComponent;
 import gov.takx.api.explorer.INameRule;
+import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.state.IRestorableMap;
 import gov.takx.core.view.gui.explorer.rules.NameRulePanel;
 import jakarta.annotation.Nonnull;
 
+import java.util.Collection;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -21,6 +24,7 @@ public class NameRule extends AExplorableRule implements INameRule
 {
     public static final String TYPE = "Name Match";
 
+    private static final Set<String> SENSITIVE_PROPERTIES = Set.of(IMapObject.NAME);
     private static final String NAME_MATCH_KEY = "nameMatch";
     private final AtomicReference<String> matchString;
 
@@ -59,6 +63,13 @@ public class NameRule extends AExplorableRule implements INameRule
     public String getMatchString()
     {
         return matchString.get();
+    }
+
+    @Nonnull
+    @Override
+    public Collection<String> getSensitiveProperties()
+    {
+        return SENSITIVE_PROPERTIES;
     }
 
     @Override

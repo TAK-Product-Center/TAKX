@@ -127,7 +127,7 @@ public class GlobeMapObjectManager implements IGlobeMapObjectManager
      * method below is called, leading to the user being unable to close any potential "insufficient control points"
      * dialog coming from an active editor.  So clear the current editor as soon as we know we're about to shut down.
      *
-     * @since 5.8
+     * @since 5.7.1
      */
     private void onShuttingDown(@Observes ShuttingDown ignored)
     {
@@ -554,7 +554,7 @@ public class GlobeMapObjectManager implements IGlobeMapObjectManager
                     }
                 } else if (MapToolType.isMapToolType(type))
                 {
-                    if (logger.isTraceEnabled()) logger.trace("CurrentMapTool: {}", getCurrentMapTool());
+                    if (logger.isDebugEnabled()) logger.debug("CurrentMapTool: {}", getCurrentMapTool());
 
                     // Check if this is different map tool than currently selected
                     if (!isCurrentMapTool(mapObject.getKey()))
@@ -601,7 +601,7 @@ public class GlobeMapObjectManager implements IGlobeMapObjectManager
     @Override
     public IGlobeMapObject setMapTool(@Nonnull MapToolType mapToolType, boolean drawOnly)
     {
-        logger.debug("SetMapTool called for type {}", mapToolType == MapToolType.NONE ? "NONE" : mapToolType);
+        logger.debug("SetMapTool called for type {}, clearingTool {}", mapToolType == MapToolType.NONE ? "NONE" : mapToolType, clearingTool);
 
         // stop recursive calls to this method that can happen when clearCurrentEditor() calls disarm()
         if (clearingTool) return null;
@@ -696,12 +696,18 @@ public class GlobeMapObjectManager implements IGlobeMapObjectManager
     @InvokeAndWaitOnEDT
     private void clearCurrentEditor(boolean noUpdate)
     {
-        logger.trace("Clearing editor, noUpdate {}, currentEditor {}", noUpdate, currentEditor);
+        logger.debug("Clearing editor, noUpdate {}, currentEditor {}", noUpdate, currentEditor);
 
         if (currentEditor != null)
         {
+            final var lastEditor = currentEditor;
+
             if (currentEditor.isArmed()) currentEditor.disarm(noUpdate);
-            currentEditor = null;
+
+            // The disarm call above can cause a new MO to be created, and selected, so a new editor might have been
+            // installed before we get here.  In that case, we need to NOT set the current editor to null, or future
+            // operations that would clear the editor would not actually deactivate the editor installed above.
+            if (lastEditor == currentEditor) currentEditor = null;
         }
     }
 

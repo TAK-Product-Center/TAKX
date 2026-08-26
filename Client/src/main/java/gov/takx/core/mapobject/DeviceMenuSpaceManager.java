@@ -164,6 +164,7 @@ public class DeviceMenuSpaceManager implements IDeviceMenuSpaceManager
         }
 
         final boolean neverCot = mapObject.getMetaBoolean(StandardAttributeNames.NEVER_COT, false)
+                // Note: new instances are NEVER_COT, but leaving these to support existing MOs
                 || mapObject instanceof IFlatAnnotationMapObject
                 || mapObject instanceof IAnnotationMapObject;
 

@@ -39,10 +39,9 @@ public class DataPackageTransferItemPanel extends JPanel implements ListCellRend
     {
         eventLabel.setText(transfer.isReceive() ? "RECV" : "SEND");
         packageNameLabel.setText(FileUtils.getNameWithoutExtension(transfer.packageFile()));
-        packageSizeLabel.setText(SizeFormatter.formatEstimate(transfer.packageFile().length()));
-        timeLabel.setText(DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm:ss ZZZ")
-                .withZone(ZoneId.systemDefault())
-                .format(Instant.ofEpochMilli(transfer.packageFile().lastModified())));
+        packageSizeLabel.setText(SizeFormatter.formatEstimate(transfer.fileSize()));
+        timeLabel.setText(DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm:ss ZZZ").withZone(ZoneId.systemDefault())
+                .format(Instant.ofEpochMilli(transfer.lastModified())));
         String verb = transfer.isReceive() ? "received from " : "sent to ";
         String callsign = transfer.getOtherCallsign();
         messageLabel.setText("Data Package " + verb + callsign);

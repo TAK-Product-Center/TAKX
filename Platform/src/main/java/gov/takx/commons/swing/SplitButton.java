@@ -6,7 +6,6 @@ import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 
 import java.awt.Color;
@@ -287,11 +286,11 @@ public class SplitButton extends JButton
         g.setColor(getArrowColor());
         if (arrowLocation == ArrowLocation.RIGHT)
         {
-            FlatUIUtils.paintArrow((Graphics2D) g, 0, 0, SPLIT_SIZE, getHeight(), SwingConstants.SOUTH, chevron,
+            FlatUIUtils.paintArrow((Graphics2D) g, 0, 0, SPLIT_SIZE, getHeight(), SOUTH, chevron,
                     ARROW_SIZE, ARROW_THICKNESS, 0, 0);
         } else
         {
-            FlatUIUtils.paintArrow((Graphics2D) g, 0, 0, getWidth(), SPLIT_SIZE, SwingConstants.SOUTH, chevron,
+            FlatUIUtils.paintArrow((Graphics2D) g, 0, 0, getWidth(), SPLIT_SIZE, SOUTH, chevron,
                     ARROW_SIZE, ARROW_THICKNESS, 0, 0);
         }
 
@@ -351,15 +350,21 @@ public class SplitButton extends JButton
         @Override
         public void mouseExited(MouseEvent e)
         {
-            onSplit = false;
-            repaint(splitRectangle);
+            if (splitRectangle != null)
+            {
+                onSplit = false;
+                repaint(splitRectangle);
+            }
         }
 
         @Override
         public void mouseMoved(MouseEvent e)
         {
-            onSplit = splitRectangle.contains(e.getPoint());
-            repaint(splitRectangle);
+            if (splitRectangle != null)
+            {
+                onSplit = splitRectangle.contains(e.getPoint());
+                repaint(splitRectangle);
+            }
         }
     }
 

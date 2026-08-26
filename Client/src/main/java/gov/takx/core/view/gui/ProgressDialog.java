@@ -8,7 +8,9 @@ import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.platform.IProgressMonitor;
 import gov.takx.commons.swing.ComponentUtils;
 import gov.takx.platform.ui.AStandardDialog;
+import jakarta.annotation.Nonnull;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -21,12 +23,27 @@ import java.awt.Window;
  */
 public class ProgressDialog extends AStandardDialog implements IProgressMonitor
 {
+    private Runnable cancelAction;
+
     public ProgressDialog(Window owner)
     {
         super(owner);
         initComponents();
 
+        cancelButton.setVisible(false);
         ComponentUtils.removeMinMaxClose(this); // Removes the close button from the frame.
+    }
+
+    /**
+     * Show a "cancel" button at the bottom of the dialog.
+     * 
+     * @param cancelAction The action to run when the cancel button is clicked
+     * @since 5.8
+     */
+    public void showCancelButton(@Nonnull Runnable cancelAction)
+    {
+        this.cancelAction = cancelAction;
+        cancelButton.setVisible(true);
     }
 
     @Override
@@ -66,13 +83,13 @@ public class ProgressDialog extends AStandardDialog implements IProgressMonitor
     {
         if (maximum < 0)
         {
-            progressBar1.setIndeterminate(true);
+            primaryProgressBar.setIndeterminate(true);
         } else
         {
-            progressBar1.setIndeterminate(false);
-            progressBar1.setValue(0);
-            progressBar1.setMaximum(maximum);
-            progressBar1.invalidate();
+            primaryProgressBar.setIndeterminate(false);
+            primaryProgressBar.setValue(0);
+            primaryProgressBar.setMaximum(maximum);
+            primaryProgressBar.invalidate();
         }
     }
 
@@ -80,7 +97,7 @@ public class ProgressDialog extends AStandardDialog implements IProgressMonitor
     @InvokeAndWaitOnEDT
     public void increment()
     {
-        progressBar1.setValue(progressBar1.getValue() + 1);
+        primaryProgressBar.setValue(primaryProgressBar.getValue() + 1);
         repaint();
     }
 
@@ -135,9 +152,14 @@ public class ProgressDialog extends AStandardDialog implements IProgressMonitor
     @InvokeAndWaitOnEDT
     public void setValue(final int v)
     {
-        progressBar1.setIndeterminate(false);
-        progressBar1.setValue(v);
+        primaryProgressBar.setIndeterminate(false);
+        primaryProgressBar.setValue(v);
         repaint();
+    }
+
+    private void cancel()
+    {
+        cancelAction.run();
     }
 
     private void initComponents()
@@ -145,10 +167,12 @@ public class ProgressDialog extends AStandardDialog implements IProgressMonitor
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         var dialogPane = new JPanel();
         var contentPanel = new JPanel();
-        progressBar1 = new JProgressBar();
+        primaryProgressBar = new JProgressBar();
         statusLabel = new JLabel();
         progressBarSubtask = new JProgressBar();
         substatusLabel = new JLabel();
+        var panel1 = new JPanel();
+        cancelButton = new JButton();
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
@@ -169,11 +193,11 @@ public class ProgressDialog extends AStandardDialog implements IProgressMonitor
                 contentPanel.setName("contentPanel");
                 contentPanel.setLayout(new FormLayout(
                         "default:grow, $lcgap, default:grow",
-                        "2*(default, $lgap), default"));
+                        "2*(default, $lgap), default, $glue, default"));
 
-                //---- progressBar1 ----
-                progressBar1.setName("progressBar1");
-                contentPanel.add(progressBar1, cc.xywh(1, 1, 3, 1));
+                //---- primaryProgressBar ----
+                primaryProgressBar.setName("primaryProgressBar");
+                contentPanel.add(primaryProgressBar, cc.xywh(1, 1, 3, 1));
 
                 //---- statusLabel ----
                 statusLabel.setText("text");
@@ -192,6 +216,21 @@ public class ProgressDialog extends AStandardDialog implements IProgressMonitor
                 contentPanel.add(substatusLabel, cc.xywh(1, 5, 3, 1));
             }
             dialogPane.add(contentPanel, BorderLayout.CENTER);
+
+            //======== panel1 ========
+            {
+                panel1.setName("panel1");
+                panel1.setLayout(new FormLayout(
+                        "$glue, right:pref",
+                        "default"));
+
+                //---- cancelButton ----
+                cancelButton.setText("Cancel");
+                cancelButton.setName("cancelButton");
+                cancelButton.addActionListener(e -> cancel());
+                panel1.add(cancelButton, cc.xy(2, 1));
+            }
+            dialogPane.add(panel1, BorderLayout.SOUTH);
         }
         contentPane.add(dialogPane, BorderLayout.CENTER);
         pack();
@@ -200,9 +239,10 @@ public class ProgressDialog extends AStandardDialog implements IProgressMonitor
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    private JProgressBar progressBar1;
+    private JProgressBar primaryProgressBar;
     private JLabel statusLabel;
     private JProgressBar progressBarSubtask;
     private JLabel substatusLabel;
+    private JButton cancelButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

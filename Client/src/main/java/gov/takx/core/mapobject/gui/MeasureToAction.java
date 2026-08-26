@@ -1,11 +1,11 @@
 package gov.takx.core.mapobject.gui;
 
-import gov.tak.core.map.layer.IPickedObjectManager;
-import gov.tak.core.map.layer.PickedObject;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.coordinatesystem.ILocation;
 import gov.takx.api.globe.IGlobeManager;
 import gov.takx.api.globe.IGlobeMapObject;
+import gov.takx.api.layer.pick.IPickedObjectManager;
+import gov.takx.api.layer.pick.PickedObject;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IShapeArrowMapObject;
 import gov.takx.api.mapobject.MapObjectSpec;

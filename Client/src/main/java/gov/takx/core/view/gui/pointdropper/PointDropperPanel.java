@@ -8,6 +8,7 @@ import gov.tak.api.icons.IUserIconSet;
 import gov.tak.api.icons.TakColor;
 import gov.tak.api.util.AttributeSet;
 import gov.tak.api.util.StandardAttributeNames;
+import gov.tak.core.icons.IconSetManager;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.coordinatesystem.CoordinateSystem;
@@ -21,6 +22,7 @@ import gov.takx.api.pointdropper.PointDropperConfiguration.CountingNameGenerator
 import gov.takx.api.pointdropper.PointDropperConfiguration.INameGenerator;
 import gov.takx.api.toolbar.ButtonType;
 import gov.takx.api.ui.location.ILocationInputListener;
+import gov.takx.commons.swing.CollapsiblePanel;
 import gov.takx.commons.swing.EscapeKeyListener;
 import gov.takx.commons.swing.GraphicsUtils;
 import gov.takx.commons.swing.PlaceholderTextField;
@@ -28,7 +30,6 @@ import gov.takx.commons.swing.documents.LimitedDocument;
 import gov.takx.commons.utils.ParseUtils;
 import gov.takx.core.pointdropper.PointDropperService;
 import gov.takx.core.view.gui.ATitledPanel;
-import gov.takx.core.view.gui.layers.viewmanager.CollapsiblePanel;
 import gov.takx.platform.ui.location.LegacyLocationInputPanel;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -43,6 +44,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -83,7 +85,7 @@ import java.util.function.Consumer;
  * @since 3.0
  */
 @PseudoBean(singletonObserver = true)
-public class PointDropperPanel extends ATitledPanel
+public class PointDropperPanel extends ATitledPanel implements IconSetManager.IconUpdatedListener
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -92,12 +94,17 @@ public class PointDropperPanel extends ATitledPanel
     private static final String COT2525C = "CoT 2525C";
     private static final String COT2525D = "CoT 2525D";
     private static final String COT2525E = "CoT 2525E";
+    private static final String COT2525ECH1 = "CoT 2525Ech1";
+    private static final String COTAPP6D = "CoT APP6D";
     private static final String SPOT_MAP = "Spot Map";
+    private static final String VEHICLE_MODELS = IIconSetManager.VEHICLE_MODELS_UID;
 
-    private static final List<String> NON_COLORIZABLE_ICON_SETS = List.of(COT2525C, COT2525D, COT2525E, SPOT_MAP);
+    private static final List<String> NON_COLORIZABLE_ICON_SETS = List.of(COT2525C, COT2525D, COT2525E, COT2525ECH1, COTAPP6D, SPOT_MAP);
     private static final IconSetSelection MIL2525C_ICONS = new IconSetSelection(COT2525C);
     private static final IconSetSelection MIL2525D_ICONS = new IconSetSelection(COT2525D);
     private static final IconSetSelection MIL2525E_ICONS = new IconSetSelection(COT2525E);
+    private static final IconSetSelection MIL2525ECH1_ICONS = new IconSetSelection(COT2525ECH1);
+    private static final IconSetSelection APP6D_ICONS = new IconSetSelection(COTAPP6D);
     private static final IconSetSelection SPOT_MAP_ICONS = new IconSetSelection(SPOT_MAP);
 
     private final Map<IUserIcon, Icon> iconCache = new HashMap<>();
@@ -110,7 +117,10 @@ public class PointDropperPanel extends ATitledPanel
     private AMil2525IconSelectionPanel mil2525cIconSelectionPanel;
     private AMil2525IconSelectionPanel mil2525dIconSelectionPanel;
     private AMil2525IconSelectionPanel mil2525eIconSelectionPanel;
+    private AMil2525IconSelectionPanel mil2525ech1IconSelectionPanel;
+    private AMil2525IconSelectionPanel app6dIconSelectionPanel;
     private SpotMapIconSelectionPanel spotMapIconSelectionPanel;
+    private VehicleModelSelectionPanel vehicleModelSelectionPanel;
     private PointDropperSelection currentPointDropperSelection;
     private ISyntheticPluginDefinition currentIconDefinition;
     private IconSetSelection currentIconSetSelection;
@@ -125,7 +135,7 @@ public class PointDropperPanel extends ATitledPanel
     private IGlobeManager globeManager;
 
     @Inject
-    private IIconSetManager iconSetManager;
+    private IconSetManager iconSetManager;
 
     @Inject
     private PointDropperService pointDropper;
@@ -151,12 +161,17 @@ public class PointDropperPanel extends ATitledPanel
         mil2525cIconSelectionPanel = new Mil2525cIconSelectionPanel(iconSelectionHandler);
         mil2525dIconSelectionPanel = new Mil2525dIconSelectionPanel(iconSelectionHandler);
         mil2525eIconSelectionPanel = new Mil2525eIconSelectionPanel(iconSelectionHandler);
+        mil2525ech1IconSelectionPanel = new Mil2525ech1IconSelectionPanel(iconSelectionHandler);
+        app6dIconSelectionPanel = new APP6dIconSelectionPanel(iconSelectionHandler);
         spotMapIconSelectionPanel = new SpotMapIconSelectionPanel(iconSelectionHandler);
+        vehicleModelSelectionPanel = new VehicleModelSelectionPanel(iconSelectionHandler);
         defaultIconSelectionPanel = new DefaultIconSelectionPanel(iconSelectionHandler);
 
         iconSetComboBox.addItem(MIL2525C_ICONS);
         iconSetComboBox.addItem(MIL2525D_ICONS);
         iconSetComboBox.addItem(MIL2525E_ICONS);
+        iconSetComboBox.addItem(MIL2525ECH1_ICONS);
+        iconSetComboBox.addItem(APP6D_ICONS);
         iconSetComboBox.addItem(SPOT_MAP_ICONS);
         iconSetManager.getAllIconSets().forEach(iconSet -> iconSetComboBox.addItem(new IconSetSelection(iconSet.getName())));
         iconSetComboBox.setSelectedIndex(0);
@@ -174,6 +189,18 @@ public class PointDropperPanel extends ATitledPanel
         // Limit these fields to only numeric values
         indexTextField.setDocument(new LimitedDocument(Character::isDigit));
         incrementTextField.setDocument(new LimitedDocument(Character::isDigit));
+
+        iconSetManager.setIconUpdatedListener(this);
+    }
+
+    @Override
+    public void onIconUpdated(@Nonnull IUserIcon icon)
+    {
+        if (currentIconSet != null && currentIconSet.getSelectedGroup().equals(icon.getGroup()))
+        {
+            ((DefaultIconSelectionPanel) iconSelectionPanel).updateButtonIcon(icon, iconColor);
+        }
+        if (iconCache.remove(icon) != null) groupComboBox.repaint();
     }
 
     /**
@@ -250,7 +277,7 @@ public class PointDropperPanel extends ATitledPanel
                 .initializer(mapObject -> {
                     // TODO: not sure I'm happy with this mechanism for spot markers.  I'll know more from TAKX-3219.
 
-                    // Specified when using the Spot Map icon selection panel
+                    // Specified when using the Spot Map or Vehicle Models icon selection panel
                     final var attributeSet = pointDropperSelection.attributeSet;
 
                     if (attributeSet != null)
@@ -335,6 +362,8 @@ public class PointDropperPanel extends ATitledPanel
 
         if (!Objects.equals(oldIconSetSelection, currentIconSetSelection))
         {
+            outlineOnlyCheckBox.setVisible(false); // Only used with Vehicle Models
+
             // Display the correct icons for the selected icon set
             if (currentIconSetSelection == null)
             {
@@ -352,10 +381,23 @@ public class PointDropperPanel extends ATitledPanel
             {
                 iconSelectionPanel = mil2525eIconSelectionPanel;
                 groupPanel.setVisible(false);
+            } else if (COT2525ECH1.equals(currentIconSetSelection.name))
+            {
+                iconSelectionPanel = mil2525ech1IconSelectionPanel;
+                groupPanel.setVisible(false);
+            } else if (COTAPP6D.equals(currentIconSetSelection.name))
+            {
+                iconSelectionPanel = app6dIconSelectionPanel;
+                groupPanel.setVisible(false);
             } else if (SPOT_MAP.equals(currentIconSetSelection.name))
             {
                 iconSelectionPanel = spotMapIconSelectionPanel;
                 groupPanel.setVisible(false);
+            } else if (VEHICLE_MODELS.equals(currentIconSetSelection.name))
+            {
+                outlineOnlyCheckBox.setVisible(true);
+                iconSelectionPanel = vehicleModelSelectionPanel;
+                installSelectedIconSet(currentIconSetSelection);
             } else
             {
                 iconSelectionPanel = defaultIconSelectionPanel;
@@ -399,8 +441,14 @@ public class PointDropperPanel extends ATitledPanel
 
             iconsInGroup.sort(Comparator.comparing(IUserIcon::getFileName));
 
-            defaultIconSelectionPanel.setIcons(iconsInGroup, iconColor);
+            ((DefaultIconSelectionPanel) iconSelectionPanel).setIcons(iconsInGroup, iconColor);
         }
+    }
+
+    private void outlineOnlyActionListener()
+    {
+        vehicleModelSelectionPanel.setOutlineOnly(outlineOnlyCheckBox.isSelected());
+        pointDropper.deactivatePointDropper();
     }
 
     /**
@@ -519,7 +567,7 @@ public class PointDropperPanel extends ATitledPanel
      * @param cotType The CoT type to use for any dropped points (can be {@code null} to use unknown ground)
      * @param sidc The Mil-Std-2525 symbol code for the dropped point. Used to facilitate more detail for icon rendering.
      *             May be {@code null} to skip extra details.
-     * @param attributeSet Optional attribute set to override the standard handling of attributes, used by Spot Map icons
+     * @param attributeSet Optional attribute set to override the standard handling of attributes, used by Spot Map and Vehicle Models icons
      * @param nameGenerator Optional name generator, used by Spot Map icons
      * @since 5.2 (signature change in 5.3)
      */
@@ -607,7 +655,9 @@ public class PointDropperPanel extends ATitledPanel
         groupPanel = new JPanel();
         groupComboBox = new JComboBox<>();
         colorSelectorButton = new JButton();
+        var iconSelectionPanel = new JPanel();
         iconSelectionScrollPane = new JScrollPane();
+        outlineOnlyCheckBox = new JCheckBox();
         locationCollapsiblePane = new CollapsiblePanel();
         var recentlyAddedPane = new CollapsiblePanel();
         var buttonsPanel = new JPanel();
@@ -705,13 +755,26 @@ public class PointDropperPanel extends ATitledPanel
             }
             addPointsPane.add(groupPanel, cc.xy(2, 8));
 
-            //======== iconSelectionScrollPane ========
+            //======== iconSelectionPanel ========
             {
-                iconSelectionScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-                iconSelectionScrollPane.setBorder(null);
-                iconSelectionScrollPane.setName("iconSelectionScrollPane");
+                iconSelectionPanel.setName("iconSelectionPanel");
+                iconSelectionPanel.setLayout(new BorderLayout());
+
+                //======== iconSelectionScrollPane ========
+                {
+                    iconSelectionScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                    iconSelectionScrollPane.setBorder(null);
+                    iconSelectionScrollPane.setName("iconSelectionScrollPane");
+                }
+                iconSelectionPanel.add(iconSelectionScrollPane, BorderLayout.CENTER);
+
+                //---- outlineOnlyCheckBox ----
+                outlineOnlyCheckBox.setText("Outline Only");
+                outlineOnlyCheckBox.setName("outlineOnlyCheckBox");
+                outlineOnlyCheckBox.addActionListener(e -> outlineOnlyActionListener());
+                iconSelectionPanel.add(outlineOnlyCheckBox, BorderLayout.SOUTH);
             }
-            addPointsPane.add(iconSelectionScrollPane, cc.xy(2, 10));
+            addPointsPane.add(iconSelectionPanel, cc.xy(2, 10));
         }
         add(addPointsPane, cc.xy(1, 1));
 
@@ -769,6 +832,7 @@ public class PointDropperPanel extends ATitledPanel
     private JComboBox<String> groupComboBox;
     private JButton colorSelectorButton;
     private JScrollPane iconSelectionScrollPane;
+    private JCheckBox outlineOnlyCheckBox;
     private CollapsiblePanel locationCollapsiblePane;
     private JButton importPointsButton;
     private JTable recentPointsTable;

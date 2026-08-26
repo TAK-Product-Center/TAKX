@@ -9,6 +9,7 @@ import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JSpinner;
+import javax.swing.SwingUtilities;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -16,8 +17,11 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.lang.invoke.MethodHandles;
 import java.text.ParseException;
 
@@ -73,12 +77,60 @@ public final class ComponentUtils
         }
     }
 
+    /**
+     * @return The dimension of the screen displaying TAKX.  The size excludes any taskbar that may be present.
+     */
     public static Dimension getActiveMonitorScreenSize()
+    {
+        final Rectangle bounds = getActiveMonitorScreenBounds();
+        return new Dimension(bounds.width, bounds.height);
+    }
+
+    /**
+     * @return The {@link Rectangle bounds} of the screen displaying TAKX.  The size excludes any taskbar that may be present.
+     * @since 5.8
+     */
+    public static Rectangle getActiveMonitorScreenBounds()
     {
         Frame frame = JFrame.getFrames()[0];
         GraphicsConfiguration gc = frame.getGraphicsConfiguration();
-        Rectangle bounds = gc.getBounds();
-        return new Dimension(bounds.width, bounds.height);
+        return getUsableDeviceBounds(gc);
+    }
+
+    /**
+     * @param gc Graphics context of screen device of interest
+     * @return The bounds of the given device, minus any insets (such as a task bar)
+     * @since 5.8
+     */
+    public static Rectangle getUsableDeviceBounds(GraphicsConfiguration gc)
+    {
+        final Rectangle bounds = gc.getBounds();
+        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(gc);
+
+        bounds.x += insets.left;
+        bounds.y += insets.top;
+        bounds.width -= (insets.left + insets.right);
+        bounds.height -= (insets.top + insets.bottom);
+
+        return bounds;
+    }
+
+    /**
+     * @return {@code true} if the window containing the given {@code component} is not within the bounds of any screen device
+     * @since 5.8
+     */
+    public static boolean isComponentWindowOutsideAllDisplays(Component component)
+    {
+        final var window = SwingUtilities.windowForComponent(component);
+        final var windowBounds = window.getBounds();
+
+        for (var device : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices())
+        {
+            final var deviceBounds = getUsableDeviceBounds(device.getDefaultConfiguration());
+            if (deviceBounds.intersects(windowBounds)) return false;
+        }
+
+        return true;
     }
 
     public static Dimension getComponentPackedSize(Component component)
@@ -158,5 +210,22 @@ public final class ComponentUtils
         var location = screenSpace ? component.getLocationOnScreen() : component.getLocation();
         location = new Point(location.x + component.getWidth() / 2, location.y + component.getHeight() / 2);
         return location;
+    }
+
+    /**
+     * @param component Component <i>(with any children)</i> to enable or disable.
+     * @param enabled New enabled state to apply.
+     * @since 5.8
+     */
+    public static void recurseEnabled(@Nonnull Component component, boolean enabled)
+    {
+        component.setEnabled(enabled);
+        if (component instanceof Container container)
+        {
+            for (Component child : container.getComponents())
+            {
+                recurseEnabled(child, enabled);
+            }
+        }
     }
 }

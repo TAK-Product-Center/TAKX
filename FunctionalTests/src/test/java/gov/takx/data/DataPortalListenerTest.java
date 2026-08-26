@@ -22,6 +22,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -201,16 +202,18 @@ public class DataPortalListenerTest extends AIntegrationTest
      */
     private static abstract class TimingListener
     {
-        final Map<String, Long> times = new HashMap<>();
+        private static final AtomicInteger COUNT = new AtomicInteger(0);
+
+        final Map<String, Integer> times = new HashMap<>();
 
         void setTime(String eventName)
         {
-            times.put(eventName, System.nanoTime());
+            times.put(eventName, COUNT.incrementAndGet());
         }
 
         long getTime(String eventName)
         {
-            return times.getOrDefault(eventName, 0L);
+            return times.getOrDefault(eventName, 0);
         }
 
         void reset()

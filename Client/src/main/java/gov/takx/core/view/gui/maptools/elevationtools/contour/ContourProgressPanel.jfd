@@ -1,0 +1,39 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow, labelcompgap, default"
+			"$rowSpecs": "default, linegap, default"
+		} ) {
+			name: "this"
+			"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+			add( new FormComponent( "javax.swing.JProgressBar" ) {
+				name: "progressBar"
+				"indeterminate": true
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "statusLabel"
+				"text": "Drawing in progress..."
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "cancelButton"
+				"text": "Cancel"
+				"enabled": false
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "onCancel", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 405, 75 )
+		} )
+	}
+}

@@ -6,69 +6,50 @@ import gov.tak.api.maps.Marker;
 import gov.tak.api.util.StandardAttributeNames;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.PseudoBean;
-import gov.takx.api.annotation.UiEventBus;
-import gov.takx.api.coordinatesystem.CoordinateSystem;
 import gov.takx.api.coordinatesystem.ExtendedLocation;
 import gov.takx.api.coordinatesystem.IExtendedLocation;
-import gov.takx.api.coordinatesystem.ILocation;
-import gov.takx.api.globe.IApplicationGlobe;
 import gov.takx.api.globe.IExtendedGlobeManager;
-import gov.takx.api.globe.IGlobeDelegate;
+import gov.takx.api.mapobject.ICoreMapObjectManager;
+import gov.takx.api.mapobject.IIconMapObject;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IMapObjectController;
-import gov.takx.api.mapobject.IMapObjectManager;
 import gov.takx.api.mapobject.IMarkerMapObject;
 import gov.takx.api.mapobject.IShapeMapObject;
 import gov.takx.api.mapobject.IShapeRangeFanMapObject;
 import gov.takx.api.mapobject.MapObjectGroupNames;
-import gov.takx.api.preferences.IPreferenceMonitor;
-import gov.takx.api.ui.event.GlobeCreatedEvent;
-import gov.takx.api.ui.event.GlobeRemovedEvent;
-import gov.takx.api.ui.event.MapObjectTrackingEvent;
+import gov.takx.api.ui.DevicePanelMetadataKeys;
+import gov.takx.commons.swing.ChipField;
+import gov.takx.commons.swing.CombinedDocumentListener;
+import gov.takx.commons.swing.FormLayoutUtils;
 import gov.takx.commons.swing.IPanelStateListener;
-import gov.takx.commons.swing.SplitButton;
+import gov.takx.commons.swing.ImageUtils;
 import gov.takx.commons.swing.documents.LimitedDocument;
-import gov.takx.platform.preferences.UserPreferenceEntry;
 import gov.takx.platform.ui.UIResources;
-import gov.takx.platform.utils.units.AltitudeUnits;
-import jakarta.annotation.PostConstruct;
+import gov.takx.platform.ui.location.LocationField;
 import jakarta.inject.Inject;
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
 
-import java.awt.event.ActionEvent;
+import java.awt.Dimension;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.ItemEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.List;
+import java.util.function.Predicate;
 
+import static gov.takx.commons.swing.ImageUtils.SMALL_ICON_WIDTH;
 import static gov.takx.platform.ui.ResourceDirectory.PLATFORM_ICONS;
 
 /**
@@ -83,69 +64,66 @@ public class MapObjectGeneralPreferencesPanel extends MapObjectMainPreferencesPa
     private IExtendedGlobeManager globeManager;
 
     @Inject
-    private IMapObjectManager mapObjectManager;
+    private ICoreMapObjectManager mapObjectManager;
 
-    @Inject
-    @UiEventBus
-    private EventBus uiEventBus;
-
-    private final IPreferenceMonitor<CoordinateSystem> coordinateSystemMonitor =
-            UserPreferenceEntry.COORDINATE_SYSTEM.newMonitor(CoordinateSystem.class, this::coordinateSystemChanged);
-    private final IPreferenceMonitor<AltitudeUnits> altitudeUnitsMonitor =
-            UserPreferenceEntry.DISPLAY_ALTITUDE_UNITS.newMonitor(AltitudeUnits.class, u -> setLocationField());
-
-    // This map holds the center on settings keyed by globe id
-    private final Map<Integer, Boolean> centerOnByGlobe = new HashMap<>();
-
-    // This map gets us from a globe Id to the checkbox controlling the center-on state for that globe
-    private final Map<Integer, AbstractButton> centerOnControlsByGlobe = new HashMap<>();
-
-    private JComponent currentCenterOnControl; // Which control is currently in use?
-
+    private boolean updating;
     private boolean allowDrag;
     private boolean snapIconToSurface;
     private boolean allowDeviceContainment;
-    private ILocation origLocation;
-    private boolean locationTextChanged;
     private boolean useCotType;
 
-    private final java.util.List<String> propertyList =
-            Arrays.asList(IMapObject.NAME, IMapObject.LOCATION, IMapObject.REMARKS, IMapObject.DESCRIPTION);
+    private final boolean immediate;
+    private final List<String> propertyList = Arrays.asList(
+            IMapObject.NAME,
+            IMapObject.LOCATION,
+            IMapObject.REMARKS,
+            IMapObject.DESCRIPTION,
+            IIconMapObject.CONTAINED_ADDED,
+            IIconMapObject.CONTAINED_REMOVED,
+            IIconMapObject.ALLOW_DEVICE_CONTAINMENT);
 
     public static final String TITLE = "General";
 
-    public MapObjectGeneralPreferencesPanel(IMapObjectController mapObjectController, IPanelStateListener panelListener)
+    public MapObjectGeneralPreferencesPanel(IMapObjectController mapObjectController, IPanelStateListener panelListener, boolean immediate)
     {
         super(TITLE, mapObjectController, panelListener);
+        this.immediate = immediate;
 
         initComponents();
-        buttonEdit.setIcon(UIResources.LOCKED_ICON);
 
-        currentCenterOnControl = btnCenterOn; // This is the initial control as setup in initComponents
+        updating = true;
+        containedField.setTextProvider(IMapObject::getName);
+        containedField.setIconProvider(mo -> mo.getSizedIcon(SMALL_ICON_WIDTH));
 
         final IMapObject cmo = getMapObject();
 
+        centerOnField.setSelectedGlobeIds(cmo, immediate);
+
+        iconLabel.setIcon(cmo.getSizedIcon(ImageUtils.DEFAULT_ICON_WIDTH));
         textFieldName.setDocument(new LimitedDocument(255));
         textFieldName.setText(cmo.getTitle());
+        textFieldName.getDocument().addDocumentListener((CombinedDocumentListener) e -> setPanelDirty());
         unitIdField.setText(mapObjectController.getMapObject().getUnitID());
+        unitTypeField.setText(mapObjectController.getMapObject().getType());
         descriptionTextArea.setDocument(new LimitedDocument(255));
         descriptionTextArea.setText(cmo.getDescription());
-        textAreaInfoText.setText(cmo.getRemarks());
-
-        origLocation = cmo.getLocation();
-        setLocationField();
+        descriptionTextArea.getDocument().addDocumentListener((CombinedDocumentListener) e -> setPanelDirty());
+        remarksField.setText(cmo.getRemarks());
+        remarksField.setCaretPosition(0); // Scrolls to the top
+        remarksField.getDocument().addDocumentListener((CombinedDocumentListener) e -> setPanelDirty());
+        locationField.setLocationValue(cmo.getLocation());
 
         allowDrag = cmo.isAllowDrag();
         allowDragCheckBox.setSelected(allowDrag);
 
         allowDeviceContainment = cmo.isAllowDeviceToBeContainer();
+        containedField.addRemoveListener(e -> setPanelDirty());
+        updateForContainment();
 
         // If it's a shape, then remove the "allow drag" checkbox, since the proper control is really "editable".
         if (cmo instanceof IShapeMapObject)
         {
             allowDragCheckBox.setVisible(false);
-            unitIdField.setVisible(false);
-            unitIdLabel.setVisible(false);
         } else
         {
             allowDragCheckBox.setVisible(true);
@@ -154,10 +132,10 @@ public class MapObjectGeneralPreferencesPanel extends MapObjectMainPreferencesPa
         if (cmo.isDevice() || cmo.getGroupName().equalsIgnoreCase(MapObjectGroupNames.FILES_GROUP))
         {
             allowContainmentCheckBox.setSelected(allowDeviceContainment);
-            allowContainmentCheckBox.setVisible(true);
+            FormLayoutUtils.restoreRow(allowContainmentCheckBox);
         } else
         {
-            allowContainmentCheckBox.setVisible(false);
+            FormLayoutUtils.hideRow(allowContainmentCheckBox);
         }
 
         if (cmo.supportsSnapIconToSurface())
@@ -179,120 +157,35 @@ public class MapObjectGeneralPreferencesPanel extends MapObjectMainPreferencesPa
             useCotIconCheckBox.setVisible(false);
         }
 
+        if (!mapObject.getMetaBoolean(DevicePanelMetadataKeys.SHOW_RANGE_AND_BEARING, true))
+        {
+            FormLayoutUtils.hideRow(containedField);
+            FormLayoutUtils.hideRow(remarksPane);
+            FormLayoutUtils.hideRow(checkboxPanel);
+        }
+
+        updating = false;
         // Note: our property change/event listeners won't be registered until we are visible
         // See thisHierarchyChanged().
-    }
-
-    @PostConstruct
-    private void postConstruct()
-    {
-        initCenterOnControls(); // Special handling for center on based upon whether we have multiple globes or not
     }
 
     @Override
     public void releaseResources()
     {
-        coordinateSystemMonitor.dispose();
-        altitudeUnitsMonitor.dispose();
-
+        locationField.releaseResources();
         super.releaseResources();
     }
 
-    /**
-     * Prepare the center on control, either a simple checkbox if we have one globe or a menu of checkboxes
-     * if we have more than one globe.
-     */
-    private void initCenterOnControls()
+    private void updateForContainment()
     {
-        final IApplicationGlobe globe = globeManager.getPrimaryGlobeDelegate();
-
-        pnlProperties.remove(currentCenterOnControl); // Remove the existing control
-
-        centerOnByGlobe.clear(); // Clear the maps
-        centerOnControlsByGlobe.clear();
-
-        if (globe.getGlobeCount() > 1)
+        if (mapObject.isAllowDeviceToBeContainer() && mapObject instanceof IIconMapObject iconMapObject)
         {
-            btnCenterOn.setPopupMenu(createCenterOnSubMenu());
-            currentCenterOnControl = btnCenterOn;
+            containedField.setModelElements(iconMapObject.getContainedMapObjects());
+            FormLayoutUtils.restoreRow(containedField);
         } else
         {
-            boolean centerOn = globe.isCenterOn(mapObjectController.getMapObject());
-            centerOnCheckBox.setSelected(centerOn);
-
-            centerOnByGlobe.put(IApplicationGlobe.PRIMARY_GLOBE_ID, centerOn);
-            centerOnControlsByGlobe.put(IApplicationGlobe.PRIMARY_GLOBE_ID, centerOnCheckBox);
-
-            currentCenterOnControl = centerOnCheckBox;
-        }
-
-        // And place the control into the containing panel
-        final CellConstraints cc = new CellConstraints();
-        pnlProperties.add(currentCenterOnControl, cc.xy(1, 1));
-    }
-
-    /**
-     * Recreate the controls used to manage the center on across the globes.  Force a re-validation and repaint.
-     */
-    private void recreateCenterOnControls()
-    {
-        initCenterOnControls();
-
-        revalidate();
-        repaint();
-    }
-
-    /**
-     * Handle the creation of a new globe.  Instantiate the proper UI controls.
-     *
-     * @param e The globe creation event
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    @Subscribe
-    public void onGlobeCreated(GlobeCreatedEvent e)
-    {
-        recreateCenterOnControls();
-    }
-
-    /**
-     * Handle the removal of a globe.  Instantiate the proper UI controls.
-     *
-     * @param e The globe removal event
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    @Subscribe
-    public void onGlobeRemoved(GlobeRemovedEvent e)
-    {
-        recreateCenterOnControls();
-    }
-
-    /**
-     * Handle a tracking event.  Depending on the event, set/clear the center on UI control for the appropriate globe.
-     *
-     * @param e Event to handle
-     */
-    @SuppressWarnings("UnusedDeclaration")
-    @Subscribe
-    public void onTrackingEvent(MapObjectTrackingEvent e)
-    {
-        // If it's not a "center on" event or it's not aimed at our MO, then we don't care about it
-
-        if (e.getTrackingType() != MapObjectTrackingEvent.TrackingType.CENTER_ON
-                || e.getMapObjectController() != getMapObjectController())
-        {
-            return;
-        }
-
-        final int globeId = e.getGlobeId();
-        final AbstractButton button = centerOnControlsByGlobe.get(globeId);
-
-        if (button != null)
-        {
-            // Set the selected tate based upon the start/stop indicated in the event
-            button.setSelected(e.getTrackingState() == MapObjectTrackingEvent.TrackingState.STARTED);
-        } else
-        {
-            logger.error("Failed to locate Center-On control for globe: {}", globeId);
+            containedField.setModelElements(null);
+            FormLayoutUtils.hideRow(containedField);
         }
     }
 
@@ -321,130 +214,71 @@ public class MapObjectGeneralPreferencesPanel extends MapObjectMainPreferencesPa
     @Override
     protected void applyActionPerformed()
     {
-        final IMapObject cmo = getMapObject();
-
-        final String newName = textFieldName.getText().trim();
-        if (cmo instanceof IMarkerMapObject) cmo.setTitle(newName);
-        cmo.setName(newName);
-
-        buttonEdit.setIcon(UIResources.LOCKED_ICON);
-        locationTextField.setEditable(false);
-        buttonEdit.setEnabled(true);
-
-        String description = descriptionTextArea.getText().trim();
-        cmo.setDescription(description);
-
-        String itext = textAreaInfoText.getText().trim();
-        cmo.setRemarks(itext);
-
-        final String locationText = locationTextField.getText().trim();
-        final ILocation location = CoordinateSystem.computeLatLonFromString(locationText);
-
-        if (locationTextChanged && (origLocation == null || !origLocation.equals(location)))
+        if (!updating)
         {
-            if (location == null)
+            updating = true;
+            final IMapObject cmo = getMapObject();
+
+            final String newName = textFieldName.getText().trim();
+            if (cmo instanceof IMarkerMapObject) cmo.setTitle(newName);
+            cmo.setName(newName);
+
+            String description = descriptionTextArea.getText().trim();
+            cmo.setDescription(description);
+
+            String itext = remarksField.getText().trim();
+            cmo.setRemarks(itext);
+
+            if (!getMapObject().getLocation().equals(locationField.getLocationValue()))
             {
-                // If the original cmo had no location and the text field is empty, then don't report this as an error.
-                // If the text field is not empty, then report anyway since the user is trying to specify a new location
-                // for the object.
-                if (mapObject.hasLocation() || !locationText.isEmpty())
-                {
-                    JOptionPane.showMessageDialog(this, "Invalid Coordinates", "Invalid Coordinates", JOptionPane.ERROR_MESSAGE);
-                }
-            } else
-            {
-                IExtendedLocation extendedLocation = new ExtendedLocation(location, true, false);
+                //noinspection DataFlowIssue location is non null once map object has been selected in the panel
+                IExtendedLocation extendedLocation = new ExtendedLocation(locationField.getLocationValue(), true, false);
                 getMapObjectController().sendLocationChangeMessage(extendedLocation);
-                locationTextChanged = false;
-                origLocation = location;
             }
-        }
 
-        applyCenterOn(); // Special handling for center on
+            // Apply center on values
+            var centerOnGlobes = centerOnField.getSelectedGlobeIds();
+            globeManager.getAllGlobeDelegates().forEach(globe -> {
+                if (globe.isCenterOn(mapObject) && !centerOnGlobes.contains(globe.getGlobeId()))
+                {
+                    globe.stopCenterOn();
+                } else if (centerOnGlobes.contains(globe.getGlobeId()) && !globe.isCenterOn(mapObject))
+                {
+                    globe.startCenterOn(mapObject);
+                }
+            });
 
-        // PLUGIN-969: range fans should have the same allowDrag value as ordinary map objects
-        if (cmo instanceof IShapeMapObject shapeMapObject && !(cmo instanceof IShapeRangeFanMapObject))
-        {
-            allowDrag = shapeMapObject.isEditable();
-        }
-        cmo.setAllowDrag(allowDrag);
-        cmo.setSnapIconToSurface(snapIconToSurface);
-        cmo.setAllowDeviceToBeContainer(allowDeviceContainment);
-        if (cmo instanceof Marker)
-        {
-            useCotType = useCotIconCheckBox.isSelected();
-            cmo.getAttributeSet().setAttribute(StandardAttributeNames.USE_COT_TYPE_ICON, useCotType);
-            if (useCotType) cmo.setMetaString(StandardAttributeNames.LAST_TEAM_ICON_AND_COLOR, ""); // needed to allow toggle back to skittle icon
-        }
-    }
-
-    /**
-     * Apply the current center-on configuration to the globe(s).  Install the center on setting according to each
-     * globe id in the map.
-     */
-    private void applyCenterOn()
-    {
-        final IMapObject mo = getMapObject();
-
-        for (Map.Entry<Integer, Boolean> entry : centerOnByGlobe.entrySet())
-        {
-            final Integer globeId = entry.getKey();
-            final Boolean centerOn = entry.getValue();
-            final IGlobeDelegate globe = globeManager.getGlobeDelegate(globeId);
-
-            if (centerOn)
+            // PLUGIN-969: range fans should have the same allowDrag value as ordinary map objects
+            if (cmo instanceof IShapeMapObject<?> shapeMapObject && !(cmo instanceof IShapeRangeFanMapObject))
             {
-                if (logger.isDebugEnabled()) logger.debug("Start centerOn on globe: {}", globeId);
-
-                globe.startCenterOn(mo);
-            } else if (globe.isCenterOn(mo))
-            {
-                if (logger.isDebugEnabled()) logger.debug("Stop centerOn on globe: {}", globeId);
-
-                globe.stopCenterOn();
+                allowDrag = shapeMapObject.isEditable();
             }
+            cmo.setAllowDrag(allowDrag);
+            cmo.setSnapIconToSurface(snapIconToSurface);
+            cmo.setAllowDeviceToBeContainer(allowDeviceContainment);
+            if (cmo instanceof Marker)
+            {
+                useCotType = useCotIconCheckBox.isSelected();
+                cmo.getAttributeSet().setAttribute(StandardAttributeNames.USE_COT_TYPE_ICON, useCotType);
+                if (useCotType) cmo.setMetaString(StandardAttributeNames.LAST_TEAM_ICON_AND_COLOR, ""); // needed to allow toggle back to skittle icon
+            }
+
+            if (cmo.isAllowDeviceToBeContainer() && cmo instanceof IIconMapObject iconMapObject)
+            {
+                var modelList = containedField.getModelElements();
+                iconMapObject.getContainedMapObjects().stream().filter(Predicate.not(modelList::contains)).forEach(mapObjectManager::removeFromContainer);
+            }
+            updateForContainment();
+
+            updating = false;
         }
     }
 
-    private void coordinateSystemChanged(CoordinateSystem coordinateSystem)
+    @Override
+    protected void setPanelDirty()
     {
-        setLocationField();
-    }
-
-    @InvokeOnEDT
-    private void setLocationField()
-    {
-        if (origLocation != null)
-        {
-            locationTextField.setText(CoordinateSystem.getLocationString(origLocation,
-                    coordinateSystemMonitor.getCurrentValue(), origLocation.hasElevation(), altitudeUnitsMonitor.getCurrentValue()));
-        }
-    }
-
-    private void locationInputKeyTyped(KeyEvent e)
-    {
-        if (!e.isActionKey())
-        {
-            locationTextChanged = true;
-            setPanelDirty();
-        }
-    }
-
-    private void locationTextFieldMousePressed()
-    {
-        locationTextChanged = true;
-        setPanelDirty();
-    }
-
-    private void descriptionInputKeyTyped(KeyEvent e)
-    {
-        if (!e.isActionKey()) setPanelDirty();
-    }
-
-    private void centerOnCheckBoxItemStateChanged(ItemEvent e)
-    {
-        centerOnByGlobe.put(IApplicationGlobe.PRIMARY_GLOBE_ID, (e.getStateChange() == ItemEvent.SELECTED));
-        setPanelDirty();
+        super.setPanelDirty();
+        if (immediate) applyActionPerformed();
     }
 
     private void allowDragCheckBoxItemStateChanged(ItemEvent e)
@@ -459,16 +293,6 @@ public class MapObjectGeneralPreferencesPanel extends MapObjectMainPreferencesPa
         setPanelDirty();
     }
 
-    private void textFieldNameKeyTyped(KeyEvent e)
-    {
-        if (!e.isActionKey()) setPanelDirty();
-    }
-
-    private void textAreaInfoTextKeyTyped(KeyEvent e)
-    {
-        if (!e.isActionKey()) setPanelDirty();
-    }
-
     private void allowContainmentCheckBoxItemStateChanged(ItemEvent e)
     {
         allowDeviceContainment = (e.getStateChange() == ItemEvent.SELECTED);
@@ -481,12 +305,13 @@ public class MapObjectGeneralPreferencesPanel extends MapObjectMainPreferencesPa
         setPanelDirty();
     }
 
-    private void buttonEditActionPerformed()
+    private void locationFieldChanged()
     {
-        buttonEdit.setIcon(UIResources.UNLOCKED_ICON);
-        buttonEdit.setEnabled(false);
-        locationTextField.setEditable(true);
-        locationTextField.requestFocus();
+        setPanelDirty();
+    }
+
+    private void centerOnFieldChanged()
+    {
         setPanelDirty();
     }
 
@@ -494,72 +319,23 @@ public class MapObjectGeneralPreferencesPanel extends MapObjectMainPreferencesPa
     @InvokeOnEDT
     public void propertyChange(final PropertyChangeEvent propertyChangeEvent)
     {
-        if (!locationTextField.isEditable())
+        if (!updating && immediate)
         {
+            updating = true;
             final IMapObject mo = getMapObject();
             final String propertyName = propertyChangeEvent.getPropertyName();
-
             switch (propertyName)
             {
                 case IMapObject.NAME -> textFieldName.setText(mo.getName());
-                case IMapObject.LOCATION ->
-                {
-                    origLocation = mo.getLocation();
-                    setLocationField();
-                }
+                case IMapObject.LOCATION -> locationField.setLocationValue(mo.getLocation());
                 case IMapObject.DESCRIPTION -> descriptionTextArea.setText(mo.getDescription());
-                case IMapObject.REMARKS -> textAreaInfoText.setText(mo.getRemarks());
+                case IMapObject.REMARKS -> remarksField.setText(mo.getRemarks());
                 case StandardAttributeNames.USE_COT_TYPE_ICON -> useCotIconCheckBox.setSelected(mo.getAttributeSet().getBooleanAttribute(StandardAttributeNames.USE_COT_TYPE_ICON, false));
+                case IIconMapObject.CONTAINED_ADDED, IIconMapObject.CONTAINED_REMOVED, IIconMapObject.ALLOW_DEVICE_CONTAINMENT -> updateForContainment();
                 default -> logger.warn("Unhandled property change: {}", propertyChangeEvent);
             }
+            updating = false;
         }
-    }
-
-    /**
-     * Construct a sub-menu that contains "center on" controls for each globe.
-     */
-    private JPopupMenu createCenterOnSubMenu()
-    {
-        JPopupMenu centerOnPopupMenu = new JPopupMenu();
-
-        final IApplicationGlobe primaryGlobe = globeManager.getPrimaryGlobeDelegate();
-
-        // Get the list of current globe ids sorted
-        final Set<Integer> idSet = primaryGlobe.getGlobeIds();
-        final Integer[] ids = idSet.toArray(new Integer[0]);
-
-        Arrays.sort(ids);
-
-        final IMapObject mo = getMapObject();
-
-        // Fill the menu with checkbox menu items for each globe
-        for (final Integer globeId : ids)
-        {
-            if (logger.isDebugEnabled()) logger.debug("Make menu item for globe: {}", globeId);
-
-            final String menuItemText = "on Globe " + globeId;
-            final JMenuItem menuItem = new JCheckBoxMenuItem(menuItemText);
-
-            final IGlobeDelegate globe = globeManager.getGlobeDelegate(globeId);
-            menuItem.setSelected(globe.isCenterOn(mo));
-
-            final Action action = new AbstractAction(menuItemText)
-            {
-                @Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    centerOnByGlobe.put(globeId, menuItem.isSelected());
-                    setPanelDirty();
-                }
-            };
-
-            menuItem.setAction(action);
-
-            centerOnPopupMenu.add(menuItem);
-            centerOnControlsByGlobe.put(globeId, menuItem);
-        }
-
-        return centerOnPopupMenu;
     }
 
     /**
@@ -591,8 +367,6 @@ public class MapObjectGeneralPreferencesPanel extends MapObjectMainPreferencesPa
     {
         // Add our listener when we become visible.
         getMapObject().addPropertyChangeListener(propertyList, this);
-
-        uiEventBus.register(this);
     }
 
     /**
@@ -603,197 +377,200 @@ public class MapObjectGeneralPreferencesPanel extends MapObjectMainPreferencesPa
         if (logger.isDebugEnabled()) logger.debug("Cleaning up");
 
         getMapObject().removePropertyChangeListener(propertyList, this);
-
-        if (uiEventBus.isRegistered(this)) uiEventBus.unregister(this);
     }
 
+    @SuppressWarnings({"Convert2MethodRef", "RedundantExplicitVariableType"})
     private void initComponents()
     {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        var label1 = new JLabel();
+        var panel1 = new JPanel();
+        var nameLabel = new JLabel();
         textFieldName = new JTextField();
-        unitIdLabel = new JLabel();
-        unitIdField = new JTextField();
-        var label2 = new JLabel();
+        iconLabel = new JLabel();
+        var descriptionLabel = new JLabel();
         var descriptionScrollPane = new JScrollPane();
         descriptionTextArea = new JTextArea();
-        var label3 = new JLabel();
-        var locationPanel = new JPanel();
-        locationTextField = new JTextField();
-        buttonEdit = new JButton();
-        pnlProperties = new JPanel();
-        btnCenterOn = new SplitButton();
+        var unitIdLabel = new JLabel();
+        var panel2 = new JPanel();
+        unitTypeField = new JTextField();
+        unitIdField = new JTextField();
+        var locationLabel = new JLabel();
+        locationField = new LocationField();
+        var label4 = new JLabel();
+        remarksPane = new JScrollPane();
+        remarksField = new JTextPane();
+        checkboxPanel = new JPanel();
         allowDragCheckBox = new JCheckBox();
+        centerOnField = new CenterOnField();
         snapIconToSurfaceCheckBox = new JCheckBox();
         useCotIconCheckBox = new JCheckBox();
         allowContainmentCheckBox = new JCheckBox();
-        var label4 = new JLabel();
-        var scrollPane1 = new JScrollPane();
-        textAreaInfoText = new JTextArea();
-        centerOnCheckBox = new JCheckBox();
+        var containsLabel = new JLabel();
+        containedField = new ChipField<>();
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
+        setName("this");
         addHierarchyListener(e -> thisHierarchyChanged(e));
         setLayout(new FormLayout(
                 "default, $lcgap, default:grow",
-                "2*(default, $lgap), fill:default, $lgap, top:default, $lgap, fill:default:grow"));
+                "3*(default, $lgap), fill:[default,35dlu]:grow, 2*($lgap, default)"));
 
-        //---- label1 ----
-        label1.setText("Name:");
-        add(label1, cc.xy(1, 1));
-
-        //---- textFieldName ----
-        textFieldName.addKeyListener(new KeyAdapter()
+        //======== panel1 ========
         {
-            @Override
-            public void keyTyped(KeyEvent e)
+            panel1.setName("panel1");
+            panel1.setLayout(new FormLayout(
+                    "2*(default, $lcgap), default:grow",
+                    "default, $lgap, default"));
+
+            //---- nameLabel ----
+            nameLabel.setText("Name:");
+            nameLabel.setName("nameLabel");
+            panel1.add(nameLabel, cc.xy(3, 1));
+
+            //---- textFieldName ----
+            textFieldName.setName("textFieldName");
+            panel1.add(textFieldName, cc.xy(5, 1));
+
+            //---- iconLabel ----
+            iconLabel.setName("iconLabel");
+            panel1.add(iconLabel, cc.xywh(1, 1, 1, 3, CellConstraints.CENTER, CellConstraints.CENTER));
+
+            //---- descriptionLabel ----
+            descriptionLabel.setText("Description:");
+            descriptionLabel.setName("descriptionLabel");
+            panel1.add(descriptionLabel, cc.xy(3, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
+
+            //======== descriptionScrollPane ========
             {
-                textFieldNameKeyTyped(e);
+                descriptionScrollPane.setName("descriptionScrollPane");
+
+                //---- descriptionTextArea ----
+                descriptionTextArea.setName("descriptionTextArea");
+                descriptionScrollPane.setViewportView(descriptionTextArea);
             }
-        });
-        add(textFieldName, cc.xy(3, 1));
+            panel1.add(descriptionScrollPane, cc.xy(5, 3));
+        }
+        add(panel1, cc.xywh(1, 1, 3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
 
         //---- unitIdLabel ----
-        unitIdLabel.setText("Unit ID:");
+        unitIdLabel.setText("Type / ID:");
+        unitIdLabel.setName("unitIdLabel");
         add(unitIdLabel, cc.xy(1, 3));
 
-        //---- unitIdField ----
-        unitIdField.setEditable(false);
-        add(unitIdField, cc.xy(3, 3));
-
-        //---- label2 ----
-        label2.setText("Description:");
-        add(label2, cc.xy(1, 5, CellConstraints.DEFAULT, CellConstraints.TOP));
-
-        //======== descriptionScrollPane ========
+        //======== panel2 ========
         {
+            panel2.setName("panel2");
+            panel2.setLayout(new FormLayout(
+                    "center:default, $lcgap, default:grow",
+                    "default"));
 
-            //---- descriptionTextArea ----
-            descriptionTextArea.addKeyListener(new KeyAdapter()
-            {
-                @Override
-                public void keyTyped(KeyEvent e)
-                {
-                    descriptionInputKeyTyped(e);
-                }
-            });
-            descriptionScrollPane.setViewportView(descriptionTextArea);
+            //---- unitTypeField ----
+            unitTypeField.setEditable(false);
+            unitTypeField.setName("unitTypeField");
+            panel2.add(unitTypeField, cc.xy(1, 1));
+
+            //---- unitIdField ----
+            unitIdField.setEditable(false);
+            unitIdField.setName("unitIdField");
+            panel2.add(unitIdField, cc.xy(3, 1));
         }
-        add(descriptionScrollPane, cc.xy(3, 5));
+        add(panel2, cc.xy(3, 3));
 
-        //---- label3 ----
-        label3.setText("Location:");
-        add(label3, cc.xy(1, 7, CellConstraints.DEFAULT, CellConstraints.TOP));
+        //---- locationLabel ----
+        locationLabel.setText("Location:");
+        locationLabel.setName("locationLabel");
+        add(locationLabel, cc.xy(1, 5, CellConstraints.DEFAULT, CellConstraints.CENTER));
 
-        //======== locationPanel ========
-        {
-            locationPanel.setLayout(new FormLayout(
-                    "default:grow, $lcgap, default",
-                    "default, $rgap, top:default"));
-
-            //---- locationTextField ----
-            locationTextField.setToolTipText("Click on the lock button to unlock for editing");
-            locationTextField.setEditable(false);
-            locationTextField.addKeyListener(new KeyAdapter()
-            {
-                @Override
-                public void keyTyped(KeyEvent e)
-                {
-                    locationInputKeyTyped(e);
-                }
-            });
-            locationTextField.addMouseListener(new MouseAdapter()
-            {
-                @Override
-                public void mousePressed(MouseEvent e)
-                {
-                    locationTextFieldMousePressed();
-                }
-            });
-            locationPanel.add(locationTextField, cc.xy(1, 1));
-
-            //---- buttonEdit ----
-            buttonEdit.setToolTipText("Lock or Unlock Editing Ability");
-            buttonEdit.addActionListener(e -> buttonEditActionPerformed());
-            locationPanel.add(buttonEdit, cc.xy(3, 1));
-
-            //======== pnlProperties ========
-            {
-                pnlProperties.setLayout(new FormLayout(
-                        "left:default, 2*($lcgap, default)",
-                        "fill:default:grow, 2*($lgap, default)"));
-
-                //---- btnCenterOn ----
-                btnCenterOn.setText("Center On");
-                btnCenterOn.setToolTipText("Press for a menu of globe options");
-                pnlProperties.add(btnCenterOn, cc.xy(1, 1));
-
-                //---- allowDragCheckBox ----
-                allowDragCheckBox.setText("Allow Drag");
-                allowDragCheckBox.setSelected(true);
-                allowDragCheckBox.addItemListener(e -> allowDragCheckBoxItemStateChanged(e));
-                pnlProperties.add(allowDragCheckBox, cc.xy(3, 1, CellConstraints.LEFT, CellConstraints.CENTER));
-
-                //---- snapIconToSurfaceCheckBox ----
-                snapIconToSurfaceCheckBox.setText("Snap Icon To Surface");
-                snapIconToSurfaceCheckBox.addItemListener(e -> snapIconToSurfaceCheckBoxItemStateChanged(e));
-                pnlProperties.add(snapIconToSurfaceCheckBox, cc.xy(1, 3, CellConstraints.LEFT, CellConstraints.CENTER));
-
-                //---- useCotIconCheckBox ----
-                useCotIconCheckBox.setText("Use CoT Icon");
-                useCotIconCheckBox.addItemListener(e -> useCotIconCheckBoxItemStateChanged(e));
-                pnlProperties.add(useCotIconCheckBox, cc.xy(3, 3));
-
-                //---- allowContainmentCheckBox ----
-                allowContainmentCheckBox.setText("Allow Containment");
-                allowContainmentCheckBox.addItemListener(e -> allowContainmentCheckBoxItemStateChanged(e));
-                pnlProperties.add(allowContainmentCheckBox, cc.xy(1, 5));
-            }
-            locationPanel.add(pnlProperties, cc.xywh(1, 3, 3, 1));
-        }
-        add(locationPanel, cc.xy(3, 7));
+        //---- locationField ----
+        locationField.setLocationLabelText(null);
+        locationField.setName("locationField");
+        locationField.addChangeListener(e -> locationFieldChanged());
+        add(locationField, cc.xy(3, 5));
 
         //---- label4 ----
         label4.setText("Remarks:");
-        add(label4, cc.xy(1, 9, CellConstraints.DEFAULT, CellConstraints.TOP));
+        label4.setName("label4");
+        add(label4, cc.xy(1, 7, CellConstraints.DEFAULT, CellConstraints.CENTER));
 
-        //======== scrollPane1 ========
+        //======== remarksPane ========
         {
+            remarksPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            remarksPane.setMinimumSize(new Dimension(50, 15));
+            remarksPane.setName("remarksPane");
 
-            //---- textAreaInfoText ----
-            textAreaInfoText.addKeyListener(new KeyAdapter()
-            {
-                @Override
-                public void keyTyped(KeyEvent e)
-                {
-                    textAreaInfoTextKeyTyped(e);
-                }
-            });
-            scrollPane1.setViewportView(textAreaInfoText);
+            //---- remarksField ----
+            remarksField.putClientProperty("JTextPane.HONOR_DISPLAY_PROPERTIES", true);
+            remarksField.setName("remarksField");
+            remarksPane.setViewportView(remarksField);
         }
-        add(scrollPane1, cc.xy(3, 9));
+        add(remarksPane, cc.xy(3, 7));
 
-        //---- centerOnCheckBox ----
-        centerOnCheckBox.setText("Center On");
-        centerOnCheckBox.addItemListener(e -> centerOnCheckBoxItemStateChanged(e));
+        //======== checkboxPanel ========
+        {
+            checkboxPanel.setName("checkboxPanel");
+            checkboxPanel.setLayout(new FormLayout(
+                    "left:default, 2*($lcgap, default)",
+                    "fill:default:grow, 2*($lgap, default)"));
+
+            //---- allowDragCheckBox ----
+            allowDragCheckBox.setText("Allow Drag");
+            allowDragCheckBox.setSelected(true);
+            allowDragCheckBox.setName("allowDragCheckBox");
+            allowDragCheckBox.addItemListener(e -> allowDragCheckBoxItemStateChanged(e));
+            checkboxPanel.add(allowDragCheckBox, cc.xy(1, 1, CellConstraints.LEFT, CellConstraints.CENTER));
+
+            //---- centerOnField ----
+            centerOnField.setName("centerOnField");
+            centerOnField.addChangeListener(e -> centerOnFieldChanged());
+            checkboxPanel.add(centerOnField, cc.xy(3, 1));
+
+            //---- snapIconToSurfaceCheckBox ----
+            snapIconToSurfaceCheckBox.setText("Snap Icon To Surface");
+            snapIconToSurfaceCheckBox.setName("snapIconToSurfaceCheckBox");
+            snapIconToSurfaceCheckBox.addItemListener(e -> snapIconToSurfaceCheckBoxItemStateChanged(e));
+            checkboxPanel.add(snapIconToSurfaceCheckBox, cc.xy(1, 3, CellConstraints.LEFT, CellConstraints.CENTER));
+
+            //---- useCotIconCheckBox ----
+            useCotIconCheckBox.setText("Use CoT Icon");
+            useCotIconCheckBox.setName("useCotIconCheckBox");
+            useCotIconCheckBox.addItemListener(e -> useCotIconCheckBoxItemStateChanged(e));
+            checkboxPanel.add(useCotIconCheckBox, cc.xy(3, 3));
+
+            //---- allowContainmentCheckBox ----
+            allowContainmentCheckBox.setText("Allow Containment");
+            allowContainmentCheckBox.setName("allowContainmentCheckBox");
+            allowContainmentCheckBox.addItemListener(e -> allowContainmentCheckBoxItemStateChanged(e));
+            checkboxPanel.add(allowContainmentCheckBox, cc.xy(1, 5));
+        }
+        add(checkboxPanel, cc.xy(3, 9));
+
+        //---- containsLabel ----
+        containsLabel.setText("Contains:");
+        containsLabel.setName("containsLabel");
+        add(containsLabel, cc.xy(1, 11));
+
+        //---- containedField ----
+        containedField.setName("containedField");
+        add(containedField, cc.xy(3, 11));
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     private JTextField textFieldName;
-    private JLabel unitIdLabel;
-    private JTextField unitIdField;
+    private JLabel iconLabel;
     private JTextArea descriptionTextArea;
-    private JTextField locationTextField;
-    private JButton buttonEdit;
-    private JPanel pnlProperties;
-    private SplitButton btnCenterOn;
+    private JTextField unitTypeField;
+    private JTextField unitIdField;
+    private LocationField locationField;
+    private JScrollPane remarksPane;
+    private JTextPane remarksField;
+    private JPanel checkboxPanel;
     private JCheckBox allowDragCheckBox;
+    private CenterOnField centerOnField;
     private JCheckBox snapIconToSurfaceCheckBox;
     private JCheckBox useCotIconCheckBox;
     private JCheckBox allowContainmentCheckBox;
-    private JTextArea textAreaInfoText;
-    private JCheckBox centerOnCheckBox;
+    private ChipField<IIconMapObject> containedField;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

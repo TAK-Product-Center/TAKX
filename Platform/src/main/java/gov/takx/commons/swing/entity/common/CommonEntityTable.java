@@ -1,16 +1,22 @@
 package gov.takx.commons.swing.entity.common;
 
+import com.google.common.annotations.VisibleForTesting;
 import gov.tak.api.annotation.IncubatingApi;
 import gov.takx.api.explorer.IExplorable;
 import gov.takx.api.mapobject.IMapObject;
+import gov.takx.commons.swing.PopupTriggerListener;
 import gov.takx.commons.swing.TableUtils;
+import gov.takx.commons.swing.actionlist.ActionListPopupMenu;
 import gov.takx.commons.swing.actionlist.ActionListTableCellRendererEditor;
 import gov.takx.commons.swing.entity.EntityTable;
 import gov.takx.commons.swing.entity.EntityTableModel;
+import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
 import org.jdesktop.swingx.table.TableColumnExt;
 
 import javax.swing.table.TableModel;
+
+import java.awt.event.MouseEvent;
 
 /**
  * A reusable swing table to be used with {@link EntityTableModel} and {@link CommonEntityDefinition}. Primarily for
@@ -38,6 +44,30 @@ import javax.swing.table.TableModel;
 @IncubatingApi(since = "5.7")
 public class CommonEntityTable<E> extends EntityTable<E>
 {
+    @VisibleForTesting
+    static final int ACTIONS_COLUMN_MIN_ROW_HEIGHT = UIResources.ACTION_BUTTON_IMAGE_SIZE.height + 21;
+
+    private final ActionListPopupMenu<E> popupMenu = new ActionListPopupMenu<>();
+    private boolean popupMenuEnabled = true;
+
+    /**
+     * @return {@code true} if the popup menu is enabled, otherwise {@code false}
+     * @since 5.8
+     */
+    public boolean isPopupMenuEnabled()
+    {
+        return popupMenuEnabled;
+    }
+
+    /**
+     * @param enabled {@code true} if the popup menu should be enabled, otherwise {@code false}
+     * @since 5.8
+     */
+    public void setPopupMenuEnabled(boolean enabled)
+    {
+        popupMenuEnabled = enabled;
+    }
+
     @Nonnull
     @Override
     public CommonEntityDefinition<E> getEntityDefinition()
@@ -106,6 +136,10 @@ public class CommonEntityTable<E> extends EntityTable<E>
         getSummaryColumn().setVisible(false);
         getIconColumn().setVisible(false);
         getVisibilityColumn().setVisible(false);
+        getActionsColumn().addPropertyChangeListener(e -> {
+            // Ensure the row height can fit action buttons if we make that column visible
+            if (e.getPropertyName().equals("visible") && Boolean.TRUE.equals(e.getNewValue()) && getRowHeight() < ACTIONS_COLUMN_MIN_ROW_HEIGHT) setRowHeight(ACTIONS_COLUMN_MIN_ROW_HEIGHT);
+        });
     }
 
     @Override
@@ -113,5 +147,31 @@ public class CommonEntityTable<E> extends EntityTable<E>
     {
         super.initRenderers();
         ActionListTableCellRendererEditor.setRendererAndEditor(this, getActionsColumn(), getVisibilityColumn());
+    }
+
+    @Override
+    protected void initListeners()
+    {
+        super.initListeners();
+        addMouseListener((PopupTriggerListener) this::popupTriggered);
+    }
+
+    /**
+     * Called when a popup event is triggered and displays a popup menu with actions obtained from the entity definition.
+     *
+     * @param event the popup mouse event
+     * @since 5.8
+     */
+    protected void popupTriggered(@Nonnull MouseEvent event)
+    {
+        if (popupMenuEnabled)
+        {
+            var entity = getEntityAtPoint(event.getPoint());
+            if (entity != null)
+            {
+                var actionList = getEntityDefinition().getPopupActions(entity);
+                if (actionList != null) popupMenu.show(actionList, event);
+            }
+        }
     }
 }

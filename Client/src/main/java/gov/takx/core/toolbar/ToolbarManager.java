@@ -4,7 +4,7 @@ import gov.takx.api.annotation.Headless;
 import gov.takx.api.annotation.InvokeAndWaitOnEDT;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.apps.ICoreAppManager;
-import gov.takx.api.event.project.ProjectClosing;
+import gov.takx.api.event.project.ProjectClosed;
 import gov.takx.api.plugin.IPlugin;
 import gov.takx.api.plugin.app.IAppListener;
 import gov.takx.api.plugin.app.IImmutableAppInstance;
@@ -420,7 +420,7 @@ public class ToolbarManager implements IToolbarManager
      * Resets tab map when the project is closed. This is to ensure that when another project is opened/created, the
      * references from plugins that were shut down are not kept around.
      */
-    private void cleanup(@Observes ProjectClosing event)
+    private void cleanup(@Observes ProjectClosed event)
     {
         pluginTabMap.values().stream().flatMap(Collection::stream).forEach(toolbarConfigurationManager::removeReferenceTab);
         pluginTabMap.clear();

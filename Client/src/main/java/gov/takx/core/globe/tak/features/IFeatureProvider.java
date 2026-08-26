@@ -4,6 +4,7 @@ import com.atakmap.map.layer.feature.AttributeSet;
 import com.atakmap.map.layer.feature.Feature.AltitudeMode;
 import com.atakmap.map.layer.feature.geometry.Geometry;
 import com.atakmap.map.layer.feature.style.Style;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
 import jakarta.annotation.Nonnull;
 
 import java.util.Arrays;
@@ -17,7 +18,6 @@ import java.util.Arrays;
  */
 public interface IFeatureProvider<T, StateObject>
 {
-    String ALL_GLOBES_GROUP_NAME = "AllGlobes";
     Geometry[] EMPTY_GEOMETRY = {null};
 
     /**
@@ -148,7 +148,7 @@ public interface IFeatureProvider<T, StateObject>
     {
         int featureCount = getFeatureCount(state);
         String[] groupingNames = new String[featureCount];
-        Arrays.fill(groupingNames, ALL_GLOBES_GROUP_NAME);
+        Arrays.fill(groupingNames, ISharedFeatureDataStore.ALL_GLOBES_FEATURE_SET_TYPE);
         return groupingNames;
     }
 }

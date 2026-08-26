@@ -65,6 +65,7 @@ public class ProgramPropertiesMigrationManager
         MIGRATIONS_BY_VERSION.put("10", "v10_to_v11.xml");
         MIGRATIONS_BY_VERSION.put("11", "v11_to_v12.xml");
         MIGRATIONS_BY_VERSION.put("12", "v12_to_v13.xml");
+        MIGRATIONS_BY_VERSION.put("13", "v13_to_v14.xml");
     }
 
     private final File localProgramPropertiesFile;

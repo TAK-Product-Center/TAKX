@@ -10,9 +10,7 @@ import gov.takx.api.globe.IFavoritesService;
 import gov.takx.api.layer.IRaptorLayer;
 import gov.takx.api.media.IMediaManager;
 import gov.takx.api.ping.IGeoPingService;
-import gov.takx.api.platform.IExperimentalServices;
 import gov.takx.api.project.IProjectAssistant;
-import gov.takx.api.propertymanager.ISystemPropertyManager;
 import gov.takx.api.registry.IPluginInspector;
 import gov.takx.api.tasks.ITaskRunnable;
 import gov.takx.api.timer.ITimerService;
@@ -41,12 +39,6 @@ public class AForwardingPluginDelegate implements IPluginDelegate
     public ScheduledExecutorService getExecutorService()
     {
         return target.getExecutorService();
-    }
-
-    @Override
-    public IExperimentalServices getExperimentalServices()
-    {
-        return target.getExperimentalServices();
     }
 
     @Override
@@ -113,12 +105,6 @@ public class AForwardingPluginDelegate implements IPluginDelegate
     public IToolbarManager getToolbarManager()
     {
         return target.getToolbarManager();
-    }
-
-    @Override
-    public ISystemPropertyManager getSystemPropertyManager()
-    {
-        return target.getSystemPropertyManager();
     }
 
     @Override

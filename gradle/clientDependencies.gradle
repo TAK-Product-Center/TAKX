@@ -40,10 +40,12 @@ dependencies {
     implementation "io.github.openfeign:feign-jackson:$feignVersion"
     implementation "io.github.openfeign:feign-java11:$feignVersion"
 
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
-    implementation "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
-    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
-    implementation "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    implementation platform("com.fasterxml.jackson:jackson-bom:$jacksonVersion")
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 
     implementation "com.drewnoakes:metadata-extractor:$metadataExtractorVersion"
     api "org.greenrobot:eventbus-java:$eventbusVersion"

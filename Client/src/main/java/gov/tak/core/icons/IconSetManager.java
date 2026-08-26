@@ -1,10 +1,16 @@
 package gov.tak.core.icons;
 
 import com.atakmap.filesystem.HashingUtils;
+import gov.tak.api.commons.graphics.Bitmap;
 import gov.tak.api.icons.IIconSetManager;
 import gov.tak.api.icons.IUserIcon;
 import gov.tak.api.icons.IUserIconSet;
+import gov.tak.api.vehicle.VehicleModelCache;
+import gov.tak.api.vehicle.VehicleModelInfo;
 import gov.tak.platform.datapackage.ZipReader;
+import gov.tak.platform.marshal.MarshalManager;
+import gov.takx.api.annotation.Headless;
+import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.event.StartProjectServices;
 import gov.takx.api.event.StopProjectServices;
 import gov.takx.api.milsym.CotSidcAdapter;
@@ -20,6 +26,8 @@ import gov.takx.commons.utils.StringUtils;
 import gov.takx.core.plugin.synthetic.SyntheticPluginDefinition;
 import gov.takx.module.PluginDefinitionFactory;
 import gov.takx.platform.KeyUtils;
+import gov.takx.platform.ui.ResourceDirectory;
+import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.Priority;
@@ -75,7 +83,7 @@ public class IconSetManager implements IIconSetManager
     private static final String ICONSET_XML = "iconset.xml";
 
     private static byte[] DEFAULT_IMAGE_BYTES;
-    private static JAXBContext jaxbContext = null;
+    private static JAXBContext jaxbContext;
 
     static
     {
@@ -115,13 +123,26 @@ public class IconSetManager implements IIconSetManager
     private final ISyntheticPluginRegistry syntheticPluginRegistry;
     private final PluginDefinitionFactory pluginDefinitionFactory;
     private final IMilStd2525Service milStd2525cService;
+    private final VehicleModelCache vehicleModelCache;
+    private final Bitmap placeholderBitmap;
+    private final boolean headless;
+
+    private IconUpdatedListener iconUpdatedListener;
 
     @Inject
-    IconSetManager(ISyntheticPluginRegistry syntheticPluginRegistry, PluginDefinitionFactory pluginDefinitionFactory, IMilStd2525ServiceProvider milStd2525ServiceProvider)
+    IconSetManager(ISyntheticPluginRegistry syntheticPluginRegistry, PluginDefinitionFactory pluginDefinitionFactory, IMilStd2525ServiceProvider milStd2525ServiceProvider, VehicleModelCache vehicleModelCache,
+                   @Headless boolean headless)
     {
         this.syntheticPluginRegistry = syntheticPluginRegistry;
         this.pluginDefinitionFactory = pluginDefinitionFactory;
-        this.milStd2525cService = milStd2525ServiceProvider.get2525Service(CHARLIE);
+        milStd2525cService = milStd2525ServiceProvider.get2525Service(CHARLIE);
+
+        // Get a placeholder icon for loading vehicle models
+        BufferedImage bufferedImage = UIResources.getImage(ResourceDirectory.PLATFORM_ICONS, "pointtype_aircraft.png");
+        placeholderBitmap = MarshalManager.marshal(bufferedImage, BufferedImage.class, Bitmap.class);
+
+        this.vehicleModelCache = vehicleModelCache;
+        this.headless = headless;
     }
 
     /**
@@ -331,6 +352,12 @@ public class IconSetManager implements IIconSetManager
         {
             logger.warn("Failed to scan assets in {}", ASSETS_DIR, e);
         }
+
+        // Load vehicle models
+        var iconSet = new UserIconSet(VEHICLE_MODELS_UID, VEHICLE_MODELS_UID);
+        vehicleModelCache.rescan();
+        vehicleModelCache.getAll().forEach(vehicleModelInfo -> addVehicleModel(iconSet, vehicleModelInfo));
+        if (!iconSet.getIcons().isEmpty()) iconSetsByUid.put(iconSet.getUid(), iconSet);
     }
 
     /**
@@ -401,6 +428,54 @@ public class IconSetManager implements IIconSetManager
             userIconSet = new UserIconSet(FilenameUtils.getBaseName(zipFilePath.getName()), uid);
         }
         return userIconSet;
+    }
+
+    /**
+     * Add an icon to the {@link UserIconSet} for the provided {@link VehicleModelInfo}.
+     * @param iconSet the icon set to add the icon to
+     * @param vehicleModelInfo the vehicle model information
+     * @since 5.8
+     */
+    private void addVehicleModel(@Nonnull UserIconSet iconSet, @Nonnull VehicleModelInfo vehicleModelInfo)
+    {
+        vehicleModelInfo.setVehicleIconLoadedCallback(bitmap -> updateVehicleIcon(toByteArray(bitmap), vehicleModelInfo, iconSet));
+        // Don't attempt to invoke GLOffscreenCaptureService if headless
+        Bitmap icon = headless ? null : vehicleModelInfo.getIcon();
+        updateVehicleIcon(toByteArray(icon != null ? icon : placeholderBitmap), vehicleModelInfo, iconSet);
+    }
+
+    /**
+     * Called to update a vehicle icon in the {@link IconSetManager}.
+     * @param byteArray Image bytes
+     * @param vehicleModelInfo the vehicle info
+     * @param iconSet the icon set
+     * @since 5.8
+     */
+    @InvokeOnEDT
+    private void updateVehicleIcon(@Nullable byte[] byteArray, @Nonnull VehicleModelInfo vehicleModelInfo, @Nonnull UserIconSet iconSet)
+    {
+        if (byteArray != null)
+        {
+            UserIcon userIcon = iconSet.addOrUpdateIcon(vehicleModelInfo.name, vehicleModelInfo.category, vehicleModelInfo.file.getPath(), byteArray);
+            iconImageCache.remove(userIcon);
+            if (iconUpdatedListener != null) iconUpdatedListener.onIconUpdated(userIcon);
+        }
+    }
+
+    /**
+     * Convert a {@link Bitmap} to a byte array in the PNG format, with a size of {@link ImageUtils#DEFAULT_ICON_WIDTH}.
+     *
+     * @param bitmap the bitmap
+     * @return a byte array representing the drawable as a PNG
+     * @since 5.8
+     */
+    @Nullable
+    private static byte[] toByteArray(@Nonnull Bitmap bitmap)
+    {
+        // Scale the image
+        final var image = MarshalManager.marshal(bitmap, Bitmap.class, BufferedImage.class);
+        byte[] result = ImageUtils.toByteArray(image, DEFAULT_ICON_WIDTH);
+        return result.length > 0 ? result : null;
     }
 
     /**
@@ -478,5 +553,28 @@ public class IconSetManager implements IIconSetManager
             logger.warn("failed to get image bytes for '{}'", zipEntry.getName(), e);
             return DEFAULT_IMAGE_BYTES;
         }
+    }
+
+    /**
+     * Set an {@link IconUpdatedListener} to get notified when an icon in the {@link IconSetManager} has been updated.
+     * @param iconUpdatedListener the listener, or {@code null} to clear the listener
+     * @since 5.8
+     */
+    public void setIconUpdatedListener(@Nullable IconUpdatedListener iconUpdatedListener)
+    {
+        this.iconUpdatedListener = iconUpdatedListener;
+    }
+
+    /**
+     * A listener that gets notified when an icon in the {@link IconSetManager} gets updated.
+     * @since 5.8
+     */
+    public interface IconUpdatedListener
+    {
+        /**
+         * Called when an {@link IUserIcon icon} is updated in the {@link IconSetManager}.
+         * @param icon the updated icon
+         */
+        void onIconUpdated(@Nonnull IUserIcon icon);
     }
 }

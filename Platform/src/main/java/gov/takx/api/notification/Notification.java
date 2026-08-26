@@ -8,12 +8,25 @@ import jakarta.annotation.Nonnull;
  * Defines a notification to be displayed to a user. Use a {@link Builder} to create new messages. A message String is
  * required for all Notifications. Defaults will be used for all other options if they are not explicitly set.
  *
+ * @param message Text of message to display
+ * @param type Message type
+ * @param logged Pass {@code true} to have the message recorded in the Notifications panel, {@code false} to not
+ *
  * @see INotificationService
- * @since 5.2
+ * @since 5.2 (logged added in 5.8)
  */
 @IncubatingApi(since = "5.2")
-public record Notification(@Nonnull String message, @Nonnull Type type)
+public record Notification(@Nonnull String message, @Nonnull Type type, boolean logged)
 {
+    /**
+     * Constructor defaulting the {@link #logged} value to {@code true}.
+     * @since 5.8
+     */
+    public Notification(@Nonnull String message, @Nonnull Type type)
+    {
+        this(message, type, true);
+    }
+
     /**
      * The {@link Notification} types. Notifications are styled according to their types (color, icon)
      */
@@ -33,6 +46,7 @@ public record Notification(@Nonnull String message, @Nonnull Type type)
     public static Builder builder(@Nonnull String message)
     {
         return new AutoBuilder_Notification_Builder()
+                .setLogged(true)
                 .setMessage(message)
                 .setType(Type.Info); // initialize with default
     }
@@ -45,10 +59,12 @@ public record Notification(@Nonnull String message, @Nonnull Type type)
     public static Builder builder(@Nonnull String message, @Nonnull Type type)
     {
         return new AutoBuilder_Notification_Builder()
+                .setLogged(true)
                 .setMessage(message)
                 .setType(type);
     }
 
+    @SuppressWarnings("NullableProblems")
     @AutoBuilder
     public abstract static class Builder
     {
@@ -65,6 +81,14 @@ public record Notification(@Nonnull String message, @Nonnull Type type)
          */
         @Nonnull
         public abstract Builder setType(@Nonnull Type type);
+
+        /**
+         * @param logged Pass {@code true} to have the notification logged in the Notifications panel, {@code false} to not
+         * @return This builder
+         * @since 5.8
+         */
+        @Nonnull
+        public abstract Builder setLogged(boolean logged);
 
         /**
          * @return A new notification

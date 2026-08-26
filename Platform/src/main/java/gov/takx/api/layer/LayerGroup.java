@@ -1,7 +1,5 @@
 package gov.takx.api.layer;
 
-import gov.tak.api.annotation.DeprecatedApi;
-
 /**
  * Enum representing layer groups in TAKX.
  * <p/>
@@ -33,10 +31,6 @@ public enum LayerGroup
     ANALYTIC_SURFACES("Analytic Surface Layers"),   // Analytic surfaces above the terrain
     MAP_DATA("Map Data"),                           // icons, annotations
     TOOLS("Tool Layers"),                           // fixed above the globe
-    /** @deprecated KML imports are now shown/managed in the Overlays */
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    @Deprecated
-    KML_HUD("KML HUD"),                             // KML heads up display layer
     WSS_SHAPE_GROUPS("WSS Shape Groups"),           // Shape group layers (for interacting with Web Shape Servers)
     TOP("TOP");                                     // special layer that always has to be on top for dragging icons
 

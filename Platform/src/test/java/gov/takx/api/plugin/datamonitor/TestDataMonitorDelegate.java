@@ -6,7 +6,6 @@ import gov.takx.api.globe.IStateIconManager;
 import gov.takx.api.mapobject.IDataMonitor;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.ping.IGeoPingService;
-import gov.takx.api.propertymanager.ISystemPropertyManager;
 import gov.takx.api.query.IQueryService;
 import gov.takx.api.timer.ITimerService;
 import gov.takx.commons.constants.State;
@@ -19,7 +18,6 @@ import java.util.Date;
  *
  * @since 1.48
  */
-@SuppressWarnings("removal")
 public class TestDataMonitorDelegate implements IDataMonitorDelegate
 {
     @Override
@@ -50,12 +48,6 @@ public class TestDataMonitorDelegate implements IDataMonitorDelegate
 
     @Override
     public IStateIconManager getStateIconManager()
-    {
-        return null;
-    }
-
-    @Override
-    public ISystemPropertyManager getSystemPropertyManager()
     {
         return null;
     }

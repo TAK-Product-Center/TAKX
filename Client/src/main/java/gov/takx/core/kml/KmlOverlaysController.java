@@ -20,6 +20,7 @@ import gov.takx.commons.swing.AlwaysOnTopJOptionPane;
 import gov.takx.commons.utils.StringUtils;
 import gov.takx.core.explorer.IExplorer;
 import gov.takx.core.explorer.IExplorerManager;
+import gov.takx.core.explorer.common.DeleteExplorableAction;
 import gov.takx.core.explorer.common.INonGroupableExplorable;
 import gov.takx.core.explorer.common.PathExplorableGroup;
 import gov.takx.core.explorer.controller.IExplorerController;
@@ -350,6 +351,14 @@ public class KmlOverlaysController
         void setDetailsTextHtml(@Nullable String detailsTextHtml)
         {
             this.detailsTextHtml = detailsTextHtml;
+        }
+
+        @Override
+        public JPopupMenu createPopupMenu(@Nonnull MouseEvent mouseEvent)
+        {
+            var popupMenu = new JPopupMenu();
+            if (supportsDeletion) popupMenu.add(new DeleteExplorableAction(this));
+            return popupMenu;
         }
     }
 

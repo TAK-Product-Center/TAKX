@@ -59,6 +59,7 @@ clean {
     delete deploymentLibDir
     delete deploymentModulesDir
     delete nativeDir
+    delete takAssetsDir
 }
 
 //==============================================================================

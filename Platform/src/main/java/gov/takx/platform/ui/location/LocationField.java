@@ -48,7 +48,6 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -154,6 +153,7 @@ public class LocationField extends JPanel implements IResourceCleaner
         {
             this.editable = editable;
             editButton.setVisible(editable);
+            locationTextField.setEditable(editable);
         }
     }
 
@@ -463,7 +463,7 @@ public class LocationField extends JPanel implements IResourceCleaner
     private void copyButtonAction()
     {
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(locationTextField.getText()), null);
-        notificationService.show(Notification.builder("Copied location to clipboard").setType(Notification.Type.Info).build(), 500);
+        notificationService.show(Notification.builder("Copied location to clipboard").setType(Notification.Type.Info).setLogged(false).build(), 500);
     }
 
     private void editButtonAction()
@@ -593,7 +593,6 @@ public class LocationField extends JPanel implements IResourceCleaner
     private void initComponents()
     {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
-        var formPanel = new JPanel();
         var textFieldPanel = new JPanel();
         locationLabel = new JLabel();
         locationTextField = new JXTextFieldExt();
@@ -651,375 +650,368 @@ public class LocationField extends JPanel implements IResourceCleaner
 
         //======== this ========
         setName("this");
-        setLayout(new BorderLayout());
+        setLayout(new FormLayout(
+                "default:grow",
+                "default, $lgap, default"));
 
-        //======== formPanel ========
+        //======== textFieldPanel ========
         {
-            formPanel.setName("formPanel");
-            formPanel.setLayout(new FormLayout(
-                    "default:grow",
-                    "default, $lgap, default"));
+            textFieldPanel.setName("textFieldPanel");
+            textFieldPanel.setLayout(new FormLayout(
+                    "default, $lcgap, default:grow",
+                    "default"));
 
-            //======== textFieldPanel ========
+            //---- locationLabel ----
+            locationLabel.setText("Location:");
+            locationLabel.setName("locationLabel");
+            textFieldPanel.add(locationLabel, cc.xy(1, 1));
+
+            //---- locationTextField ----
+            locationTextField.setPrompt("Enter Location Here");
+            locationTextField.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT);
+            locationTextField.setForeground(UIManager.getColor("Label.disabledForeground"));
+            locationTextField.setName("locationTextField");
+            locationTextField.addFocusListener(new FocusAdapter()
             {
-                textFieldPanel.setName("textFieldPanel");
-                textFieldPanel.setLayout(new FormLayout(
-                        "default, $lcgap, default:grow",
-                        "default"));
-
-                //---- locationLabel ----
-                locationLabel.setText("Location:");
-                locationLabel.setName("locationLabel");
-                textFieldPanel.add(locationLabel, cc.xy(1, 1));
-
-                //---- locationTextField ----
-                locationTextField.setPrompt("Enter Location Here");
-                locationTextField.setFocusBehavior(PromptSupport.FocusBehavior.SHOW_PROMPT);
-                locationTextField.setForeground(UIManager.getColor("Label.disabledForeground"));
-                locationTextField.setName("locationTextField");
-                locationTextField.addFocusListener(new FocusAdapter()
+                @Override
+                public void focusLost(FocusEvent e)
                 {
-                    @Override
-                    public void focusLost(FocusEvent e)
-                    {
-                        locationTextFocusLost();
-                    }
-                });
-                textFieldPanel.add(locationTextField, cc.xy(3, 1));
-            }
-            formPanel.add(textFieldPanel, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-            //======== detailsPanel ========
-            {
-                detailsPanel.setBorder(new CompoundBorder(
-                        new TitledBorder(new MatteBorder(0, 1, 1, 1, UIManager.getColor("Component.borderColor")), "", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION, null, Color.white),
-                        Borders.createEmptyBorder("0dlu, 4dlu, 4dlu, 4dlu")));
-                detailsPanel.setName("detailsPanel");
-                detailsPanel.setLayout(new FormLayout(
-                        "default:grow",
-                        "default"));
-
-                //======== detailsFormPanel ========
-                {
-                    detailsFormPanel.setName("detailsFormPanel");
-                    detailsFormPanel.setLayout(new FormLayout(
-                            "default:grow",
-                            "default, $lgap, default"));
-
-                    //======== tabPane ========
-                    {
-                        tabPane.setName("tabPane");
-                        tabPane.addChangeListener(e -> tabPaneStateChanged());
-
-                        //======== mgrsPanel ========
-                        {
-                            mgrsPanel.setBorder(Borders.createEmptyBorder("4dlu, 0dlu, 0dlu, 0dlu"));
-                            mgrsPanel.setName("mgrsPanel");
-                            mgrsPanel.setLayout(new FormLayout(
-                                    "40dlu, $lcgap, 20dlu, 4*($lcgap, default)",
-                                    "fill:default, $lgap, default"));
-                            ((FormLayout) mgrsPanel.getLayout()).setColumnGroups(new int[][]{{3, 5, 7, 9}});
-
-                            //---- label18 ----
-                            label18.setText("Grid:");
-                            label18.setName("label18");
-                            mgrsPanel.add(label18, cc.xy(1, 1));
-
-                            //---- gzdField ----
-                            gzdField.setName("gzdField");
-                            gzdField.addFocusListener(new FocusAdapter()
-                            {
-                                @Override
-                                public void focusLost(FocusEvent e)
-                                {
-                                    mgrsChanged();
-                                }
-                            });
-                            mgrsPanel.add(gzdField, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- sqrField ----
-                            sqrField.setName("sqrField");
-                            sqrField.addFocusListener(new FocusAdapter()
-                            {
-                                @Override
-                                public void focusLost(FocusEvent e)
-                                {
-                                    mgrsChanged();
-                                }
-                            });
-                            mgrsPanel.add(sqrField, cc.xy(5, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- easField ----
-                            easField.setName("easField");
-                            easField.addFocusListener(new FocusAdapter()
-                            {
-                                @Override
-                                public void focusLost(FocusEvent e)
-                                {
-                                    mgrsChanged();
-                                }
-                            });
-                            mgrsPanel.add(easField, cc.xy(7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- norField ----
-                            norField.setName("norField");
-                            norField.addFocusListener(new FocusAdapter()
-                            {
-                                @Override
-                                public void focusLost(FocusEvent e)
-                                {
-                                    mgrsChanged();
-                                }
-                            });
-                            mgrsPanel.add(norField, cc.xy(9, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-                        }
-                        tabPane.addTab("MGRS", mgrsPanel);
-
-                        //======== degPanel ========
-                        {
-                            degPanel.setBorder(Borders.createEmptyBorder("4dlu, 0dlu, 0dlu, 0dlu"));
-                            degPanel.setAlignmentX(0.0F);
-                            degPanel.setName("degPanel");
-                            degPanel.setLayout(new FormLayout(
-                                    "40dlu, $lcgap, 50dlu, $lcgap, default",
-                                    "fill:default, $lgap, default"));
-
-                            //---- degLatLabel ----
-                            degLatLabel.setText("Latitude:");
-                            degLatLabel.setName("degLatLabel");
-                            degPanel.add(degLatLabel, cc.xy(1, 1));
-
-                            //---- dLatDegField ----
-                            dLatDegField.setModel(new SpinnerNumberModel(0.0, -90.0, 90.0, 1.0));
-                            dLatDegField.setMaximumSize(new Dimension(100, 34));
-                            dLatDegField.setMinimumSize(new Dimension(100, 0));
-                            dLatDegField.setName("dLatDegField");
-                            dLatDegField.addChangeListener(e -> degChanged());
-                            degPanel.add(dLatDegField, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label4 ----
-                            label4.setText("\u00b0");
-                            label4.setName("label4");
-                            degPanel.add(label4, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
-
-                            //---- degLonLabel ----
-                            degLonLabel.setText("Longitude:");
-                            degLonLabel.setName("degLonLabel");
-                            degPanel.add(degLonLabel, cc.xy(1, 3));
-
-                            //---- dLonDegField ----
-                            dLonDegField.setModel(new SpinnerNumberModel(0.0, -180.0, 180.0, 1.0));
-                            dLonDegField.setMaximumSize(new Dimension(100, 34));
-                            dLonDegField.setMinimumSize(new Dimension(100, 0));
-                            dLonDegField.setName("dLonDegField");
-                            dLonDegField.addChangeListener(e -> degChanged());
-                            degPanel.add(dLonDegField, cc.xy(3, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label15 ----
-                            label15.setText("\u00b0");
-                            label15.setName("label15");
-                            degPanel.add(label15, cc.xy(5, 3, CellConstraints.DEFAULT, CellConstraints.TOP));
-                        }
-                        tabPane.addTab("Deg", degPanel);
-
-                        //======== degMinPanel ========
-                        {
-                            degMinPanel.setBorder(Borders.createEmptyBorder("4dlu, 0dlu, 0dlu, 0dlu"));
-                            degMinPanel.setName("degMinPanel");
-                            degMinPanel.setLayout(new FormLayout(
-                                    "40dlu, $lcgap, 50dlu, 3*($lcgap, default)",
-                                    "fill:default, $lgap, default"));
-                            ((FormLayout) degMinPanel.getLayout()).setColumnGroups(new int[][]{{3, 7}, {5, 9}});
-
-                            //---- dmLatLabel ----
-                            dmLatLabel.setText("Latitude:");
-                            dmLatLabel.setName("dmLatLabel");
-                            degMinPanel.add(dmLatLabel, cc.xy(1, 1));
-
-                            //---- dmLatDegField ----
-                            dmLatDegField.setModel(new SpinnerNumberModel(0, -90, 90, 1));
-                            dmLatDegField.setMaximumSize(new Dimension(100, 34));
-                            dmLatDegField.setMinimumSize(new Dimension(100, 0));
-                            dmLatDegField.setName("dmLatDegField");
-                            dmLatDegField.addChangeListener(e -> degMinChanged());
-                            degMinPanel.add(dmLatDegField, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label5 ----
-                            label5.setText("\u00b0");
-                            label5.setName("label5");
-                            degMinPanel.add(label5, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
-
-                            //---- dmLatMinField ----
-                            dmLatMinField.setModel(new SpinnerNumberModel(0.0, 0.0, 60.0, 1.0));
-                            dmLatMinField.setMaximumSize(new Dimension(100, 34));
-                            dmLatMinField.setMinimumSize(new Dimension(100, 0));
-                            dmLatMinField.setName("dmLatMinField");
-                            dmLatMinField.addChangeListener(e -> degMinChanged());
-                            degMinPanel.add(dmLatMinField, cc.xy(7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label7 ----
-                            label7.setText("'");
-                            label7.setName("label7");
-                            degMinPanel.add(label7, cc.xy(9, 1, CellConstraints.LEFT, CellConstraints.TOP));
-
-                            //---- dmLonDegLabel ----
-                            dmLonDegLabel.setText("Longitude:");
-                            dmLonDegLabel.setName("dmLonDegLabel");
-                            degMinPanel.add(dmLonDegLabel, cc.xy(1, 3));
-
-                            //---- dmLonDegField ----
-                            dmLonDegField.setModel(new SpinnerNumberModel(0, -180, 180, 1));
-                            dmLonDegField.setMaximumSize(new Dimension(100, 34));
-                            dmLonDegField.setMinimumSize(new Dimension(100, 0));
-                            dmLonDegField.setName("dmLonDegField");
-                            dmLonDegField.addChangeListener(e -> degMinChanged());
-                            degMinPanel.add(dmLonDegField, cc.xy(3, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label6 ----
-                            label6.setText("\u00b0");
-                            label6.setName("label6");
-                            degMinPanel.add(label6, cc.xy(5, 3, CellConstraints.DEFAULT, CellConstraints.TOP));
-
-                            //---- dmLonMinField ----
-                            dmLonMinField.setModel(new SpinnerNumberModel(0.0, 0.0, 60.0, 1.0));
-                            dmLonMinField.setMaximumSize(new Dimension(100, 34));
-                            dmLonMinField.setMinimumSize(new Dimension(100, 0));
-                            dmLonMinField.setName("dmLonMinField");
-                            dmLonMinField.addChangeListener(e -> degMinChanged());
-                            degMinPanel.add(dmLonMinField, cc.xy(7, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label8 ----
-                            label8.setText("'");
-                            label8.setName("label8");
-                            degMinPanel.add(label8, cc.xy(9, 3, CellConstraints.LEFT, CellConstraints.TOP));
-                        }
-                        tabPane.addTab("Deg/Min", degMinPanel);
-
-                        //======== degMinSecPanel ========
-                        {
-                            degMinSecPanel.setBorder(Borders.createEmptyBorder("4dlu, 0dlu, 0dlu, 0dlu"));
-                            degMinSecPanel.setName("degMinSecPanel");
-                            degMinSecPanel.setLayout(new FormLayout(
-                                    "40dlu, $lcgap, 50dlu, 5*($lcgap, default)",
-                                    "fill:default:grow, $lgap, default"));
-                            ((FormLayout) degMinSecPanel.getLayout()).setColumnGroups(new int[][]{{3, 7, 11}, {5, 9, 13}});
-
-                            //---- dmLatLabel2 ----
-                            dmLatLabel2.setText("Latitude:");
-                            dmLatLabel2.setName("dmLatLabel2");
-                            degMinSecPanel.add(dmLatLabel2, cc.xy(1, 1));
-
-                            //---- dmsLatDegField ----
-                            dmsLatDegField.setModel(new SpinnerNumberModel(0, -90, 90, 1));
-                            dmsLatDegField.setName("dmsLatDegField");
-                            dmsLatDegField.addChangeListener(e -> degMinSecChanged());
-                            degMinSecPanel.add(dmsLatDegField, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label9 ----
-                            label9.setText("\u00b0");
-                            label9.setName("label9");
-                            degMinSecPanel.add(label9, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
-
-                            //---- dmsLatMinField ----
-                            dmsLatMinField.setModel(new SpinnerNumberModel(0, 0, 60, 1));
-                            dmsLatMinField.setName("dmsLatMinField");
-                            dmsLatMinField.addChangeListener(e -> degMinSecChanged());
-                            degMinSecPanel.add(dmsLatMinField, cc.xy(7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label10 ----
-                            label10.setText("'");
-                            label10.setName("label10");
-                            degMinSecPanel.add(label10, cc.xy(9, 1, CellConstraints.LEFT, CellConstraints.TOP));
-
-                            //---- dmsLatSecField ----
-                            dmsLatSecField.setModel(new SpinnerNumberModel(0.0, 0.0, 60.0, 1.0));
-                            dmsLatSecField.setName("dmsLatSecField");
-                            dmsLatSecField.addChangeListener(e -> degMinSecChanged());
-                            degMinSecPanel.add(dmsLatSecField, cc.xy(11, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label13 ----
-                            label13.setText("\"");
-                            label13.setName("label13");
-                            degMinSecPanel.add(label13, cc.xy(13, 1, CellConstraints.LEFT, CellConstraints.TOP));
-
-                            //---- dmLonLabel2 ----
-                            dmLonLabel2.setText("Longitude:");
-                            dmLonLabel2.setName("dmLonLabel2");
-                            degMinSecPanel.add(dmLonLabel2, cc.xy(1, 3));
-
-                            //---- dmsLonDegField ----
-                            dmsLonDegField.setModel(new SpinnerNumberModel(0, -180, 180, 1));
-                            dmsLonDegField.setName("dmsLonDegField");
-                            dmsLonDegField.addChangeListener(e -> degMinSecChanged());
-                            degMinSecPanel.add(dmsLonDegField, cc.xy(3, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label11 ----
-                            label11.setText("\u00b0");
-                            label11.setName("label11");
-                            degMinSecPanel.add(label11, cc.xy(5, 3, CellConstraints.DEFAULT, CellConstraints.TOP));
-
-                            //---- dmsLonMinField ----
-                            dmsLonMinField.setModel(new SpinnerNumberModel(0, 0, 60, 1));
-                            dmsLonMinField.setName("dmsLonMinField");
-                            dmsLonMinField.addChangeListener(e -> degMinSecChanged());
-                            degMinSecPanel.add(dmsLonMinField, cc.xy(7, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label12 ----
-                            label12.setText("'");
-                            label12.setName("label12");
-                            degMinSecPanel.add(label12, cc.xy(9, 3, CellConstraints.LEFT, CellConstraints.TOP));
-
-                            //---- dmsLonSecField ----
-                            dmsLonSecField.setModel(new SpinnerNumberModel(0.0, 0.0, 60.0, 1.0));
-                            dmsLonSecField.setName("dmsLonSecField");
-                            dmsLonSecField.addChangeListener(e -> degMinSecChanged());
-                            degMinSecPanel.add(dmsLonSecField, cc.xy(11, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                            //---- label14 ----
-                            label14.setText("\"");
-                            label14.setName("label14");
-                            degMinSecPanel.add(label14, cc.xy(13, 3, CellConstraints.LEFT, CellConstraints.TOP));
-                        }
-                        tabPane.addTab("Deg/Min/Sec", degMinSecPanel);
-                    }
-                    detailsFormPanel.add(tabPane, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                    //======== elevationPanel ========
-                    {
-                        elevationPanel.setName("elevationPanel");
-                        elevationPanel.setLayout(new FormLayout(
-                                "40dlu, $lcgap, 50dlu, $lcgap, default, $lcgap, default:grow",
-                                "default"));
-
-                        //---- elevationLabel ----
-                        elevationLabel.setText("Elevation:");
-                        elevationLabel.setName("elevationLabel");
-                        elevationPanel.add(elevationLabel, cc.xy(1, 1));
-
-                        //---- elevationField ----
-                        elevationField.setModel(new SpinnerNumberModel(0.0, null, null, 1.0));
-                        elevationField.setName("elevationField");
-                        elevationField.addChangeListener(e -> elevationChanged());
-                        elevationPanel.add(elevationField, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-
-                        //---- label16 ----
-                        label16.setText("\u00b0");
-                        label16.setVisible(false);
-                        label16.setName("label16");
-                        elevationPanel.add(label16, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
-
-                        //---- elevationUnitField ----
-                        elevationUnitField.setName("elevationUnitField");
-                        elevationUnitField.addItemListener(e -> elevationUnitFieldChanged());
-                        elevationPanel.add(elevationUnitField, cc.xy(7, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
-                    }
-                    detailsFormPanel.add(elevationPanel, cc.xy(1, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
+                    locationTextFocusLost();
                 }
-                detailsPanel.add(detailsFormPanel, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
-            }
-            formPanel.add(detailsPanel, cc.xy(1, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
+            });
+            textFieldPanel.add(locationTextField, cc.xy(3, 1));
         }
-        add(formPanel, BorderLayout.CENTER);
+        add(textFieldPanel, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+        //======== detailsPanel ========
+        {
+            detailsPanel.setBorder(new CompoundBorder(
+                    new TitledBorder(new MatteBorder(0, 1, 1, 1, UIManager.getColor("Component.borderColor")), "", TitledBorder.LEADING, TitledBorder.DEFAULT_POSITION, null, Color.white),
+                    Borders.createEmptyBorder("0dlu, 4dlu, 4dlu, 4dlu")));
+            detailsPanel.setName("detailsPanel");
+            detailsPanel.setLayout(new FormLayout(
+                    "default:grow",
+                    "default"));
+
+            //======== detailsFormPanel ========
+            {
+                detailsFormPanel.setName("detailsFormPanel");
+                detailsFormPanel.setLayout(new FormLayout(
+                        "default:grow",
+                        "default, $lgap, default"));
+
+                //======== tabPane ========
+                {
+                    tabPane.setName("tabPane");
+                    tabPane.addChangeListener(e -> tabPaneStateChanged());
+
+                    //======== mgrsPanel ========
+                    {
+                        mgrsPanel.setBorder(Borders.createEmptyBorder("4dlu, 0dlu, 0dlu, 0dlu"));
+                        mgrsPanel.setName("mgrsPanel");
+                        mgrsPanel.setLayout(new FormLayout(
+                                "40dlu, $lcgap, 20dlu, 3*($lcgap, default)",
+                                "fill:default, $lgap, default"));
+                        ((FormLayout) mgrsPanel.getLayout()).setColumnGroups(new int[][]{{3, 5, 7, 9}});
+
+                        //---- label18 ----
+                        label18.setText("Grid:");
+                        label18.setName("label18");
+                        mgrsPanel.add(label18, cc.xy(1, 1));
+
+                        //---- gzdField ----
+                        gzdField.setName("gzdField");
+                        gzdField.addFocusListener(new FocusAdapter()
+                        {
+                            @Override
+                            public void focusLost(FocusEvent e)
+                            {
+                                mgrsChanged();
+                            }
+                        });
+                        mgrsPanel.add(gzdField, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- sqrField ----
+                        sqrField.setName("sqrField");
+                        sqrField.addFocusListener(new FocusAdapter()
+                        {
+                            @Override
+                            public void focusLost(FocusEvent e)
+                            {
+                                mgrsChanged();
+                            }
+                        });
+                        mgrsPanel.add(sqrField, cc.xy(5, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- easField ----
+                        easField.setName("easField");
+                        easField.addFocusListener(new FocusAdapter()
+                        {
+                            @Override
+                            public void focusLost(FocusEvent e)
+                            {
+                                mgrsChanged();
+                            }
+                        });
+                        mgrsPanel.add(easField, cc.xy(7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- norField ----
+                        norField.setName("norField");
+                        norField.addFocusListener(new FocusAdapter()
+                        {
+                            @Override
+                            public void focusLost(FocusEvent e)
+                            {
+                                mgrsChanged();
+                            }
+                        });
+                        mgrsPanel.add(norField, cc.xy(9, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+                    }
+                    tabPane.addTab("MGRS", mgrsPanel);
+
+                    //======== degPanel ========
+                    {
+                        degPanel.setBorder(Borders.createEmptyBorder("4dlu, 0dlu, 0dlu, 0dlu"));
+                        degPanel.setAlignmentX(0.0F);
+                        degPanel.setName("degPanel");
+                        degPanel.setLayout(new FormLayout(
+                                "2*(40dlu, $lcgap), default",
+                                "fill:default, $lgap, default"));
+
+                        //---- degLatLabel ----
+                        degLatLabel.setText("Latitude:");
+                        degLatLabel.setName("degLatLabel");
+                        degPanel.add(degLatLabel, cc.xy(1, 1));
+
+                        //---- dLatDegField ----
+                        dLatDegField.setModel(new SpinnerNumberModel(0.0, -90.0, 90.0, 1.0));
+                        dLatDegField.setMaximumSize(new Dimension(100, 34));
+                        dLatDegField.setMinimumSize(new Dimension(100, 0));
+                        dLatDegField.setName("dLatDegField");
+                        dLatDegField.addChangeListener(e -> degChanged());
+                        degPanel.add(dLatDegField, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label4 ----
+                        label4.setText("\u00b0");
+                        label4.setName("label4");
+                        degPanel.add(label4, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
+
+                        //---- degLonLabel ----
+                        degLonLabel.setText("Longitude:");
+                        degLonLabel.setName("degLonLabel");
+                        degPanel.add(degLonLabel, cc.xy(1, 3));
+
+                        //---- dLonDegField ----
+                        dLonDegField.setModel(new SpinnerNumberModel(0.0, -180.0, 180.0, 1.0));
+                        dLonDegField.setMaximumSize(new Dimension(100, 34));
+                        dLonDegField.setMinimumSize(new Dimension(100, 0));
+                        dLonDegField.setName("dLonDegField");
+                        dLonDegField.addChangeListener(e -> degChanged());
+                        degPanel.add(dLonDegField, cc.xy(3, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label15 ----
+                        label15.setText("\u00b0");
+                        label15.setName("label15");
+                        degPanel.add(label15, cc.xy(5, 3, CellConstraints.DEFAULT, CellConstraints.TOP));
+                    }
+                    tabPane.addTab("Deg", degPanel);
+
+                    //======== degMinPanel ========
+                    {
+                        degMinPanel.setBorder(Borders.createEmptyBorder("4dlu, 0dlu, 0dlu, 0dlu"));
+                        degMinPanel.setName("degMinPanel");
+                        degMinPanel.setLayout(new FormLayout(
+                                "2*(40dlu, $lcgap), 2*(default, $lcgap), default",
+                                "fill:default, $lgap, default"));
+                        ((FormLayout) degMinPanel.getLayout()).setColumnGroups(new int[][]{{3, 7}, {5, 9}});
+
+                        //---- dmLatLabel ----
+                        dmLatLabel.setText("Latitude:");
+                        dmLatLabel.setName("dmLatLabel");
+                        degMinPanel.add(dmLatLabel, cc.xy(1, 1));
+
+                        //---- dmLatDegField ----
+                        dmLatDegField.setModel(new SpinnerNumberModel(0, -90, 90, 1));
+                        dmLatDegField.setMaximumSize(new Dimension(100, 34));
+                        dmLatDegField.setMinimumSize(new Dimension(100, 0));
+                        dmLatDegField.setName("dmLatDegField");
+                        dmLatDegField.addChangeListener(e -> degMinChanged());
+                        degMinPanel.add(dmLatDegField, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label5 ----
+                        label5.setText("\u00b0");
+                        label5.setName("label5");
+                        degMinPanel.add(label5, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
+
+                        //---- dmLatMinField ----
+                        dmLatMinField.setModel(new SpinnerNumberModel(0.0, 0.0, 60.0, 1.0));
+                        dmLatMinField.setMaximumSize(new Dimension(100, 34));
+                        dmLatMinField.setMinimumSize(new Dimension(100, 0));
+                        dmLatMinField.setName("dmLatMinField");
+                        dmLatMinField.addChangeListener(e -> degMinChanged());
+                        degMinPanel.add(dmLatMinField, cc.xy(7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label7 ----
+                        label7.setText("'");
+                        label7.setName("label7");
+                        degMinPanel.add(label7, cc.xy(9, 1, CellConstraints.LEFT, CellConstraints.TOP));
+
+                        //---- dmLonDegLabel ----
+                        dmLonDegLabel.setText("Longitude:");
+                        dmLonDegLabel.setName("dmLonDegLabel");
+                        degMinPanel.add(dmLonDegLabel, cc.xy(1, 3));
+
+                        //---- dmLonDegField ----
+                        dmLonDegField.setModel(new SpinnerNumberModel(0, -180, 180, 1));
+                        dmLonDegField.setMaximumSize(new Dimension(100, 34));
+                        dmLonDegField.setMinimumSize(new Dimension(100, 0));
+                        dmLonDegField.setName("dmLonDegField");
+                        dmLonDegField.addChangeListener(e -> degMinChanged());
+                        degMinPanel.add(dmLonDegField, cc.xy(3, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label6 ----
+                        label6.setText("\u00b0");
+                        label6.setName("label6");
+                        degMinPanel.add(label6, cc.xy(5, 3, CellConstraints.DEFAULT, CellConstraints.TOP));
+
+                        //---- dmLonMinField ----
+                        dmLonMinField.setModel(new SpinnerNumberModel(0.0, 0.0, 60.0, 1.0));
+                        dmLonMinField.setMaximumSize(new Dimension(100, 34));
+                        dmLonMinField.setMinimumSize(new Dimension(100, 0));
+                        dmLonMinField.setName("dmLonMinField");
+                        dmLonMinField.addChangeListener(e -> degMinChanged());
+                        degMinPanel.add(dmLonMinField, cc.xy(7, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label8 ----
+                        label8.setText("'");
+                        label8.setName("label8");
+                        degMinPanel.add(label8, cc.xy(9, 3, CellConstraints.LEFT, CellConstraints.TOP));
+                    }
+                    tabPane.addTab("Deg/Min", degMinPanel);
+
+                    //======== degMinSecPanel ========
+                    {
+                        degMinSecPanel.setBorder(Borders.createEmptyBorder("4dlu, 0dlu, 0dlu, 0dlu"));
+                        degMinSecPanel.setName("degMinSecPanel");
+                        degMinSecPanel.setLayout(new FormLayout(
+                                "2*(40dlu, $lcgap), 4*(default, $lcgap), default",
+                                "fill:default:grow, $lgap, default"));
+                        ((FormLayout) degMinSecPanel.getLayout()).setColumnGroups(new int[][]{{3, 7, 11}, {5, 9, 13}});
+
+                        //---- dmLatLabel2 ----
+                        dmLatLabel2.setText("Latitude:");
+                        dmLatLabel2.setName("dmLatLabel2");
+                        degMinSecPanel.add(dmLatLabel2, cc.xy(1, 1));
+
+                        //---- dmsLatDegField ----
+                        dmsLatDegField.setModel(new SpinnerNumberModel(0, -90, 90, 1));
+                        dmsLatDegField.setName("dmsLatDegField");
+                        dmsLatDegField.addChangeListener(e -> degMinSecChanged());
+                        degMinSecPanel.add(dmsLatDegField, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label9 ----
+                        label9.setText("\u00b0");
+                        label9.setName("label9");
+                        degMinSecPanel.add(label9, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
+
+                        //---- dmsLatMinField ----
+                        dmsLatMinField.setModel(new SpinnerNumberModel(0, 0, 60, 1));
+                        dmsLatMinField.setName("dmsLatMinField");
+                        dmsLatMinField.addChangeListener(e -> degMinSecChanged());
+                        degMinSecPanel.add(dmsLatMinField, cc.xy(7, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label10 ----
+                        label10.setText("'");
+                        label10.setName("label10");
+                        degMinSecPanel.add(label10, cc.xy(9, 1, CellConstraints.LEFT, CellConstraints.TOP));
+
+                        //---- dmsLatSecField ----
+                        dmsLatSecField.setModel(new SpinnerNumberModel(0.0, 0.0, 60.0, 1.0));
+                        dmsLatSecField.setName("dmsLatSecField");
+                        dmsLatSecField.addChangeListener(e -> degMinSecChanged());
+                        degMinSecPanel.add(dmsLatSecField, cc.xy(11, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label13 ----
+                        label13.setText("\"");
+                        label13.setName("label13");
+                        degMinSecPanel.add(label13, cc.xy(13, 1, CellConstraints.LEFT, CellConstraints.TOP));
+
+                        //---- dmLonLabel2 ----
+                        dmLonLabel2.setText("Longitude:");
+                        dmLonLabel2.setName("dmLonLabel2");
+                        degMinSecPanel.add(dmLonLabel2, cc.xy(1, 3));
+
+                        //---- dmsLonDegField ----
+                        dmsLonDegField.setModel(new SpinnerNumberModel(0, -180, 180, 1));
+                        dmsLonDegField.setName("dmsLonDegField");
+                        dmsLonDegField.addChangeListener(e -> degMinSecChanged());
+                        degMinSecPanel.add(dmsLonDegField, cc.xy(3, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label11 ----
+                        label11.setText("\u00b0");
+                        label11.setName("label11");
+                        degMinSecPanel.add(label11, cc.xy(5, 3, CellConstraints.DEFAULT, CellConstraints.TOP));
+
+                        //---- dmsLonMinField ----
+                        dmsLonMinField.setModel(new SpinnerNumberModel(0, 0, 60, 1));
+                        dmsLonMinField.setName("dmsLonMinField");
+                        dmsLonMinField.addChangeListener(e -> degMinSecChanged());
+                        degMinSecPanel.add(dmsLonMinField, cc.xy(7, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label12 ----
+                        label12.setText("'");
+                        label12.setName("label12");
+                        degMinSecPanel.add(label12, cc.xy(9, 3, CellConstraints.LEFT, CellConstraints.TOP));
+
+                        //---- dmsLonSecField ----
+                        dmsLonSecField.setModel(new SpinnerNumberModel(0.0, 0.0, 60.0, 1.0));
+                        dmsLonSecField.setName("dmsLonSecField");
+                        dmsLonSecField.addChangeListener(e -> degMinSecChanged());
+                        degMinSecPanel.add(dmsLonSecField, cc.xy(11, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                        //---- label14 ----
+                        label14.setText("\"");
+                        label14.setName("label14");
+                        degMinSecPanel.add(label14, cc.xy(13, 3, CellConstraints.LEFT, CellConstraints.TOP));
+                    }
+                    tabPane.addTab("Deg/Min/Sec", degMinSecPanel);
+                }
+                detailsFormPanel.add(tabPane, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                //======== elevationPanel ========
+                {
+                    elevationPanel.setName("elevationPanel");
+                    elevationPanel.setLayout(new FormLayout(
+                            "40dlu, $lcgap, 50dlu, $lcgap, default, $lcgap, default:grow",
+                            "default"));
+
+                    //---- elevationLabel ----
+                    elevationLabel.setText("Elevation:");
+                    elevationLabel.setName("elevationLabel");
+                    elevationPanel.add(elevationLabel, cc.xy(1, 1));
+
+                    //---- elevationField ----
+                    elevationField.setModel(new SpinnerNumberModel(0.0, null, null, 1.0));
+                    elevationField.setName("elevationField");
+                    elevationField.addChangeListener(e -> elevationChanged());
+                    elevationPanel.add(elevationField, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+
+                    //---- label16 ----
+                    label16.setText("\u00b0");
+                    label16.setVisible(false);
+                    label16.setName("label16");
+                    elevationPanel.add(label16, cc.xy(5, 1, CellConstraints.DEFAULT, CellConstraints.TOP));
+
+                    //---- elevationUnitField ----
+                    elevationUnitField.setName("elevationUnitField");
+                    elevationUnitField.addItemListener(e -> elevationUnitFieldChanged());
+                    elevationPanel.add(elevationUnitField, cc.xy(7, 1, CellConstraints.LEFT, CellConstraints.DEFAULT));
+                }
+                detailsFormPanel.add(elevationPanel, cc.xy(1, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
+            }
+            detailsPanel.add(detailsFormPanel, cc.xy(1, 1, CellConstraints.FILL, CellConstraints.DEFAULT));
+        }
+        add(detailsPanel, cc.xy(1, 3, CellConstraints.FILL, CellConstraints.DEFAULT));
 
         //---- copyButton ----
         copyButton.setBorderPainted(false);

@@ -5,10 +5,7 @@ import gov.tak.api.cot.event.CotEvent;
 import gov.tak.api.icons.ICotIconResolver;
 import gov.tak.api.icons.PredefinedCotIconAdapter;
 import gov.takx.api.mapobject.IMapObject;
-import gov.takx.api.milsym.CotSidcAdapter;
-import gov.takx.api.milsym.IMilStd2525Service;
-import gov.takx.api.milsym.IMilStd2525ServiceProvider;
-import gov.takx.api.milsym.IMilSymIconBuilder;
+import gov.takx.api.milsym.*;
 import gov.takx.api.persist.IMapObjectFinder;
 import gov.takx.commons.swing.ImageUtils;
 import gov.takx.platform.ui.UIResources;
@@ -40,7 +37,7 @@ public class CotIconResolver implements ICotIconResolver
     {
         this.mapObjectFinder = mapObjectFinder;
         this.predefinedCotIconAdapter = predefinedCotIconAdapter;
-        milStd2525Service = milStd2525ServiceProvider.get2525cService();
+        milStd2525Service = milStd2525ServiceProvider.get2525Service(MilStd2525Variant.CHARLIE);
     }
 
     @Nonnull

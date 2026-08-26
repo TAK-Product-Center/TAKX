@@ -29,6 +29,7 @@ import bibliothek.gui.dock.common.mode.ExtendedMode;
 import bibliothek.gui.dock.common.theme.ThemeMap;
 import bibliothek.gui.dock.control.focus.DefaultFocusStrategy;
 import bibliothek.gui.dock.control.focus.FocusStrategyRequest;
+import bibliothek.gui.dock.facile.mode.NormalMode;
 import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.station.flap.FlapDockHoldToggle;
 import bibliothek.gui.dock.station.flap.button.ButtonContent;
@@ -50,6 +51,7 @@ import gov.takx.api.globe.IExtendedGlobeManager;
 import gov.takx.api.ui.ComponentPosition;
 import gov.takx.api.ui.docking.DockingArea;
 import gov.takx.api.ui.docking.DockingPortNotFoundException;
+import gov.takx.commons.swing.ComponentUtils;
 import gov.takx.core.globe.GlobeDockable;
 import gov.takx.core.globe.GlobeDockableFactory;
 import gov.takx.core.launcher.ApplicationLauncher;
@@ -68,12 +70,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.HashMap;
@@ -267,6 +271,66 @@ public class DockingManager
     public ComponentDockable findComponentDockable(Predicate<DockableAndProps> filter)
     {
         return matchDockableAndProps(filter).findFirst().map(DockableAndProps::getDockable).orElse(null);
+    }
+
+    /**
+     * Scan all our dockables, and if it is externalized, then re-dock it.
+     *
+     * @since 5.8
+     */
+    public void reDockAllExternalizedComponents()
+    {
+        // All side panels
+        componentDockables.forEach(dap -> {
+            final var dockable = dap.getDockable();
+
+            if (dockable != null && dockable.getExtendedMode() == ExtendedMode.EXTERNALIZED)
+            {
+                relocateWindowIfNeeded(dap);
+                dockable.setExtendedMode(getRestoreLocation(dockable)); // Normalize or minimize the component
+            }
+        });
+
+        // Now all globes, since they are tracked separately
+        globeDockablesById.values().forEach(dockable -> {
+            if (dockable.getExtendedMode() == ExtendedMode.EXTERNALIZED) dockable.setExtendedMode(ExtendedMode.NORMALIZED);
+        });
+    }
+
+    /**
+     * If the window containing the given component is not located on any screen device, then force it back onto the
+     * screen that is showing TAKX.
+     * 
+     * @since 5.8
+     */
+    private static void relocateWindowIfNeeded(DockableAndProps dap)
+    {
+        final Component component = dap.getComponent();
+
+        if (ComponentUtils.isComponentWindowOutsideAllDisplays(component))
+        {
+            final Rectangle componentBounds = SwingUtilities.windowForComponent(component).getBounds();
+
+            final var windowBounds = ComponentUtils.getActiveMonitorScreenBounds();
+            componentBounds.x = windowBounds.x;
+            componentBounds.y = windowBounds.y;
+
+            dap.setExternalizedLocation(componentBounds);
+            dap.requireDockable().setLocation(dap.getExternalizedLocation());
+        }
+    }
+
+    /**
+     * Determine where to re-dock a component.  If it has a "normal" mode entry in the history, we will restore it
+     * as {@link ExtendedMode#NORMALIZED}, else {@link ExtendedMode#MINIMIZED}.
+     *
+     * @since 5.8
+     */
+    private static ExtendedMode getRestoreLocation(ComponentDockable dockable)
+    {
+        final var history = dockable.getControl().getLocationManager().getPropertyHistory(dockable.intern());
+        final boolean hasNormalizedLocation = history.stream().anyMatch(location -> NormalMode.IDENTIFIER.equals(location.getMode()));
+        return hasNormalizedLocation ? ExtendedMode.NORMALIZED : ExtendedMode.MINIMIZED;
     }
 
     /**

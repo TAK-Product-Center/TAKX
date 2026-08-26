@@ -2,14 +2,12 @@ package gov.takx.core.globe;
 
 import com.atakmap.map.layer.feature.Feature;
 import com.atakmap.map.layer.feature.FeatureDataStore2;
-import com.atakmap.map.layer.feature.FeatureLayer3;
 import com.atakmap.map.layer.feature.FeatureSet;
 import com.atakmap.map.layer.feature.geometry.LineString;
 import com.atakmap.map.layer.feature.style.BasicStrokeStyle;
 import com.atakmap.map.layer.feature.style.Style;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Sector;
-import gov.tak.core.map.layer.feature.datastore.memory.InMemoryFeatureDataStore;
 import gov.takx.api.annotation.Headless;
 import gov.takx.api.event.StartProjectServices;
 import gov.takx.api.event.StopProjectServices;
@@ -17,6 +15,7 @@ import gov.takx.api.layer.IRaptorLayer;
 import gov.takx.api.layer.IRaptorLayerManager;
 import gov.takx.api.layer.IRaptorLayerManagerListener;
 import gov.takx.api.layer.LayerGroup;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
 import gov.takx.core.globe.tak.elevation.ElevationDownloaderLayer;
 import gov.takx.core.project.ServiceOrdering;
 import jakarta.annotation.Nonnull;
@@ -50,22 +49,21 @@ public class LayerBoundsManager implements IRaptorLayerManagerListener
 
     private final Map<IRaptorLayer, Registration> registrations = new ConcurrentHashMap<>();
 
-    private final InMemoryFeatureDataStore dataStore = new InMemoryFeatureDataStore();
-    private final FeatureLayer3 featureLayer = new FeatureLayer3("LayerBoundsLayer", dataStore);
-
     private final Style imageryOutline = new BasicStrokeStyle(Color.YELLOW.getRGB(), 1f);
     private final Style elevationOutline = new BasicStrokeStyle(Color.GREEN.getRGB(), 1f);
 
     private final ApplicationGlobeManager globeManager;
     private final IRaptorLayerManager raptorLayerManager;
+    private final ISharedFeatureDataStore dataStore;
 
     private long featureSetId;
 
     @Inject
-    private LayerBoundsManager(ApplicationGlobeManager globeManager, IRaptorLayerManager raptorLayerManager)
+    private LayerBoundsManager(ApplicationGlobeManager globeManager, IRaptorLayerManager raptorLayerManager, ISharedFeatureDataStore dataStore)
     {
         this.globeManager = globeManager;
         this.raptorLayerManager = raptorLayerManager;
+        this.dataStore = dataStore;
     }
 
     private void startService(@Observes @Priority(ServiceOrdering.START_LayerViewManager + 1) StartProjectServices ignored, @Headless boolean headless)
@@ -74,7 +72,7 @@ public class LayerBoundsManager implements IRaptorLayerManagerListener
         try
         {
             dataStore.acquireModifyLock(true);
-            FeatureSet featureSet = new FeatureSet("LayerBoundsManager", "LayerBoundsLayer", "LayerBoundsLayer", Double.MAX_VALUE, 0);
+            FeatureSet featureSet = new FeatureSet("LayerBoundsManager", ISharedFeatureDataStore.ALL_GLOBES_FEATURE_SET_TYPE, "LayerBoundsLayer", Double.MAX_VALUE, 0);
             featureSetId = dataStore.insertFeatureSet(featureSet);
         } catch (Exception e)
         {
@@ -154,16 +152,6 @@ public class LayerBoundsManager implements IRaptorLayerManagerListener
     private boolean isValidSector(@Nullable Sector sector)
     {
         return sector != null && sector.getDeltaLonDegrees() < 90.0 && sector.getDeltaLatDegrees() < 90.0;
-    }
-
-    /**
-     * The {@link FeatureLayer3} for rendering the layer bounding boxes.
-     *
-     * @return the layer containing the {@link Feature Features}
-     */
-    public FeatureLayer3 getLayer()
-    {
-        return featureLayer;
     }
 
     @Override

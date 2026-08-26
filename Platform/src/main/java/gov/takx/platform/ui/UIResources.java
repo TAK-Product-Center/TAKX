@@ -1,10 +1,10 @@
 package gov.takx.platform.ui;
 
 import com.github.weisj.jsvg.SVGDocument;
-import com.github.weisj.jsvg.attributes.ViewBox;
-import com.github.weisj.jsvg.geometry.size.FloatSize;
+import com.github.weisj.jsvg.parser.LoaderContext;
 import com.github.weisj.jsvg.parser.SVGLoader;
-import gov.tak.api.annotation.DeprecatedApi;
+import com.github.weisj.jsvg.view.FloatSize;
+import com.github.weisj.jsvg.view.ViewBox;
 import gov.takx.api.annotation.Internal;
 import gov.takx.api.annotation.PlatformUnderTest;
 import gov.takx.api.url.Schemes;
@@ -23,6 +23,7 @@ import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.net.MalformedURLException;
@@ -118,6 +119,22 @@ public class UIResources
     public static final String REFRESH_ICON_FILE = "refresh.svg";
     /** @since 5.7 */
     public static final String CANCEL_ICON_FILE = "cancel.svg";
+    /** @since 5.8 */
+    public static final String OPEN_ICON_FILE = "open.svg";
+    /** @since 5.8 */
+    public static final String LAUNCH_ICON_FILE = "launch.svg";
+    /** @since 5.8 */
+    public static final String ATTACH_ICON_FILE = "attach.svg";
+    /** @since 5.8 */
+    public static final String ROUTE_ICON_FILE = "route.svg";
+
+    /** @since 5.8 */
+    public static final URL ATTACH_ICON_URL = getUrl(PLATFORM_ICONS, ATTACH_ICON_FILE);
+    /**
+     * Do not use. Only needed by data monitor.
+     * @since 5.8
+     */
+    public static final URL BATTERY_BLACK_ICON_URL = getUrl(PLATFORM_ICONS, "battery_black.png");
 
     // Various icons at the small standard size for reuse throughout the application.
     public static final ImageIcon ADD_ICON = getStandardSizedIcon(PLATFORM_ICONS, ADD_ICON_FILE);
@@ -131,7 +148,7 @@ public class UIResources
     public static final ImageIcon IMPORT_ICON = getStandardSizedIcon(PLATFORM_ICONS, "import.png");
     public static final ImageIcon LOCKED_ICON = getStandardSizedIcon(PLATFORM_ICONS, "lock.png");
     public static final ImageIcon NONE_ICON = getStandardSizedIcon(PLATFORM_ICONS, "none.png");
-    public static final ImageIcon OPEN_ICON = getStandardSizedIcon(PLATFORM_ICONS, "open.png");
+    public static final ImageIcon OPEN_ICON = getStandardSizedIcon(PLATFORM_ICONS, "open.svg");
     public static final ImageIcon REMOVE_ICON = getStandardSizedIcon(PLATFORM_ICONS, REMOVE_ICON_FILE);
     public static final ImageIcon SETTINGS_ICON = getStandardSizedIcon(PLATFORM_ICONS, SETTINGS_ICON_FILE);
     /** @since 5.2 */
@@ -144,14 +161,16 @@ public class UIResources
     public static final ImageIcon SORT_ASCENDING_ICON = getStandardSizedIcon(PLATFORM_ICONS, "sort_ascending.svg");
     /** @since 5.7.1 */
     public static final ImageIcon SORT_DESCENDING_ICON = getStandardSizedIcon(PLATFORM_ICONS, "sort_descending.svg");
+    /** @since 5.8 */
+    public static final ImageIcon ROUTE_ICON = getStandardSizedIcon(PLATFORM_ICONS, ROUTE_ICON_FILE);
 
     // Icons at the action button size for reuse across multiple panels.
     public static final ImageIcon ADD_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, ADD_ICON_FILE);
     public static final ImageIcon DEVICE_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, "device.png");
     public static final ImageIcon EDIT_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, EDIT_ICON_FILE);
-    public static final ImageIcon EXPORT_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, "export.png");
+    public static final ImageIcon EXPORT_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, "export.svg");
     public static final ImageIcon GOTO_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, "go_to.png");
-    public static final ImageIcon IMPORT_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, "import.png");
+    public static final ImageIcon IMPORT_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, "import.svg");
     public static final ImageIcon NONE_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, "none.png");
     public static final ImageIcon REMOVE_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, REMOVE_ICON_FILE);
     public static final ImageIcon SETTINGS_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, SETTINGS_ICON_FILE);
@@ -167,6 +186,24 @@ public class UIResources
     public static final ImageIcon REFRESH_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, REFRESH_ICON_FILE);
     /** @since 5.7 */
     public static final ImageIcon CANCEL_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, CANCEL_ICON_FILE);
+    /** @since 5.8 */
+    public static final ImageIcon LAUNCH_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, LAUNCH_ICON_FILE);
+    /** @since 5.8 */
+    public static final ImageIcon OPEN_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, OPEN_ICON_FILE);
+    /** @since 5.8 */
+    public static final ImageIcon ATTACH_ACTION_BUTTON_ICON = getActionButtonIcon(PLATFORM_ICONS, ATTACH_ICON_FILE);
+
+    /** @since 5.8 **/
+    public static final ImageIcon ROUTE_TOOLBAR_ICON = getToolbarIcon(PLATFORM_ICONS, ROUTE_ICON_FILE);
+
+    /**
+     * A color to use when highlighting elements of the user interface e.g. during hover operations. Should work well as a
+     * border but alpha may need to be applied before using as a background behind text. Beware of reusing this reference for
+     * things other than borders, as someone may come back in the future and change the color without realizing the impact.
+     *
+     * @since 5.8
+     */
+    public static final Color BORDER_HIGHLIGHT_COLOR = new Color(50, 153, 205);
 
     private UIResources()
     {
@@ -671,51 +708,6 @@ public class UIResources
     }
 
     /**
-     * Loads in an SVG located in the specified directory with a new {@link SVGLoader}.
-     * <p/>
-     * Defaults to the SVG size for the returned image size, as well as {@link BufferedImage#TYPE_INT_ARGB} for the image type
-     *
-     * @param directory      The directory from which a resource is being requested
-     * @param imagePath      Name of file containing the image to load
-     * @param defaultOnError Whether to return the default image if an error occurs
-     * @return {@code BufferedImage} created from the SVG file. If failure occurs and defaultOnError is {@code true},
-     *         returns {@link ImageUtils#getDefaultImage()}, else {@code null}
-     *
-     * @since 5.0
-     * @deprecated since 5.4, for removal in 5.7, use {@link #getSvg(SVGLoader, InputStream, int, int, int, boolean)} or {@link ImageUtils#getImage(URL, boolean)} instead
-     */
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
-    @Nullable
-    public static BufferedImage getSvg(@Nonnull ResourceDirectory directory, @Nonnull String imagePath, boolean defaultOnError)
-    {
-        return getSvg(null, directory, imagePath, defaultOnError);
-    }
-
-    /**
-     * Loads in an SVG located in the specified directory.
-     * <p/>
-     * Defaults to the SVG size for the returned image size, as well as {@link BufferedImage#TYPE_INT_ARGB} for the image type
-     *
-     * @param loader         The {@link SVGLoader} to use
-     * @param directory      The directory from which a resource is being requested
-     * @param imagePath      Name of file containing the image to load
-     * @param defaultOnError Whether to return the default image if an error occurs
-     * @return {@code BufferedImage} created from the SVG file. If failure occurs and defaultOnError is {@code true},
-     *         returns {@link ImageUtils#getDefaultImage()}, else {@code null}
-     *
-     * @since 5.0
-     * @deprecated since 5.4, for removal in 5.7, use {@link #getSvg(SVGLoader, InputStream, int, int, int, boolean)} or {@link ImageUtils#getImage(URL, boolean)} instead
-     */
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
-    @Nullable
-    public static BufferedImage getSvg(@Nullable SVGLoader loader, @Nonnull ResourceDirectory directory, @Nonnull String imagePath, boolean defaultOnError)
-    {
-        return getSvg(loader, directory, imagePath, -1, -1, defaultOnError);
-    }
-
-    /**
      * Loads in an SVG located in the specified directory.
      * <p/>
      * Defaults to {@link BufferedImage#TYPE_INT_ARGB} for the image type
@@ -730,59 +722,13 @@ public class UIResources
      *         returns {@link ImageUtils#getDefaultImage()}, else {@code null}
      *
      * @since 5.0
-     * @deprecated since 5.4, for removal in 5.7, use {@link #getSvg(SVGLoader, InputStream, int, int, int, boolean)} or {@link ImageUtils#getImage(URL, boolean)} instead
      */
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
     @Nullable
     public static BufferedImage getSvg(@Nullable SVGLoader loader, @Nonnull ResourceDirectory directory, @Nonnull String imagePath, int width, int height, boolean defaultOnError)
     {
         URL svgUrl = getUrl(directory, imagePath, defaultOnError);
         if (svgUrl == null) return defaultOnError ? ImageUtils.getDefaultImage() : null;
         return getSvg(loader, svgUrl, width, height, defaultOnError);
-    }
-
-    /**
-     * Loads in an SVG located at the given URL with a new {@link SVGLoader}.
-     * <p/>
-     * Defaults to the SVG size for the returned image size, as well as {@link BufferedImage#TYPE_INT_ARGB} for the image type
-     *
-     * @param svgUrl         The URL to load the SVG from
-     * @param defaultOnError Whether to return the default image if an error occurs
-     * @return {@code BufferedImage} created from the SVG file. If failure occurs and defaultOnError is {@code true},
-     *         returns {@link ImageUtils#getDefaultImage()}, else {@code null}
-     *
-     * @since 5.0
-     * @deprecated since 5.4, for removal in 5.7, use {@link #getSvg(SVGLoader, InputStream, int, int, int, boolean)} or {@link ImageUtils#getImage(URL, boolean)} instead
-     */
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
-    @Nullable
-    public static BufferedImage getSvg(@Nonnull URL svgUrl, boolean defaultOnError)
-    {
-        return getSvg(null, svgUrl, defaultOnError);
-    }
-
-    /**
-     * Loads in an SVG located at the given URL.
-     * <p/>
-     * Defaults to the SVG size for the returned image size, as well as {@link BufferedImage#TYPE_INT_ARGB} for the image type
-     *
-     * @param loader         The {@link SVGLoader} to use
-     * @param svgUrl         The URL to load the SVG from
-     * @param defaultOnError Whether to return the default image if an error occurs
-     * @return {@code BufferedImage} created from the SVG file. If failure occurs and defaultOnError is {@code true},
-     *         returns {@link ImageUtils#getDefaultImage()}, else {@code null}
-     *
-     * @since 5.0
-     * @deprecated since 5.4, for removal in 5.7, use {@link #getSvg(SVGLoader, InputStream, int, int, int, boolean)} or {@link ImageUtils#getImage(URL, boolean)} instead
-     */
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
-    @Nullable
-    public static BufferedImage getSvg(@Nullable SVGLoader loader, @Nonnull URL svgUrl, boolean defaultOnError)
-    {
-        return getSvg(loader, svgUrl, -1, -1, defaultOnError);
     }
 
     /**
@@ -799,44 +745,18 @@ public class UIResources
      *         returns {@link ImageUtils#getDefaultImage()}, else {@code null}
      *
      * @since 5.0
-     * @deprecated since 5.4, for removal in 5.7, use {@link #getSvg(SVGLoader, InputStream, int, int, int, boolean)} or {@link ImageUtils#getImage(URL, boolean)} instead
      */
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
     @Nullable
     public static BufferedImage getSvg(@Nullable SVGLoader loader, @Nonnull URL svgUrl, int width, int height, boolean defaultOnError)
     {
-        return getSvg(loader, svgUrl, width, height, BufferedImage.TYPE_INT_ARGB, defaultOnError);
-    }
-
-    /**
-     * Loads in an SVG located at the given URL.
-     *
-     * @param loader            The {@link SVGLoader} to use, a new loader will be created if {@code null}
-     * @param svgUrl            The URL to load the SVG from
-     * @param width             The width to render the SVG; pass -1 to use SVG width
-     * @param height            The height to render the SVG; pass -1 to use SVG height
-     * @param bufferedImageType The {@link BufferedImage} type to use when rendering the SVG
-     * @param defaultOnError    Whether to return the default image if an error occurs
-     * @return {@code BufferedImage} created from the SVG file. If failure occurs and defaultOnError is {@code true},
-     *         returns {@link ImageUtils#getDefaultImage()}, else {@code null}
-     *
-     * @since 5.0
-     * @deprecated since 5.4, for removal in 5.7, use {@link #getSvg(SVGLoader, InputStream, int, int, int, boolean)} or {@link ImageUtils#getImage(URL, boolean)} instead
-     */
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
-    @Nullable
-    public static BufferedImage getSvg(@Nullable SVGLoader loader, @Nonnull URL svgUrl, int width, int height, int bufferedImageType, boolean defaultOnError)
-    {
-        loader = loader == null ? new SVGLoader() : loader;
-        SVGDocument svgDocument = loader.load(svgUrl);
-        if (svgDocument == null)
+        try (var inputStream = svgUrl.openStream())
         {
-            logger.warn("Cannot create SVG {}, returning default image: {}", svgUrl, defaultOnError);
+            return getSvg(loader, inputStream, width, height, BufferedImage.TYPE_INT_ARGB, defaultOnError);
+        } catch (IOException e)
+        {
+            logger.warn("Failed to open '{}', returning default image: {}", svgUrl, defaultOnError);
             return defaultOnError ? ImageUtils.getDefaultImage() : null;
         }
-        return getBufferedImage(width, height, bufferedImageType, svgDocument);
     }
 
     /**
@@ -857,7 +777,7 @@ public class UIResources
     public static BufferedImage getSvg(@Nullable SVGLoader loader, @Nonnull InputStream svgInputStream, int width, int height, int bufferedImageType, boolean defaultOnError)
     {
         loader = loader == null ? new SVGLoader() : loader;
-        SVGDocument svgDocument = loader.load(svgInputStream);
+        SVGDocument svgDocument = loader.load(svgInputStream, null, LoaderContext.createDefault());
         if (svgDocument == null)
         {
             logger.warn("Cannot create SVG from stream, returning default image: {}", defaultOnError);

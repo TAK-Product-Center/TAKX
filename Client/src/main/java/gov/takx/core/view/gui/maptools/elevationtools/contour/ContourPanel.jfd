@@ -1,0 +1,94 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "max(default;96px), labelcompgap, default, labelcompgap, default:grow"
+			"$rowSpecs": "fill:default, linegap, default, linegap, default, linegap, default"
+		} ) {
+			name: "this"
+			"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "graphicHolder"
+				"border": new javax.swing.border.LineBorder( sfield java.awt.Color lightGray, 1, false )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridHeight": 7
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "locationPrefixLabel"
+				"text": "Location"
+				"font": new java.awt.Font( "Segoe UI", 1, 12 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "locationLabel"
+				"text": "text"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 1
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "elevationMinPrefixLabel"
+				"text": "Min Elevation:"
+				"font": new java.awt.Font( "Segoe UI", 1, 12 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "elevationMinLabel"
+				"text": "text"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "elevationMaxPrefixLabel"
+				"text": "Max Elevation:"
+				"font": new java.awt.Font( "Segoe UI", 1, 12 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "elevationMaxLabel"
+				"text": "text"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "areaPrefixLabel"
+				"text": "Area:"
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 7
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "areaLabel"
+				"text": "text"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 7
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 95 )
+		} )
+	}
+}

@@ -1,62 +1,39 @@
 package gov.takx.core.mapobject.gui.primarydialog.primarypanel;
 
-import com.formdev.flatlaf.FlatClientProperties;
 import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.PseudoBean;
-import gov.takx.api.mapobject.ICoreMapObjectManager;
-import gov.takx.api.mapobject.IDataMonitor;
 import gov.takx.api.mapobject.IIconMapObject;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IMapObjectController;
 import gov.takx.api.plugin.IRaptorPanel;
-import gov.takx.api.plugin.datamonitor.DataMonitorEvent;
-import gov.takx.api.plugin.datamonitor.DataMonitorEventType;
-import gov.takx.api.timer.ITimerService;
 import gov.takx.api.ui.DevicePanelMetadataKeys;
 import gov.takx.api.ui.IDeviceSwingUIProvider;
 import gov.takx.api.ui.IResourceCleaner;
-import gov.takx.commons.swing.ImageUtils;
-import gov.takx.core.mapobject.ICoreAudioManager;
-import gov.takx.core.mapobject.gui.DataMonitorsPanel;
-import gov.takx.platform.ui.UIResources;
+import gov.takx.commons.swing.ChipField;
+import gov.takx.commons.swing.FormLayoutUtils;
 import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.DefaultListModel;
-import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JToolTip;
-import javax.swing.Popup;
-import javax.swing.PopupFactory;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Point;
 import java.awt.Window;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.lang.invoke.MethodHandles;
 import java.util.Arrays;
 import java.util.List;
 
-import static gov.takx.platform.ui.ResourceDirectory.PLATFORM_ICONS;
+import static gov.takx.commons.swing.ImageUtils.SMALL_ICON_WIDTH;
 
 /**
+ * The Panel for the old "Properties" panel header and "Open" dialog
  */
 @SuppressWarnings("CdiManagedBeanInconsistencyInspection")
 @PseudoBean
@@ -69,22 +46,9 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
             IIconMapObject.CONTAINED_REMOVED,
             IIconMapObject.ALLOW_DEVICE_CONTAINMENT);
 
-    private static final Icon SOUND_ICON = UIResources.getStandardSizedIcon(PLATFORM_ICONS, "volume.png");
-    private static final Icon MUTE_ICON = UIResources.getStandardSizedIcon(PLATFORM_ICONS, "volume_off.png");
-
     private static final CellConstraints CELL_CONSTRAINTS = new CellConstraints();
 
     private JPanel pluginPanel;
-    private DataMonitorsPanel dataMonitorsPanel;
-
-    @Inject
-    private ITimerService timerService;
-
-    @Inject
-    private ICoreMapObjectManager mapObjectManager;
-
-    @Inject
-    private ICoreAudioManager audioManager;
 
     public DeviceMapObjectPrimaryPanel(IMapObjectController controller)
     {
@@ -104,15 +68,9 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
         // label didn't yet exist.
         addProperties(propertyList);
 
-        clearAlarmsButton.putClientProperty(FlatClientProperties.MINIMUM_WIDTH, 0);
-
         // For contained MapObjects
-        containerList.setCellRenderer(new ContainerListCellRenderer());
-        containerList.addMouseListener(new ContainerListMouseListener());
-        containerList.addListSelectionListener(
-                e -> removeButton.setEnabled(!containerList.getSelectionModel().isSelectionEmpty()));
-
-        removeButton.putClientProperty(FlatClientProperties.MINIMUM_WIDTH, 0);
+        containerList.setTextProvider(IMapObject::getName);
+        containerList.setIconProvider(mo -> mo.getSizedIcon(SMALL_ICON_WIDTH));
     }
 
     @PostConstruct
@@ -146,16 +104,16 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
 
         updateForContainment(); // Add containment panel, if the device can contain other MOs
 
-        dataMonitorsPanel = new DataMonitorsPanel(mapObjectController);
-
         mapObjectController.addPropertyChangeListener(this);
 
         // Add data monitors to UI (if necessary)
         if (!mapObjectController.getDataMonitors().isEmpty()
                 && mapObject.getMetaBoolean(DevicePanelMetadataKeys.SHOW_DATA_MONITORS, true))
         {
-            panelStatusHolder.add(statusPanel, CELL_CONSTRAINTS.xy(1, 1));
-            panelDataMonitorsPanelHolder.add(dataMonitorsPanel, CELL_CONSTRAINTS.xy(1, 1));
+            dataMonitorsDetailsPanel.setMapObject(mapObject);
+        } else
+        {
+            FormLayoutUtils.hideColumn(dataMonitorsDetailsPanel);
         }
 
         final boolean isDevice = mapObject.isDevice();
@@ -169,8 +127,6 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
 
         helpButton.setEnabled(enableHelp);
         helpButton.setVisible(enableHelp);
-
-        setSpeakerIcon();
     }
 
     /**
@@ -192,101 +148,6 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
     }
 
     /**
-     * Clear any alarming alarms in the alarms panel.
-     */
-    private void clearAlarmsButtonActionPerformed()
-    {
-        for (IDataMonitor dataMonitor : mapObjectController.getDataMonitors())
-        {
-            dataMonitor.onDataMonitorEvent(new DataMonitorEvent(dataMonitor, DataMonitorEventType.AlarmClear));
-        }
-
-        // Audio Manager is a black box- if there were any audio alarms associated with
-        // the data monitors, let the audio manager know that they have been cleared.
-        audioManager.clearAudioAlarms(mapObjectController);
-    }
-
-    /**
-     * Mute any alarming alarms in the alarm panel.
-     */
-    private void buttonMuteActionPerformed()
-    {
-        boolean enableAudio = !mapObjectController.isAudioAlarmPlaybackEnabled();
-        logger.debug("Toggling alarm state: {}", enableAudio);
-        mapObjectController.setAudioAlarmPlayback(enableAudio);
-
-        setSpeakerIcon();
-
-        // If the user was trying to mute all monitors but the current
-        // state is still un-muted, it is because 1 or more data monitors
-        // is un-mutable. Notify the user.
-        if (!enableAudio && mapObjectController.isAudioAlarmPlaybackEnabled())
-        {
-            showImmutableDataMonitorsPopup();
-        }
-    }
-
-    /**
-     * Show a popup notifying the user that one or more data monitors could not be muted,
-     * thus prevented a global mute. Popup will be hidden after two seconds.
-     *
-     * @since 1.14
-     */
-    private void showImmutableDataMonitorsPopup()
-    {
-        JToolTip tooltip = new JToolTip();
-        tooltip.setTipText("<html>1 or more data monitors<br>are not mutable.");
-        Point location = buttonMute.getLocationOnScreen();
-        Dimension buttonsSize = buttonMute.getSize();
-        final Popup popup = PopupFactory.getSharedInstance().getPopup(buttonMute, tooltip, location.x + buttonsSize.width, location.y + buttonsSize.height);
-
-        popup.show();
-
-        timerService.createTask(popup::hide, 2_000);
-    }
-
-    /**
-     * Remove the currently selected contained map object from containment within this map object.
-     */
-    private void removeButtonActionPerformed()
-    {
-        for (IIconMapObject mapObject : containerList.getSelectedValuesList())
-        {
-            removeChild(mapObject);
-            mapObjectManager.removeFromContainer(mapObject);
-        }
-    }
-
-    /**
-     * Add a child map object.
-     *
-     * @param containedMapObject child to add
-     */
-    private void addChild(final IIconMapObject containedMapObject)
-    {
-        getContainerListModel().addElement(containedMapObject);
-    }
-
-    /**
-     * Remove a child map object.
-     *
-     * @param containable child to remove
-     */
-    private void removeChild(IIconMapObject containable)
-    {
-        getContainerListModel().removeElement(containable);
-    }
-
-    /**
-     * @return List model from {@code containerList} properly typed as a {@code DefaultListModel}.
-     * @since 2.37
-     */
-    private DefaultListModel<IIconMapObject> getContainerListModel()
-    {
-        return (DefaultListModel<IIconMapObject>) containerList.getModel();
-    }
-
-    /**
      * Update our UI to show or hide the contained MOs panel.  If the contained MOs panel should be visible,
      * its model is recreated with the current list of contained MOs.
      *
@@ -297,22 +158,13 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
         if (mapObject.isAllowDeviceToBeContainer() && mapObject instanceof IIconMapObject iconMapObject)
         {
             // Create a new model with all the children currently contained by the map object
-            containerList.setModel(new DefaultListModel<>());
-            iconMapObject.getContainedMapObjects().forEach(this::addChild);
-
+            containerList.setModelElements(iconMapObject.getContainedMapObjects());
             panelCustomAndContained.add(panelContainedMapObjects, CELL_CONSTRAINTS.xy(1, 2));
         } else
         {
             panelCustomAndContained.remove(panelContainedMapObjects);
         }
-    }
-
-    /**
-     * Sets the speaker icon.
-     */
-    private void setSpeakerIcon()
-    {
-        buttonMute.setIcon(mapObjectController.isAudioAlarmPlaybackEnabled() ? SOUND_ICON : MUTE_ICON);
+        revalidate();
     }
 
     @InvokeOnEDT
@@ -323,10 +175,10 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
 
         if (propertyName.equals(IIconMapObject.CONTAINED_ADDED))
         {
-            addChild((IIconMapObject) evt.getNewValue());
+            containerList.addModelElement((IMapObject) evt.getNewValue());
         } else if (propertyName.equals(IIconMapObject.CONTAINED_REMOVED))
         {
-            removeChild((IIconMapObject) evt.getNewValue());
+            containerList.removeModelElement((IMapObject) evt.getNewValue());
         } else if (propertyName.equals(IIconMapObject.ALLOW_DEVICE_CONTAINMENT))
         {
             updateForContainment();
@@ -339,9 +191,6 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
             {
                 window.pack();
             }
-        } else if (propertyName.equalsIgnoreCase(IDataMonitor.MUTE))
-        {
-            setSpeakerIcon();
         }
     }
 
@@ -349,45 +198,18 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
     public void releaseResources()
     {
         mapObjectController.removePropertyChangeListener(this);
-        dataMonitorsPanel.releaseResources();
+        dataMonitorsDetailsPanel.releaseResources();
 
         if (pluginPanel instanceof IResourceCleaner resourceCleaner) resourceCleaner.releaseResources();
 
         super.releaseResources();
     }
 
-    private static class ContainerListCellRenderer extends DefaultListCellRenderer
-    {
-        @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
-        {
-            JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-
-            IMapObject mapObject = (IMapObject) value;
-            label.setIcon(mapObject.getSizedIcon(ImageUtils.SMALL_ICON_WIDTH));
-            label.setText(mapObject.getName());
-            return label;
-        }
-    }
-
-    private class ContainerListMouseListener extends MouseAdapter
-    {
-        @Override
-        public void mouseClicked(MouseEvent e)
-        {
-            if ((e.getClickCount() > 1) && (e.getButton() == MouseEvent.BUTTON1))
-            {
-                IMapObject mapObject = containerList.getSelectedValue();
-                if (mapObject != null) mapObject.getController().showPluginDialog();
-            }
-        }
-    }
-
     private void initComponents()
     {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         var panel5 = new JPanel();
-        panelStatusHolder = new JPanel();
+        dataMonitorsDetailsPanel = new DataMonitorsDetailsPanel();
         var panel6 = new JPanel();
         panelCustomAndContained = new JPanel();
         var buttonPanelPrimaryButtons = new JPanel();
@@ -396,17 +218,8 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
         cancelButton = new JButton();
         panelContainedMapObjects = new JPanel();
         var label1 = new JLabel();
-        var containerListScrollPane = new JScrollPane();
-        containerList = new JList<>();
-        removeButton = new JButton();
-        statusPanel = new JPanel();
-        var statusPanel2 = new JPanel();
-        var label5 = new JLabel();
-        var panelDataMonitorButtons = new JPanel();
-        clearAlarmsButton = new JButton();
-        buttonMute = new JButton();
-        panelDataMonitorsPanelHolder = new JPanel();
-        var statusSeparatorRight = new JSeparator();
+        containerList = new ChipField<>();
+        panelStatusHolder = new JPanel();
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
@@ -420,14 +233,9 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
                     "default, $lcgap, default:grow",
                     "fill:default:grow"));
 
-            //======== panelStatusHolder ========
-            {
-                panelStatusHolder.setName("panelStatusHolder");
-                panelStatusHolder.setLayout(new FormLayout(
-                        "default:grow",
-                        "fill:default:grow"));
-            }
-            panel5.add(panelStatusHolder, cc.xy(1, 1));
+            //---- dataMonitorsDetailsPanel ----
+            dataMonitorsDetailsPanel.setName("dataMonitorsDetailsPanel");
+            panel5.add(dataMonitorsDetailsPanel, cc.xy(1, 1));
 
             //======== panel6 ========
             {
@@ -482,109 +290,36 @@ public class DeviceMapObjectPrimaryPanel extends AMapObjectPanel
         {
             panelContainedMapObjects.setName("panelContainedMapObjects");
             panelContainedMapObjects.setLayout(new FormLayout(
-                    "default:grow, $lcgap, default",
-                    "default, $lgap, fill:default:grow"));
+                    "default:grow",
+                    "default, $lgap, fill:default"));
 
             //---- label1 ----
-            label1.setText("Contained Map Objects");
+            label1.setText("Contained Map Objects:");
             label1.setName("label1");
             panelContainedMapObjects.add(label1, cc.xy(1, 1));
 
-            //======== containerListScrollPane ========
-            {
-                containerListScrollPane.setVerifyInputWhenFocusTarget(false);
-                containerListScrollPane.setName("containerListScrollPane");
-
-                //---- containerList ----
-                containerList.setVisibleRowCount(-1);
-                containerList.setLayoutOrientation(JList.HORIZONTAL_WRAP);
-                containerList.setName("containerList");
-                containerListScrollPane.setViewportView(containerList);
-            }
-            panelContainedMapObjects.add(containerListScrollPane, cc.xy(1, 3));
-
-            //---- removeButton ----
-            removeButton.setText("Remove");
-            removeButton.setEnabled(false);
-            removeButton.setToolTipText("Remove Contained Map Object");
-            removeButton.setName("removeButton");
-            removeButton.addActionListener(e -> removeButtonActionPerformed());
-            panelContainedMapObjects.add(removeButton, cc.xy(3, 3, CellConstraints.DEFAULT, CellConstraints.CENTER));
+            //---- containerList ----
+            containerList.setName("containerList");
+            panelContainedMapObjects.add(containerList, cc.xy(1, 3));
         }
 
-        //======== statusPanel ========
+        //======== panelStatusHolder ========
         {
-            statusPanel.setName("statusPanel");
-            statusPanel.setLayout(new FormLayout(
-                    "default, $lcgap, default",
+            panelStatusHolder.setName("panelStatusHolder");
+            panelStatusHolder.setLayout(new FormLayout(
+                    "default:grow",
                     "fill:default:grow"));
-
-            //======== statusPanel2 ========
-            {
-                statusPanel2.setName("statusPanel2");
-                statusPanel2.setLayout(new FormLayout(
-                        "default",
-                        "default, $lgap, fill:default, $lgap, fill:default:grow"));
-
-                //---- label5 ----
-                label5.setText("Status");
-                label5.putClientProperty("FlatLaf.styleClass", "large");
-                label5.setName("label5");
-                statusPanel2.add(label5, cc.xy(1, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
-
-                //======== panelDataMonitorButtons ========
-                {
-                    panelDataMonitorButtons.setName("panelDataMonitorButtons");
-                    panelDataMonitorButtons.setLayout(new FormLayout(
-                            "center:default, $lcgap, center:default",
-                            "default"));
-
-                    //---- clearAlarmsButton ----
-                    clearAlarmsButton.setText("Clear");
-                    clearAlarmsButton.setToolTipText("Clear All Alarms");
-                    clearAlarmsButton.putClientProperty("FlatLaf.styleClass", "mini");
-                    clearAlarmsButton.setName("clearAlarmsButton");
-                    clearAlarmsButton.addActionListener(e -> clearAlarmsButtonActionPerformed());
-                    panelDataMonitorButtons.add(clearAlarmsButton, cc.xy(1, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
-
-                    //---- buttonMute ----
-                    buttonMute.setToolTipText("Toggle Audible Alerts");
-                    buttonMute.setName("buttonMute");
-                    buttonMute.addActionListener(e -> buttonMuteActionPerformed());
-                    panelDataMonitorButtons.add(buttonMute, cc.xy(3, 1, CellConstraints.FILL, CellConstraints.FILL));
-                }
-                statusPanel2.add(panelDataMonitorButtons, cc.xy(1, 3));
-
-                //======== panelDataMonitorsPanelHolder ========
-                {
-                    panelDataMonitorsPanelHolder.setName("panelDataMonitorsPanelHolder");
-                    panelDataMonitorsPanelHolder.setLayout(new FormLayout(
-                            "default:grow",
-                            "fill:default:grow"));
-                }
-                statusPanel2.add(panelDataMonitorsPanelHolder, cc.xy(1, 5));
-            }
-            statusPanel.add(statusPanel2, cc.xy(1, 1));
-
-            //---- statusSeparatorRight ----
-            statusSeparatorRight.setOrientation(SwingConstants.VERTICAL);
-            statusSeparatorRight.setName("statusSeparatorRight");
-            statusPanel.add(statusSeparatorRight, cc.xy(3, 1, CellConstraints.CENTER, CellConstraints.DEFAULT));
         }
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
-    private JPanel panelStatusHolder;
+    private DataMonitorsDetailsPanel dataMonitorsDetailsPanel;
     private JPanel panelCustomAndContained;
     private JButton helpButton;
     private JButton cancelButton;
     private JPanel panelContainedMapObjects;
-    private JList<IIconMapObject> containerList;
-    private JButton removeButton;
-    private JPanel statusPanel;
-    private JButton clearAlarmsButton;
-    private JButton buttonMute;
-    private JPanel panelDataMonitorsPanelHolder;
+    private ChipField<IMapObject> containerList;
+    private JPanel panelStatusHolder;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

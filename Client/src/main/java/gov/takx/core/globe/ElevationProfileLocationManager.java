@@ -8,12 +8,15 @@ import com.atakmap.map.layer.feature.FeatureSet;
 import com.atakmap.map.layer.feature.geometry.Point;
 import com.atakmap.map.layer.feature.style.IconPointStyle;
 import gov.tak.api.engine.map.coords.IGeoPoint;
-import gov.tak.core.map.layer.feature.datastore.SharedFeatureDataStore;
+import gov.tak.api.maps.coords.GeoPoint;
 import gov.takx.api.event.StartProjectServices;
 import gov.takx.api.event.StopProjectServices;
+import gov.takx.api.globe.IGlobeManager;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
+import gov.takx.commons.lang.ErrorThrowingRunnable;
 import gov.takx.core.globe.tak.FeatureUtility;
-import gov.takx.core.globe.tak.features.IFeatureProvider;
 import gov.takx.core.project.ServiceOrdering;
+import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.platform.ui.ResourceDirectory;
 import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
@@ -40,14 +43,19 @@ public class ElevationProfileLocationManager
     private static final String LOCATION_ICON = UIResources.getUrl(ResourceDirectory.PLATFORM_ICONS, "elevation_profile_location.png").toString();
     private static final String LOCATION_FEATURE_NAME = "Elevation Profile Location";
 
+    private final IGlobeManager globeManager;
     private final FeatureDataStore4 dataStore;
     private long featureSetId;
     private long featureId;
 
+    /**
+     * @since 5.6 (globeManager added in 5.8)
+     */
     @Inject
-    ElevationProfileLocationManager(@SharedFeatureDataStore FeatureDataStore4 dataStore)
+    ElevationProfileLocationManager(ISharedFeatureDataStore dataStore, IGlobeManager globeManager)
     {
         this.dataStore = dataStore;
+        this.globeManager = globeManager;
     }
 
     @SuppressWarnings("unused")
@@ -80,6 +88,12 @@ public class ElevationProfileLocationManager
         lockAndExecute(() -> dataStore.updateFeature(featureId, FeatureDataStore2.PROPERTY_FEATURE_GEOMETRY,
                 LOCATION_FEATURE_NAME, point, null, null, 0),
                 "set location");
+
+        if (PreferenceEntry.ROUTE_ELEVATION_PROFILE_CENTER_ON_SEEKER.getBooleanValue())
+        {
+            var lastGlobe = globeManager.getLastFocusedGlobe();
+            if (lastGlobe != null) lastGlobe.centerOn(new GeoPoint(geoPoint), false);
+        }
     }
 
     /**
@@ -89,7 +103,7 @@ public class ElevationProfileLocationManager
      */
     private void init() throws DataStoreException
     {
-        final var featureSet = new FeatureSet(LOCATION_FEATURE_NAME, IFeatureProvider.ALL_GLOBES_GROUP_NAME, LOCATION_FEATURE_NAME, Double.MAX_VALUE, 0);
+        final var featureSet = new FeatureSet(LOCATION_FEATURE_NAME, ISharedFeatureDataStore.ALL_GLOBES_FEATURE_SET_TYPE, LOCATION_FEATURE_NAME, Double.MAX_VALUE, 0);
         featureSetId = dataStore.insertFeatureSet(featureSet);
         dataStore.setFeatureSetVisible(featureSetId, false);
 
@@ -105,7 +119,7 @@ public class ElevationProfileLocationManager
      * @param runnable The runnable
      * @param actionName The name of the action to log if errors occur
      */
-    private void lockAndExecute(@Nonnull ICheckedRunnable runnable, @Nonnull String actionName)
+    private void lockAndExecute(@Nonnull ErrorThrowingRunnable<DataStoreException> runnable, @Nonnull String actionName)
     {
         try
         {
@@ -118,14 +132,5 @@ public class ElevationProfileLocationManager
         {
             dataStore.releaseModifyLock();
         }
-    }
-
-    /**
-     * Runnable-like functional interface that re-throws {@link DataStoreException}.
-     */
-    @FunctionalInterface
-    private interface ICheckedRunnable
-    {
-        void run() throws DataStoreException;
     }
 }

@@ -1,18 +1,23 @@
 package gov.takx.core.milsym;
 
-import gov.tak.api.annotation.DeprecatedApi;
+import gov.tak.platform.symbology.SymbologyProvider;
+import gov.tak.platform.symbology.milstd2525.APP6dSymbologyProvider;
 import gov.tak.platform.symbology.milstd2525.MilStd2525cSymbologyProvider;
 import gov.tak.platform.symbology.milstd2525.MilStd2525dSymbologyProvider;
 import gov.tak.platform.symbology.milstd2525.MilStd2525eSymbologyProvider;
+import gov.tak.platform.symbology.milstd2525.MilStd2525ech1SymbologyProvider;
 import gov.takx.api.milsym.IExtendedMilStd2525Service;
 import gov.takx.api.milsym.IMilStd2525Service;
 import gov.takx.api.milsym.IMilStd2525ServiceProvider;
+import gov.takx.api.milsym.MilStd2525Variant;
 import gov.takx.api.preferences.IPreferenceMonitor;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Objects;
+import java.util.Map;
 
 import static gov.takx.platform.preferences.PreferenceEntry.MIL_STD_2525_PREF;
 
@@ -26,19 +31,28 @@ import static gov.takx.platform.preferences.PreferenceEntry.MIL_STD_2525_PREF;
 @ApplicationScoped
 public class MilStd2525ServiceProvider implements IMilStd2525ServiceProvider
 {
-    private final IExtendedMilStd2525Service charlieService = new MilStd2525Service(this, new MilStd2525cSymbologyProvider());
-    private final IExtendedMilStd2525Service deltaService = new MilStd2525Service(this, new MilStd2525dSymbologyProvider());
-    private final IExtendedMilStd2525Service echoService = new MilStd2525Service(this, new MilStd2525eSymbologyProvider());
-    private final IPreferenceMonitor<String> currentServiceMonitor = MIL_STD_2525_PREF.newStringMonitor(this::updatePreferredService);
-    private IExtendedMilStd2525Service currentService = getImpl(currentServiceMonitor.getCurrentValue());
+    private final IExtendedMilStd2525Service app6dService = new MilStd2525Service(this, new APP6dSymbologyProvider(), MilStd2525Variant.APP6D);
+    private final IExtendedMilStd2525Service charlieService = new MilStd2525Service(this, new MilStd2525cSymbologyProvider(), MilStd2525Variant.CHARLIE);
+    private final IExtendedMilStd2525Service deltaService = new MilStd2525Service(this, new MilStd2525dSymbologyProvider(), MilStd2525Variant.DELTA);
+    private final IExtendedMilStd2525Service echoService = new MilStd2525Service(this, new MilStd2525eSymbologyProvider(), MilStd2525Variant.ECHO);
+    private final IExtendedMilStd2525Service echoch1Service = new MilStd2525Service(this, new MilStd2525ech1SymbologyProvider(), MilStd2525Variant.ECHOCH1);
 
-    @Override
-    @Nonnull
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    public IExtendedMilStd2525Service getMilStd2525Service()
+    private final IPreferenceMonitor<String> currentServiceMonitor = MIL_STD_2525_PREF.newStringMonitor(this::updatePreferredService);
+    private IExtendedMilStd2525Service currentService;
+
+    private Map<MilStd2525Variant, IExtendedMilStd2525Service> services;
+
+    @PostConstruct
+    private void postConstruct()
     {
-        return get2525cService();
+        services = Map.ofEntries(
+                Map.entry(MilStd2525Variant.CHARLIE, charlieService),
+                Map.entry(MilStd2525Variant.DELTA, deltaService),
+                Map.entry(MilStd2525Variant.ECHO, echoService),
+                Map.entry(MilStd2525Variant.ECHOCH1, echoch1Service),
+                Map.entry(MilStd2525Variant.APP6D, app6dService));
+
+        currentService = getImpl(currentServiceMonitor.getCurrentValue());
     }
 
     @Nonnull
@@ -48,9 +62,18 @@ public class MilStd2525ServiceProvider implements IMilStd2525ServiceProvider
         // Default to Charlie if the symbol is empty.
         if (symbolCode.isBlank()) return charlieService;
 
-        // Numeric symbols are D/E, where E has a specific version code in the 2nd character.
-        char identifier = symbolCode.charAt(1);
-        return Character.isDigit(identifier) ? (identifier == '3' ? echoService : deltaService) : charlieService;
+        do // Defer to SymbologyProvider to determine best service
+        {
+            final var provider = SymbologyProvider.getProviderFromSymbol(symbolCode);
+            if (provider == null) break;
+
+            final var service = services.values().stream().filter(x -> provider == x.getSymbologyProvider()).findFirst();
+            if (service.isEmpty()) break;
+
+            return service.get();
+        } while (false);
+
+        return charlieService;
     }
 
     @Override
@@ -75,6 +98,12 @@ public class MilStd2525ServiceProvider implements IMilStd2525ServiceProvider
     }
 
     @Override
+    public @NotNull IMilStd2525Service get2525Service(@NotNull MilStd2525Variant variant)
+    {
+        return services.getOrDefault(variant, charlieService);
+    }
+
+    @Override
     @Nonnull
     public IExtendedMilStd2525Service getPreferred2525Service()
     {
@@ -89,11 +118,6 @@ public class MilStd2525ServiceProvider implements IMilStd2525ServiceProvider
     @Nonnull
     private IExtendedMilStd2525Service getImpl(@Nullable String stdImpl)
     {
-        return switch (Character.toLowerCase(Objects.requireNonNullElse(stdImpl, "c").charAt(0)))
-        {
-            case 'd' -> deltaService;
-            case 'e' -> echoService;
-            default -> charlieService;
-        };
+        return services.getOrDefault(MilStd2525Variant.fromName(stdImpl), charlieService);
     }
 }

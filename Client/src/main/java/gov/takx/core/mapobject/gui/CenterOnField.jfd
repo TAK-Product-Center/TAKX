@@ -1,0 +1,50 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default, labelcompgap, default"
+			"$rowSpecs": "fill:default:grow"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "checkBox"
+				"text": "Center On Globe"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "checkBoxAction", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default:grow"
+				"$rowSpecs": "fill:default:grow"
+			} ) {
+				name: "splitButtonPanel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label1"
+					"text": "Center On Globe"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 1
+				} )
+				add( new FormComponent( "gov.takx.commons.swing.SplitButton" ) {
+					name: "splitButton"
+					"text": "None"
+					"popupMenu": new FormReference( "popupMenu" )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 20, 0 )
+			"size": new java.awt.Dimension( 350, 40 )
+		} )
+		add( new FormContainer( "javax.swing.JPopupMenu", new FormLayoutManager( class javax.swing.JPopupMenu ) ) {
+			name: "popupMenu"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 155, 325 )
+		} )
+	}
+}

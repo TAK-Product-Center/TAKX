@@ -19,7 +19,7 @@ import java.util.Iterator;
  *     {
  *         while(it.hasNext())
  *         {
- *             MediaFrame frame = it.next();
+ *             IMediaFrame frame = it.next();
  *             ...
  *         }
  *     }

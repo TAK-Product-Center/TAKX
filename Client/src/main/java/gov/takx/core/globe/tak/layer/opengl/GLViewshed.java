@@ -29,7 +29,7 @@ import java.util.Arrays;
 public class GLViewshed extends GLHeatMap implements ViewshedLayer.OnPointOfInterestChangedListener,
         ViewshedLayer.OnRadiusChangedListener, ViewshedLayer.OnOpacityChangedListener
 {
-    public final static GLLayerSpi2 SPI = new GLLayerSpi2()
+    public static final GLLayerSpi2 SPI = new GLLayerSpi2()
     {
         @Override
         public int getPriority()

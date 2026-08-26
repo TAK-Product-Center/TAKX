@@ -14,6 +14,7 @@ import gov.takx.api.coordinatesystem.ILocation;
 import gov.takx.api.shapes.IMutableIrregularShape;
 import gov.takx.api.shapes.IRoute;
 import gov.takx.commons.utils.UUIDUtils;
+import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.platform.utils.ShapeUtils;
 import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class Route extends AShape implements IRoute, IMutableIrregularShape, Pro
     private RouteMethod method = RouteMethod.DRIVING;
     private RouteType routeType = RouteType.PRIMARY;
     private RouteOrder routeOrder = RouteOrder.ASCENDING;
-    private String prefix = "CP";
+    private String prefix = PreferenceEntry.ROUTE_CHECKPOINT_PREFIX.getStringValue();
 
     private List<GeoPointMetaData> vertices = new CopyOnWriteArrayList<>();
 
@@ -149,7 +150,7 @@ public class Route extends AShape implements IRoute, IMutableIrregularShape, Pro
     @Override
     public void addPoint(@Nonnull GeoPointMetaData geoPoint)
     {
-        addPoint(geoPoint, getWaypoints().size());
+        addPoint(geoPoint, getControlPoints().size());
     }
 
     @Override

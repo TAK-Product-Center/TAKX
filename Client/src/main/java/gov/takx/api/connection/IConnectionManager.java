@@ -7,7 +7,6 @@ import gov.takx.api.plugin.connection.TooManyConnectionsException;
 import gov.takx.api.registry.NoSuchPluginException;
 import gov.takx.core.view.gui.event.ProxyButtonEvent;
 import jakarta.annotation.Nonnull;
-import jakarta.annotation.Nullable;
 
 import java.io.File;
 import java.util.Collection;
@@ -43,11 +42,11 @@ public interface IConnectionManager extends IConnectionManagerDelegate
      * Translates an IConnection unique key into its associated IComposedConnectionController.
      *
      * @param uniqueKey Unique key that represents the IConnection inside of the IComposedConnectionController.
-     * @return Composed connection controller associated with the IConnection unique key, or {@code null} if no match is found
+     * @return Composed connection controller associated with the IConnection unique key
      * @throws NoSuchConnectionControllerException when the key is not registered with the connection manager
      * @since 1.7
      */
-    @Nullable
+    @Nonnull
     IComposedConnectionController getControllerFromConnectionKey(String uniqueKey) throws NoSuchConnectionControllerException;
 
     /**
@@ -128,20 +127,6 @@ public interface IConnectionManager extends IConnectionManagerDelegate
      * @param uniqueKey Unique key that represents the IConnectionPluginController
      */
     void editDialogClosed(String uniqueKey);
-
-    /**
-     * Request to remove a connection by its key.
-     * <p>
-     * Note: for the isActiveConnection parameter, active DOES NOT refer to the current connection state. Rather, it is
-     * used to indicate whether this is a fully-initialized connection that has been persisted to the database so it can
-     * be removed from the database if necessary. Callers should pass true if the connection was created successfully.
-     * Pass false only during creation of the connection.
-     *
-     * @param uniqueKey          Unique key that represents the IConnectionPluginController
-     * @param isActiveConnection boolean indicating if the connection being removed is an active connection, as
-     *                           opposed to a connection that was cancelled during the instantiation process.
-     */
-    void removeConnection(String uniqueKey, boolean isActiveConnection);
 
     /**
      * Process the Open connection logic for a given connection.

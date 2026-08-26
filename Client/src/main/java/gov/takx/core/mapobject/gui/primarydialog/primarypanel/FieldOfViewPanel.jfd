@@ -1,0 +1,320 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "30dlu, labelcompgap, 38dlu, labelcompgap, default, labelcompgap, default, labelcompgap, max(default;100dlu):grow, labelcompgap, default, labelcompgap, default, labelcompgap, default"
+			"$rowSpecs": "default, pargap, default, unrelgap, default, linegap, default, linegap, default, linegap, default, unrelgap, default, unrelgap, default, pargap, default, linegap, default, linegap, default"
+		} ) {
+			name: "this"
+			"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "showFovCheckBox"
+				"text": "Show FOV Overlay"
+				"selected": true
+				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "showFovCheckBoxStateChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridWidth": 7
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label1"
+				"text": "Video URL"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridWidth": 2
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+				"gridY": 3
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "213dlu:grow, labelcompgap, 32dlu"
+				"$rowSpecs": "fill:default"
+			} ) {
+				name: "videoUrlPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "urlButton"
+					"text": "None"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "videoButtonClicked", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "gov.takx.commons.swing.SplitButton" ) {
+					name: "selectMediaButton"
+					"toolTipText": "Select the Media for this Sensor"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+				"gridWidth": 13
+				"gridX": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label2"
+				"text": "Range"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+				"gridWidth": 2
+			} )
+			add( new FormComponent( "javax.swing.JSpinner" ) {
+				name: "rangeSpinner"
+				"model": new javax.swing.SpinnerNumberModel( 20000, 0, 60000, 1 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 5
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label3"
+				"text": "m"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 7
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "placeEndpointButton"
+				"text": "Place Endpoint"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "placeEndpoint", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+				"gridX": 9
+			} )
+			add( new FormComponent( "javax.swing.JSlider" ) {
+				name: "rangeSlider"
+				"maximum": 60000
+				"value": 20000
+				"majorTickSpacing": 60000
+				"paintLabels": true
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 7
+				"gridWidth": 15
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label10"
+				"text": "Fill"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 9
+				"gridX": 3
+			} )
+			add( new FormComponent( "net.java.dev.colorchooser.ColorChooser" ) {
+				name: "fillColorChooser"
+				"background": new java.awt.Color( 255, 255, 255, 255 )
+				"toolTipText": "Fill color"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 9
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+			} )
+			add( new FormComponent( "javax.swing.JSlider" ) {
+				name: "fillColorOpacitySlider"
+				"value": 30
+				"toolTipText": "Fill opacity"
+				"maximum": 255
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 7
+				"gridY": 9
+				"gridWidth": 9
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label11"
+				"text": "Outline"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 11
+				"gridX": 3
+			} )
+			add( new FormComponent( "net.java.dev.colorchooser.ColorChooser" ) {
+				name: "outlineColorChooser"
+				"background": new java.awt.Color( 153, 255, 255, 255 )
+				"toolTipText": "Outline color"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 11
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+			} )
+			add( new FormComponent( "javax.swing.JSlider" ) {
+				name: "outlineWeightSlider"
+				"value": 30
+				"toolTipText": "Outline opacity"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 7
+				"gridY": 11
+				"gridWidth": 9
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label4"
+				"text": "Direction"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 13
+				"gridWidth": 2
+			} )
+			add( new FormComponent( "javax.swing.JSpinner" ) {
+				name: "directionSpinner"
+				"model": new javax.swing.SpinnerNumberModel( 0, 0, 359, 1 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 13
+				"gridX": 3
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "javax.swing.JComboBox" ) {
+				name: "northReferenceCombo"
+				auxiliary() {
+					"JavaCodeGenerator.typeParameters": "NorthReference"
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 7
+				"gridY": 13
+			} )
+			add( new FormComponent( "javax.swing.JSlider" ) {
+				name: "directionSlider"
+				"maximum": 359
+				"majorTickSpacing": 359
+				"paintLabels": true
+				"value": 0
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 13
+				"gridWidth": 7
+				"gridX": 9
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label7"
+				"text": "<html>Field of View</html>"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 15
+				"gridWidth": 2
+			} )
+			add( new FormComponent( "javax.swing.JSpinner" ) {
+				name: "fieldOfViewSpinner"
+				"model": new javax.swing.SpinnerNumberModel( 45, 0, 359, 1 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 15
+				"gridX": 3
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label9"
+				"text": "°"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 7
+				"gridY": 15
+			} )
+			add( new FormComponent( "javax.swing.JSlider" ) {
+				name: "fieldOfViewSlider"
+				"maximum": 359
+				"value": 45
+				"majorTickSpacing": 359
+				"paintLabels": true
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 15
+				"gridX": 9
+				"gridWidth": 7
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "showRangeLinesAndLabelsCheckBox"
+				"text": "Show Range Lines, Angles"
+				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "showAnglesCheckBoxStateChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 17
+				"gridWidth": 9
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label5"
+				"text": "<html>Range Line Dist</html>"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 19
+			} )
+			add( new FormComponent( "javax.swing.JSpinner" ) {
+				name: "rangeLineSpacingSpinner"
+				"model": new javax.swing.SpinnerNumberModel( 0, 0, 60000, 1 )
+				"toolTipText": "Range line spacing"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 19
+				"gridX": 3
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label6"
+				"text": "m"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 7
+				"gridY": 19
+			} )
+			add( new FormComponent( "javax.swing.JSlider" ) {
+				name: "rangeLineSpacingSlider"
+				"maximum": 60000
+				"majorTickSpacing": 60000
+				"paintLabels": true
+				"toolTipText": "Range line distance"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 19
+				"gridWidth": 7
+				"gridX": 9
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label12"
+				"text": "Color / Weight"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 21
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "net.java.dev.colorchooser.ColorChooser" ) {
+				name: "rangeLinesOutlineColorChooser"
+				"background": new java.awt.Color( 51, 153, 255, 255 )
+				"toolTipText": "Range line color"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 21
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+			} )
+			add( new FormComponent( "javax.swing.JSlider" ) {
+				name: "rangeLinesWeightSlider"
+				"value": 30
+				"toolTipText": "Range line weight"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 9
+				"gridY": 21
+				"gridWidth": 7
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 580, 450 )
+		} )
+	}
+}

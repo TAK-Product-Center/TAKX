@@ -93,6 +93,7 @@ public class DataPackagePanel extends ATitledPanel implements IRaptorLifecycleLi
         cardLayout = (CardLayout) contentPanel.getLayout();
 
         detailsScrollPane.setViewportView(dataPackageListPanel);
+        detailsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 
         folderButton.setIcon(FOLDER_ICON);
         logButton.setIcon(TRANSFER_ICON);

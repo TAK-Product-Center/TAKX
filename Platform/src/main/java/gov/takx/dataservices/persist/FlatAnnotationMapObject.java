@@ -1,6 +1,7 @@
 package gov.takx.dataservices.persist;
 
 import gov.nasa.worldwind.avlist.AVKey;
+import gov.tak.api.util.StandardAttributeNames;
 import gov.takx.api.mapobject.IFlatAnnotationMapObject;
 import gov.takx.api.mapobject.MapObjectSpec;
 import gov.takx.api.plugin.IPluginDefinition;
@@ -41,6 +42,8 @@ public class FlatAnnotationMapObject extends MapObject implements IFlatAnnotatio
     public FlatAnnotationMapObject(MapObjectSpec mapObjectSpec, IPluginDefinition<? extends IRaptorPlugin> pluginDefinition)
     {
         super(mapObjectSpec, pluginDefinition);
+
+        setMetaBoolean(StandardAttributeNames.NEVER_COT, true);
     }
 
     @Override

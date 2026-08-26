@@ -18,14 +18,19 @@ import gov.tak.platform.symbology.milstd2525.MilStd2525;
 import gov.tak.platform.symbology.milstd2525.MilSymStandardAttributes;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.coordinatesystem.ILocation;
-import gov.takx.api.globe.IGlobeManager;
+import gov.takx.api.globe.IExtendedGlobeManager;
+import gov.takx.api.globe.IGlobeMapObject;
+import gov.takx.api.globe.IGlobeMapObjectManager;
 import gov.takx.api.globe.IGlobeShapeMapObject;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.milsym.IMilStd2525ServiceProvider;
 import gov.takx.api.shapes.IMutableShape;
+import gov.takx.api.shapes.ShapeType;
 import gov.takx.core.globe.tak.features.AShapeFeatureProvider.ShapeGeometryState;
 import gov.takx.dataservices.persist.AShapeMapObject;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 
 import java.awt.Component;
@@ -47,6 +52,20 @@ import java.util.stream.Stream;
 @PseudoBean
 public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<IGlobeShapeMapObject, MilStdGlobeShapeFeatureProvider.MilStdShapeState>
 {
+    private static final Map<gov.takx.api.shapes.ShapeType, gov.tak.api.symbology.ShapeType> shapeLookup = Map.ofEntries(
+            Map.entry(ShapeType.RECTANGLE, gov.tak.api.symbology.ShapeType.Rectangle),
+            Map.entry(ShapeType.SQUARE, gov.tak.api.symbology.ShapeType.Rectangle),
+            Map.entry(ShapeType.FREEHAND_POLYGON, gov.tak.api.symbology.ShapeType.Polygon),
+            Map.entry(ShapeType.POLYGON, gov.tak.api.symbology.ShapeType.Polygon),
+            Map.entry(ShapeType.FREEHAND_POLYLINE, gov.tak.api.symbology.ShapeType.LineString),
+            Map.entry(ShapeType.POLYLINE, gov.tak.api.symbology.ShapeType.LineString),
+            Map.entry(ShapeType.ARROW, gov.tak.api.symbology.ShapeType.LineString),
+            Map.entry(ShapeType.CIRCLE, gov.tak.api.symbology.ShapeType.LineString),
+            Map.entry(ShapeType.ELLIPSE, gov.tak.api.symbology.ShapeType.Ellipse),
+            Map.entry(ShapeType.BULLSEYE, gov.tak.api.symbology.ShapeType.Circle),
+            Map.entry(ShapeType.RANGE_FAN, gov.tak.api.symbology.ShapeType.Circle),
+            Map.entry(ShapeType.ROUTE, gov.tak.api.symbology.ShapeType.LineString));
+
     public static final FeatureFactorySpi SPI = new AbstractFeatureFactorySpi(AbstractFeatureFactorySpi.TOP_PRIORITY, IGlobeShapeMapObject.class)
     {
         @Override
@@ -65,13 +84,20 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
     private static final GlobeShapeFeatureProvider GLOBE_SHAPE_FEATURE_PROVIDER = new GlobeShapeFeatureProvider();
 
     @Inject
-    private IGlobeManager globeManager;
+    private IExtendedGlobeManager globeManager;
 
     @Inject
     private IMilStd2525ServiceProvider symbologyServiceProvider;
 
+    private IGlobeMapObjectManager globeMapObjectManager;
     private MilStdShapeState lastState;
     private Map<Integer, Collection<Feature>> lastFeatureCollection;
+
+    @PostConstruct
+    private void postConstruct()
+    {
+        globeMapObjectManager = globeManager.getPrimaryGlobeDelegate().getGlobeMapObjectManager();
+    }
 
     @Nonnull
     @Override
@@ -90,14 +116,18 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
             }
         }
 
+        boolean wasClipped = attributeSet.getBooleanAttribute(StandardAttributeNames.MIL_SYM_HINT_WAS_CLIPPED, false);
+        boolean lodAware = attributeSet.getBooleanAttribute(StandardAttributeNames.MIL_SYM_HINT_LOD_AWARE, false);
+
         Map<Integer, Double> milStdGsdHintMap = mapObject instanceof AShapeMapObject<?> mo ? mo.getMilStdGsdHintMap() : null;
         Map<Integer, GeoBounds> milStdSceneBoundsHintMap = mapObject instanceof AShapeMapObject<?> mo ? mo.getMilStdSceneBoundsHintMap() : null;
 
         AShapeFeatureProvider.ShapeState gmoState = GLOBE_SHAPE_FEATURE_PROVIDER.createState(globeShapeMapObject);
         AltitudeMode altitudeMode = AltitudeMode.ClampToGround;
         List<ILocation> geoPoints = getGeoPoints(gmoState.geometryState());
-
-        return new MilStdShapeState(symbolCode, geoPoints, unitModifiers, gmoState.outlineColor(), gmoState.outlineWidth(), shapeModel.isVisible(), altitudeMode, milStdSceneBoundsHintMap, milStdGsdHintMap);
+        gov.tak.api.symbology.ShapeType shapeType = getShapeType(globeShapeMapObject);
+        String moKey = mapObject.getKey();
+        return new MilStdShapeState(symbolCode, geoPoints, unitModifiers, gmoState.outlineColor(), gmoState.outlineWidth(), shapeModel.isVisible(), altitudeMode, milStdSceneBoundsHintMap, milStdGsdHintMap, wasClipped, lodAware, shapeType, moKey);
     }
 
     @Override
@@ -143,7 +173,6 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
         final String[] names = new String[getFeatureCount(state)];
         Arrays.fill(names, "");
         return names;
-
     }
 
     @Nonnull
@@ -167,6 +196,7 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
             hints.strokeWidth = (float) state.strokeWidth;
             hints.fontSize = 10;
             hints.boundingBox = null;
+            hints.shapeType = state.shapeType();
             // compute the minimum resolution for the symbol based on source points. If the current globe resolution is
             // lower than the minimum, use the minimum resolution and discard any bounding box; else if the current
             // globe resolution is higher than the minimum, use actual resolution and apply the bounding box.
@@ -185,10 +215,28 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
             org.gdal.gdal.gdal.PopErrorHandler();
             if (result == null || result.isEmpty()) result = getFallbackFeatures(state);
             featureResultsByGlobe.put(appGlobeId, result);
+            updateMapObjectHints(state, hints);
         });
         lastState = state;
         lastFeatureCollection = featureResultsByGlobe;
         return featureResultsByGlobe;
+    }
+
+    /**
+     * Apply the provided rendering hints to the {@link IGlobeMapObject} associated with the provided {@link MilStdShapeState state object}
+     * if the map object can be retrieved from the {@link IGlobeMapObjectManager}. The relevant hints are stored in the map object's {@link AttributeSet} for later use.
+     * @param state the state object
+     * @param hints the rendering hints
+     */
+    private void updateMapObjectHints(@Nonnull MilStdShapeState state, @Nonnull ISymbologyProvider.RendererHints hints)
+    {
+        IGlobeMapObject gmo = globeMapObjectManager.getGlobeMapObject(state.moKey);
+        if (gmo != null)
+        {
+            AttributeSet attributeSet = gmo.getMapObject().getAttributeSet();
+            attributeSet.setAttribute(StandardAttributeNames.MIL_SYM_HINT_WAS_CLIPPED, hints.wasClipped);
+            attributeSet.setAttribute(StandardAttributeNames.MIL_SYM_HINT_LOD_AWARE, hints.lodAware);
+        }
     }
 
     @Nonnull
@@ -225,6 +273,12 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
         {
             return Collections.emptyList();
         }
+    }
+
+    private static gov.tak.api.symbology.ShapeType getShapeType(IGlobeShapeMapObject globeShapeMapObject)
+    {
+        ShapeType st = globeShapeMapObject.getMapToolType().getShapeType();
+        return shapeLookup.getOrDefault(st, null);
     }
 
     private static List<ILocation> createEllipse(ILocation centerPoint, double heading, double width, double length)
@@ -280,7 +334,7 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
      * State object for {@link MilStdGlobeShapeFeatureProvider}.
      * @since 5.1
      */
-    public record MilStdShapeState(String symbolCode, List<ILocation> geoPoints, Map<String, String> unitModifiers, int strokeColor, double strokeWidth, boolean isVisible, AltitudeMode altitudeMode, Map<Integer, GeoBounds> hintSceneBounds, Map<Integer, Double> hintGsd)
+    public record MilStdShapeState(@Nonnull String symbolCode, @Nonnull List<ILocation> geoPoints, @Nonnull Map<String, String> unitModifiers, int strokeColor, double strokeWidth, boolean isVisible, @Nonnull AltitudeMode altitudeMode, @Nullable Map<Integer, GeoBounds> hintSceneBounds, @Nullable Map<Integer, Double> hintGsd, boolean wasClipped, boolean isLodAware, @Nullable gov.tak.api.symbology.ShapeType shapeType, @Nonnull String moKey)
     {
     }
 }

@@ -10,6 +10,7 @@ import gov.takx.api.mapobject.MapObjectSpec;
 import gov.takx.api.milsym.Echelon;
 import gov.takx.api.milsym.IMilStd2525Service;
 import gov.takx.api.milsym.IMilStd2525ServiceProvider;
+import gov.takx.api.milsym.MilStd2525Variant;
 import gov.takx.api.milsym.Presence;
 import gov.takx.api.milsym.SymbolWrapper;
 import gov.takx.api.persist.IMapObjectPersist;
@@ -56,7 +57,7 @@ class MilStd2525ServiceTest extends AContainerTest
         BlacksmithExtension.setBeansToUpdate(CdiTestUtils.getInstance(getBean(MapObjectManager.class)));
 
         IMilStd2525ServiceProvider serviceProvider = getBean(IMilStd2525ServiceProvider.class);
-        milSym2525C = serviceProvider.get2525cService();
+        milSym2525C = serviceProvider.get2525Service(MilStd2525Variant.CHARLIE);
     }
 
     @BeforeEach

@@ -19,27 +19,37 @@ project(':platform').configurations {
     }
 }
 
-// During script evaluation (even in an afterEvaluate), the configuration dependencies are not available (well,
-// they are empty), so we have to do it during task execution, after 'platform' has finished assembling.
+// Dependencies are not resolved until they are actually needed/consumed, and that typically happens at task
+// execution, so we need to perform our work during task execution, BEFORE 'platform' processes its java templates,
+// because that template generation needs our resolved dependencies.
 
-def implementationConfiguration = project(':platform').configurations.implementation
 def runtimeConfiguration = project(':platform').configurations.runtimeOnlyTransitive
+def compileClasspath = project(':platform').configurations.compileClasspath
 
 tasks.register('configureConstraints') {
     doLast {
-        dependencies.constraints {
-                // Declare all of the dependencies from the 'implementation' configuration as our 'api' constraints.
-                implementationConfiguration.dependencies.each {
-                    api "${it.group}:${it.name}:${it.version}"
-                }
+        dependencies.constraints { constraintHandler ->
+            // Declare all of the dependencies from our compileClasspath as our 'api' constraints.
+            //
+            // We need to use the resolved dependency info so we properly handle dependencies specified with no version,
+            // as is the case when declaring a dependency controlled  by a BOM.
 
-                // Declare all of the dependencies from the 'runtimeOnlyTransitive' configuration as 'runtime' constraints
-                runtimeConfiguration.resolvedConfiguration.resolvedArtifacts.each {
-                    def id = it.moduleVersion.id
-                    runtime "${id.group}:${id.name}:${id.version}"
-                }
+            def resolved = (Set<ResolvedDependencyResult>) compileClasspath.incoming.resolutionResult.root.dependencies
+                    .findAll { it instanceof ResolvedDependencyResult }
+
+            resolved.each {
+                def moduleVersion = it.selected.moduleVersion
+                constraintHandler.add('api', "${moduleVersion.group}:${moduleVersion.name}:${moduleVersion.version}")
             }
+
+            // Declare all of the dependencies from the 'runtimeOnlyTransitive' configuration as 'runtime' constraints
+            runtimeConfiguration.resolvedConfiguration.resolvedArtifacts.each {
+                def id = it.moduleVersion.id
+                constraintHandler.add('runtime', "${id.group}:${id.name}:${id.version}")
+            }
+        }
     }
 }
 
-tasks.assemble.dependsOn project(':platform').assemble, configureConstraints
+// We need to run before java templates are processed in the main platform build
+project(':platform').tasks.copyJavaTemplates.dependsOn configureConstraints

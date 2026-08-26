@@ -20,19 +20,13 @@ import jakarta.annotation.Nonnull;
 @NoPluginImplementations
 public interface IMilStd2525ServiceProvider
 {
-    /**
-     * @return The MIL-STD-2525 service for the current application context. Defaults to {@link #get2525cService()}
-     * @deprecated Will be removed in 5.8, use {@link #get2525cService()}
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    @Nonnull
-    IMilStd2525Service getMilStd2525Service();
 
     /**
      * @return The 2525C Service
      * @since 5.5
      */
+    @Deprecated(since = "5.8", forRemoval = true)
+    @DeprecatedApi(since = "5.8", forRemoval = true, removeAt = "5.10")
     @Nonnull
     IMilStd2525Service get2525cService();
 
@@ -40,6 +34,8 @@ public interface IMilStd2525ServiceProvider
      * @return The 2525D Service.
      * @since 5.5
      */
+    @Deprecated(since = "5.8", forRemoval = true)
+    @DeprecatedApi(since = "5.8", forRemoval = true, removeAt = "5.10")
     @Nonnull
     IMilStd2525Service get2525dService();
 
@@ -47,6 +43,8 @@ public interface IMilStd2525ServiceProvider
      * @return The 2525E Service.
      * @since 5.5
      */
+    @Deprecated(since = "5.8", forRemoval = true)
+    @DeprecatedApi(since = "5.8", forRemoval = true, removeAt = "5.10")
     @Nonnull
     IMilStd2525Service get2525eService();
 
@@ -58,7 +56,7 @@ public interface IMilStd2525ServiceProvider
     @Nonnull
     default IMilStd2525Service get2525ServiceForMapObject(@Nonnull IMapObject mapObject)
     {
-        String symbolCode = get2525cService().getSymbolCode(mapObject);
+        String symbolCode = get2525Service(MilStd2525Variant.CHARLIE).getSymbolCode(mapObject);
         return symbolCode == null ? getPreferred2525Service() : get2525ServiceForSymbol(symbolCode);
     }
 
@@ -83,12 +81,11 @@ public interface IMilStd2525ServiceProvider
     @Nonnull
     default IMilStd2525Service get2525Service(@Nonnull MilStd2525Variant variant)
     {
-        return switch (variant)
-        {
-            case CHARLIE -> get2525cService();
-            case DELTA -> get2525dService();
-            case ECHO -> get2525eService();
-        };
+
+        if (variant == MilStd2525Variant.CHARLIE)
+            return get2525ServiceForSymbol("");
+        else
+            return get2525ServiceForSymbol(variant.version() + "000000000000000000");
     }
 
     /**

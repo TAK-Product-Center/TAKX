@@ -3,7 +3,9 @@ package gov.takx.core.configuration;
 import gov.takx.api.configuration.IProgramEnvironment;
 import gov.takx.commons.file.FileUtils;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,6 +51,12 @@ public class BareProgramEnvironment
      * System property key to specify the location of the Project Data directory.
      */
     public static final String SYSPROP_PROJECTDATA_DIR = "projectdata.dir";
+
+    /**
+     * Value of {@link #SYSPROP_PROJECTDATA_DIR} indicating to place ProjectData in the user's home directory.
+     * @since 5.8
+     */
+    public static final String USE_USER_DIR = "$user_home";
 
     /**
      * The local program properties file, within ProjectData.
@@ -300,6 +308,23 @@ public class BareProgramEnvironment
         }
 
         programRoot = System.getProperty(SYSPROP_PROJECTDATA_DIR);
+        if (programRoot == null) programRoot = System.getenv(SYSPROP_PROJECTDATA_DIR);
+
+        if (USE_USER_DIR.equalsIgnoreCase(programRoot))
+        {
+            programRoot = getUserHomeDir();
+            if (programRoot != null)
+            {
+                logger.debug("using user home: {}", programRoot);
+
+                // Force a reconfiguration of our logger context to use the new file location
+                System.setProperty("takx.logFileDir", programRoot);
+                Configurator.reconfigure(new File("log4j2.xml").toURI());
+
+                logger.debug("Moved logging to: {}", programRoot);
+                return;
+            }
+        }
 
         final String userDir = SystemUtils.USER_DIR;
         final File userDirFile = new File(userDir, PROJECT_DATA);
@@ -309,6 +334,29 @@ public class BareProgramEnvironment
         if (programRoot == null) programRoot = userDir;
 
         logger.debug("getProgramRoot chose: {}", programRoot);
+    }
+
+    /**
+     * @return Appropriate directory within the user's home directory to place our log file and ProjectData dir
+     * @since 5.8
+     */
+    @Nullable
+    private String getUserHomeDir()
+    {
+        String userHome;
+        if (SystemUtils.IS_OS_WINDOWS)
+        {
+            userHome = System.getenv("APPDATA");
+            if (userHome == null) userHome = System.getenv("LOCALAPPDATA");
+            if (userHome == null) userHome = System.getenv("HOMEDRIVE") + '\\' + System.getenv("HOMEPATH");
+            return userHome + "\\TAKX";
+        } else if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC)
+        {
+            return System.getenv("HOME") + "/TAKX";
+        }
+
+        logger.warn("Can't determine user home directory");
+        return null;
     }
 
     /**

@@ -65,11 +65,6 @@ public abstract class AMapObjectPrimaryDialog<T extends IMapObjectPanel> extends
         {
             headerPanel = new MapObjectHeaderPanel(controller);
             addResourceCleaner(headerPanel);
-
-            if (!mapObject.getMetaBoolean(DevicePanelMetadataKeys.SHOW_RANGE_AND_BEARING, true))
-            {
-                headerPanel.getFromYouField().setVisible(false);
-            }
         }
 
         this.contentPanel = contentPanel;
@@ -188,7 +183,7 @@ public abstract class AMapObjectPrimaryDialog<T extends IMapObjectPanel> extends
         {
             dialogPane.setBorder(Borders.DIALOG_BORDER);
             dialogPane.setName("dialogPane");
-            dialogPane.setLayout(new BorderLayout());
+            dialogPane.setLayout(new BorderLayout(5, 5));
         }
         contentPane.add(dialogPane, BorderLayout.CENTER);
         pack();

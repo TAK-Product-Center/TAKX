@@ -1,14 +1,14 @@
 package gov.takx.core.globe.tak;
 
-import gov.tak.core.map.layer.IPickContext;
-import gov.tak.core.map.layer.IPickedObjectDeconflictor;
-import gov.tak.core.map.layer.IPickedObjectManager;
-import gov.tak.core.map.layer.IPickedObjectProvider;
-import gov.tak.core.map.layer.PickContext;
-import gov.tak.core.map.layer.PickedObject;
-import gov.tak.core.map.layer.PickedObjectList;
 import gov.takx.api.annotation.Headless;
 import gov.takx.api.globe.IApplicationGlobe;
+import gov.takx.api.layer.pick.IPickContext;
+import gov.takx.api.layer.pick.IPickedObjectDeconflictor;
+import gov.takx.api.layer.pick.IPickedObjectManager;
+import gov.takx.api.layer.pick.IPickedObjectProvider;
+import gov.takx.api.layer.pick.PickContext;
+import gov.takx.api.layer.pick.PickedObject;
+import gov.takx.api.layer.pick.PickedObjectList;
 import gov.takx.core.globe.tak.layer.PickingLayer;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -45,7 +45,8 @@ public class PickedObjectManager implements IPickedObjectManager
     @Override
     public PickedObjectList getPickedObjectList()
     {
-        return pickedObjectListRef.get();
+        // Return a copy of the list
+        return new PickedObjectList(pickedObjectListRef.get());
     }
 
     @Override

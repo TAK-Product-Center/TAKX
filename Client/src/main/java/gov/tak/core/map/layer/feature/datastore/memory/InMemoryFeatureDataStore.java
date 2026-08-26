@@ -6,7 +6,6 @@ import com.atakmap.map.layer.feature.AbstractFeatureDataStore3;
 import com.atakmap.map.layer.feature.AttributeSet;
 import com.atakmap.map.layer.feature.DataStoreException;
 import com.atakmap.map.layer.feature.Feature.AltitudeMode;
-import com.atakmap.map.layer.feature.FeatureDataStore2;
 import com.atakmap.map.layer.feature.FeatureDefinition;
 import com.atakmap.map.layer.feature.geometry.Envelope;
 import com.atakmap.map.layer.feature.geometry.Geometry;
@@ -15,11 +14,12 @@ import com.atakmap.map.layer.feature.ogr.style.FeatureStyleParser;
 import com.atakmap.map.layer.feature.style.Style;
 import com.atakmap.math.MathUtils;
 import com.atakmap.math.Rectangle;
-import gov.takx.api.globe.IApplicationGlobe;
+import gov.takx.api.globe.IGlobeDelegate;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
 import gov.takx.core.globe.tak.FeatureRendererManager;
-import gov.takx.core.globe.tak.features.IFeatureProvider;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import jakarta.inject.Singleton;
 import org.apache.commons.lang3.mutable.MutableLong;
 
 import java.util.ArrayList;
@@ -36,18 +36,19 @@ import java.util.stream.Stream;
  * Two HashMaps are used to prevent having to filter queries based on class. Ids are generated from a simple counter.<br>
  * <p/>
  * Note that there is a single instance of this data store used across all globes to render features, as created in
- * {@link FeatureRendererManager#createFeatureRenderer(IApplicationGlobe)}, and that layer has a "type" filter specified
+ * {@link FeatureRendererManager#createFeatureRenderer(IGlobeDelegate)}, and that layer has a "type" filter specified
  * to only render feature sets that have a {@link com.atakmap.map.layer.feature.FeatureSet#getType() type} of a special
- * name of {@link IFeatureProvider#ALL_GLOBES_GROUP_NAME}, a string of the integer globe ID, or the empty string.
+ * name of {@link ISharedFeatureDataStore#ALL_GLOBES_FEATURE_SET_TYPE}, a string of the integer globe ID, or the empty string.
  * If any other value is used for the type of the feature set, it will not be rendered.
  * <p/>
+ *
  * @implNote Keep in mind that lock acquisition order matters. There are two maps in this class that require synchronized access.
  * Operations that need to access both maps should <i>almost always</i> acquire the locks in the same order (currently FeatureSet -> Feature)
  * to prevent deadlocks.
- *
  * @since 5.2
  */
-public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
+@Singleton
+public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3 implements ISharedFeatureDataStore
 {
     private final static int DEFAULT_VISIBILITY_FLAGS = VISIBILITY_SETTINGS_FEATURESET | VISIBILITY_SETTINGS_FEATURE;
     private final static int DEFAULT_MODIFICATION_FLAGS =
@@ -79,18 +80,7 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
      */
     public InMemoryFeatureDataStore()
     {
-        this(DEFAULT_MODIFICATION_FLAGS, DEFAULT_VISIBILITY_FLAGS);
-    }
-
-    /**
-     * Constructs new InMemoryFeatureDataStore with specified modification and visibility flags.
-     *
-     * @param modificationFlags modification flags, see {@link FeatureDataStore2} {@code MODIFY_***} constants
-     * @param visibilityFlags visibility flags, see {@link FeatureDataStore2} {@code VISIBILITY_SETTINGS_***} constants
-     */
-    public InMemoryFeatureDataStore(int modificationFlags, int visibilityFlags)
-    {
-        super(modificationFlags, visibilityFlags);
+        super(DEFAULT_MODIFICATION_FLAGS, DEFAULT_VISIBILITY_FLAGS);
     }
 
     @Override
@@ -117,19 +107,31 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
         Style style = createStyle(styleCoding, rawStyle);
         Geometry geometry = createGeometry(geomCoding, rawGeom);
 
-        // Need manual synchronization here because we may have to scan the map for unused ids
-        synchronized (featureMap)
+        final long id;
+        if (fid == FEATURE_ID_NONE)
         {
-            final long id = findId(fid, featureIdCounter, featureMap);
+            // Need manual synchronization here because we have to scan the map for unused ids to compute the next fid
+            synchronized (featureMap)
+            {
+                id = findId(fid, featureIdCounter, featureMap);
+                final var feature = new Feature(id, version, true, fsid, name, geometry, style, attributes, altitudeMode, extrude, timestamp);
+                featureMap.put(id, feature);
+                clusteredFeatures.add(feature);
+            }
+        } else
+        {
+            // Otherwise if we know the feature has a requested ID we just need to check if it conflicts or not
+            id = isIdAvailable(fid, featureMap);
             final var feature = new Feature(id, version, true, fsid, name, geometry, style, attributes, altitudeMode, extrude, timestamp);
             featureMap.put(id, feature);
             clusteredFeatures.add(feature);
-            return new Pair<>(id, version);
         }
+        return new Pair<>(id, version);
     }
 
-    private long findId(long requested, MutableLong counter, Map<Long, ?> map) throws DataStoreException
+    private long findId(long requested, @Nonnull MutableLong counter, @Nonnull Map<Long, ?> map) throws DataStoreException
     {
+        // Check if we need to compute an available fid
         if (requested == FEATURE_ID_NONE)
         {
             long id;
@@ -138,7 +140,22 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
                 id = counter.incrementAndGet();
             } while (map.containsKey(id));
             return id;
-        } else if (map.containsKey(requested))
+        }
+
+        return isIdAvailable(requested, map);
+    }
+
+    /**
+     * Check if the requested feature ID is available for use.
+     * @param requested Requested feature ID.
+     * @param map Map to search in.
+     * @return The validated unique feature ID (same as passed)
+     * @throws DataStoreException When the map already contains the feature ID.
+     * @since 5.8
+     */
+    private long isIdAvailable(long requested, @Nonnull Map<Long, ?> map) throws DataStoreException
+    {
+        if (map.containsKey(requested))
         {
             throw new DataStoreException("Entity already exists with id: " + requested);
         } else
@@ -150,15 +167,27 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
     @Override
     protected long insertFeatureSetImpl(com.atakmap.map.layer.feature.FeatureSet featureSet) throws DataStoreException
     {
-        // Need manual synchronization here because we have to scan the map for unused ids
-        synchronized (featureSetMap)
+        final long fsid = featureSet.getId();
+        final long id;
+        if (fsid == FEATURESET_ID_NONE)
         {
-            final long id = findId(FEATURESET_ID_NONE, featureSetIdCounter, featureSetMap);
+            // Need manual synchronization here because we have to scan the map for unused ids
+            synchronized (featureSetMap)
+            {
+                id = findId(FEATURESET_ID_NONE, featureSetIdCounter, featureSetMap);
+                final var newFeatureSet = new FeatureSet(id, featureSet);
+                featureSetMap.put(id, newFeatureSet);
+                visibleFeatureSets.put(id, newFeatureSet);
+            }
+        } else
+        {
+            // Otherwise if we know the feature-set has a requested ID we just need to check if it conflicts or not
+            id = isIdAvailable(fsid, featureSetMap);
             final var newFeatureSet = new FeatureSet(id, featureSet);
             featureSetMap.put(id, newFeatureSet);
             visibleFeatureSets.put(id, newFeatureSet);
-            return id;
         }
+        return id;
     }
 
     /**
@@ -267,6 +296,7 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
      * @return {@code true} if the feature with the given {@code id} is visible
      * @since 5.7
      */
+    @Override
     public boolean isFeatureVisible(long id)
     {
         final var feature = featureMap.get(id);
@@ -301,6 +331,7 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
      * {@inheritDoc}
      * <p/>
      * Overridden to optimize implementation.
+     *
      * @since 5.5.1
      */
     @Override
@@ -320,7 +351,7 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
      * </ul>
      */
     @Override
-    public synchronized com.atakmap.map.layer.feature.FeatureCursor queryFeatures(FeatureQueryParameters featureQueryParameters) throws DataStoreException
+    public synchronized com.atakmap.map.layer.feature.FeatureCursor queryFeatures(FeatureQueryParameters featureQueryParameters)
     {
         if (featureMap.isEmpty()) return new FeatureCursor(List.of());
 
@@ -394,6 +425,7 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
     /**
      * Return an array of the ids of the feature sets that match {@link FeatureQueryParameters#featureSetFilter}.
      * The returned array has the ids sorted by increasing value, so a binary search can be used to test for inclusion.
+     *
      * @since 5.5.1
      */
     private long[] getFeatureSetIdsFromQueryParams(@Nonnull FeatureQueryParameters params)
@@ -416,8 +448,8 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
      * {@code FeatureSetQueryParameters} specify {@code visibleOnly = false}.  Since an invisible FeatureSet can't
      * have any visible features, there's no reason to include the invisible feature set in the results.  This method
      * offers that by taking an override {@code visibleOnly}, and we ignore the one in the given {@code params}.
-     * 
-     * @param params query parameters
+     *
+     * @param params      query parameters
      * @param visibleOnly Pass {@code true} to only return visible feature sets
      * @return Stream providing matching feature sets
      * @since 5.5.1
@@ -582,7 +614,6 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
      *
      * @implNote Other options were things like a {@code Map<FSID, List<FID>>}, but that approach allocates a Map and
      * a List for every FeatureSet.
-     *
      * @since 5.5.1
      */
     private static class ClusteredList
@@ -661,7 +692,7 @@ public class InMemoryFeatureDataStore extends AbstractFeatureDataStore3
          * anywhere within the FSID cluster.
          *
          * @param index Starting index
-         * @param fsid Feature set id of interest
+         * @param fsid  Feature set id of interest
          * @return Index bounds of the {@code fsid} cluster
          */
         @Nonnull

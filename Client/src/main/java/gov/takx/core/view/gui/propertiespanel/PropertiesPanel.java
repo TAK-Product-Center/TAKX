@@ -1,11 +1,11 @@
 package gov.takx.core.view.gui.propertiespanel;
 
-import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.annotation.UiEventBus;
+import gov.takx.api.event.mapobject.MapObjectRemoved;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IMapObjectController;
 import gov.takx.api.mapobject.IMapObjectManager;
@@ -16,10 +16,10 @@ import gov.takx.api.ui.ComponentPosition;
 import gov.takx.api.ui.DevicePanelMetadataKeys;
 import gov.takx.api.ui.event.MapObjectSelectedEvent;
 import gov.takx.commons.lang.ExceptionUtils;
+import gov.takx.commons.swing.entity.ActionButtonPanel;
 import gov.takx.core.mapobject.gui.MapObjectAttachmentsPanel;
 import gov.takx.core.mapobject.gui.primarydialog.IMapObjectPrimaryDialog;
 import gov.takx.core.view.gui.ATitledPanel;
-import gov.takx.core.view.gui.CoreComponentType;
 import gov.takx.core.view.gui.DrawingTools;
 import gov.takx.core.view.gui.IExtendedUISpaceManager;
 import gov.takx.platform.KeyUtils;
@@ -27,6 +27,7 @@ import gov.takx.platform.ui.ComponentDescriptorBuilder;
 import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -38,22 +39,26 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.UIManager;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 
 import java.awt.Dimension;
 import java.awt.Font;
 import java.lang.invoke.MethodHandles;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import static gov.takx.platform.ui.ResourceDirectory.PLATFORM_ICONS;
+import static gov.takx.platform.ui.UIResources.ATTACH_ACTION_BUTTON_ICON;
+import static gov.takx.platform.ui.UIResources.ATTACH_ICON_URL;
 
 /**
  * Properties panel. Displays the data from the map object dialog, as well as editing tools for shapes.
  *
  */
-@PseudoBean
+@PseudoBean(singletonObserver = true)
 public class PropertiesPanel extends ATitledPanel implements IRaptorLifecycleListener
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
@@ -62,8 +67,6 @@ public class PropertiesPanel extends ATitledPanel implements IRaptorLifecycleLis
 
     private static final CellConstraints XY_1_1 = new CellConstraints().xy(1, 1);
     private static final String NOTHING_SELECTED_TEXT = "Nothing Selected";
-    private static final URL PAPERCLIP_URL = UIResources.getUrl(PLATFORM_ICONS, "paperclip.png");
-    private static final ImageIcon PAPERCLIP_ICON = UIResources.getStandardSizedIcon(PLATFORM_ICONS, "paperclip.png");
     private static final ImageIcon WARNING_ICON = UIResources.getToolbarIcon(PLATFORM_ICONS, "warning.svg");
 
     @Inject
@@ -124,8 +127,12 @@ public class PropertiesPanel extends ATitledPanel implements IRaptorLifecycleLis
         // Make the scroll wheel input move in larger increments
         propertiesPane.getVerticalScrollBar().setUnitIncrement(10);
         propertiesPane.getHorizontalScrollBar().setUnitIncrement(10);
-        openAttachments.setIcon(PAPERCLIP_ICON);
+        openAttachments.setIcon(ATTACH_ACTION_BUTTON_ICON);
         dialogOpenLabel.setIcon(WARNING_ICON);
+        configureButton.setIcon(UIResources.SETTINGS_ACTION_BUTTON_ICON);
+
+        actionButtonPanel.addActionButton(configureButton);
+        actionButtonPanel.addActionButton(openAttachments);
 
         noSelection();
     }
@@ -200,9 +207,6 @@ public class PropertiesPanel extends ATitledPanel implements IRaptorLifecycleLis
             {
                 trySelection(new MapObjectPropertiesItem(controller));
             }
-        } else
-        {
-            noSelection();
         }
     }
 
@@ -252,20 +256,9 @@ public class PropertiesPanel extends ATitledPanel implements IRaptorLifecycleLis
          * if it's open, or the properties panel if its open and the user then opens the map object dialog. This is a
          * result of a swing component only being able to have one parent container.
          */
-        if (!propertiesItem.isDialogOpen())
-        {
-            newSelection(propertiesItem);
-        } else
-        {
-            // Hide properties panel when the user opens the dialog for the currently selected map object.
-            clearPanel();
-            clearSelectedItem();
 
-            selectedItem = propertiesItem;
-            propertiesHolderPanel.add(dialogOpenLabel, XY_1_1);
+        newSelection(propertiesItem);
 
-            spaceManager.hideComponent(CoreComponentType.PROPERTIES_PANEL);
-        }
     }
 
     @InvokeOnEDT
@@ -277,7 +270,7 @@ public class PropertiesPanel extends ATitledPanel implements IRaptorLifecycleLis
         messageLabel.setIcon(UIResources.WARNING_ICON);
         messageLabel.setText(NOTHING_SELECTED_TEXT);
         openAttachments.setVisible(false);
-        extraButtonsPanel.setVisible(false);
+        configureButton.setVisible(false);
         currentPanel = null;
         repaint();
     }
@@ -298,6 +291,8 @@ public class PropertiesPanel extends ATitledPanel implements IRaptorLifecycleLis
             selectedItem = propertiesItem;
             currentPanel = propertiesItem.getPanel();
 
+            configureButton.setVisible(selectedMapObject != null);
+
             if (currentPanel == null)
             {
                 noSelection();
@@ -305,9 +300,9 @@ public class PropertiesPanel extends ATitledPanel implements IRaptorLifecycleLis
             {
                 messageLabel.setIcon(null);
                 messageLabel.setText(propertiesItem.getLabelText());
-                extraButtonsPanel.setVisible(selectedMapObject != null
-                        && selectedMapObject.getMetaBoolean(DevicePanelMetadataKeys.SHOW_EXTRA_BUTTONS, true));
-                if (selectedItem.supportsAttachments() && selectedMapObject != null) openAttachments.setVisible(true);
+
+                var extraButtons = selectedMapObject != null && selectedMapObject.getMetaBoolean(DevicePanelMetadataKeys.SHOW_EXTRA_BUTTONS, true);
+                openAttachments.setVisible(extraButtons && selectedItem.supportsAttachments());
 
                 // Only place the currentPanel in a scroll pane if requested
                 if (selectedItem.addScrollPane())
@@ -401,51 +396,82 @@ public class PropertiesPanel extends ATitledPanel implements IRaptorLifecycleLis
         onClearState(progressMonitor);
     }
 
+    @InvokeOnEDT
+    private void onMapObjectRemoved(@Observes MapObjectRemoved event)
+    {
+        if (selectedItem != null && selectedItem.getIdentityObject() instanceof IMapObjectController controller
+                && controller.getMapObject() == event.getMapObject())
+        {
+            noSelection();
+        }
+    }
+
     /**
      * Create and open an {@link MapObjectAttachmentsPanel} for the selected {@link IMapObject}
      * @since 5.3
      */
     private void openAttachmentsClicked()
     {
-        mapObjectAttachmentsPanel = new MapObjectAttachmentsPanel(mapObjectManager.getSelectedMapObject(), true);
+        if (selectedItem.getIdentityObject() instanceof IMapObjectController controller)
+        {
+            mapObjectAttachmentsPanel = new MapObjectAttachmentsPanel(controller.getMapObject(), true);
 
-        final var componentDescriptorBuilder = new ComponentDescriptorBuilder(mapObjectAttachmentsPanel, "Attachments")
-                .setComponentPosition(ComponentPosition.RIGHT)
-                .setExternalizable(false)
-                .setPinned(true)
-                .setToolbarButtonVisible(false)
-                .setIcon(PAPERCLIP_URL);
+            final var componentDescriptorBuilder = new ComponentDescriptorBuilder(mapObjectAttachmentsPanel, "Attachments").setComponentPosition(ComponentPosition.RIGHT).setExternalizable(false).setPinned(true).setToolbarButtonVisible(false).setIcon(ATTACH_ICON_URL);
 
-        spaceManager.addComponent(componentDescriptorBuilder.build(), mapObjectAttachmentsPanel);
-        spaceManager.showComponent(mapObjectAttachmentsPanel);
+            spaceManager.addComponent(componentDescriptorBuilder.build(), mapObjectAttachmentsPanel);
+            spaceManager.showComponent(mapObjectAttachmentsPanel);
+        }
+    }
+
+    private void configureButtonActionPerformed()
+    {
+        if (selectedItem.getIdentityObject() instanceof IMapObjectController controller) controller.showConfigurationDialog();
     }
 
     private void initComponents()
     {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+        var headerPanel = new JPanel();
+        actionButtonPanel = new ActionButtonPanel();
         messageLabel = new JLabel();
         propertiesHolderPanel = new JPanel();
         propertiesPane = new JScrollPane();
         propertiesPanel = new JPanel();
-        extraButtonsPanel = new JPanel();
-        openAttachments = new JButton();
         dialogOpenLabel = new JLabel();
+        openAttachments = new JButton();
+        configureButton = new JButton();
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
         setPreferredSize(new Dimension(300, 400));
-        setBorder(Borders.DLU2_BORDER);
         setName("this");
         setLayout(new FormLayout(
                 "default:grow",
-                "default, fill:2dlu, fill:default:grow, $lgap, default"));
+                "default, fill:default:grow"));
 
-        //---- messageLabel ----
-        messageLabel.putClientProperty("FlatLaf.styleClass", "large");
-        messageLabel.setFont(messageLabel.getFont().deriveFont(messageLabel.getFont().getStyle() | Font.BOLD));
-        messageLabel.setBorder(new EmptyBorder(2, 2, 2, 0));
-        messageLabel.setName("messageLabel");
-        add(messageLabel, cc.xy(1, 1));
+        //======== headerPanel ========
+        {
+            headerPanel.setBorder(new CompoundBorder(
+                    new MatteBorder(0, 0, 1, 0, UIManager.getColor("TableHeader.separatorColor")),
+                    new EmptyBorder(5, 5, 5, 5)));
+            headerPanel.setName("headerPanel");
+            headerPanel.setLayout(new FormLayout(
+                    "default:grow, $lcgap, default",
+                    "default"));
+
+            //---- actionButtonPanel ----
+            actionButtonPanel.setBorder(null);
+            actionButtonPanel.setName("actionButtonPanel");
+            headerPanel.add(actionButtonPanel, cc.xy(1, 1));
+
+            //---- messageLabel ----
+            messageLabel.putClientProperty("FlatLaf.styleClass", "large");
+            messageLabel.setFont(messageLabel.getFont().deriveFont(messageLabel.getFont().getStyle() | Font.BOLD));
+            messageLabel.setBorder(new EmptyBorder(0, 0, 0, 5));
+            messageLabel.setName("messageLabel");
+            headerPanel.add(messageLabel, cc.xy(3, 1));
+        }
+        add(headerPanel, cc.xy(1, 1));
 
         //======== propertiesHolderPanel ========
         {
@@ -457,50 +483,47 @@ public class PropertiesPanel extends ATitledPanel implements IRaptorLifecycleLis
             //======== propertiesPane ========
             {
                 propertiesPane.setOpaque(false);
+                propertiesPane.setBorder(null);
                 propertiesPane.setName("propertiesPane");
 
                 //======== propertiesPanel ========
                 {
-                    propertiesPanel.setBorder(Borders.DLU2_BORDER);
                     propertiesPanel.setName("propertiesPanel");
                     propertiesPanel.setLayout(new FormLayout(
                             "default:grow",
-                            "fill:default:grow"));
+                            "default"));
                 }
                 propertiesPane.setViewportView(propertiesPanel);
             }
             propertiesHolderPanel.add(propertiesPane, cc.xy(1, 1));
         }
-        add(propertiesHolderPanel, cc.xy(1, 3));
-
-        //======== extraButtonsPanel ========
-        {
-            extraButtonsPanel.setName("extraButtonsPanel");
-            extraButtonsPanel.setLayout(new FormLayout(
-                    "default:grow, $lcgap, 20dlu",
-                    "fill:20dlu"));
-
-            //---- openAttachments ----
-            openAttachments.setName("openAttachments");
-            openAttachments.addActionListener(e -> openAttachmentsClicked());
-            extraButtonsPanel.add(openAttachments, cc.xy(3, 1));
-        }
-        add(extraButtonsPanel, cc.xy(1, 5));
+        add(propertiesHolderPanel, cc.xy(1, 2));
 
         //---- dialogOpenLabel ----
         dialogOpenLabel.setText("Dialog Already Open");
         dialogOpenLabel.putClientProperty("FlatLaf.styleClass", "large");
         dialogOpenLabel.setName("dialogOpenLabel");
+
+        //---- openAttachments ----
+        openAttachments.setText("Attach");
+        openAttachments.setName("openAttachments");
+        openAttachments.addActionListener(e -> openAttachmentsClicked());
+
+        //---- configureButton ----
+        configureButton.setText("Configure");
+        configureButton.setName("configureButton");
+        configureButton.addActionListener(e -> configureButtonActionPerformed());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    private ActionButtonPanel actionButtonPanel;
     private JLabel messageLabel;
     private JPanel propertiesHolderPanel;
     private JScrollPane propertiesPane;
     private JPanel propertiesPanel;
-    private JPanel extraButtonsPanel;
-    private JButton openAttachments;
     private JLabel dialogOpenLabel;
+    private JButton openAttachments;
+    private JButton configureButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }

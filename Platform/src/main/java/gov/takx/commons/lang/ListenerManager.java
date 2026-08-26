@@ -86,13 +86,17 @@ public class ListenerManager
      * 
      * @param registration the registration
      */
-    private void register(ListenerRegistration registration)
+    public void register(@Nonnull ListenerRegistration registration)
     {
         registration.register();
         registrations.add(registration);
     }
 
-    private interface ListenerRegistration
+    /**
+     * Represents a listener registration for a specific object instance, with the ability to register and unregister. Exposed so that types that
+     * do not implement {@link IPropertyChangeListenerSupport} can still take advantage of this manager.
+     */
+    public interface ListenerRegistration
     {
         /**
          * Remove property change listener from source object.
@@ -107,6 +111,7 @@ public class ListenerManager
         /**
          * @return the source object
          */
+        @Nonnull
         Object object();
     }
 

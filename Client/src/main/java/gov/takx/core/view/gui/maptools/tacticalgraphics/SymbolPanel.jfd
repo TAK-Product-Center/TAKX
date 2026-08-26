@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -8,7 +8,6 @@ new FormModel {
 			"$rowSpecs": "fill:default"
 		} ) {
 			name: "this"
-			"border": sfield com.jgoodies.forms.factories.Borders DLU2_BORDER
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "symbolNameLabel"
 				"text": "MilSym Details"

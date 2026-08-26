@@ -6,7 +6,6 @@ import gov.takx.api.shapes.ShapeProperties;
 import gov.takx.commons.swing.ImageUtils;
 import gov.takx.commons.swing.actionlist.ActionList;
 import gov.takx.commons.swing.actionlist.ActionListAction;
-import gov.takx.commons.swing.actionlist.ActionListToggleAction;
 import gov.takx.commons.swing.entity.EntityColumn;
 import gov.takx.commons.swing.entity.common.CommonEntityDefinition;
 import gov.takx.core.navigation.NavigationConfiguration;
@@ -26,7 +25,6 @@ import javax.swing.UIManager;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import static gov.takx.core.navigation.NavigationConstants.NAVIGATE_TO_ACTION_BUTTON_ICON;
@@ -55,17 +53,13 @@ public class BloodhoundEntityDefinition extends CommonEntityDefinition<Navigatio
     @Inject
     private NavigationManager navigationManager;
 
-    @SuppressWarnings("DataFlowIssue") // the getActions method always passes a value to the ActionList
-    private final Action deleteAction = new ActionListAction<NavigationConfiguration>("Cancel", CANCEL_ACTION_BUTTON_ICON)
-            .withEventConsumer(e -> navigationManager.removeConfiguration(e.getValue(), (Component) e.getSource()));
-    private final ActionListToggleAction<NavigationConfiguration> keepInViewAction = new ActionListToggleAction<NavigationConfiguration>(
-            "Toggle Keep In View",
-            KEEP_IN_VIEW_ACTION_BUTTON_ICON,
-            config -> navigationManager.isKeepInView(config))
-            .withSelectedIconAndBackground(KEEP_IN_VIEW_ICON_SELECTED, Color.WHITE)
-            .withValueConsumer(config -> navigationManager.toggleKeepInView(config));
-    private final Action navigateAction = new ActionListAction<NavigationConfiguration>("Navigate", NAVIGATE_TO_ACTION_BUTTON_ICON)
-            .withValueConsumer(bh -> navigationManager.navigate(bh));
+    private final Action deleteAction = new ActionListAction<NavigationConfiguration>("Cancel", CANCEL_ACTION_BUTTON_ICON,
+            e -> navigationManager.removeConfiguration(e.requireValue(), (Component) e.getSource()));
+    private final ActionListAction<NavigationConfiguration> keepInViewAction = ActionListAction.<NavigationConfiguration>builder()
+            .nameIconValueConsumer("Toggle Keep In View", KEEP_IN_VIEW_ACTION_BUTTON_ICON, config -> navigationManager.toggleKeepInView(config))
+            .selectedNameIconBackground(null, KEEP_IN_VIEW_ICON_SELECTED, Color.WHITE)
+            .build();
+    private final Action navigateAction = new ActionListAction<NavigationConfiguration>("Navigate", NAVIGATE_TO_ACTION_BUTTON_ICON, config -> navigationManager.navigate(config), null);
     private final List<Action> actions = List.of(navigateAction, keepInViewAction, deleteAction);
 
     final EntityColumn<NavigationConfiguration, Double> rangeColumn;
@@ -128,21 +122,10 @@ public class BloodhoundEntityDefinition extends CommonEntityDefinition<Navigatio
     }
 
     @Override
-    protected void addPropertyChangeListener(@Nonnull NavigationConfiguration object, @Nonnull String propertyName, @Nonnull PropertyChangeListener listener)
-    {
-        object.addPropertyChangeListener(propertyName, listener);
-    }
-
-    @Override
-    protected void removePropertyChangeListener(@Nonnull NavigationConfiguration object, @Nonnull String propertyName, @Nonnull PropertyChangeListener propertyChangeListener)
-    {
-        object.removePropertyChangeListener(propertyName, propertyChangeListener);
-    }
-
-    @Override
     @Nullable
     protected ActionList<NavigationConfiguration> getActions(@Nonnull NavigationConfiguration entity)
     {
+        keepInViewAction.setSelected(navigationManager.isKeepInView(entity));
         return new ActionList<>(actions, entity);
     }
 }

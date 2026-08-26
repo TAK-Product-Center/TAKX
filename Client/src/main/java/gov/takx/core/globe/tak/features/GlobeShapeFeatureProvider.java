@@ -40,8 +40,7 @@ public final class GlobeShapeFeatureProvider extends AShapeFeatureProvider<IGlob
             shapeGeometryState = new EllipseGeometryState(circle.getLocation(), circle.getOrientation(), circle.getRadius(), circle.getRadius(), circle.getRingCount());
         } else if (shapeModel instanceof IRectangle rectangle)
         {
-            List<ILocation> vertices = rectangle.getVertices();
-            vertices = closeGeoPoints(vertices);
+            List<ILocation> vertices = closeGeoPoints(rectangle.getVertices(true));
             shapeGeometryState = new PolygonGeometryState(vertices != null ? vertices : Collections.emptyList(), Collections.emptyList());
         } else if (shapeModel instanceof IPolygon polygon)
         {

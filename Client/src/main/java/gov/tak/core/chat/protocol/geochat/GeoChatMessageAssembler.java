@@ -135,6 +135,34 @@ class GeoChatMessageAssembler
     }
 
     /**
+     * Assembles a group-updated GeoChat message intended for a member of an updated GeoChat group.
+     *
+     * @param recipientUid The UID of the recipient contact
+     * @param updatedGroup The updated group
+     * @param messageUid The message UID to use when assembling the message
+     * @param message The detailed update message
+     * @return The group-creation GeoChat message as a CoT string
+     * @since 5.8
+     */
+    @Nonnull
+    String assembleDetailedGroupUpdatedMessage(@Nonnull String recipientUid, @Nonnull IGroupContact updatedGroup,
+                                               @Nonnull String messageUid, @Nonnull String message)
+    {
+        final String createdGroupUid = updatedGroup.getUid();
+
+        final var chatGroupDetail = makeChatGroupDetail(recipientUid, createdGroupUid);
+        final var chatDetail = makeChatDetail(chatGroupDetail, createdGroupUid, updatedGroup.getName(), messageUid,
+                updatedGroup.getParentContact().getUid(), true);
+
+        addHierarchyDetailToChatDetail(updatedGroup, chatDetail);
+
+        return assembleEventXmlWithRemarks(recipientUid, createdGroupUid, messageUid,
+                // + 1ms ensures message is displayed after the standard update message
+                new CoordinatedTime(System.currentTimeMillis()).addMilliseconds(1),
+                message, chatDetail, null);
+    }
+
+    /**
      * Assembles a group-deletion GeoChat message intended for a member of a recently-deleted GeoChat group.
      *
      * @param recipientUid The UID of the recipient contact

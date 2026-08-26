@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  *
  * @since 5.2 (code moved here from {@link ApplicationModuleFinder}
  */
-public class DeploymentRoots
+public final class DeploymentRoots
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 

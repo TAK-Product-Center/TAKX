@@ -8,6 +8,7 @@ import gov.takx.api.globe.IExtendedGlobeManager;
 import gov.takx.api.layer.IRaptorLayer;
 import gov.takx.api.project.IProjectManager;
 import gov.takx.api.toolbar.ButtonType;
+import gov.takx.commons.swing.CollapsiblePanel;
 import gov.takx.commons.swing.IPanelStateListener;
 import gov.takx.commons.swing.SplitButton;
 import gov.takx.core.globe.tak.WidgetLayerManager;

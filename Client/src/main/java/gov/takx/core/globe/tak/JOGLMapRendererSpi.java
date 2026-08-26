@@ -40,6 +40,8 @@ import jakarta.inject.Inject;
 
 import javax.swing.JComponent;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 /**
  * Create a TAK globe renderer using an underlying {@link GLMapView}.
  *
@@ -114,6 +116,8 @@ public final class JOGLMapRendererSpi implements IMapRendererSpi
 
         // create the Globe renderer and start it
         JOGLRenderContext renderContext = (JOGLRenderContext) RenderContextFactory.create(component);
+        // Tracks the latest render context
+        AtomicReference<JOGLRenderContext> renderContextRef = new AtomicReference<>(renderContext);
         GLMapView glMapView = new GLMapView(
                 renderContext,
                 (Globe) globe,
@@ -141,10 +145,11 @@ public final class JOGLMapRendererSpi implements IMapRendererSpi
 
                 if (glContextIsDestroyed)
                 {
-                    component.removeGLEventListener(renderContext);
-                    JOGLRenderContext newRenderContext = (JOGLRenderContext) RenderContextFactory.create(component);
+                    JOGLRenderContext renderContext = (JOGLRenderContext) RenderContextFactory.create(component);
+                    JOGLRenderContext oldRenderContext = renderContextRef.getAndSet(renderContext);
+                    component.removeGLEventListener(oldRenderContext);
                     RenderContextControl renderContextControl = glMapView.getControl(RenderContextControl.class);
-                    renderContextControl.setRenderContext(newRenderContext);
+                    renderContextControl.setRenderContext(renderContext);
                     configureGLMapView(glMapView);
                 }
 

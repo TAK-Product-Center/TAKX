@@ -43,7 +43,7 @@ public interface IEmergencyAlertManager
 
     /**
      * Remove the given {@code emergencyAlert}.
-     * @see #removeAlert(PointMapItem, String)
+     * @see #removeAlert(PointMapItem)
      */
     void removeAlert(@Nonnull EmergencyAlert emergencyAlert);
 

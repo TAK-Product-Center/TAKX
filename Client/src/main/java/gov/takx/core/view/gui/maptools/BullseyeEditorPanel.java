@@ -20,6 +20,7 @@ import gov.takx.api.shapes.IMutableBullseye;
 import gov.takx.api.shapes.IRingedShape;
 import gov.takx.api.shapes.ShapeProperties;
 import gov.takx.api.ui.location.ILocationInputListener;
+import gov.takx.commons.swing.FormLayoutUtils;
 import gov.takx.commons.swing.IPanelStateListener;
 import gov.takx.commons.utils.StringUtils;
 import gov.takx.platform.preferences.UserPreferenceEntry;
@@ -85,7 +86,7 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
     private BullseyeEditorPanel(@Nonnull IMutableBullseye bullseye, boolean directActionMode,
                                 @Nullable IPanelStateListener panelListener)
     {
-        super("Bullseye Details", bullseye, directActionMode, panelListener);
+        super("Bullseye", bullseye, directActionMode, panelListener);
         initComponents();
         setUpComponents();
         setShape(bullseye);
@@ -174,6 +175,8 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
                 locationInputPanel.setVisible(false);
             }
         });
+
+        if (!directActionMode || !initialCreationOnly) FormLayoutUtils.hideRow(nameField);
     }
 
     @Override
@@ -564,11 +567,11 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
         //======== this ========
         setName("this");
         setLayout(new FormLayout(
-                "0dlu, $lcgap, right:default, $lcgap, default, $lcgap, 0dlu",
+                "0dlu, $lcgap, left:default, $lcgap, default, $lcgap, 0dlu",
                 "0dlu, 9*($lgap, default), $lgap, 0dlu"));
 
         //---- nameLabel ----
-        nameLabel.setText("Name");
+        nameLabel.setText("Name:");
         nameLabel.setName("nameLabel");
         add(nameLabel, cc.xy(3, 3));
 
@@ -586,7 +589,7 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
         add(nameField, cc.xy(5, 3));
 
         //---- centerLabel ----
-        centerLabel.setText("Center");
+        centerLabel.setText("Center:");
         centerLabel.setName("centerLabel");
         add(centerLabel, cc.xy(3, 5));
 
@@ -611,7 +614,7 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
         add(panel1, cc.xy(5, 5));
 
         //---- directionLabel ----
-        directionLabel.setText("Direction");
+        directionLabel.setText("Direction:");
         directionLabel.setName("directionLabel");
         add(directionLabel, cc.xy(3, 7));
 
@@ -643,7 +646,7 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
         add(directionPanel, cc.xy(5, 7));
 
         //---- radiusLabel ----
-        radiusLabel.setText("Bullseye Radius");
+        radiusLabel.setText("Bullseye Radius:");
         radiusLabel.setName("radiusLabel");
         add(radiusLabel, cc.xy(3, 9));
 
@@ -687,7 +690,7 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
         add(panel2, cc.xy(5, 9));
 
         //---- showRingsLabel ----
-        showRingsLabel.setText("Show Range Rings");
+        showRingsLabel.setText("Show Range Rings:");
         showRingsLabel.setName("showRingsLabel");
         add(showRingsLabel, cc.xy(3, 11));
 
@@ -697,7 +700,7 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
         add(showRingsCheckbox, cc.xy(5, 11));
 
         //---- ringRadiusLabel ----
-        ringRadiusLabel.setText("Ring Radius");
+        ringRadiusLabel.setText("Ring Radius:");
         ringRadiusLabel.setName("ringRadiusLabel");
         add(ringRadiusLabel, cc.xy(3, 13));
 
@@ -741,7 +744,7 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
         add(panel3, cc.xy(5, 13));
 
         //---- ringCountLabel ----
-        ringCountLabel.setText("Rings");
+        ringCountLabel.setText("Rings:");
         ringCountLabel.setName("ringCountLabel");
         add(ringCountLabel, cc.xy(3, 15));
 
@@ -751,7 +754,7 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
         add(ringCountSpinner, cc.xy(5, 15));
 
         //---- remarksLabel ----
-        remarksLabel.setText("Remarks");
+        remarksLabel.setText("Remarks:");
         remarksLabel.setName("remarksLabel");
         add(remarksLabel, cc.xy(3, 17));
 
@@ -769,7 +772,7 @@ public class BullseyeEditorPanel extends AShapePropertiesEditorPanel<IMutableBul
         add(remarksField, cc.xy(5, 17));
 
         //---- authorLabel ----
-        authorLabel.setText("Original Author");
+        authorLabel.setText("Original Author:");
         authorLabel.setName("authorLabel");
         add(authorLabel, cc.xy(3, 19));
 

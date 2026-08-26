@@ -19,7 +19,9 @@ import jakarta.inject.Inject;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.BiConsumer;
 
 /**
@@ -34,6 +36,7 @@ public class TakLabelManager implements IGlobeLifeCycleListener
     private final ApplicationGlobeManager globeManager;
     private final boolean headless;
     private final List<LabelRegistration> registrations = new CopyOnWriteArrayList<>();
+    private final Set<MapRenderer<?>> loadedGlobes = new CopyOnWriteArraySet<>();
 
     @Inject
     TakLabelManager(ApplicationGlobeManager globeManager, @Headless boolean headless)
@@ -55,6 +58,7 @@ public class TakLabelManager implements IGlobeLifeCycleListener
 
         globeManager.removeGlobeLifeCycleListener(this);
         registrations.clear();
+        loadedGlobes.clear();
     }
 
     @Override
@@ -63,6 +67,7 @@ public class TakLabelManager implements IGlobeLifeCycleListener
         registrations.stream()
                 .filter(r -> r.forAllGlobes)
                 .forEach(r -> getGlobeLabelManager(globe, (mapRenderer, labelManager) -> addLabelToRegistration(mapRenderer, labelManager, r)));
+        loadedGlobes.add(globe.getPortableMapRenderer());
     }
 
     @Override
@@ -70,6 +75,7 @@ public class TakLabelManager implements IGlobeLifeCycleListener
     {
         MapRenderer<?> mapRenderer = globe.getPortableMapRenderer();
         registrations.forEach(r -> r.labelIdPerGlobe.remove(mapRenderer));
+        loadedGlobes.remove(mapRenderer);
     }
 
     /**
@@ -81,7 +87,10 @@ public class TakLabelManager implements IGlobeLifeCycleListener
     public LabelRegistration createLabel(BiConsumer<GLLabelManager, Integer> updateConsumer)
     {
         LabelRegistration registration = new LabelRegistration(new HashMap<>(), updateConsumer, true);
-        forEachLabelManager((mapRenderer, labelManager) -> addLabelToRegistration(mapRenderer, labelManager, registration));
+        forEachLabelManager((mapRenderer, labelManager) -> {
+            // Only add to label manager if globe is loaded, otherwise defer to {@link #globeCreated} since {@code forAllGlobes} is true
+            if (loadedGlobes.contains(mapRenderer)) addLabelToRegistration(mapRenderer, labelManager, registration);
+        });
         registrations.add(registration);
         return registration;
     }

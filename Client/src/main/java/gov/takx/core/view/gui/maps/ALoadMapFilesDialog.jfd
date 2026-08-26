@@ -279,6 +279,14 @@
               <void property="name">
                <string>layerNameTextField</string>
               </void>
+              <void method="addEvent">
+               <object class="com.jformdesigner.model.FormEvent">
+                <string>java.awt.event.KeyListener</string>
+                <string>keyReleased</string>
+                <string>onLayerNameTextChanged</string>
+                <boolean>false</boolean>
+               </object>
+              </void>
              </object>
              <object class="com.jformdesigner.model.FormLayoutConstraints">
               <class>com.jgoodies.forms.layout.CellConstraints</class>

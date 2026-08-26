@@ -8,7 +8,6 @@ import jakarta.annotation.Nonnull;
 
 import javax.swing.Icon;
 
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
 /**
@@ -27,6 +26,7 @@ public class MapObjectEntityDefinition<E extends IMapObject> extends CommonEntit
     {
         addPropertyChangeMapping(List.of(IMapObject.NAME), List.of(getSummaryColumn(), getNameColumn()));
         addPropertyChangeMapping(IMapObject.ICON, getIconColumn());
+        addPropertyChangeMapping(IMapObject.VISIBILITY, getVisibilityColumn());
     }
 
     @Override
@@ -39,18 +39,6 @@ public class MapObjectEntityDefinition<E extends IMapObject> extends CommonEntit
     protected String getName(@Nonnull E entity)
     {
         return entity.getName();
-    }
-
-    @Override
-    protected void addPropertyChangeListener(@Nonnull E entity, @Nonnull String propertyName, @Nonnull PropertyChangeListener listener)
-    {
-        entity.addPropertyChangeListener(propertyName, listener);
-    }
-
-    @Override
-    protected void removePropertyChangeListener(@Nonnull E entity, @Nonnull String propertyName, @Nonnull PropertyChangeListener propertyChangeListener)
-    {
-        entity.removePropertyChangeListener(propertyName, propertyChangeListener);
     }
 
     @Override

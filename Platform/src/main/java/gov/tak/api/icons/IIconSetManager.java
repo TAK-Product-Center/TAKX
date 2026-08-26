@@ -31,6 +31,12 @@ public interface IIconSetManager
     String TAKX_LEGACY_ICONSET_UID = "TAKX Legacy";
 
     /**
+     * The UID for the Vehicle Models icon set.
+     * @since 5.8
+     */
+    String VEHICLE_MODELS_UID = "Vehicle Models";
+
+    /**
      * @return All discovered {@link IUserIconSet icon sets}
      * @since 5.2
      */

@@ -21,7 +21,6 @@ import gov.takx.api.terrain.experimental.ITerrainCalculator;
 import gov.takx.api.terrain.experimental.ITerrainCalculatorDelegate;
 import gov.takx.api.terrain.experimental.ITerrainService;
 import gov.takx.api.terrain.experimental.TerrainCalculator;
-import gov.takx.api.terrain.experimental.TerrainUtils;
 import gov.takx.core.globe.ApplicationGlobe;
 import gov.takx.core.globe.ApplicationGlobeManager;
 import gov.takx.core.globe.tak.elevation.TakHighestResolutionTerrain;
@@ -200,7 +199,7 @@ public class TerrainService implements ITerrainService, ITerrainCalculatorDelega
         if (headless) return;
 
         ElevationModel elevationModel = globeManager.getPrimaryGlobeDelegate().getWorldWindow().getModel().getGlobe().getElevationModel();
-        List<ITakElevationModel> enabledModels = TerrainUtils.splitModels(ITakElevationModel.class, elevationModel).stream().filter(ElevationModel::isEnabled).toList();
+        List<ITakElevationModel> enabledModels = TakHighestResolutionTerrain.splitModels(ITakElevationModel.class, elevationModel).stream().filter(ElevationModel::isEnabled).toList();
         getHighestResolutionTerrain().setElevationModelsOfInterest(enabledModels);
     }
 

@@ -57,8 +57,11 @@ public class MapObjectImageUtils implements IMapObjectImageUtils
     @Override
     public boolean isSyntheticDefaultIcon(IPluginDefinition<?> pluginDefinition)
     {
+        // The default icon is used when it is the exact URI specified by a synthetic plugin definition,
+        // and also when there is no URI specified. When no URI is specified calls to getImage() will
+        // fall back to the default image URI, so both cases are valid here.
         return pluginDefinition instanceof ISyntheticPluginDefinition
-                && ImageUtils.DEFAULT_IMAGE_URI.equals(pluginDefinition.getIconURI().orElse(null));
+                && pluginDefinition.getIconURI().map(uri -> ImageUtils.DEFAULT_IMAGE_URI.equals(uri)).orElse(true);
     }
 
     @Override

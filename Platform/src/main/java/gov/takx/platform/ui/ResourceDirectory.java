@@ -16,7 +16,11 @@ public enum ResourceDirectory
     PLATFORM_ICONS("icons/", false),
     RESOURCES("resources/", true),
     TAK_ASSETS_ICONS("resources/tak-assets/icons/", true),
+    /** @since 5.8 */
+    TAK_ASSETS_VEHICLE_MODELS("resources/tak-assets/vehicle_models/", true),
     TAK_ASSETS_PNG("resources/tak-assets/png/", true),
+    /** @since 5.8 **/
+    TAK_ASSETS_SVG("resources/tak-assets/svg/", true),
     ;
 
     private final String directoryPath;

@@ -4,20 +4,19 @@ import android.graphics.Color;
 import com.atakmap.map.layer.feature.DataStoreException;
 import com.atakmap.map.layer.feature.Feature;
 import com.atakmap.map.layer.feature.FeatureDataStore2;
-import com.atakmap.map.layer.feature.FeatureDataStore4;
 import com.atakmap.map.layer.feature.FeatureSet;
 import com.atakmap.map.layer.feature.geometry.Geometry;
 import com.atakmap.map.layer.feature.style.BasicStrokeStyle;
 import com.atakmap.map.layer.feature.style.Style;
 import com.google.common.annotations.VisibleForTesting;
 import gov.tak.api.maps.Marker;
-import gov.tak.core.map.layer.feature.datastore.SharedFeatureDataStore;
 import gov.takx.api.breadcrumb.IBreadcrumb;
 import gov.takx.api.breadcrumb.IBreadcrumbManager;
 import gov.takx.api.breadcrumb.event.TrailBreadcrumbAdded;
 import gov.takx.api.breadcrumb.event.TrailVisibilityChanged;
 import gov.takx.api.event.mapobject.MapObjectAdded;
 import gov.takx.api.event.project.ProjectClosed;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
 import gov.takx.api.preferences.IPreferenceMonitor;
 import gov.takx.core.globe.tak.FeatureUtility;
 import gov.takx.platform.preferences.PreferenceEntry;
@@ -57,7 +56,7 @@ public class GlobePersistentPathManager extends AGlobeBreadcrumbManager
     private String selfMarkerUid;
 
     @Inject
-    GlobePersistentPathManager(@SharedFeatureDataStore FeatureDataStore4 dataStore, IBreadcrumbManager breadcrumbManager)
+    GlobePersistentPathManager(ISharedFeatureDataStore dataStore, IBreadcrumbManager breadcrumbManager)
     {
         super(dataStore, breadcrumbManager);
     }

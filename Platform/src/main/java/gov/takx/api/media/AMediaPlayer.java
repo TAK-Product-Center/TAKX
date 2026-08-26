@@ -1,15 +1,21 @@
 package gov.takx.api.media;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.annotation.Experimental;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.media.slider.ISliderListener;
 import gov.takx.api.media.slider.SliderEvent;
 import gov.takx.api.media.slider.YouTubeSlider;
 import gov.takx.api.platform.ICoreExecutorService;
+import gov.takx.commons.lang.ExceptionUtils;
 import gov.takx.commons.swing.ImageUtils;
+import gov.takx.commons.swing.MouseEnteredExitedListener;
+import gov.takx.commons.swing.MouseRolloverListener;
 import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
@@ -22,7 +28,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
-import javax.swing.SwingUtilities;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -30,12 +35,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.image.AffineTransformOp;
@@ -43,6 +45,7 @@ import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,8 +53,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import static gov.takx.platform.ui.ResourceDirectory.PLATFORM_ICONS;
 
 /**
- * In general a plugin will want to extend this abstract class for its custom media panels. This abstract panel
- * will provide all the generic functions for a typical moving image content type panel.
+ * Extend this abstract class if you need to access its media panels to work with plugin-generated media content.
+ * If reading, decoding, and displaying standard media formats (audio and video), use or extend {@link gov.takx.core.media.MediaPlayer}.
+ *
+ * @implNote The image set on {@link #paintImage} is what will be rendered each time this component is painted.
  *
  * @since 2.37
  */
@@ -64,16 +69,27 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
 
     protected static final String EMPTY_ELAPSED_AND_DURATION_LABEL = "-:-- / -:--";
 
-    protected final static ImageIcon PLAY_ICON = UIResources.getActionButtonIcon(PLATFORM_ICONS, "play.png");
-    protected final static ImageIcon PAUSE_ICON = UIResources.getActionButtonIcon(PLATFORM_ICONS, "pause.png");
-    protected final static ImageIcon AUDIO_ICON = UIResources.getActionButtonIcon(PLATFORM_ICONS, "volume.png");
-    protected final static ImageIcon MUTE_ICON = UIResources.getActionButtonIcon(PLATFORM_ICONS, "volume_off.png");
-    protected final static BufferedImage AUDIO_IMAGE = ImageUtils.getImage(UIResources.getUrl(PLATFORM_ICONS, "audio.png"), false);
+    protected final static ImageIcon PLAY_ICON = UIResources.getActionButtonIcon(PLATFORM_ICONS, "play.svg");
+    protected final static ImageIcon PAUSE_ICON = UIResources.getActionButtonIcon(PLATFORM_ICONS, "pause.svg");
+    protected final static ImageIcon AUDIO_ICON = UIResources.getActionButtonIcon(PLATFORM_ICONS, "volume.svg");
+    protected final static ImageIcon MUTE_ICON = UIResources.getActionButtonIcon(PLATFORM_ICONS, "volume_off.svg");
+    protected final static BufferedImage AUDIO_IMAGE = ImageUtils.getImage(UIResources.getUrl(PLATFORM_ICONS, "audio.svg"), false);
+
+    /**
+     * @deprecated do not use this to perform long-running operations, like stream decoding.
+     */
+    @Deprecated
+    @DeprecatedApi(since = "5.8", forRemoval = true, removeAt = "5.11")
+    @Inject
+    protected ICoreExecutorService executorService;
+
+    @Inject
+    protected IMediaPlayerManager mediaPlayerManager;
 
     protected MediaPlayerOptions options;
     protected IMedia media;
-    protected boolean isBlank = false;
-    protected java.util.List<IMediaPlayerListener> listeners = new CopyOnWriteArrayList<>();
+    protected boolean isBlank;
+    protected final List<IMediaPlayerListener> listeners = new CopyOnWriteArrayList<>();
     protected JPanel titlePanel;
     protected JPanel controlPanel;
     protected YouTubeSlider slider;
@@ -82,24 +98,18 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
     protected JToggleButton playPauseButton;
     protected volatile boolean isMuted;
     protected volatile boolean sliderDragging;
-    protected AtomicReference<BufferedImage> image =
-            new AtomicReference<>(new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR));
-    protected AtomicReference<BufferedImage> scaledImage =
-            new AtomicReference<>(new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR));
+    protected final AtomicReference<BufferedImage> image = new AtomicReference<>(new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR));
+    protected final AtomicReference<BufferedImage> scaledImage = new AtomicReference<>(new BufferedImage(1, 1, BufferedImage.TYPE_3BYTE_BGR));
     protected AtomicReference<BufferedImage> paintImage;
-
-    @Inject
-    protected ICoreExecutorService executorService;
-
-    @Inject
-    protected IMediaPlayerManager mediaPlayerManager;
+    private boolean stillImage;
+    private final MouseEnteredExitedListener mouseEnteredExitedListener = this::mouseEnteredOrExited;
 
     /**
-     * Constructor
-     *
      * @param options Media player options
+     * @param media Media to play
+     * @see #loadMedia(IMedia)
      */
-    protected AMediaPlayer(MediaPlayerOptions options, IMedia media)
+    protected AMediaPlayer(@Nonnull MediaPlayerOptions options, @Nullable IMedia media)
     {
         this.options = options;
         this.media = media;
@@ -117,47 +127,26 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
 
         setName(options.getTitle());
 
-        // TODO There's a bug here when you mouse out of the window from inside the control or title panel.
-        // Ignore the mouseExited event when it occurs on a child element.
-        MouseListener userControlsDisplayer = new MouseAdapter()
+        MouseRolloverListener.addRolloverListener(this, mouseEnteredExitedListener);
+
+        if (media != null) loadMedia(media);
+    }
+
+    /**
+     * Handle a mouse enter/exit event, to show or hide our control panel.
+     * @since 5.8
+     */
+    protected void mouseEnteredOrExited(MouseEvent e)
+    {
+        if (e.getID() == MouseEvent.MOUSE_ENTERED)
         {
-            @Override
-            public void mouseEntered(MouseEvent e)
-            {
-                titlePanel.setVisible(true);
-                boolean unhide = !(media instanceof IImage) && ((IPlayable) media).getDuration() != null;
-                controlPanel.setVisible(unhide);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e)
-            {
-                // TODO There's a bug here when you mouse out of the window from inside the control or title panel.
-                // Ignore the mouseExited event when it occurs on a child element.
-                Point p = new Point(e.getLocationOnScreen());
-                SwingUtilities.convertPointFromScreen(p, e.getComponent());
-                if (!e.getComponent().contains(p))
-                {
-                    titlePanel.setVisible(false);
-                    controlPanel.setVisible(false);
-                }
-            }
-        };
-        addMouseListener(userControlsDisplayer);
-
-        if (media != null)
+            titlePanel.setVisible(true);
+            boolean showControls = !(media instanceof IImage) && ((IPlayable) media).getDuration() != null;
+            controlPanel.setVisible(showControls);
+        } else
         {
-            setBorderColor(media.getColor());
-
-            media.addPropertyChangeListener(MediaProperties.Common.COLOR, this);
-
-            if (media instanceof IImage)
-            {
-                paintImage = scaledImage;
-            } else
-            {
-                paintImage = image;
-            }
+            titlePanel.setVisible(false);
+            controlPanel.setVisible(false);
         }
     }
 
@@ -165,7 +154,7 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
     {
         // If media is a still image, the player is responsible for resizing it to fit the window. For video, the
         // resizing is done natively for efficiency.
-        if (getMedia().isPresent() && getMedia().get() instanceof IImage)
+        if (media instanceof IImage)
         {
             generateScaledCopy();
             repaint();
@@ -175,33 +164,35 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
     @Override
     public void loadMedia(@Nonnull IMedia media)
     {
-        unloadMedia();
-        this.media = media;
-
         logger.debug("Loading {}", media);
 
+        unloadMedia();
+        this.media = media;
+        stillImage = media instanceof IImage;
+
+        setBorderColor(media.getColor());
+        media.addPropertyChangeListener(MediaProperties.Common.COLOR, this);
+        paintImage = media instanceof IImage ? scaledImage : image;
+
         final boolean playable = media instanceof IPlayable;
-        if (playPauseButton != null) playPauseButton.setEnabled(playable);
+        playPauseButton.setEnabled(playable);
         slider.setEnabled(playable);
 
         title.setText(media.getName());
 
         // Notify listeners
-        for (IMediaPlayerListener listener : listeners)
-        {
-            listener.onMediaLoaded(this, media);
-        }
-
-        media.addPropertyChangeListener(MediaProperties.Common.COLOR, this);
+        ExceptionUtils.safeDoOperation(listeners, listener -> listener.onMediaLoaded(this, media));
     }
 
     @Override
+    @Nonnull
     public Optional<IMedia> getMedia()
     {
         return Optional.ofNullable(media);
     }
 
     @Override
+    @Nonnull
     public Optional<MediaPlayerOptions> getOptions()
     {
         return Optional.of(options);
@@ -210,26 +201,36 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
     @Override
     public void unloadMedia()
     {
-        getMedia().ifPresent(m -> {
-            logger.debug("Unloading {}", m);
+        getMedia().ifPresent(media -> {
+            logger.debug("Unloading {}", media);
 
-            m.removePropertyChangeListener(MediaProperties.Common.COLOR, this);
-            media = null;
+            media.removePropertyChangeListener(MediaProperties.Common.COLOR, this);
+            this.media = null;
+            stillImage = false;
         });
 
-        if (playPauseButton != null) playPauseButton.setEnabled(false);
+        playPauseButton.setEnabled(false);
         slider.setEnabled(false);
         blank();
     }
 
+    /**
+     * @return {@code true} if we're processing a still image
+     * @since 5.8
+     */
+    protected boolean isStillImage()
+    {
+        return stillImage;
+    }
+
     @Override
-    public void addListener(IMediaPlayerListener listener)
+    public void addListener(@Nonnull IMediaPlayerListener listener)
     {
         listeners.add(listener);
     }
 
     @Override
-    public void removeListener(IMediaPlayerListener listener)
+    public void removeListener(@Nonnull IMediaPlayerListener listener)
     {
         listeners.remove(listener);
     }
@@ -239,10 +240,7 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
     {
         logger.debug("Play");
 
-        if (options != null && options.isPlaybackControlsEnabled())
-        {
-            playPauseButton.setSelected(true);
-        }
+        playPauseButton.setSelected(true);
         isBlank = false;
         repaint();
     }
@@ -251,11 +249,7 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
     public void pause()
     {
         logger.debug("Pause");
-
-        if (options != null && options.isPlaybackControlsEnabled())
-        {
-            playPauseButton.setSelected(false);
-        }
+        playPauseButton.setSelected(false);
     }
 
     @Override
@@ -281,13 +275,10 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
     {
         if (getMedia().isEmpty() || !(getMedia().get() instanceof final IPlayable playable)) return;
 
-        if (logger.isDebugEnabled())
-        {
-            logger.debug("seekByPercentage pct={} duration={}", pct, playable.getDuration());
-        }
+        if (logger.isDebugEnabled()) logger.debug("seekByPercentage pct={} duration={}", pct, playable.getDuration());
 
-        double time = playable.getDuration() * pct;
-        seek(time);
+        //noinspection DataFlowIssue - IJ is wrong
+        seek(playable.getDuration() * pct);
     }
 
     /**
@@ -298,6 +289,20 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
     protected void mute(boolean mute)
     {
         isMuted = mute;
+    }
+
+    /**
+     * Called by media manager to release any resources and notify listeners that we closed.
+     *
+     * @since 5.8
+     */
+    @OverridingMethodsMustInvokeSuper
+    @Override
+    public void destroy()
+    {
+        MouseRolloverListener.removeRolloverListener(this, mouseEnteredExitedListener);
+        listeners.clear();
+        unloadMedia();
     }
 
     @Override
@@ -349,8 +354,7 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
      */
     protected void generateScaledCopy()
     {
-        BufferedImage scaledCopy = generateScaledCopy(image.get());
-        scaledImage.set(scaledCopy);
+        scaledImage.set(generateScaledCopy(image.get()));
     }
 
     /**
@@ -360,7 +364,7 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
     {
         int origWidth = orig.getWidth();
         int origHeight = orig.getHeight();
-        AffineTransform at = new AffineTransform();
+        var at = new AffineTransform();
 
         int windowWidth = getWidth() > 0 ? getWidth() : 1;
         int windowHeight = getHeight() > 0 ? getHeight() : 1;
@@ -373,17 +377,11 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
 
         // Recommended approach to scaling is to use bicubic interpolation when enlarging an image,
         // bilinear when reducing it
-        int interpolation = AffineTransformOp.TYPE_BILINEAR;
-        if (scaleFactor > 1.0)
-        {
-            interpolation = AffineTransformOp.TYPE_BICUBIC;
-        }
-
+        int interpolation = scaleFactor > 1.0 ? AffineTransformOp.TYPE_BICUBIC : AffineTransformOp.TYPE_BILINEAR;
         int scaledWidth = (int) Math.ceil(origWidth * scaleFactor);
         int scaledHeight = (int) Math.ceil(origHeight * scaleFactor);
-        AffineTransformOp scaleOp =
-                new AffineTransformOp(at, interpolation);
-        BufferedImage scaledCopy = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
+        var scaleOp = new AffineTransformOp(at, interpolation);
+        var scaledCopy = new BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB);
 
         logger.debug("Generating scaled image, size = {}x{}", scaledWidth, scaledHeight);
 
@@ -391,6 +389,7 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
     }
 
     @Override
+    @Nonnull
     public Component getComponent()
     {
         return this;
@@ -402,14 +401,45 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
      * @param color the border color (ARGB)
      */
     @Override
-    public void setBorderColor(Color color)
+    public void setBorderColor(@Nullable Color color)
     {
-        if (color != null)
+        setBorder(color != null ? BorderFactory.createMatteBorder(2, 2, 2, 2, color) : null);
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent event)
+    {
+        if (event.getPropertyName().equals(MediaProperties.Common.COLOR))
         {
-            setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, color));
-        } else
+            getMedia().ifPresent(media -> {
+                if (event.getSource() == media) setBorderColor((Color) event.getNewValue());
+            });
+        }
+    }
+
+    private class SliderListener implements ISliderListener
+    {
+        boolean wasPlayingBeforeDrag;
+
+        @Override
+        public void sliderMoved(SliderEvent e)
         {
-            setBorder(null);
+            seekByPercentage(e.getThumbPercent());
+        }
+
+        @Override
+        public void sliderDragBegin(SliderEvent e)
+        {
+            wasPlayingBeforeDrag = isPlaying();
+            pause();
+            sliderDragging = true;
+        }
+
+        @Override
+        public void sliderDragEnd(SliderEvent e)
+        {
+            if (wasPlayingBeforeDrag) play();
+            sliderDragging = false;
         }
     }
 
@@ -425,8 +455,7 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
         final Font font = title.getFont();
         title.setFont(font.deriveFont(font.getSize() + 4f));
         titlePanel.add(title);
-        JComponent strut = (JComponent) Box.createHorizontalStrut(1);
-        titlePanel.add(strut);
+        titlePanel.add(Box.createHorizontalStrut(1));
 
         add(titlePanel, "dock north, growx");
 
@@ -437,39 +466,13 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
 
         slider = new YouTubeSlider(options.isPlaybackControlsEnabled());
         controlPanel.add(slider, "h 16!, dock north");
+        playPauseButton = new JToggleButton(PLAY_ICON);
+
         if (options.isPlaybackControlsEnabled())
         {
             // Allow user to seek with the slider
-            slider.addSliderListener(new ISliderListener()
-            {
-                boolean wasPlayingBeforeDrag;
+            slider.addSliderListener(new SliderListener());
 
-                @Override
-                public void sliderMoved(SliderEvent e)
-                {
-                    seekByPercentage(e.getThumbPercent());
-                }
-
-                @Override
-                public void sliderDragBegin(SliderEvent e)
-                {
-                    wasPlayingBeforeDrag = isPlaying();
-                    pause();
-                    sliderDragging = true;
-                }
-
-                @Override
-                public void sliderDragEnd(SliderEvent e)
-                {
-                    if (wasPlayingBeforeDrag)
-                    {
-                        play();
-                    }
-                    sliderDragging = false;
-                }
-            });
-
-            playPauseButton = new JToggleButton(PLAY_ICON);
             playPauseButton.setSelectedIcon(PAUSE_ICON);
             playPauseButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_BORDERLESS);
             playPauseButton.setSelected(false);
@@ -486,7 +489,7 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
             controlPanel.add(playPauseButton);
         }
 
-        JToggleButton muteButton = new JToggleButton(AUDIO_ICON);
+        var muteButton = new JToggleButton(AUDIO_ICON);
         muteButton.setSelectedIcon(MUTE_ICON);
         muteButton.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_BORDERLESS);
         muteButton.setSelected(false);
@@ -497,21 +500,8 @@ public abstract class AMediaPlayer extends JPanel implements IMediaPlayer, Prope
         elapsedAndDurationLabel = new JLabel(EMPTY_ELAPSED_AND_DURATION_LABEL);
         elapsedAndDurationLabel.setForeground(Color.white);
         controlPanel.add(elapsedAndDurationLabel);
-
-        JComponent strut2 = (JComponent) Box.createHorizontalStrut(1);
-        controlPanel.add(strut2);
+        controlPanel.add(Box.createHorizontalStrut(1));
 
         add(controlPanel, "dock south, growx");
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent event)
-    {
-        if (event.getPropertyName().equals(MediaProperties.Common.COLOR))
-        {
-            getMedia().ifPresent(media -> {
-                if (event.getSource() == media && event.getNewValue() instanceof Color color) setBorderColor(color);
-            });
-        }
     }
 }

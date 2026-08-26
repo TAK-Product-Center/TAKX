@@ -25,8 +25,7 @@ public class ChatsPanelTest extends AIntegrationTest
     @BeforeEach
     void beforeEach()
     {
-        chatsPanel = new ChatsPanel(() -> {
-        }, conversation -> {
+        chatsPanel = new ChatsPanel(conversation -> {
         }, conversation -> null, (label, integer) -> {
         });
     }

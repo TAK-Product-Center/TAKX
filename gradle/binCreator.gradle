@@ -204,7 +204,7 @@ def shapeFilesZipTask = createExtractZipTask('shapeFiles', "gov.raptor.resources
 
 // Now that we need some of the png assets, minimize it by excluding the sizes we don't use (we'll use the 32x32, 36x36, and 48x48 sizes for now)
 def takAssetsExcludes = ['dbs/iconsets.sqlite', 'mil-std-2525c/**', 'png/lpticons/**', 'png/**24.png', 'png/**72.png', 'png/**96.png',
-                         'svg/**', 'tools/**', 'vehicle_models/**', 'vehicles/**', 'wmm/**'] as List
+                         'tools/**', 'vehicles/**', 'wmm/**'] as List
 
 // For CIV releases, we need to exclude some data files that contain sensitive information
 if (buildFlavor == 'civ') takAssetsExcludes << 'xml/**'

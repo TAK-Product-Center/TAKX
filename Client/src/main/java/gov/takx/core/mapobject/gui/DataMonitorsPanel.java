@@ -4,6 +4,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.mapobject.IDataMonitor;
+import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IMapObjectController;
 import gov.takx.api.platform.IDataMonitorServices;
 import gov.takx.api.plugin.datamonitor.DataMonitorEvent;
@@ -40,30 +41,37 @@ public class DataMonitorsPanel extends JPanel implements IResourceCleaner, Prope
     private final DefaultTreeModel model = new DefaultTreeModel(root);
     private final Map<IDataMonitor, DataMonitorTreeNode> monitorToNodeMap = new HashMap<>();
     private Comparator<IDataMonitor> comparator;
-    private final IMapObjectController controller;
+    private IMapObjectController controller;
 
-    public DataMonitorsPanel(@Nonnull IMapObjectController controller)
+    /**
+     * Create a new empty panel.
+     *
+     * @since 5.8
+     */
+    public DataMonitorsPanel()
     {
-        this.controller = controller;
-        comparator = controller.getComparator();
-
         initComponents();
-
         treeDataMonitors.addMouseListener(new MouseListener());
         treeDataMonitors.setToggleClickCount(0);
         treeDataMonitors.setModel(model);
         treeDataMonitors.setCellRenderer(new DataMonitorTreeNodeRenderer());
+    }
 
+    /**
+     * @param mapObject the map object to display data monitors for
+     */
+    public void setMapObject(@Nonnull IMapObject mapObject)
+    {
+        controller = mapObject.getController();
+        comparator = controller.getComparator();
         controller.addPropertyChangeListener(this); // Listen for addition/removal of data monitors on this MOC
-
         controller.getDataMonitors().forEach(this::addDataMonitor);
     }
 
     @Override
     public void releaseResources()
     {
-        controller.removePropertyChangeListener(this);
-
+        if (controller != null) controller.removePropertyChangeListener(this);
         clear();
     }
 
@@ -274,21 +282,21 @@ public class DataMonitorsPanel extends JPanel implements IResourceCleaner, Prope
         setName("this");
         setLayout(new FormLayout(
                 "default:grow",
-                "fill:default:grow"));
+                "default"));
 
         //======== scrollPane1 ========
         {
             scrollPane1.setName("scrollPane1");
 
             //---- treeDataMonitors ----
-            treeDataMonitors.setRootVisible(false);
-            treeDataMonitors.setShowsRootHandles(false);
             treeDataMonitors.setToggleClickCount(0);
-            treeDataMonitors.setVisibleRowCount(5);
+            treeDataMonitors.setShowsRootHandles(false);
+            treeDataMonitors.setRootVisible(false);
+            treeDataMonitors.setVisibleRowCount(3);
             treeDataMonitors.setName("treeDataMonitors");
             scrollPane1.setViewportView(treeDataMonitors);
         }
-        add(scrollPane1, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
+        add(scrollPane1, cc.xy(1, 1));
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 

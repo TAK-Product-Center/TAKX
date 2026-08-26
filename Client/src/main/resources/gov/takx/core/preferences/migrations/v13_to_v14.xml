@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="13" to="14">
+    <add refXpath="node[@name='CommonCommo']/map" where="append">
+        <!-- On certain gateway systems, directed messages need to contain information on how to relay
+        the message.   Only enable if this is required.-->
+        <entry key="AddDestUid" value="false"/>
+
+        <!-- Enables the ability of datagram sockets to share the local address with other sockets on
+        the system. Use with caution if you expect to be able to receive unicast datagrams -->
+        <entry key="EnableAddressReuse" value="false"/>
+
+        <!-- Determines whether sent multicast packets should be looped back to local sockets.
+        This is the same as setting the socket option 'IP_MULTICAST_LOOP'.
+        NOTE: this is only functional on Linux, it has no effect on Windows.-->
+        <entry key="EnableMulticastLoopback" value="false"/>
+
+        <!-- Multicast TTL (in hops) for outgoing multicast -->
+        <entry key="MulticastTTL" value="64"/>
+
+        <!-- How long (in sec) to wait for TCP connections to complete. Shorter values make failed
+        connections happen sooner (more responsive) but if the value is too short for your network then
+        you may get spurious connection failures. -->
+        <entry key="TcpConnectionTimeout" value="20"/>
+
+        <!-- Secure Port of the Server API -->
+        <entry key="SecureServerApiPort" value="8443"/>
+
+        <!-- Unsecure Port of the Server API-->
+        <entry key="UnsecureServerApiPort" value="8080"/>
+
+        <!-- Port of the Certificate Enrollment API -->
+        <entry key="CertEnrollmentApiPort" value="8446"/>
+
+        <!-- During enrollment, allow certificate authorities installed at the system level to be used
+        as trust anchors to verify the server -->
+        <entry key="UseSystemCertAuthorities" value="false"/>
+    </add>
+</migration>

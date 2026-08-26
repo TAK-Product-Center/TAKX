@@ -1,16 +1,23 @@
 package gov.takx.commons.swing;
 
+import com.jgoodies.forms.factories.FormFactory;
 import com.jgoodies.forms.layout.ColumnSpec;
 import com.jgoodies.forms.layout.ConstantSize;
 import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.FormSpec;
 import com.jgoodies.forms.layout.RowSpec;
 import gov.tak.api.annotation.IncubatingApi;
 import jakarta.annotation.Nonnull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JComponent;
 
 import java.awt.Component;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
+import java.util.OptionalInt;
+import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
 /**
@@ -33,6 +40,8 @@ import java.util.stream.IntStream;
 @IncubatingApi(since = "5.6")
 public class FormLayoutUtils
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private static final String ROW_SPEC_CACHE_PROPERTY = "FormLayoutUtils.RowSpecCache";
     private static final String COLUMN_SPEC_CACHE_PROPERTY = "FormLayoutUtils.ColumnSpecCache";
 
@@ -113,21 +122,36 @@ public class FormLayoutUtils
     @SuppressWarnings("unchecked")
     public static void hideOrRestoreRow(@Nonnull JComponent container, int row, boolean gaps, boolean hide)
     {
-        FormLayout layout = (FormLayout) container.getLayout();
+        var layout = (FormLayout) container.getLayout();
+        var rows = layout.getRowCount();
         if (hide)
         {
             if (container.getClientProperty(ROW_SPEC_CACHE_PROPERTY) == null)
             {
                 container.putClientProperty(ROW_SPEC_CACHE_PROPERTY, IntStream.range(1, layout.getRowCount() + 1).mapToObj(layout::getRowSpec).toList());
             }
-            layout.setRowSpec(row, HIDDEN_ROW);
-            if (gaps && row > 1) layout.setRowSpec(row - 1, HIDDEN_ROW);
+            if (!layout.getRowSpec(row).equals(HIDDEN_ROW)) // Dont proceed if its already hidden
+            {
+                layout.setRowSpec(row, HIDDEN_ROW);
+                // Hide adjacent gap
+                if (gaps) findAdjacentSpec(rows, row, layout::getRowSpec, FormFactory.LINE_GAP_ROWSPEC).ifPresent(i -> layout.setRowSpec(i, HIDDEN_ROW));
+            }
         } else
         {
-            List<RowSpec> specs = (List<RowSpec>) container.getClientProperty(ROW_SPEC_CACHE_PROPERTY);
-            if (specs == null) throw new IllegalStateException("Cache does not exist");
-            layout.setRowSpec(row, specs.get(row - 1));
-            if (gaps && row > 1) layout.setRowSpec(row - 1, specs.get(row - 2));
+            var specs = (List<RowSpec>) container.getClientProperty(ROW_SPEC_CACHE_PROPERTY);
+            if (specs != null)
+            {
+                var cachedSpec = specs.get(row - 1);
+                if (!layout.getRowSpec(row).equals(cachedSpec))
+                {
+                    layout.setRowSpec(row, cachedSpec);
+                    // Restore adjacent gap
+                    if (gaps) findAdjacentSpec(rows, row, r -> specs.get(r - 1), FormFactory.LINE_GAP_ROWSPEC).ifPresent(i -> layout.setRowSpec(i, specs.get(i - 1)));
+                }
+            } else
+            {
+                logger.debug("Cache does not exist. Row is probably already visible");
+            }
         }
         container.revalidate();
     }
@@ -196,22 +220,69 @@ public class FormLayoutUtils
     @SuppressWarnings("unchecked")
     public static void hideOrRestoreColumn(@Nonnull JComponent container, int column, boolean gaps, boolean hide)
     {
-        FormLayout layout = (FormLayout) container.getLayout();
+        var layout = (FormLayout) container.getLayout();
+        var columns = layout.getColumnCount();
         if (hide)
         {
             if (container.getClientProperty(COLUMN_SPEC_CACHE_PROPERTY) == null)
             {
                 container.putClientProperty(COLUMN_SPEC_CACHE_PROPERTY, IntStream.range(1, layout.getColumnCount() + 1).mapToObj(layout::getColumnSpec).toList());
             }
-            layout.setColumnSpec(column, HIDDEN_COLUMN);
-            if (gaps && column > 1) layout.setColumnSpec(column - 1, HIDDEN_COLUMN);
+
+            if (!layout.getColumnSpec(column).equals(HIDDEN_COLUMN)) // Dont proceed if its already hidden
+            {
+                layout.setColumnSpec(column, HIDDEN_COLUMN);
+                // Hide adjacent gap
+                if (gaps) findAdjacentSpec(columns, column, layout::getColumnSpec, FormFactory.LABEL_COMPONENT_GAP_COLSPEC).ifPresent(i -> layout.setColumnSpec(i, HIDDEN_COLUMN));
+            }
+
         } else
         {
             List<ColumnSpec> specs = (List<ColumnSpec>) container.getClientProperty(COLUMN_SPEC_CACHE_PROPERTY);
-            if (specs == null) throw new IllegalStateException("Cache does not exist");
-            layout.setColumnSpec(column, specs.get(column - 1));
-            if (gaps && column > 1) layout.setColumnSpec(column - 1, specs.get(column - 2));
+            if (specs != null)
+            {
+                var cachedSpec = specs.get(column - 1);
+                if (!layout.getColumnSpec(column).equals(cachedSpec))
+                {
+                    layout.setColumnSpec(column, cachedSpec);
+                    // Restore adjacent gap
+                    if (gaps) findAdjacentSpec(columns, column, r -> specs.get(r - 1), FormFactory.LABEL_COMPONENT_GAP_COLSPEC).ifPresent(i -> layout.setColumnSpec(i, specs.get(i - 1)));
+                }
+            } else
+            {
+                logger.debug("Cache does not exist. Column is probably already visible");
+            }
         }
         container.revalidate();
+    }
+
+    /**
+     * This is a helper method to determine if a collection of {@link FormSpec} instances contains a gap on either side of
+     * a given index. This is necessary so that we can effectively hide and restore "gaps" in {@link FormLayout}
+     * instances. These gaps can be either {@link RowSpec} or {@link ColumnSpec} instances, and we could be searching either
+     * the layout instance directly, or the List of cached specs. Hence, why this needs a "provider" rather than just a 
+     * collection. It returns an {@link OptionalInt} for conciseness in the caller logic.
+     * <p>
+     * Confusing? Yes. But this just ended up being the nicest way to do it. It was either this or four nearly duplicate 
+     * chunks.
+     * @since 5.8
+     */
+    @Nonnull
+    private static OptionalInt findAdjacentSpec(int size, int index, @Nonnull IntFunction<FormSpec> specProvider, @Nonnull FormSpec find)
+    {
+        var findEncoded = find.encode();
+        // check for an adjacent spec
+        for (var r : new int[]{index - 1, index + 1})
+        {
+            if (r > 1 && r <= size)
+            {
+                var check = specProvider.apply(r);
+                if (check.encode().equals(findEncoded))
+                {
+                    return OptionalInt.of(r);
+                }
+            }
+        }
+        return OptionalInt.empty();
     }
 }

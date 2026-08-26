@@ -1,0 +1,72 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "right:41dlu, labelcompgap, center:134dlu"
+			"$rowSpecs": "default, linegap, default, linegap, default, linegap, default"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "showHeatMapCheckbox"
+				"text": "Show HeatMap"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showHeatmapClicked", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 1
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "intensityLabel"
+				"text": "Intensity"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JSlider" ) {
+				name: "intensitySlider"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "saturationLabel"
+				"text": "Saturation"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JSlider" ) {
+				name: "saturationSlider"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "valueLabel"
+				"text": "Value"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 7
+			} )
+			add( new FormComponent( "javax.swing.JSlider" ) {
+				name: "valueSlider"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 7
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 355, 120 )
+		} )
+	}
+}

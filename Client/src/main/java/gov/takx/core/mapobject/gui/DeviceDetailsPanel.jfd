@@ -1,0 +1,96 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		auxiliary() {
+			"JavaCodeGenerator.defaultVariableLocal": true
+		}
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default, labelcompgap, default:grow"
+			"$rowSpecs": "default, linegap, default, linegap, default, linegap, default"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "takVersionLabel"
+				"text": "TAK:"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormComponent( "gov.takx.commons.swing.JTextFieldLabel" ) {
+				name: "takVersionField"
+				"text": "TAKX-MIL 10.1.2"
+				"horizontalAlignment": 4
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": false
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 1
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "osVersionLabel"
+				"text": "OS:"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+			add( new FormComponent( "gov.takx.commons.swing.JTextFieldLabel" ) {
+				name: "osVersionField"
+				"text": "Windows 11 , version 10.0, arch amd64"
+				"horizontalAlignment": 4
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": false
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "deviceLabel"
+				"text": "Device:"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 5
+			} )
+			add( new FormComponent( "gov.takx.commons.swing.JTextFieldLabel" ) {
+				name: "deviceField"
+				"text": "Unknown"
+				"horizontalAlignment": 4
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": false
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+				"gridX": 3
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label1"
+				"text": "Battery:"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 7
+				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "batteryField"
+				"text": "100%"
+				"horizontalAlignment": 4
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": false
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 7
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

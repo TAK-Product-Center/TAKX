@@ -5,9 +5,6 @@ import com.google.common.collect.ListMultimap;
 import gov.takx.api.explorer.AExplorerEventSupport;
 import gov.takx.api.explorer.IExplorableRule;
 import gov.takx.api.state.IRestorableMap;
-import gov.takx.core.explorer.rules.GeofenceRule;
-import gov.takx.core.explorer.rules.NameRule;
-import gov.takx.core.explorer.rules.ProximityRule;
 import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,8 +12,11 @@ import org.slf4j.LoggerFactory;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -33,8 +33,7 @@ public class RuleGroupModel extends AExplorerEventSupport implements IRuleGroupM
     private final List<IExplorableRule> enabledRules = new CopyOnWriteArrayList<>();
     private final AtomicBoolean matchAll = new AtomicBoolean(true);
     private final ListMultimap<String, IRestorableMap> restoredRuleStateMap = ArrayListMultimap.create();
-    private boolean hasLocationSensitiveRules;
-    private boolean hasNameSensitiveRules;
+    private final Set<String> sensitiveProperties = new HashSet<>();
 
     @Nonnull
     @Override
@@ -50,16 +49,11 @@ public class RuleGroupModel extends AExplorerEventSupport implements IRuleGroupM
         return Collections.unmodifiableList(enabledRules);
     }
 
+    @Nonnull
     @Override
-    public boolean hasLocationSensitiveRules()
+    public Collection<String> getSensitiveProperties()
     {
-        return hasLocationSensitiveRules;
-    }
-
-    @Override
-    public boolean hasNameSensitiveRules()
-    {
-        return hasNameSensitiveRules;
+        return Collections.unmodifiableSet(sensitiveProperties);
     }
 
     @Override
@@ -83,64 +77,38 @@ public class RuleGroupModel extends AExplorerEventSupport implements IRuleGroupM
         {
             success = rules.add(rule);
             if (rule.isEnabled()) enabledRules.add(rule);
-
             rule.addPropertyChangeListener(IExplorableRule.ENABLED, this);
             firePropertyChange(RULE_ADDED, null, rule);
-
-            final String type = rule.getType();
-
-            if (type.equals(NameRule.TYPE)) hasNameSensitiveRules = true;
-            if (type.equals(GeofenceRule.TYPE) || type.equals(ProximityRule.TYPE)) hasLocationSensitiveRules = true;
+            sensitiveProperties.addAll(rule.getSensitiveProperties());
         }
         return success;
-    }
-
-    /**
-     * Determines if any of the current rules in the group contains a location-sensitive rule.
-     *
-     * @since 2.31
-     */
-    private void updateLocationSensitivity()
-    {
-        hasLocationSensitiveRules = rules.stream()
-                .map(IExplorableRule::getType)
-                .anyMatch(type -> type.equals(GeofenceRule.TYPE) || type.equals(ProximityRule.TYPE));
-    }
-
-    /**
-     * Determines if any of the current rules in the group contains a name-sensitive rule.
-     *
-     * @since 2.36
-     */
-    private void updateNameSensitivity()
-    {
-        hasNameSensitiveRules = rules.stream()
-                .anyMatch(rule -> NameRule.TYPE.equals(rule.getType()));
     }
 
     @Override
     public boolean remove(@Nonnull IExplorableRule rule)
     {
-        if (rule == null)
-        {
-            logger.warn("Unable to remove null explorable rule");
-            return false;
-        }
+        if (!rules.remove(rule)) return false;
 
-        return remove(rules.indexOf(rule)) != null;
+        if (rule.isEnabled()) enabledRules.remove(rule);
+        rule.removePropertyChangeListener(IExplorableRule.ENABLED, this);
+        firePropertyChange(RULE_REMOVED, rule, null);
+
+        rule.getSensitiveProperties().forEach(property -> {
+            if (rules.stream().flatMap(r -> r.getSensitiveProperties().stream()).noneMatch(property::equals))
+            {
+                sensitiveProperties.remove(property);
+            }
+        });
+        return true;
     }
 
     @Nonnull
     @Override
     public IExplorableRule remove(int index)
     {
-        IExplorableRule removed = rules.remove(index);
-        if (removed.isEnabled()) enabledRules.remove(removed);
-        removed.removePropertyChangeListener(IExplorableRule.ENABLED, this);
-        firePropertyChange(RULE_REMOVED, removed, null);
-        updateLocationSensitivity();
-        updateNameSensitivity();
-        return removed;
+        var rule = rules.get(index);
+        remove(rule);
+        return rule;
     }
 
     @Override

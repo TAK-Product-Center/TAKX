@@ -280,6 +280,15 @@ public class DrifterController
     }
 
     /**
+     * @param listener the listener to remove
+     * @since 5.8
+     */
+    public void removeDrifterConfigurationListener(@Nonnull DrifterConfigurationListener listener)
+    {
+        eventListeners.remove(DrifterConfigurationListener.class, listener);
+    }
+
+    /**
      * Simulate the passage of time for a {@link IMapObject} or all map objects based on drifter configuration.
      *
      * @param mapObject the map object to move
@@ -417,7 +426,9 @@ public class DrifterController
             if (route == null)
             {
                 mapObject.setTrack(configuration.bearing(), configuration.speed());
-                mapObject.setLocation(ShapeUtils.rhumbEndPositionMeters(startLocation, configuration.bearing(), distanceMeters), current, false);
+                var newPoint = ShapeUtils.rhumbEndPositionMeters(startLocation, configuration.bearing(), distanceMeters);
+                newPoint.setAltitude(mapObject.getLocation().getAltitude());
+                mapObject.setLocation(newPoint, current, false);
             } else
             {
                 var controlPoints = route.getControlPoints();

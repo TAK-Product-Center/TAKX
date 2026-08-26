@@ -1,22 +1,15 @@
 package gov.takx.core.view.gui.preferences;
 
+import gov.tak.api.comms.takserver.DeleteOption;
 import gov.tak.api.comms.takserver.PublishOption;
 import gov.tak.api.comms.takserver.TimeThresholdOption;
 import gov.tak.api.icons.TakColor;
 import gov.takx.api.annotation.PseudoBean;
-import gov.takx.api.preferences.IPreferenceEntry;
-import gov.takx.api.preferences.tool.CheckBoxPreference;
-import gov.takx.api.preferences.tool.ComboBoxPreference;
-import gov.takx.api.preferences.tool.CustomControlPreference;
-import gov.takx.api.preferences.tool.HiddenPreference;
-import gov.takx.api.preferences.tool.SliderPreference;
-import gov.takx.api.preferences.tool.TextPreference;
-import gov.takx.api.preferences.tool.ToggleButtonPreference;
+import gov.takx.api.milsym.MilStd2525Variant;
 import gov.takx.core.preferences.ToolPreferenceManager;
 import gov.takx.core.preferences.ToolPreferenceManager.ToolDefinition;
 import gov.takx.core.preferences.tool.ToolPreferenceAdded;
 import gov.takx.core.preferences.tool.ToolPreferenceRemoved;
-import gov.takx.core.view.gui.preferences.tools.ToolPreferenceEntry;
 import gov.takx.platform.ui.ResourceDirectory;
 import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
@@ -26,7 +19,6 @@ import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 
 import java.awt.Image;
 import java.util.ArrayList;
@@ -53,12 +45,21 @@ import static gov.takx.platform.preferences.PreferenceEntry.DATA_PACKAGE_NO_GO_T
 import static gov.takx.platform.preferences.PreferenceEntry.DATA_PACKAGE_SUCCESS_THRESHOLD_HIGH_MB;
 import static gov.takx.platform.preferences.PreferenceEntry.DATA_PACKAGE_SUCCESS_THRESHOLD_LOW_MB;
 import static gov.takx.platform.preferences.PreferenceEntry.DATA_SYNC_AUTO_ACCEPT_FEED_INVITES;
+import static gov.takx.platform.preferences.PreferenceEntry.DATA_SYNC_AUTO_DELETE_REMOVED;
 import static gov.takx.platform.preferences.PreferenceEntry.DATA_SYNC_AUTO_DELETE_THRESHOLD;
 import static gov.takx.platform.preferences.PreferenceEntry.DATA_SYNC_AUTO_DOWNLOAD_UPDATES;
 import static gov.takx.platform.preferences.PreferenceEntry.DATA_SYNC_LARGE_FILE_PROMPT;
 import static gov.takx.platform.preferences.PreferenceEntry.DATA_SYNC_PUBLISH_OPTIONS;
 import static gov.takx.platform.preferences.PreferenceEntry.DATA_SYNC_THRESHOLD;
 import static gov.takx.platform.preferences.PreferenceEntry.MIL_STD_2525_PREF;
+import static gov.takx.platform.preferences.PreferenceEntry.ROUTE_CHECKPOINT_PREFIX;
+import static gov.takx.platform.preferences.PreferenceEntry.ROUTE_DRIVING_CHECKPOINT_RADIUS;
+import static gov.takx.platform.preferences.PreferenceEntry.ROUTE_ELEVATION_PROFILE_CENTER_ON_SEEKER;
+import static gov.takx.platform.preferences.PreferenceEntry.ROUTE_FLYING_CHECKPOINT_RADIUS;
+import static gov.takx.platform.preferences.PreferenceEntry.ROUTE_SWIMMING_CHECKPOINT_RADIUS;
+import static gov.takx.platform.preferences.PreferenceEntry.ROUTE_WALKING_CHECKPOINT_RADIUS;
+import static gov.takx.platform.preferences.PreferenceEntry.ROUTE_WATERCRAFT_CHECKPOINT_RADIUS;
+import static gov.takx.platform.ui.UIResources.ROUTE_TOOLBAR_ICON;
 
 /**
  * Preferences page showing links to sub-pages Data Packages, Data Sync, and all Tools that have been added by plugins.
@@ -73,6 +74,7 @@ public class ToolsPreferencesPage extends APreferencesPage
     private static final String DATA_PACKAGES = "Data Packages Preferences";
     private static final String MIL_STD_2525 = "MIL-STD-2525 Preferences";
     private static final String BLOODHOUND = "Bloodhound Preferences";
+    private static final String ROUTE = "Route Preferences";
     private static final String PLAYBACK = "Playback Preferences";
 
     private static final int SIZE = ICON_SIZE.width;
@@ -84,9 +86,6 @@ public class ToolsPreferencesPage extends APreferencesPage
 
     @Inject
     private ToolPreferenceManager toolPreferenceManager;
-
-    @Inject
-    private PreferencePagesController preferencePagesController;
 
     private final List<PageHolder> pages = new ArrayList<>();
     private final Map<ToolDefinition, Integer> toolPageIds = new ConcurrentHashMap<>();
@@ -104,6 +103,7 @@ public class ToolsPreferencesPage extends APreferencesPage
         pages.add(new PageHolder(DATA_PACKAGE_ICON, DATA_PACKAGES, "Adjust " + DATA_PACKAGES, DataPackagesPage::new));
         pages.add(new PageHolder(MIL_STD_2525_ICON, MIL_STD_2525, "Adjust " + MIL_STD_2525, MilStd2525Page::new));
         pages.add(new PageHolder(BLOODHOUND_ICON, BLOODHOUND, "Adjust " + BLOODHOUND, BloodhoundPage::new));
+        pages.add(new PageHolder(ROUTE_TOOLBAR_ICON, ROUTE, "Adjust " + ROUTE, RoutePage::new));
         pages.add(new PageHolder(PLAYBACK_ICON, PLAYBACK, "Adjust " + PLAYBACK, PlaybackPreferencesPage::new));
 
         toolPreferenceManager.getToolDefinitions().forEach(toolDefinition -> pages.add(makeToolPageHolder(toolDefinition)));
@@ -161,12 +161,6 @@ public class ToolsPreferencesPage extends APreferencesPage
         pages.removeIf(page -> page.toolDefinition == toolDefinition);
         final var pageId = toolPageIds.remove(toolDefinition);
         if (pageId != null) removeActionPanel(pageId);
-
-        // If the preference page for the tool is showing, the pop it.
-        if (preferencePagesController.getCurrentPage().getTitle().equals(toolDefinition.title()))
-        {
-            preferencePagesController.goBackward();
-        }
     }
 
     /**
@@ -181,55 +175,26 @@ public class ToolsPreferencesPage extends APreferencesPage
 
         PageHolder(@Nonnull ImageIcon icon, @Nonnull ToolDefinition toolDefinition)
         {
-            this(icon, toolDefinition.title(), toolDefinition.description(), () -> new ToolPage(toolDefinition), toolDefinition);
+            this(icon, toolDefinition.title(), toolDefinition.description(), () -> new ToolPreferencesPage(toolDefinition), toolDefinition);
         }
     }
 
     /**
-     * Preferences page for a single tool.
+     * @since 5.8
      */
-    private static class ToolPage extends APreferencesPage
+    private static class RoutePage extends APreferencesPage
     {
-        public ToolPage(@Nonnull ToolDefinition toolDefinition)
+        public RoutePage()
         {
-            super(toolDefinition.title());
+            super(ROUTE);
 
-            toolDefinition.preferenceEntries().forEach(this::addToolPreferenceEditor);
-        }
-
-        /**
-         * Add the appropriate editor tile for the given tool preference entry.
-         */
-        private void addToolPreferenceEditor(@Nonnull ToolPreferenceEntry preferenceEntry)
-        {
-            final var toolPreference = preferenceEntry.getToolPreference();
-
-            //noinspection StatementWithEmptyBody
-            if (toolPreference instanceof HiddenPreference)
-            {
-                // Hidden preferences are not shown on the page
-            } else if (toolPreference instanceof CheckBoxPreference)
-            {
-                addCheckboxEditor(preferenceEntry);
-            } else if (toolPreference instanceof ToggleButtonPreference toggleButtonPreference)
-            {
-                addToggleButtonEditor(preferenceEntry, toggleButtonPreference.getText(), toggleButtonPreference.getIcon());
-            } else if (toolPreference instanceof ComboBoxPreference comboBoxPreference)
-            {
-                addEditor(preferenceEntry, PreferencesComponentFactory.makeComboBox(comboBoxPreference.getItems()));
-            } else if (toolPreference instanceof SliderPreference sliderPreference)
-            {
-                addEditor(preferenceEntry, PreferencesComponentFactory.makeSliderEditor(sliderPreference.getMin(), sliderPreference.getMax()));
-            } else if (toolPreference instanceof TextPreference)
-            {
-                addEditor(preferenceEntry, PreferencesComponentFactory.makeTextEditor());
-            } else if (toolPreference instanceof CustomControlPreference customControlPreference)
-            {
-                addEditor(preferenceEntry, new CustomEditorComponent(preferenceEntry, customControlPreference));
-            } else
-            {
-                throw new IllegalArgumentException("Unknown tool preference class: " + toolPreference.getClass().getName());
-            }
+            addEditor(ROUTE_CHECKPOINT_PREFIX, PreferencesComponentFactory.makeTextEditor());
+            addEditor(ROUTE_DRIVING_CHECKPOINT_RADIUS, PreferencesComponentFactory.makeIntSpinnerEditor(0, 10_000, 1));
+            addEditor(ROUTE_FLYING_CHECKPOINT_RADIUS, PreferencesComponentFactory.makeIntSpinnerEditor(0, 10_000, 1));
+            addEditor(ROUTE_SWIMMING_CHECKPOINT_RADIUS, PreferencesComponentFactory.makeIntSpinnerEditor(0, 10_000, 1));
+            addEditor(ROUTE_WALKING_CHECKPOINT_RADIUS, PreferencesComponentFactory.makeIntSpinnerEditor(0, 10_000, 1));
+            addEditor(ROUTE_WATERCRAFT_CHECKPOINT_RADIUS, PreferencesComponentFactory.makeIntSpinnerEditor(0, 10_000, 1));
+            addCheckboxEditor(ROUTE_ELEVATION_PROFILE_CENTER_ON_SEEKER);
         }
     }
 
@@ -271,7 +236,7 @@ public class ToolsPreferencesPage extends APreferencesPage
         {
             super(MIL_STD_2525);
 
-            addEditor(MIL_STD_2525_PREF, PreferencesComponentFactory.makeComboBox(List.of("Charlie", "Delta", "Echo")));
+            addEditor(MIL_STD_2525_PREF, PreferencesComponentFactory.makeComboBox(MilStd2525Variant.getNameList()));
         }
     }
 
@@ -286,6 +251,7 @@ public class ToolsPreferencesPage extends APreferencesPage
             addEditor(DATA_SYNC_AUTO_DELETE_THRESHOLD, PreferencesComponentFactory.makeComboBox(TimeThresholdOption.class));
             addEditor(DATA_SYNC_LARGE_FILE_PROMPT, PreferencesComponentFactory.makeIntSpinnerEditor(0, Integer.MAX_VALUE, 1));
             addEditor(DATA_SYNC_PUBLISH_OPTIONS, PreferencesComponentFactory.makeComboBox(PublishOption.class));
+            addEditor(DATA_SYNC_AUTO_DELETE_REMOVED, PreferencesComponentFactory.makeComboBox(DeleteOption.class));
             addEditor(DATA_SYNC_THRESHOLD, PreferencesComponentFactory.makeComboBox(TimeThresholdOption.class));
         }
     }
@@ -300,44 +266,6 @@ public class ToolsPreferencesPage extends APreferencesPage
             addEditor(DATA_PACKAGE_SUCCESS_THRESHOLD_LOW_MB, PreferencesComponentFactory.makeIntSpinnerEditor(0, Integer.MAX_VALUE, 1));
             addEditor(DATA_PACKAGE_SUCCESS_THRESHOLD_HIGH_MB, PreferencesComponentFactory.makeIntSpinnerEditor(0, Integer.MAX_VALUE, 1));
             addEditor(DATA_PACKAGE_NO_GO_THRESHOLD_MB, PreferencesComponentFactory.makeIntSpinnerEditor(0, Integer.MAX_VALUE, 1));
-        }
-    }
-
-    /**
-     * Adapter to make a {@link CustomControlPreference} behave like an {@link IEditorComponent}.
-     */
-    private static class CustomEditorComponent implements IEditorComponent
-    {
-        private final CustomControlPreference preference;
-
-        CustomEditorComponent(@Nonnull IPreferenceEntry entry, @Nonnull CustomControlPreference preference)
-        {
-            this.preference = preference;
-            updateFromPreference(entry); // Initialize the custom control from the current preference value
-        }
-
-        @Override
-        public void updateFromPreference(@Nonnull IPreferenceEntry entry)
-        {
-            preference.getValueRestorer().accept(entry.getStringValue());
-        }
-
-        @Override
-        public void applyToPreference(@Nonnull IPreferenceEntry entry)
-        {
-            entry.putAndSave(preference.getValueSupplier().get());
-        }
-
-        @Override
-        public String getDisplayValue(@Nonnull IPreferenceEntry entry)
-        {
-            return preference.getValueSupplier().get();
-        }
-
-        @Override
-        public JComponent getComponent()
-        {
-            return preference.getControl();
         }
     }
 }

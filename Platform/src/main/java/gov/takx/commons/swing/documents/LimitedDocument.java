@@ -1,15 +1,18 @@
 package gov.takx.commons.swing.documents;
 
+import jakarta.annotation.Nonnull;
+
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 
 import java.awt.Toolkit;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
  * Creates a document suitable for use as a JTextField/Pane document that can limit the maximum length
- * and allowable characters.
+ * and allowable characters, validate input characters, and transform input strings.
  *
  * @since 3.0
  */
@@ -22,6 +25,7 @@ public class LimitedDocument extends DefaultStyledDocument
 
     private final int lengthLimit;
     private final Predicate<Character> validator;
+    private final Function<String, String> transformer;
 
     /**
      * Construct a document with the given length limit, allowing all characters.
@@ -39,7 +43,7 @@ public class LimitedDocument extends DefaultStyledDocument
      *
      * @param validator Validator to test characters in the document
      */
-    public LimitedDocument(Predicate<Character> validator)
+    public LimitedDocument(@Nonnull Predicate<Character> validator)
     {
         this(Integer.MAX_VALUE, validator);
     }
@@ -50,10 +54,25 @@ public class LimitedDocument extends DefaultStyledDocument
      * @param lengthLimit Maximum length of document (text)
      * @param validator   Validator to test characters in the document
      */
-    public LimitedDocument(int lengthLimit, Predicate<Character> validator)
+    public LimitedDocument(int lengthLimit, @Nonnull Predicate<Character> validator)
+    {
+        this(lengthLimit, validator, Function.identity());
+    }
+
+    /**
+     * Construct a document with the given length limit, allowing only characters passed by the given validator, and transforming all input strings
+     * using the given transformer.
+     *
+     * @param lengthLimit Maximum length of document (text)
+     * @param validator   Validator to test characters in the document
+     * @param transformer A transformer for inserted strings
+     * @since 5.8
+     */
+    public LimitedDocument(int lengthLimit, @Nonnull Predicate<Character> validator, @Nonnull Function<String, String> transformer)
     {
         this.lengthLimit = lengthLimit;
         this.validator = validator;
+        this.transformer = transformer;
     }
 
     /**
@@ -64,6 +83,7 @@ public class LimitedDocument extends DefaultStyledDocument
     {
         if (str == null) return;
 
+        str = transform(str);
         if ((getLength() + str.length()) <= lengthLimit && isValid(str))
         {
             super.insertString(offset, str, attr);
@@ -86,5 +106,16 @@ public class LimitedDocument extends DefaultStyledDocument
             if (!validator.test(s.charAt(i))) return false;
         }
         return true;
+    }
+
+    /**
+     * Applies the transformer.
+     *
+     * @param s the String to transform
+     * @return the transformed string, or the input string if there is no transformer
+     */
+    private String transform(String s)
+    {
+        return transformer.apply(s);
     }
 }

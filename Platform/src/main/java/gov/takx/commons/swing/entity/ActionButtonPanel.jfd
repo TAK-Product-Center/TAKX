@@ -9,6 +9,7 @@ new FormModel {
 		} ) {
 			name: "this"
 			"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
+			"border": new javax.swing.border.CompoundBorder( new javax.swing.border.MatteBorder( 0, 0, 1, 0, new com.jformdesigner.model.SwingColor( "TableHeader.separatorColor" ) ), new javax.swing.border.EmptyBorder( 5, 5, 5, 5 ) )
 			add( new FormComponent( "javax.swing.JLabel" ) {
 				name: "fillerLabel"
 				auxiliary() {

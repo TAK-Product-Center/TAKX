@@ -20,9 +20,15 @@ public class Schemes
 
     /**
      * Scheme indicating a UI resource.
-     * @since 5.8
+     * @since 5.7.1
      */
     public static final String UI_RESOURCE = "uiresource";
+
+    /**
+     * Scheme indicating a UI resource that is specifically an SVG.
+     * @since 5.8
+     */
+    public static final String UI_RESOURCE_SVG = "uiresourcesvg";
 
     /**
      * Scheme indicating files stored in the project VFS.

@@ -1,14 +1,22 @@
 package gov.takx.api.terrain.experimental;
 
+import com.atakmap.coremap.maps.coords.GeoBounds;
+import com.atakmap.map.contentservices.CacheRequest;
+import com.atakmap.map.contentservices.CacheRequestListener;
 import com.atakmap.map.elevation.ElevationChunk;
 import com.atakmap.map.elevation.ElevationChunk.Data;
 import com.atakmap.map.elevation.ElevationManager;
 import com.atakmap.map.elevation.ElevationSource;
 import com.atakmap.map.elevation.ElevationSource.QueryParameters.Order;
+import com.atakmap.map.layer.control.Controls;
 import com.atakmap.map.layer.feature.geometry.Envelope;
 import com.atakmap.map.layer.feature.geometry.GeometryFactory;
+import com.atakmap.map.layer.feature.geometry.LineString;
 import com.atakmap.map.layer.feature.geometry.Point;
 import com.atakmap.map.layer.model.Models;
+import com.atakmap.map.layer.raster.tilematrix.TileClient;
+import com.atakmap.map.layer.raster.tilematrix.TileContainer;
+import com.atakmap.map.layer.raster.tilematrix.TileScraper;
 import gov.tak.api.engine.map.coords.GeoPoint;
 import gov.tak.api.engine.map.coords.IGeoPoint;
 import gov.tak.api.engine.map.coords.IProjection;
@@ -16,16 +24,26 @@ import gov.tak.api.engine.math.IGeometryModel;
 import gov.tak.api.engine.math.PointD;
 import gov.tak.api.engine.math.Ray;
 import gov.tak.api.engine.math.Vector;
+import gov.tak.platform.client.dted.Dt2FileWatcher;
+import gov.tak.platform.client.dted.ElevationDownloader;
+import gov.tak.platform.commons.resources.JavaResourceManager;
 import gov.tak.platform.engine.map.coords.ProjectionFactory;
 import gov.tak.platform.marshal.MarshalManager;
+import gov.takx.api.coordinatesystem.ILocation;
+import gov.takx.api.platform.ICoreExecutorService;
+import gov.takx.platform.preferences.ProjectPreferenceEntry;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A collection of utility methods for working with {@link ElevationSource}.
@@ -34,6 +52,7 @@ import java.util.Map;
 public class ElevationSourceUtils
 {
     private static final int EQUIRECTANGULAR_PROJECTION_SRID = 4326;
+    private static final int NUM_DOWNLOAD_THREADS = 4;
 
     /**
      * Calculate intersection points in an area from a collection of rays. Rays should be in
@@ -263,5 +282,199 @@ public class ElevationSourceUtils
             llaBuffer[i * 3] = llaBuffer[i * 3 + 1];
             llaBuffer[i * 3 + 1] = lng;
         }
+    }
+
+    /**
+     * Fill the cache of the specified {@link ElevationSource} with downloaded elevation data. The ElevationSource must support tile download and caching services. The locations
+     * provided will define a bounding area of tiles to download and cache, and they do not need to define a closed line.
+     *
+     * @param elevationSource the elevation source
+     * @param locations a collection of locations that define the bounding area to download
+     * @param minResolution the lowest quality resolution requested (nominally the highest value)
+     * @param maxResolution the highest quality resolution requested (nominally the lowest value)
+     * @param callback an optional callback to monitor the download operation
+     * @param executorService an executor service to run the job on or {@code null} to run on the current thread
+     * @return {@code true} if download job successfully queued, {@code false} if the elevation source does not support the operation
+     * @since 5.8
+     */
+    public static boolean fillElevationSourceCache(@Nonnull ElevationSource elevationSource, @Nonnull ILocation[] locations, double minResolution, double maxResolution, @Nullable CacheRequestListener callback, @Nullable ICoreExecutorService executorService)
+    {
+        if (elevationSource instanceof Controls controls)
+        {
+            TileClient client = controls.getControl(TileClient.class);
+            TileContainer sink = client != null ? client.getControl(TileContainer.class) : null;
+            if (sink != null)
+            {
+                CacheRequest request = createRequest(maxResolution, minResolution, locations);
+                TileScraper scraper = new TileScraper(client, sink, request, callback);
+                if (executorService != null)
+                {
+                    executorService.execute(scraper::run);
+                } else
+                {
+                    scraper.run();
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Download missing DTED0 data into the specified directory for the specified bounding areas.
+     *
+     * @param dtedDir the path to DTED files
+     * @param geoBounds a collection of {@link GeoBounds} that define the bounding area to download
+     * @param onComplete an optional {@link Runnable} to execute when the task is complete
+     * @param executorService an executor service to run the job on asynchronously or {@code null} to block on the current thread
+     * @param cancelSignal an optional cancellation signal
+     * @since 5.8
+     */
+    public static void fillDtedCache(@Nonnull File dtedDir, @Nonnull GeoBounds[] geoBounds, @Nullable Runnable onComplete, @Nullable ICoreExecutorService executorService, @Nullable AtomicBoolean cancelSignal)
+    {
+        var elevationDownloader = new DtedDownloaderTask(geoBounds, dtedDir, onComplete, cancelSignal);
+        if (executorService != null)
+        {
+            executorService.execute(elevationDownloader);
+        } else
+        {
+            elevationDownloader.run();
+        }
+    }
+
+    /**
+     * Get the count of missing DTED0 files in the specified directory for the specified bounding areas.
+     *
+     * @param dtedDir the path to DTED files
+     * @param geoBounds a collection of {@link GeoBounds} that define the bounding area to download
+     * @return the missing file count
+     * @since 5.8
+     */
+    public static int getMissingDtedFileCount(@Nonnull File dtedDir, @Nonnull GeoBounds[] geoBounds)
+    {
+        var elevationDownloader = new DtedDownloaderTask(geoBounds, dtedDir, null, null);
+        return elevationDownloader.getMissingFileCount();
+    }
+
+    /**
+     * An implementation of {@link ElevationDownloader} that downloads a set list of locations and then shuts down.
+     * @since 5.8
+     */
+    private static class DtedDownloaderTask extends ElevationDownloader implements Runnable, ElevationDownloader.OnContentChangedListener
+    {
+        private final Runnable onComplete;
+        private final AtomicBoolean cancelSignal;
+
+        /**
+         * @param aois the areas to download
+         * @param dtedDir the root directory of dted files
+         * @param onComplete an optional {@link Runnable} to execute when the task is complete
+         * @param cancelSignal an optional cancellation signal
+         */
+        public DtedDownloaderTask(@Nonnull GeoBounds[] aois, @Nonnull File dtedDir, @Nullable Runnable onComplete, @Nullable AtomicBoolean cancelSignal)
+        {
+            super(new JavaResourceManager(), dtedDir);
+            this.onComplete = onComplete;
+            this.cancelSignal = cancelSignal != null ? cancelSignal : new AtomicBoolean(false);
+            addListener(this);
+            setDownloadServer(ProjectPreferenceEntry.DTED_STREAM_SERVER.getStringValue());
+            setMaxTileRequests(Integer.MAX_VALUE);
+            setCurrentAreasOfInterest(aois);
+        }
+
+        @Override
+        public void run()
+        {
+            Thread.currentThread().setName("On-demand Elevation Loader");
+            while (!cancelSignal.get() && getMissingFileCount() > 0)
+            {
+                scanCurrentAreas();
+                synchronized (this)
+                {
+                    try
+                    {
+                        this.wait(1000);
+                    } catch (InterruptedException ignored)
+                    {
+                    }
+                }
+            }
+            dispose();
+            if (onComplete != null) onComplete.run();
+        }
+
+        @Override
+        public void dispose()
+        {
+            removeListener(this);
+            super.dispose();
+        }
+
+        @Override
+        public void onContentChanged()
+        {
+            synchronized (this)
+            {
+                this.notifyAll();
+            }
+        }
+
+        private int getMissingFileCount()
+        {
+            int missing = 0;
+            for (GeoBounds geoBounds : getCurrentAreasOfInterest())
+            {
+                int[] b = getDownloadBounds(geoBounds);
+                if (b == null) continue;
+
+                int minLng = b[0];
+                int minLat = b[1];
+                int maxLng = b[2];
+                int maxLat = b[3];
+                BitSet coverage = dt2FileWatcher.getCoverage(0);
+
+                for (int lat = minLat; lat <= maxLat; lat++)
+                {
+                    for (int lng = minLng; lng <= maxLng; lng++)
+                    {
+                        // IDL wrap
+                        int lngWrapped = lng;
+                        if (lngWrapped >= 180) lngWrapped -= 360;
+                        if (lngWrapped < -180) lngWrapped += 360;
+
+                        int idx = Dt2FileWatcher.getCoverageIndex(lat, lngWrapped);
+
+                        if (remote_coverage.get(idx) && !coverage.get(idx)) missing++;
+                    }
+                }
+            }
+            return missing;
+        }
+    }
+
+    @Nonnull
+    private static CacheRequest createRequest(double maxRes, double minRes, @Nonnull ILocation[] locations)
+    {
+        CacheRequest cacheRequest = new CacheRequest();
+        cacheRequest.expirationOffset = TimeUnit.DAYS.toMillis(7);
+        cacheRequest.maxResolution = maxRes;
+        cacheRequest.minResolution = minRes;
+
+        cacheRequest.maxThreads = NUM_DOWNLOAD_THREADS;
+        cacheRequest.mode = CacheRequest.CacheMode.Append;
+
+        LineString geomString = new LineString(2);
+        for (ILocation gp : locations)
+        {
+            geomString.addPoint(gp.getLongitude(), gp.getLatitude());
+        }
+        cacheRequest.region = geomString;
+
+        if (cacheRequest.minResolution < cacheRequest.maxResolution)
+        {
+            cacheRequest.minResolution = 0d;
+            cacheRequest.maxResolution = 0d;
+        }
+        return cacheRequest;
     }
 }

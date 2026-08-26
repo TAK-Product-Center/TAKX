@@ -5,7 +5,6 @@ import gov.takx.api.mapobject.IMapObject;
 import gov.takx.commons.swing.ActionPopupFactory;
 import gov.takx.commons.swing.actionlist.ActionList;
 import gov.takx.commons.swing.actionlist.ActionListAction;
-import gov.takx.commons.swing.actionlist.ActionListToggleAction;
 import gov.takx.commons.swing.entity.EntityColumn;
 import gov.takx.commons.swing.entity.mapobject.MapObjectEntityDefinition;
 import gov.takx.core.drifter.DrifterController;
@@ -52,24 +51,18 @@ public class DrifterEntityDefinition extends MapObjectEntityDefinition<IMapObjec
     @Inject
     private DrifterController controller;
 
-    private final Action simulateTimeAction = new ActionListAction<IMapObject>("Simulate Time Delay", DELAY_ICON)
-            .withValueConsumer(SimulateTimeDrifterDialog::show);
-    private final Action editAction = new ActionListAction<IMapObject>("Edit", EDIT_ACTION_BUTTON_ICON)
-            .withValueConsumer(EditDrifterConfigurationDialog::show);
-    @SuppressWarnings("DataFlowIssue") // the getActions method always passes a value to the ActionList
-    private final Action deleteAction = new ActionListAction<IMapObject>("Delete", DELETE_ACTION_BUTTON_ICON)
-            .withEventConsumer(e -> ActionPopupFactory
-                    .yesNo(DELETE_POPUP_STRING_FORMAT.formatted(e.getValue().getName()), (Component) e.getSource(), () -> controller.deleteConfiguration(e.getValue(), false))
+    private final Action simulateTimeAction = new ActionListAction<IMapObject>("Simulate Time Delay", DELAY_ICON, SimulateTimeDrifterDialog::show, null);
+    private final Action editAction = new ActionListAction<IMapObject>("Edit", EDIT_ACTION_BUTTON_ICON, EditDrifterConfigurationDialog::show, null);
+    private final Action deleteAction = new ActionListAction<IMapObject>("Delete", DELETE_ACTION_BUTTON_ICON,
+            e -> ActionPopupFactory
+                    .yesNo(DELETE_POPUP_STRING_FORMAT.formatted(e.requireValue().getName()), (Component) e.getSource(), () -> controller.deleteConfiguration(e.requireValue(), false))
                     .show());
-    private final Action restartAction = new ActionListAction<IMapObject>("Restart", REFRESH_ACTION_BUTTON_ICON)
-            .withValueConsumer(mapObject -> controller.restart(mapObject));
-    private final ActionListToggleAction<IMapObject> pauseResumeAction = new ActionListToggleAction<IMapObject>(
-            "Resume",
-            PLAY_ACTION_BUTTON_ICON,
-            mapObject -> !(controller.requireDrifterConfiguration(mapObject).paused()))
-            .withSelectedIconAndBackground(PAUSE_INVERSE_ICON, Color.WHITE)
-            .withSelectedName("Pause")
-            .withValueConsumer(mapObject -> controller.togglePaused(mapObject));
+    private final Action restartAction = new ActionListAction<IMapObject>("Restart", REFRESH_ACTION_BUTTON_ICON, mo -> controller.restart(mo), null);
+    private final ActionListAction<IMapObject> pauseResumeAction = ActionListAction.<IMapObject>builder()
+            .nameIconValueConsumer("Resume", PLAY_ACTION_BUTTON_ICON, mapObject -> controller.togglePaused(mapObject))
+            .selectedNameIconBackground("Pause", PAUSE_INVERSE_ICON, Color.WHITE)
+            .build();
+
     private final List<Action> actions = List.of(pauseResumeAction, restartAction, simulateTimeAction, editAction, deleteAction);
 
     final EntityColumn<IMapObject, Double> speedColumn;
@@ -92,6 +85,7 @@ public class DrifterEntityDefinition extends MapObjectEntityDefinition<IMapObjec
     {
         var configuration = controller.requireDrifterConfiguration(entity);
         restartAction.setEnabled(controller.getRoute(configuration) != null);
+        pauseResumeAction.setSelected(!configuration.paused());
         return new ActionList<>(actions, entity);
     }
 

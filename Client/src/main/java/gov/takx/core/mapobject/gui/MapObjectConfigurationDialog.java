@@ -87,7 +87,7 @@ public class MapObjectConfigurationDialog extends APluginConfigurationDialog imp
         // We can't just use a list of IMutablePanels b/c ShapePropertiesEditorPanel doesn't provide the shape's icon
         final List<CorePanelAndIcon> corePanelAndIcons = new ArrayList<>();
 
-        corePanelAndIcons.add(new CorePanelAndIcon(new MapObjectGeneralPreferencesPanel(mapObjectController, panelStateListener), null));
+        corePanelAndIcons.add(new CorePanelAndIcon(new MapObjectGeneralPreferencesPanel(mapObjectController, panelStateListener, false), null));
         corePanelAndIcons.add(new CorePanelAndIcon(new MapObjectAttachmentsPanel(mapObject, false), null));
 
         if (mapObject instanceof IMarkerMapObject)

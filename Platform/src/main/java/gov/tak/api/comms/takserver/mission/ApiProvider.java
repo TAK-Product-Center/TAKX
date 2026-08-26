@@ -15,6 +15,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import feign.Client;
 import feign.Feign;
 import feign.RequestTemplate;
+import feign.Response;
 import feign.Util;
 import feign.jackson.JacksonDecoder;
 import feign.jackson.JacksonEncoder;
@@ -42,6 +43,7 @@ import org.apache.http.client.utils.URIBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -51,6 +53,7 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
@@ -67,7 +70,8 @@ public class ApiProvider
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
-    private static final String API_SCHEME = "https";
+    private static final String API_SCHEME_SECURE = "https";
+    private static final String API_SCHEME_UNSECURE = "http";
     private static final String API_PREFIX = "/Marti/api/";
     private static final String HEADER_API_VERSION = "API_VERSION";
     private static final String HEADER_API_VERSION_TARGET = "3";
@@ -213,8 +217,9 @@ public class ApiProvider
     public SessionHandler getSessionHandler(@Nonnull ITakServerConnection connection)
     {
         return sessionHandlers.computeIfAbsent(key(connection), key -> {
-            // 'useSecurePort' can be false, since the OAuth login API is not auth-locked.
-            String host = toHostString(connection.getUri(), false);
+            // The OAuth login API is not auth-locked behind the secure port.
+            // It uses the same port for cert enrollment oddly enough.
+            String host = toHostString(connection.getUri(), PortUse.SETUP);
 
             // In some cases a TAK Server connection may be configured to require custom certificates
             // to communicate to the OAuth login API. In such cases we need to provide our extended client
@@ -274,7 +279,7 @@ public class ApiProvider
         SslClient client = newClientForConnection(connection);
 
         // Transform the connection URI into the appropriate REST host.
-        String host = toHostString(connection.getUri(), client.hasSocketFactory());
+        String host = toHostString(connection.getUri(), client.hasSocketFactory() ? PortUse.API_SECURE : PortUse.API_UNSECURE);
 
         // Create builder that fills in auth headers with our desired form of authentication.
         return Feign.builder()
@@ -337,25 +342,34 @@ public class ApiProvider
 
     /**
      * @param uri Input URI.
-     * @param useSecurePort Flag indicating the host is contacted over the
-     * {@link PreferenceEntry#COMMON_COMMO_TAK_SERVER_SECURE_API_PORT secure API port}.
+     * @param portUse Kind of intended port use.
      *
      * @return Host name string.
      */
     @Nonnull
-    private String toHostString(@Nonnull URI uri, boolean useSecurePort)
+    private String toHostString(@Nonnull URI uri, @Nonnull PortUse portUse)
     {
         try
         {
+            // Different ports/scheme get used for different use cases.
+            int port = switch (portUse)
+            {
+                case SETUP -> PreferenceEntry.COMMON_COMMO_TAK_SERVER_CERT_ENROLLMENT_API_PORT.getIntegerValue();
+                case API_SECURE -> PreferenceEntry.COMMON_COMMO_TAK_SERVER_SECURE_API_PORT.getIntegerValue();
+                case API_UNSECURE -> PreferenceEntry.COMMON_COMMO_TAK_SERVER_UNSECURE_API_PORT.getIntegerValue();
+            };
+            String scheme = switch (portUse)
+            {
+                case SETUP, API_SECURE -> API_SCHEME_SECURE;
+                case API_UNSECURE -> API_SCHEME_UNSECURE;
+            };
+
             // Feign only supports 'http(s)' schemes & the ports used by the config need to be mapped
             // to the appropriate ones for API usage. The URIs coming in originate from the TAK connection config
             // which targets different ports than what we're dealing with here.
             return new URIBuilder(uri)
-                    .setPort(useSecurePort
-                            ? PreferenceEntry.COMMON_COMMO_TAK_SERVER_SECURE_API_PORT.getIntegerValue()
-                            // This assumes the auth port should match the port passed to CommonCommo.enrollmentInit()
-                            : PreferenceEntry.COMMON_COMMO_TAK_SERVER_CERT_ENROLLMENT_API_PORT.getIntegerValue())
-                    .setScheme(API_SCHEME)
+                    .setPort(port)
+                    .setScheme(scheme)
                     .build().toString();
         } catch (URISyntaxException ex)
         {
@@ -377,7 +391,7 @@ public class ApiProvider
         // system and switching sign-ins. Ensuring data is unique per server/user combo allows for
         // such cases.
         var user = Objects.requireNonNullElse(connection.getConnectionConfig().getUsername(), "default");
-        return connection.getUri().toString() + ":" + user;
+        return connection.getUri() + ":" + user;
     }
 
     /**
@@ -433,9 +447,9 @@ public class ApiProvider
      * {@link JsonRootName} or {@link #setAnnotationIntrospector(AnnotationIntrospector) set the annotation inspector}
      * to handle extraction.
      * <p>
-     * But consider if you want to unpack a {@link java.util.List} of some type.
+     * But consider if you want to unpack a {@link List} of some type.
      * The internals of {@link ObjectMapper} are not written to support this case.
-     * As {@link java.util.List} is not annotated with {@link JsonRootName} it fails on that approach,
+     * As {@link List} is not annotated with {@link JsonRootName} it fails on that approach,
      * and the custom inspector falls to the same trap. Even if your inspector checks {@link JavaType#getContentType()}
      * of arrays/collections, the internal handling will operate on the top-level type, and there is no way to override
      * the behavior where it does that due to the design.
@@ -460,7 +474,7 @@ public class ApiProvider
          * This acts as a hook before any deserialization occurs, allowing us to add our hooks to handle extraction of
          * the {@code data} element, and handle that content instead of the root.
          *
-         * @param parser Parser operating on the literal {@link feign.Response.Body} content.
+         * @param parser Parser operating on the literal {@link Response.Body} content.
          * @param type Target type to deserialize to.
          *
          * @return Deserialized instance.
@@ -589,7 +603,7 @@ public class ApiProvider
     }
 
     /**
-     * Client backed by {@link javax.net.ssl.HttpsURLConnection} configured to ignore hostname validation.
+     * Client backed by {@link HttpsURLConnection} configured to ignore hostname validation.
      * <p/>
      * This is intentional, as the only portion of TAK Server's communication that is validated is
      * certificate enrollment. Once we have the certificate from that process all further validation ceases.
@@ -622,5 +636,15 @@ public class ApiProvider
         {
             return hasSocketFactory;
         }
+    }
+
+    /**
+     * General port use-cases for API requests.
+     * @see #toHostString(URI, PortUse)
+     * @since 5.8
+     */
+    private enum PortUse
+    {
+        SETUP, API_SECURE, API_UNSECURE
     }
 }

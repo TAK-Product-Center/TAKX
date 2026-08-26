@@ -19,13 +19,32 @@ import java.util.function.Function;
  * @param sortValue a function to convert the row value to a sortable value
  * @param cached {@code true} if values for this column can be cached, otherwise {@code false}
  * @param sortable {@code true} to allow the column to be sortable (does not guarantee sortability) or {@code false} to force it to be unsortable
+ * @param tooltip a function that maps entities to table cell tooltips
+ * @param header the column header
  * @param <E> the entity type
  * @param <C> the column type
- * @since 5.7
+ * @since 5.7 (tooltip, header added in 5.8)
  */
 @IncubatingApi(since = "5.7")
-public record EntityColumn<E, C>(@Nonnull String name, boolean editable, @Nonnull Class<?> type, @Nonnull Function<E, C> value, @Nullable Comparator<C> comparator, @Nullable Function<E, Comparable<?>> sortValue, boolean cached, boolean sortable)
+public record EntityColumn<E, C>(@Nonnull String name, boolean editable, @Nonnull Class<?> type, @Nonnull Function<E, C> value, @Nullable Comparator<C> comparator, @Nullable Function<E, Comparable<?>> sortValue, boolean cached, boolean sortable, @Nullable Function<E, String> tooltip, @Nullable String header)
 {
+    /**
+     * @param name the column name
+     * @param editable {@code true} if the column cells are editable, otherwise {@code false}
+     * @param type the column value class
+     * @param value a function to convert the row object to the cell value
+     * @param comparator the comparator to sort values in this column
+     * @param sortValue a function to convert the row value to a sortable value
+     * @param cached {@code true} if values for this column can be cached, otherwise {@code false}
+     * @param sortable {@code true} to allow the column to be sortable (does not guarantee sortability) or {@code false} to force it to be unsortable
+     * @param tooltip a function that maps entities to table cell tooltips
+     * @param header the column header, defaults to {@link #name} if {@code null}
+     * @since 5.8
+     */
+    public EntityColumn {
+        // Default the header to the name if null
+        if (header == null) header = name;
+    }
 
     /**
      * Construct a new uncached instance.
@@ -36,10 +55,23 @@ public record EntityColumn<E, C>(@Nonnull String name, boolean editable, @Nonnul
      * @param value a function to convert the row object to the cell value
      * @param comparator the comparator to sort values in this column
      * @param sortValue a function to convert the row value to a sortable value
+     * @since 5.7
      */
     public EntityColumn(@Nonnull String name, boolean editable, @Nonnull Class<?> type, @Nonnull Function<E, C> value, @Nullable Comparator<C> comparator, @Nullable Function<E, Comparable<?>> sortValue)
     {
-        this(name, editable, type, value, comparator, sortValue, false, false);
+        this(name, editable, type, value, comparator, sortValue, false, false, null, null);
+    }
+
+    /**
+     * @return the column header
+     * @implNote Overridden to enforce nullity
+     * @since 5.8
+     */
+    @Nonnull
+    public String header()
+    {
+        //noinspection DataFlowIssue header is effectively non-null because it's set in constructor
+        return header;
     }
 
     /**
@@ -68,7 +100,8 @@ public record EntityColumn<E, C>(@Nonnull String name, boolean editable, @Nonnul
                 .sortable(true)
                 .sortValue(null)
                 .comparator(null)
-                .cached(false);
+                .cached(false)
+                .tooltip(null);
     }
 
     /**
@@ -136,6 +169,22 @@ public record EntityColumn<E, C>(@Nonnull String name, boolean editable, @Nonnul
          */
         @Nonnull
         public abstract Builder<E, C> sortable(boolean sortable);
+
+        /**
+         * @param tooltip a function that maps entities to table cell tooltips
+         * @return {@code this} (for chaining)
+         * @since 5.8
+         */
+        @Nonnull
+        public abstract Builder<E, C> tooltip(@Nullable Function<E, String> tooltip);
+
+        /**
+         * @param header the column header
+         * @return {@code this} (for chaining)
+         * @since 5.8
+         */
+        @Nonnull
+        public abstract Builder<E, C> header(@Nullable String header);
 
         /**
          * @return the instance constructed using the properties set on this builder

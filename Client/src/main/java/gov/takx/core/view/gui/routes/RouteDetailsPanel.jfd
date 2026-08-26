@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.8" encoding: "UTF-8"
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -25,11 +25,9 @@ new FormModel {
 					"gridX": 3
 					"gridY": 1
 				} )
-				add( new FormComponent( "javax.swing.JButton" ) {
+				add( new FormComponent( "gov.takx.commons.swing.SplitButton" ) {
 					name: "exportButton"
-					"enabled": false
 					"toolTipText": "Export"
-					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "exportRouteButtonPressed", false ) )
 				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 					"gridX": 5
 					"gridY": 1
@@ -49,15 +47,6 @@ new FormModel {
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "adjustRouteSettingsButtonPressed", false ) )
 				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 					"gridX": 9
-					"gridY": 1
-				} )
-				add( new FormComponent( "javax.swing.JButton" ) {
-					name: "newWindowButton"
-					"enabled": false
-					"toolTipText": "New Window"
-					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "newWindowButtonPressed", false ) )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 11
 					"gridY": 1
 				} )
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {

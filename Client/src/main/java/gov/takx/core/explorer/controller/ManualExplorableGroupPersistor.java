@@ -4,6 +4,7 @@ import gov.takx.api.explorer.AExplorerEventSupport;
 import gov.takx.api.explorer.IExplorable;
 import gov.takx.api.explorer.IExplorableGroup;
 import gov.takx.api.explorer.IManualExplorableGroup;
+import gov.takx.api.explorer.IUserExplorableGroup;
 import gov.takx.api.state.IRestorableMap;
 import gov.takx.commons.swing.ImageUtils;
 import gov.takx.core.explorer.common.ExplorerStateKeys;
@@ -60,6 +61,7 @@ class ManualExplorableGroupPersistor extends AExplorerEventSupport implements IE
                 .stream()
                 .filter(ManualExplorableGroup.class::isInstance)
                 .map(ManualExplorableGroup.class::cast)
+                .filter(IUserExplorableGroup::isPersist)
                 .toList();
         for (ManualExplorableGroup explorableGroup : manualGroups)
         {

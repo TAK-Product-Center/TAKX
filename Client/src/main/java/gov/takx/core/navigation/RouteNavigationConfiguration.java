@@ -1,9 +1,9 @@
 package gov.takx.core.navigation;
 
 import com.google.common.annotations.VisibleForTesting;
-import gov.tak.api.cot.route.RouteMethod;
 import gov.tak.api.maps.coords.GeoPointMetaData;
 import gov.tak.api.util.StandardAttributeNames;
+import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IPointMapObject;
 import gov.takx.api.mapobject.IRouteMapObject;
 import gov.takx.api.mapobject.IShapeArrowMapObject;
@@ -11,7 +11,6 @@ import gov.takx.api.shapes.IRoute;
 import gov.takx.api.shapes.ShapeProperties;
 import jakarta.annotation.Nonnull;
 
-import java.util.EnumMap;
 import java.util.List;
 
 import static gov.takx.api.shapes.IRoute.WAYPOINT_ADDED;
@@ -24,17 +23,6 @@ import static gov.takx.api.shapes.IRoute.WAYPOINT_ADDED;
  */
 public class RouteNavigationConfiguration extends NavigationConfiguration
 {
-    private static final EnumMap<RouteMethod, Integer> ROUTE_METHOD_TRANSITION_DISTANCE = new EnumMap<>(RouteMethod.class);
-    // Distances for automatically transitioning to the next waypoint
-    static
-    {
-        ROUTE_METHOD_TRANSITION_DISTANCE.put(RouteMethod.WALKING, 10);
-        ROUTE_METHOD_TRANSITION_DISTANCE.put(RouteMethod.SWIMMING, 10);
-        ROUTE_METHOD_TRANSITION_DISTANCE.put(RouteMethod.DRIVING, 20);
-        ROUTE_METHOD_TRANSITION_DISTANCE.put(RouteMethod.WATERCRAFT, 100);
-        ROUTE_METHOD_TRANSITION_DISTANCE.put(RouteMethod.FLYING, 1000);
-    }
-
     /**
      * Construct a new configuration that tracks navigation from the first map object along the waypoints of the given route.
      *
@@ -45,8 +33,6 @@ public class RouteNavigationConfiguration extends NavigationConfiguration
     {
         super(sourceMapObject, route);
 
-        var method = route.getMethod();
-        arrivalRadius = ROUTE_METHOD_TRANSITION_DISTANCE.get(method);
         listenerManager.addPropertyChangeListener(route, List.of(ShapeProperties.LOCATIONS, WAYPOINT_ADDED), ignored -> updateRouteLocations());
 
         updateRouteLocations();
@@ -74,6 +60,13 @@ public class RouteNavigationConfiguration extends NavigationConfiguration
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Waypoint " + waypointUid + " not found in route"));
         setCurrentTarget(target);
+    }
+
+    @Override
+    protected boolean arrivedAt(@Nonnull IMapObject target)
+    {
+        var arrivalRadius = navigationManager.getArrivalRadius(getTargetMapObject().getMethod());
+        return sourceMapObject.getLocation().distanceTo(target.getLocation()) <= arrivalRadius;
     }
 
     private void updateRouteLocations()

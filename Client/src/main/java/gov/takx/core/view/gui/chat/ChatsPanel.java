@@ -6,8 +6,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
 import gov.tak.api.chat.IChatMessage;
-import gov.tak.api.comms.takserver.ITakServerConnectionManager;
-import gov.tak.core.comms.takserver.TakServerConnection;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.toolbar.ButtonType;
@@ -25,9 +23,7 @@ import jakarta.inject.Inject;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
@@ -53,12 +49,10 @@ import java.util.function.Function;
 public class ChatsPanel extends ATitledPanel implements IResourceCleaner
 {
     private static final Icon SEARCH_ICON = UIResources.getStandardSizedIcon(ResourceDirectory.PLATFORM_ICONS, "search.png");
-    private static final Icon ADD_ICON = UIResources.getStandardSizedIcon(ResourceDirectory.PLATFORM_ICONS, "add.png");
-    private static final Icon CONTACTS_ICON = UIResources.getStandardSizedIcon(ResourceDirectory.PLATFORM_ICONS, "contacts.svg");
-    private static final Icon TAK_SERVER_ICON = UIResources.getStandardSizedIcon(ResourceDirectory.PLATFORM_ICONS, "tak_server.svg");
+    private static final Icon CONTACT_ICON = UIResources.getStandardSizedIcon(ResourceDirectory.PLATFORM_ICONS, "user.png");
+    private static final Icon GROUP_ICON = UIResources.getActionButtonIcon(ResourceDirectory.PLATFORM_ICONS, "contacts.svg");
     private static final RowSpec ROW_SPEC = RowSpec.decode("fill:pref");
     private final CellConstraints cellConstraints = new CellConstraints();
-    private final Runnable openContactsRunnable;
     private final Consumer<Conversation> openConversationCallback;
     private final Function<Conversation, Icon> conversationToIconFunction;
     private final BiConsumer<JLabel, Integer> unreadIconUpdater;
@@ -67,23 +61,19 @@ public class ChatsPanel extends ATitledPanel implements IResourceCleaner
     final Map<Conversation, ChatEntryPanel> conversationAndPanels = new ConcurrentHashMap<>();
 
     @Inject
-    ITakServerConnectionManager takServerConnectionManager;
-
-    @Inject
-    ServerContactsDialogController serverContactsDialogController;
+    AllContactsDialogController allContactsDialogController;
 
     /**
-     * @param openContactsRunnable Runnable that responds when the user clicks the new chat button
      * @param openConversationConsumer Consumer that accepts a conversation UID and opens the corresponding conversation
      * @param conversationToIconFunction Function that accepts a conversation and returns the conversation's icon
+     * @param unreadIconUpdater Function that updates the provided label with an unread message count icon
      */
-    ChatsPanel(@Nonnull Runnable openContactsRunnable, @Nonnull Consumer<Conversation> openConversationConsumer,
+    ChatsPanel(@Nonnull Consumer<Conversation> openConversationConsumer,
                @Nonnull Function<Conversation, Icon> conversationToIconFunction,
                @Nonnull BiConsumer<JLabel, Integer> unreadIconUpdater)
     {
         super(ButtonType.CHATS.getDisplayText());
 
-        this.openContactsRunnable = openContactsRunnable;
         this.openConversationCallback = openConversationConsumer;
         this.conversationToIconFunction = conversationToIconFunction;
         this.unreadIconUpdater = unreadIconUpdater;
@@ -91,7 +81,8 @@ public class ChatsPanel extends ATitledPanel implements IResourceCleaner
         initComponents();
 
         searchIconLabel.setIcon(SEARCH_ICON);
-        newChatButton.setIcon(ADD_ICON);
+        newChatButton.setIcon(CONTACT_ICON);
+        groupsButton.setIcon(GROUP_ICON);
 
         // Resizes the JTextFields when the panel width changes
         addComponentListener(new ComponentAdapter()
@@ -266,37 +257,12 @@ public class ChatsPanel extends ATitledPanel implements IResourceCleaner
      */
     private void newChat()
     {
-        // Find all the TAK servers that support commo
-        final var takServers = takServerConnectionManager.getTakServerConnections(true).stream()
-                .filter(TakServerConnection.class::isInstance)
-                .map(TakServerConnection.class::cast)
-                .filter(c -> c.getStreamingNetInterface() != null)
-                .toList();
+        allContactsDialogController.showSelectionDialog();
+    }
 
-        // If there are no eligible servers, just open the Contacts panel
-        if (takServers.isEmpty())
-        {
-            openContactsRunnable.run();
-        } else
-        {
-            final var menu = new JPopupMenu("Select contact source");
-
-            final var contactsItem = new JMenuItem("Contacts");
-            contactsItem.setIcon(CONTACTS_ICON);
-            contactsItem.addActionListener(e -> openContactsRunnable.run());
-            menu.add(contactsItem);
-
-            menu.addSeparator();
-
-            takServers.forEach(connection -> {
-                final var serverItem = new JMenuItem(connection.getDisplayName());
-                serverItem.setIcon(TAK_SERVER_ICON);
-                serverItem.addActionListener(e -> serverContactsDialogController.showSelectionDialog(connection));
-                menu.add(serverItem);
-            });
-
-            menu.show(newChatButton, 0, newChatButton.getHeight());
-        }
+    private void groups()
+    {
+        // todo: TAKX-4283
     }
 
     /**
@@ -329,6 +295,7 @@ public class ChatsPanel extends ATitledPanel implements IResourceCleaner
         searchIconLabel = new JLabel();
         filterTextField = new JTextField();
         newChatButton = new JButton();
+        groupsButton = new JButton();
         var conversationListScrollPane = new JScrollPane();
         chatEntriesPanel = new JPanel();
         CellConstraints cc = new CellConstraints();
@@ -343,7 +310,7 @@ public class ChatsPanel extends ATitledPanel implements IResourceCleaner
             headerPanel.setBorder(Borders.DLU2_BORDER);
             headerPanel.setName("headerPanel");
             headerPanel.setLayout(new FormLayout(
-                    "default:grow, 10dlu, default",
+                    "default:grow, 10dlu, 24dlu, $lcgap, 24dlu",
                     "fill:default"));
 
             //======== searchPanel ========
@@ -361,12 +328,19 @@ public class ChatsPanel extends ATitledPanel implements IResourceCleaner
                 filterTextField.setName("filterTextField");
                 searchPanel.add(filterTextField, cc.xy(3, 1));
             }
-            headerPanel.add(searchPanel, cc.xy(1, 1));
+            headerPanel.add(searchPanel, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.CENTER));
 
             //---- newChatButton ----
             newChatButton.setName("newChatButton");
             newChatButton.addActionListener(e -> newChat());
             headerPanel.add(newChatButton, cc.xy(3, 1));
+
+            //---- groupsButton ----
+            groupsButton.setEnabled(false);
+            groupsButton.setToolTipText("Not yet supported");
+            groupsButton.setName("groupsButton");
+            groupsButton.addActionListener(e -> groups());
+            headerPanel.add(groupsButton, cc.xy(5, 1));
         }
         add(headerPanel, BorderLayout.NORTH);
 
@@ -392,6 +366,7 @@ public class ChatsPanel extends ATitledPanel implements IResourceCleaner
     private JLabel searchIconLabel;
     private JTextField filterTextField;
     private JButton newChatButton;
+    private JButton groupsButton;
     private JPanel chatEntriesPanel;
     // JFormDesigner - End of variables declaration  //GEN-END:variables  @formatter:on
 }

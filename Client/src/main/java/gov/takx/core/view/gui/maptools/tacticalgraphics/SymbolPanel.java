@@ -1,6 +1,5 @@
 package gov.takx.core.view.gui.maptools.tacticalgraphics;
 
-import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import gov.takx.commons.swing.ActionPopupFactory;
@@ -61,7 +60,6 @@ public class SymbolPanel extends JPanel
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
-        setBorder(Borders.DLU2_BORDER);
         setName("this");
         setLayout(new FormLayout(
                 "default:grow, $lcgap, default, $lcgap, 100dlu",

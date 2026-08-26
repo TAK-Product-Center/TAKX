@@ -13,11 +13,13 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 
+import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import javax.swing.JToggleButton;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -81,6 +83,28 @@ public class DefaultIconSelectionPanel extends APointDropperIconSelectionPanel
 
         revalidate();
         repaint();
+    }
+
+    /**
+     * Update the button icon associated with the provided {@link IUserIcon}.
+     * @param icon the icon to update
+     * @param color optional color to colorize the icons with. Can be {@code null} for no visual filtering
+     * @since 5.8
+     */
+    public void updateButtonIcon(@Nonnull IUserIcon icon, @Nullable Color color)
+    {
+        Enumeration<AbstractButton> elements = iconButtonGroup.getElements();
+        while (elements.hasMoreElements())
+        {
+            AbstractButton button = elements.nextElement();
+            if (button.getName().equals(icon.getFileName()))
+            {
+                BufferedImage image = iconSetManager.getIconImage(icon);
+                if (color != null && color != Color.WHITE) image = GraphicsUtils.colorImage(image, color);
+                button.setIcon(new ImageIcon(image));
+                break;
+            }
+        }
     }
 
     /**

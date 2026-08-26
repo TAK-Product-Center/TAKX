@@ -1,27 +1,35 @@
 {
   "acceptedApiChanges": [
     {
-      "type": "gov.takx.commons.swing.TriStateJCheckBox$State",
-      "member": "Field PARTIALLY_SELECTED",
-      "acceptation": "Renamed to INDETERMINATE",
-      "changes": [
-        "Field has been removed"
-      ]
-    },
-    {
-      "type": "gov.takx.api.event.PluginAdded",
-      "member": "Class gov.takx.api.event.PluginAdded",
-      "acceptation": "Was never possible for a plugin to receive this event",
+      "type": "gov.takx.api.propertymanager.ISystemPropertyChangeListener",
+      "member": "Class gov.takx.api.propertymanager.ISystemPropertyChangeListener",
+      "acceptation": "Removed along with ISystemPropertyManager",
       "changes": [
         "Class has been removed"
       ]
     },
     {
-      "type": "gov.takx.api.plugin.app.IAppPluginDefinition",
-      "member": "Class gov.takx.api.plugin.app.IAppPluginDefinition",
-      "acceptation": "Should always have been tagged with @NoPluginImplementations",
+      "type": "gov.takx.api.terrain.experimental.IHighestResolutionWWTerrain$ITerrainWWListener",
+      "member": "Class gov.takx.api.terrain.experimental.IHighestResolutionWWTerrain$ITerrainWWListener",
+      "acceptation": "Removed along with other WW terrain classes",
       "changes": [
-        "ANNOTATION_ADDED"
+        "Class has been removed"
+      ]
+    },
+    {
+      "type": "gov.takx.api.terrain.experimental.TerrainUtils$ElevationKey",
+      "member": "Class gov.takx.api.terrain.experimental.TerrainUtils$ElevationKey",
+      "acceptation": "Removed along with other WW terrain classes",
+      "changes": [
+        "Class has been removed"
+      ]
+    },
+    {
+      "type": "gov.takx.dataservices.shapes.Arrow",
+      "member": "Class gov.takx.dataservices.shapes.Arrow",
+      "acceptation": "False positive; only deprecated methods were removed",
+      "changes": [
+        "Default method has been added in implemented interface"
       ]
     }
   ]

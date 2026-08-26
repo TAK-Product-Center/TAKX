@@ -23,6 +23,7 @@ import gov.tak.api.chat.IChatService;
 import gov.tak.api.comms.commo.BroadcastConnectionConfiguration;
 import gov.tak.api.comms.commo.ConnectionConfiguration;
 import gov.tak.api.comms.commo.ICommonCommoManager;
+import gov.tak.api.comms.commo.ICotEventInterceptor;
 import gov.tak.api.comms.commo.ICotEventListener;
 import gov.tak.api.comms.commo.ICotSendListener;
 import gov.tak.api.comms.commo.StreamingConnectionConfiguration;
@@ -39,6 +40,7 @@ import gov.takx.api.event.StartBackgroundProjectServices;
 import gov.takx.api.event.StartProjectServices;
 import gov.takx.api.event.StopProjectServices;
 import gov.takx.api.preferences.IPreferenceMonitor;
+import gov.takx.commons.lang.ErrorThrowingRunnable;
 import gov.takx.commons.lang.ExceptionUtils;
 import gov.takx.core.view.gui.contacts.ContactsPanelController;
 import gov.takx.platform.preferences.PreferenceEntry;
@@ -119,6 +121,9 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
 
     @VisibleForTesting
     List<ICotSendListener> cotSendListeners = new CopyOnWriteArrayList<>();
+
+    @VisibleForTesting
+    List<ICotEventInterceptor> cotEventInterceptors = new CopyOnWriteArrayList<>();
 
     @VisibleForTesting
     INetworkDeviceManager networkDeviceManager;
@@ -399,6 +404,18 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
     public void removeContactPresenceListener(@Nonnull ContactPresenceListener listener)
     {
         if (commo != null) commo.removeContactPresenceListener(listener);
+    }
+
+    @Override
+    public void addCotEventInterceptor(@Nonnull ICotEventInterceptor interceptor)
+    {
+        cotEventInterceptors.add(interceptor);
+    }
+
+    @Override
+    public void removeCotEventInterceptor(@Nonnull ICotEventInterceptor interceptor)
+    {
+        cotEventInterceptors.remove(interceptor);
     }
 
     /**
@@ -873,6 +890,7 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
     {
         logger.debug("broadcast: {}", cotMessage);
 
+        cotMessage = notifyCotInterceptorsOnSend(cotMessage);
         commo.broadcastCoT(cotMessage);
         notifyCotSendListeners(cotMessage);
     }
@@ -882,6 +900,7 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
     {
         logger.debug("broadcasting over {}: {}", sendMethod, cotMessage);
 
+        cotMessage = notifyCotInterceptorsOnSend(cotMessage);
         commo.broadcastCoT(cotMessage, sendMethod);
         notifyCotSendListeners(cotMessage);
     }
@@ -894,6 +913,10 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
         // which is 'host:port:scheme'
         URI uri = connection.getUri();
         String streamId = uri.getScheme() + ":" + uri.getHost() + ":" + uri.getPort();
+
+        logger.debug("Send to mission {}/{}: {}", streamId, missionName, cotMessage);
+
+        cotMessage = notifyCotInterceptorsOnSend(cotMessage);
         commo.sendCoTToServerMissionDest(streamId, missionName, cotMessage);
         notifyCotSendListeners(cotMessage);
     }
@@ -905,6 +928,7 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
 
         logger.debug("Send to {}: {}", contacts, cotMessage);
 
+        cotMessage = notifyCotInterceptorsOnSend(cotMessage);
         commo.sendCoT(contacts, cotMessage, sendMethod);
         notifyCotSendListeners(cotMessage);
     }
@@ -913,6 +937,38 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
     public void setEnableAddressReuse(boolean enable)
     {
         commo.setEnableAddressReuse(enable);
+    }
+
+    @Override
+    public void setMulticastLoopbackEnabled(boolean enable)
+    {
+        commo.setMulticastLoopbackEnabled(enable);
+    }
+
+    /**
+     * Notify all registered interceptors of a message receipt/send.
+     * @since 5.8
+     */
+    private void notifyCotInterceptorsOnReceive(CotEvent cotEvent)
+    {
+        ExceptionUtils.safeDoOperation(cotEventInterceptors, l -> l.onReceive(cotEvent));
+    }
+
+    /**
+     * Notify all registered interceptors of a message send.
+     * @param cotXml Original message
+     * @return Potentially modified CoT XML
+     * @since 5.8
+     */
+    @Nonnull
+    private String notifyCotInterceptorsOnSend(String cotXml)
+    {
+        if (cotEventInterceptors.isEmpty()) return cotXml;
+
+        // Give the interceptor an actual event object to process
+        final var cotEvent = CotEvent.parse(cotXml);
+        ExceptionUtils.safeDoOperation(cotEventInterceptors, l -> l.onSend(cotEvent));
+        return cotEvent.toString();
     }
 
     /**
@@ -927,10 +983,12 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
     @Override
     public void cotMessageReceived(String cotMessage, String remoteEndpointId)
     {
-        logger.debug(cotMessage);
+        logger.debug("received {}", cotMessage);
 
         // If it is a valid event - hand it to the listeners
         final CotEvent event = CotEvent.parse(cotMessage);
+
+        notifyCotInterceptorsOnReceive(event);
 
         if (event.isValid())
         {
@@ -1160,6 +1218,8 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
                 PreferenceEntry.COMMON_COMMO_MULTICAST_TTL.newIntegerMonitor(i -> commo.setTTL(i), false);
         private final IPreferenceMonitor<Boolean> enableAddressReuseMonitor =
                 PreferenceEntry.COMMON_COMMO_ENABLE_ADDRESS_REUSE.newBooleanMonitor(b -> commo.setEnableAddressReuse(b), false);
+        private final IPreferenceMonitor<Boolean> enableMulticastLoopbackMonitor =
+                PreferenceEntry.COMMON_COMMO_ENABLE_MULTICAST_LOOPBACK.newBooleanMonitor(b -> commo.setMulticastLoopbackEnabled(b), false);
         private final IPreferenceMonitor<Integer> tcpConnectTimeoutMonitor =
                 PreferenceEntry.COMMON_COMMO_TCP_CONNECTION_TIMEOUT.newIntegerMonitor(i -> commo.setTcpConnTimeout(i), false);
         private final IPreferenceMonitor<Boolean> addDestUidMonitor =
@@ -1190,6 +1250,7 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
 
             commo.setTTL(multicastTtlMonitor.getCurrentValue());
             commo.setEnableAddressReuse(enableAddressReuseMonitor.getCurrentValue());
+            commo.setMulticastLoopbackEnabled(enableMulticastLoopbackMonitor.getCurrentValue());
             commo.setDestUidInsertionEnabled(addDestUidMonitor.getCurrentValue());
             commo.setTcpConnTimeout(tcpConnectTimeoutMonitor.getCurrentValue());
             commo.setMissionPackageHttpsPort(secureApiPortMonitor.getCurrentValue());
@@ -1199,6 +1260,7 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
 
             multicastTtlMonitor.start();
             enableAddressReuseMonitor.start();
+            enableMulticastLoopbackMonitor.start();
             addDestUidMonitor.start();
             tcpConnectTimeoutMonitor.start();
             secureApiPortMonitor.start();
@@ -1213,6 +1275,7 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
         {
             multicastTtlMonitor.stop();
             enableAddressReuseMonitor.stop();
+            enableMulticastLoopbackMonitor.stop();
             addDestUidMonitor.stop();
             tcpConnectTimeoutMonitor.stop();
             secureApiPortMonitor.stop();
@@ -1273,12 +1336,12 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
         }
 
         /**
-         * Convenience method that calls a {@link ICheckedRunnable} and catches and logs {@link CommoException}s.
+         * Convenience method that calls a {@link ErrorThrowingRunnable} and catches and logs {@link CommoException}s.
          *
          * @param runnable A functional interface that calls a commo method
          * @param errorMessage The error message to log if there is a {@link CommoException}.
          */
-        private void runWithExceptionHandling(@Nonnull ICheckedRunnable runnable, @Nonnull String errorMessage)
+        private void runWithExceptionHandling(@Nonnull ErrorThrowingRunnable<CommoException> runnable, @Nonnull String errorMessage)
         {
             try
             {
@@ -1287,15 +1350,6 @@ public class CommonCommoManager implements ICommonCommoManager, CoTMessageListen
             {
                 logger.error(errorMessage, e);
             }
-        }
-
-        /**
-         * A Runnable-like interface that allows a {@link CommoException} to be thrown from the {@code run} method.
-         */
-        @FunctionalInterface
-        public interface ICheckedRunnable
-        {
-            void run() throws CommoException;
         }
     }
 

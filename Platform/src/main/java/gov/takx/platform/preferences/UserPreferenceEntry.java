@@ -1,6 +1,5 @@
 package gov.takx.platform.preferences;
 
-import com.atakmap.coremap.conversions.Angle;
 import com.atakmap.coremap.maps.coords.NorthReference;
 import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.annotation.PreferenceDescriptor;
@@ -13,7 +12,6 @@ import gov.takx.api.preferences.IUserPreferenceManager;
 import gov.takx.commons.media.AudioAlert;
 import gov.takx.platform.cdi.InjectableContainerSupport;
 import gov.takx.platform.toolbar.ToolbarButtonLabelLocation;
-import gov.takx.platform.utils.ILengthMeasurer;
 import gov.takx.platform.utils.StandardTimeFormatting;
 import gov.takx.platform.utils.units.AltitudeUnits;
 import gov.takx.platform.utils.units.BearingUnits;
@@ -42,14 +40,6 @@ public enum UserPreferenceEntry implements IPreferenceEntry
     @PreferenceDescriptor(title = "Confirm Quit", description = "Query the user before allowing an application exit")
     CONFIRM_QUIT("ConfirmQuit", "true"),
     DATE_FORMAT("DateFormat", StandardTimeFormatting.DEFAULT_FORMAT),
-    /**
-     * @since 5.0
-     * @deprecated Use {@link #DISPLAY_BEARING_UNIT} instead ("UNIT", <em>not</em> "UNITS", to differentiate from deprecated entry)
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    @PreferenceDescriptor(title = "Bearing Units", description = "")
-    DISPLAY_BEARING_UNITS("BearingUnits", Angle.DEGREE.name()),
 
     /** @since 5.5 */
     @PreferenceDescriptor(title = "Bearing Units", description = "The unit to use for bearing")
@@ -57,15 +47,6 @@ public enum UserPreferenceEntry implements IPreferenceEntry
     @PreferenceDescriptor(title = "Display Local Time", description = "Display time values in the local time zone vs. UTC")
     DISPLAY_LOCAL_TIME("displayLocalTime", "false"),
 
-    /**
-     * Replaced by individual units of measure for altitude, range and speed.
-     *
-     * @deprecated Use {@link #DISPLAY_ALTITUDE_UNITS}, {@link #DISPLAY_RANGE_UNITS} and {@link #DISPLAY_SPEED_UNITS} instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    @PreferenceDescriptor(title = "Unit of Measure", description = "The units of measure to use for distance/length/area values")
-    DISPLAY_UNIT_OF_MEASURE("lastDisplayUoM", ILengthMeasurer.DEFAULT_UNIT_OF_MEASURE),
     /** @since 5.5 */
     @PreferenceDescriptor(title = "Altitude Units", description = "The units of measure to use for altitude")
     DISPLAY_ALTITUDE_UNITS("units/altitudeUnits", AltitudeUnits.METERS.name()),
@@ -99,7 +80,10 @@ public enum UserPreferenceEntry implements IPreferenceEntry
 
     /**
      * @since 3.4
+     * @deprecated unused
      */
+    @Deprecated(since = "5.8", forRemoval = true)
+    @DeprecatedApi(since = "5.8", forRemoval = true, removeAt = "5.11")
     MOBAC_SERVERS("mobac/servers", ""),
     PKI_USER_KEY("PKIKeys/UserKey", ""),
 

@@ -1,6 +1,7 @@
 package gov.takx.commons.swing;
 
 import gov.tak.api.annotation.IncubatingApi;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 import javax.swing.AbstractAction;
@@ -85,6 +86,15 @@ public class SimpleAction extends AbstractAction
     }
 
     /**
+     * @param icon the icon (See {@link javax.swing.Action#SMALL_ICON})
+     * @since 5.8
+     */
+    public void setIcon(@Nullable Icon icon)
+    {
+        putValue(SMALL_ICON, icon);
+    }
+
+    /**
      * @return the name (See {@link javax.swing.Action#NAME})
      * @since 5.7
      */
@@ -92,6 +102,15 @@ public class SimpleAction extends AbstractAction
     public String getName()
     {
         return (String) getValue(NAME);
+    }
+
+    /**
+     * @param name the name (See {@link javax.swing.Action#NAME})
+     * @since 5.8
+     */
+    public void setName(@Nullable String name)
+    {
+        putValue(NAME, name);
     }
 
     /**
@@ -119,6 +138,11 @@ public class SimpleAction extends AbstractAction
     @FunctionalInterface
     public interface ActionPerformedListener
     {
-        void actionPerformed(ActionEvent e);
+        /**
+         * Called when the action is performed.
+         *
+         * @param event the action event
+         */
+        void actionPerformed(@Nonnull ActionEvent event);
     }
 }

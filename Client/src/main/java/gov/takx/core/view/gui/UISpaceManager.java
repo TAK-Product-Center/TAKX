@@ -298,6 +298,12 @@ public class UISpaceManager implements IExtendedUISpaceManager
         }
     }
 
+    @Override
+    public void reDockAllExternalizedComponents()
+    {
+        dockingManager.reDockAllExternalizedComponents();
+    }
+
     @Nonnull
     @Override
     public JComponent createDockingPort(@Nonnull String portIdentifier) throws IllegalArgumentException

@@ -2,7 +2,7 @@ package gov.takx.commons.swing.entity.common;
 
 import gov.tak.api.annotation.IncubatingApi;
 import gov.takx.commons.swing.actionlist.ActionList;
-import gov.takx.commons.swing.actionlist.ActionListToggleAction;
+import gov.takx.commons.swing.actionlist.ActionListAction;
 import gov.takx.commons.swing.entity.EntityColumn;
 import gov.takx.commons.swing.entity.EntityDefinition;
 import gov.takx.platform.ui.UIResources;
@@ -13,6 +13,7 @@ import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.UIManager;
 
+import java.awt.Color;
 import java.util.Comparator;
 import java.util.List;
 
@@ -40,10 +41,12 @@ public class CommonEntityDefinition<E> extends EntityDefinition<E>
     public static final Icon VISIBILITY_ON_ICON = UIResources.getSizedIcon(PLATFORM_ICONS, "visibility.png", ACTION_BUTTON_IMAGE_SIZE);
     public static final Icon VISIBILITY_OFF_ICON = UIResources.getSizedColorizedIcon(UIResources.getUrl(PLATFORM_ICONS, "visibility_off.png"), ACTION_BUTTON_IMAGE_SIZE, UIManager.getColor("Label.disabledForeground").darker().darker().darker());
 
-    public final ActionListToggleAction<E> visibilityAction = new ActionListToggleAction<>("Visibility", VISIBILITY_OFF_ICON, this::isVisible)
-            .withSelectedIcon(VISIBILITY_ON_ICON)
-            .withButtonConfigurer((button, action, value, row) -> button.setContentAreaFilled(false)) // By default, we want the visibility action to appear only as an Icon, not a Button
-            .withValueConsumer(this::toggleVisibility);
+    private final ActionListAction<E> visibilityAction = ActionListAction.<E>builder()
+            .nameIconValueConsumer("Visibility", VISIBILITY_OFF_ICON, this::toggleVisibility)
+            .selectedNameIconBackground("Visibility", VISIBILITY_ON_ICON, Color.WHITE)
+            .buttonConfigurer((button, action, value, row) -> button.setContentAreaFilled(false)) // By default, we want the visibility action to appear only as an Icon, not a Button
+            .build();
+
     private final List<Action> visibilityActions = List.of(visibilityAction);
 
     private final EntityColumn<E, String> nameColumn;
@@ -58,15 +61,12 @@ public class CommonEntityDefinition<E> extends EntityDefinition<E>
      */
     public CommonEntityDefinition()
     {
-        visibilityColumn = EntityColumn.<E, ActionList<E>>builder().editable(true).type(ActionList.class)
-                .value(o -> new ActionList<>(visibilityActions, o))
-                .comparator(Comparator.comparing(al -> isVisible(al.value())))
-                .build();
-        iconColumn = EntityColumn.<E, Icon>builder().type(Icon.class).value(this::getIcon).cached(true).build(); // TODO DCW TAKX-3258 figure out a way to sort on the icon/type column
-        nameColumn = EntityColumn.<E, String>builder().name("Name").type(String.class).value(this::getName).cached(true).build();
+        visibilityColumn = buildVisibilityColumn().build();
+        iconColumn = buildIconColumn().build();
+        nameColumn = buildNameColumn().build();
         summaryProvider = new SummaryProvider<>(this);
-        summaryColumn = EntityColumn.<E, String>builder().name("Details").type(String.class).value(e -> summaryProvider.createSummaryHtml(e)).cached(true).sortable(false).build();
-        actionsColumn = EntityColumn.<E, ActionList<E>>builder().editable(true).type(ActionList.class).value(this::getActions).build();
+        summaryColumn = buildSummaryColumn().build();
+        actionsColumn = buildActionsColumn().build();
 
         addColumns(visibilityColumn, iconColumn, nameColumn, summaryColumn, actionsColumn);
     }
@@ -126,6 +126,61 @@ public class CommonEntityDefinition<E> extends EntityDefinition<E>
     }
 
     /**
+     * @return the builder for the name column
+     * @since 5.8
+     */
+    @Nonnull
+    protected EntityColumn.Builder<E, String> buildNameColumn()
+    {
+        return EntityColumn.<E, String>builder().name("Name").type(String.class).value(this::getName).cached(true);
+    }
+
+    /**
+     * @return the builder for the icon column
+     * @since 5.8
+     */
+    @Nonnull
+    protected EntityColumn.Builder<E, Icon> buildIconColumn()
+    {
+        return EntityColumn.<E, Icon>builder().type(Icon.class).value(this::getIcon).cached(true); // TODO DCW TAKX-3258 figure out a way to sort on the icon/type column
+    }
+
+    /**
+     * @return the builder for the summary column
+     * @since 5.8
+     */
+    @Nonnull
+    protected EntityColumn.Builder<E, String> buildSummaryColumn()
+    {
+        return EntityColumn.<E, String>builder().name("Details").type(String.class).value(e -> summaryProvider.createSummaryHtml(e)).cached(true).sortable(false);
+    }
+
+    /**
+     * @return the builder for the actions column
+     * @since 5.8
+     */
+    @Nonnull
+    protected EntityColumn.Builder<E, ActionList<E>> buildActionsColumn()
+    {
+        return EntityColumn.<E, ActionList<E>>builder().editable(true).type(ActionList.class).value(this::getActions);
+    }
+
+    /**
+     * @return the builder for the visibility column
+     * @since 5.8
+     */
+    @Nonnull
+    protected EntityColumn.Builder<E, ActionList<E>> buildVisibilityColumn()
+    {
+        return EntityColumn.<E, ActionList<E>>builder().editable(true).type(ActionList.class).name("Visible").header("").sortable(false)
+                .value(o -> {
+                    visibilityAction.setSelected(isVisible(o));
+                    return new ActionList<>(visibilityActions, o);
+                })
+                .comparator(Comparator.comparing(al -> isVisible(al.value())));
+    }
+
+    /**
      * @implNote Default implementation always returns {@code null}
      * @param entity the model object to get the icon for
      * @return the icon for the given object
@@ -175,6 +230,18 @@ public class CommonEntityDefinition<E> extends EntityDefinition<E>
     protected ActionList<E> getActions(@Nonnull E entity)
     {
         return null;
+    }
+
+    /**
+     * @implNote Default implementation always returns {@link #getActions(Object)}
+     * @param entity the model entity to get popup actions for
+     * @return the List of popup actions for the given entity
+     * @since 5.8
+     */
+    @Nullable
+    protected ActionList<E> getPopupActions(@Nonnull E entity)
+    {
+        return getActions(entity);
     }
 
     /**

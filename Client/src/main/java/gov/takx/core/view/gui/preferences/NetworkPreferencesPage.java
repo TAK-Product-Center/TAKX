@@ -9,6 +9,7 @@ import static gov.takx.platform.preferences.PreferenceEntry.COMMON_COMMO_ADD_DES
 import static gov.takx.platform.preferences.PreferenceEntry.COMMON_COMMO_DEFAULT_INPUTS_NODE;
 import static gov.takx.platform.preferences.PreferenceEntry.COMMON_COMMO_DEFAULT_OUTPUTS_NODE;
 import static gov.takx.platform.preferences.PreferenceEntry.COMMON_COMMO_ENABLE_ADDRESS_REUSE;
+import static gov.takx.platform.preferences.PreferenceEntry.COMMON_COMMO_ENABLE_MULTICAST_LOOPBACK;
 import static gov.takx.platform.preferences.PreferenceEntry.COMMON_COMMO_MULTICAST_TTL;
 import static gov.takx.platform.preferences.PreferenceEntry.COMMON_COMMO_TAK_SERVER_CERT_ENROLLMENT_API_PORT;
 import static gov.takx.platform.preferences.PreferenceEntry.COMMON_COMMO_TAK_SERVER_SECURE_API_PORT;
@@ -45,6 +46,7 @@ public class NetworkPreferencesPage extends APreferencesPage
 
         addSectionHeader("Network Tweaks");
         addCheckboxEditor(COMMON_COMMO_ENABLE_ADDRESS_REUSE);
+        addCheckboxEditor(COMMON_COMMO_ENABLE_MULTICAST_LOOPBACK);
         addEditor(COMMON_COMMO_MULTICAST_TTL, PreferencesComponentFactory.makeIntSpinnerEditor(1, 255, 1));
         addEditor(COMMON_COMMO_TCP_CONNECTION_TIMEOUT, PreferencesComponentFactory.makeIntSpinnerEditor(1, 600, 1));
         addCheckboxEditor(COMMON_COMMO_ADD_DEST_UID);

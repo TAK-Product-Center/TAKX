@@ -80,11 +80,15 @@ public class UrlDialog extends AStandardDialog
 
         if (!updating)
         {
+            setTitle("Add a URL");
             // Auto-name "Stream (n)"
             String autoName = mediaManager.createUniqueName("Stream");
             nameTextField.setText(autoName);
             nameTextField.setSelectionStart(0);
             nameTextField.setSelectionEnd(autoName.length());
+        } else
+        {
+            setTitle("Update a URL");
         }
     }
 

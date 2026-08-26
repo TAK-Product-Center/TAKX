@@ -124,15 +124,6 @@ public class WMSNetworkStatus extends AVListImpl implements NetworkStatus
     }
 
     /**
-     * Update our test sites when the MOBAC servers change.
-     * @since 3.4
-     */
-    private void handleMobacServerChange(@Observes @UserPreferenceType(UserPreferenceEntry.MOBAC_SERVERS) PreferenceEntryChange ignored)
-    {
-        refreshTestSites();
-    }
-
-    /**
      * Update the list of test sites from the given string containing a list of comma-separated WMS entries.
      */
     protected synchronized void refreshTestSites()
@@ -141,7 +132,6 @@ public class WMSNetworkStatus extends AVListImpl implements NetworkStatus
 
         addTestSites(UserPreferenceEntry.WMS_IMAGERY_SERVERS.getStringValue().split(","));
         addTestSites(UserPreferenceEntry.WMS_ELEVATION_SERVERS.getStringValue().split(","));
-        addTestSites(UserPreferenceEntry.MOBAC_SERVERS.getStringValue().split(","));
 
         logger.debug("wmsList: {}", networkTestSites);
     }

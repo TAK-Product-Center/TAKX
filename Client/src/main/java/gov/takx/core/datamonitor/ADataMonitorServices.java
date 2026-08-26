@@ -16,12 +16,14 @@ import gov.takx.api.plugin.datamonitor.IDataMonitorDelegate;
 import gov.takx.api.plugin.datamonitor.StandardDataMonitorType;
 import gov.takx.api.query.IQueryService;
 import gov.takx.commons.constants.State;
+import gov.takx.commons.lang.IPropertyChangeDelegateSupport;
+import gov.takx.commons.lang.IPropertyChangeListenerSupport;
+import gov.takx.platform.utils.PrioritizedPropertyChangeSupport;
 import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 
 import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,7 +43,7 @@ import java.util.function.Supplier;
  */
 @SuppressWarnings("CdiManagedBeanInconsistencyInspection")
 @PseudoBean
-public abstract class ADataMonitorServices<DELEGATE extends IPluginDelegate> implements IDataMonitorServices
+public abstract class ADataMonitorServices<DELEGATE extends IPluginDelegate> implements IDataMonitorServices, IPropertyChangeDelegateSupport
 {
     @Inject
     protected IRaptorEventLogManager eventLogManager;
@@ -67,7 +69,7 @@ public abstract class ADataMonitorServices<DELEGATE extends IPluginDelegate> imp
      */
     protected final List<IDataMonitor> dataMonitors;
 
-    private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private final PrioritizedPropertyChangeSupport propertyChangeSupport = new PrioritizedPropertyChangeSupport(this);
 
     // Re-fire all DM PCEs to our listeners
     private final PropertyChangeListener dataMonitorPropertyChangeHandler = propertyChangeSupport::firePropertyChange;
@@ -102,16 +104,14 @@ public abstract class ADataMonitorServices<DELEGATE extends IPluginDelegate> imp
      */
     protected abstract ADataMonitorDelegate makeDataMonitorDelegate(DELEGATE delegate);
 
+    /**
+     * @since 5.8
+     */
+    @Nonnull
     @Override
-    public void addPropertyChangeListener(@Nonnull PropertyChangeListener listener)
+    public IPropertyChangeListenerSupport getPropertyChangeListenerSupport()
     {
-        propertyChangeSupport.addPropertyChangeListener(listener);
-    }
-
-    @Override
-    public void removePropertyChangeListener(@Nonnull PropertyChangeListener listener)
-    {
-        propertyChangeSupport.removePropertyChangeListener(listener);
+        return propertyChangeSupport;
     }
 
     /**

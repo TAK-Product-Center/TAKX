@@ -1,0 +1,120 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "fill:default:grow"
+		} ) {
+			name: "this"
+			"resizable": false
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "200dlu:grow, labelcompgap, default"
+				"$rowSpecs": "fill:200dlu:grow, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default"
+			} ) {
+				name: "wrapperPanel"
+				"border": new javax.swing.border.EmptyBorder( 10, 10, 10, 10 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "contourPreviewLabel"
+					"border": new javax.swing.border.LineBorder( new com.jformdesigner.model.SwingColor( "Group.separatorColor" ), 1, false )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridWidth": 3
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "areaDescriptionLabel"
+					"text": "Area description"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 2, 0, false )
+					"horizontalAlignment": 0
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 3
+					"gridWidth": 3
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "contourFormatLabel"
+					"horizontalAlignment": 0
+					"text": "Format"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 2, 0, false )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 5
+					"gridWidth": 3
+				} )
+				add( new FormComponent( "javax.swing.JSeparator" ) {
+					name: "separator1"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 7
+					"gridWidth": 3
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "intervalLabel"
+					"text": "Line every N units"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 9
+				} )
+				add( new FormComponent( "javax.swing.JSpinner" ) {
+					name: "intervalSpinner"
+					"model": new javax.swing.SpinnerNumberModel {
+						minimum: 1.0
+						stepSize: 1.0
+						value: 50.0
+					}
+					addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "onIntervalChanged", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 9
+				} )
+				add( new FormComponent( "javax.swing.JSpinner" ) {
+					name: "majorIntervalSpinner"
+					"model": new javax.swing.SpinnerNumberModel {
+						minimum: 1
+						value: 2
+					}
+					addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "onMajorIntervalChanged", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 11
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "majorIntervalLabel"
+					"text": "Major every N lines"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 11
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "intervalUnitsLabel"
+					"text": "Interval units"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 13
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "intervalUnitsSpinner"
+					"model": new javax.swing.DefaultComboBoxModel {
+						selectedItem: "Meters"
+						addElement( "Meters" )
+						addElement( "Feet" )
+						addElement( "Yards" )
+					}
+					addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "onIntervalUnitsChanged", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 13
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 675, 525 )
+		} )
+	}
+}

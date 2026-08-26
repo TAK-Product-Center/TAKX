@@ -5,6 +5,7 @@ import gov.takx.api.layer.LayerConfiguration.LayerClassType;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -22,7 +23,7 @@ public class ModelLayerBuilderTest
     @Test
     void builderDefaults_asExpected()
     {
-        final LayerConfiguration layerConfiguration = ModelLayerBuilder.builder().setName(NAME).setFile(FILE).build();
+        final LayerConfiguration layerConfiguration = ModelLayerBuilder.builder().setName(NAME).setFiles(List.of(FILE)).build();
         assertThat(layerConfiguration).isNotNull();
         assertThat(layerConfiguration.displayName()).isNull();
         assertThat(layerConfiguration.visible()).isTrue();
@@ -56,7 +57,7 @@ public class ModelLayerBuilderTest
                 .setName(NAME)
                 .setDisplayName(DISPLAY_NAME)
                 .setVisible(false)
-                .setFile(FILE)
+                .setFiles(List.of(FILE))
                 .build();
     }
 }

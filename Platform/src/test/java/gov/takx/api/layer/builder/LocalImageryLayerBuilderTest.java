@@ -40,7 +40,7 @@ public class LocalImageryLayerBuilderTest
         assertThat(layerConfiguration.displayName()).isEqualTo(DISPLAY_NAME);
         assertThat(layerConfiguration.visible()).isFalse();
         assertThat(layerConfiguration.restorableXMLString()).isNotNull();
-        assertThat(layerConfiguration.restorableXMLString().split(LocalImageryLayerBuilder.ESCAPED_PATH_SEPARATOR))
+        assertThat(LocalImageryLayerBuilder.parseRestorableString(layerConfiguration.restorableXMLString()))
                 .containsExactlyInAnyOrder(FILE1.getAbsolutePath(), FILE2.getAbsolutePath());
     }
 

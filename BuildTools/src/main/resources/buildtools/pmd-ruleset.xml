@@ -2,123 +2,124 @@
 <ruleset name="TAKX ruleset"
          xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd"
-         xsi:noNamespaceSchemaLocation="http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
-
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
     <description>
         Custom ruleset for use on the TAKX code base
     </description>
 
-    <!-- We'll use all of these in their entirety -->
-    <rule ref="rulesets/java/strings.xml"/>
+    <exclude-pattern>.*/generated/.*</exclude-pattern>
+    <exclude-pattern>.*/generated-sources/.*</exclude-pattern>
 
-    <rule ref="rulesets/java/basic.xml"/>
-    <rule ref="rulesets/java/unusedcode.xml"/>
-    <rule ref="rulesets/java/imports.xml"/>
-    <rule ref="rulesets/java/strings.xml"/>
-    <rule ref="rulesets/java/codesize.xml"/>
-    <rule ref="rulesets/java/finalizers.xml"/>
-    <rule ref="rulesets/java/clone.xml"/>
-    <rule ref="rulesets/java/strictexception.xml"/>
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="AvoidReassigningLoopVariables"/>
+        <exclude name="ForLoopVariableCount"/>
+        <exclude name="UnusedPrivateMethod"/>
+    </rule>
 
-    <!-- Below here we're configuring specific exclusions on standard rule sets. -->
+    <rule ref="category/java/bestpractices.xml/GuardLogStatement">
+        <properties>
+            <property name="logLevels" value="trace,debug"/>
+            <property name="guardsMethods" value="isTraceEnabled,isDebugEnabled"/>
+        </properties>
+    </rule>
 
-    <rule ref="rulesets/java/coupling.xml">
-        <exclude name="LoosePackageCoupling"/>
+    <rule ref="category/java/design.xml">
+        <exclude name="AvoidCatchingGenericException"/>
+        <exclude name="AvoidUncheckedExceptionsInSignatures"/>
+        <exclude name="CyclomaticComplexity"/>
+        <exclude name="DataClass"/>
+        <exclude name="ExcessiveImports"/>
         <exclude name="LawOfDemeter"/>
-        <!-- Many of these are just plain stupid -->
+        <exclude name="LoosePackageCoupling"/>
+        <exclude name="NcssCount"/>
+        <exclude name="NPathComplexity"/>
+        <exclude name="TooManyFields"/>
+        <exclude name="TooManyMethods"/>
     </rule>
-
-    <rule ref="rulesets/java/braces.xml">
-    <exclude name="IfStmtsMustUseBraces"/>
-    </rule>
-
-    <rule ref="rulesets/java/design.xml">
-    <exclude name="SimpleDateFormatNeedsLocale"/>
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="AvoidCatchingThrowable"/>
+        <exclude name="AvoidFieldNameMatchingMethodName"/>
+        <exclude name="MissingSerialVersionUID"/>
+        <exclude name="NullAssignment"/>
+        <exclude name="SimpleDateFormatNeedsLocale"/>
         <exclude name="UseLocaleWithCaseConversions"/>
-        <exclude name="ConfusingTernary"/>
-        <exclude name="EmptyMethodInAbstractClassShouldBeAbstract"/>
     </rule>
-
-    <rule ref="rulesets/java/naming.xml">
-    <exclude name="ShortVariable"/>
-        <exclude name="LongVariable"/>
-        <exclude name="AbstractNaming"/>
-        <exclude name="VariableNamingConventions"/>
+    <rule ref="category/java/errorprone.xml/AvoidLiteralsInIfCondition">
+        <properties>
+            <property name="ignoreMagicNumbers" value="-1,0,1" />
+            <property name="ignoreExpressions" value="true" />
+        </properties>
     </rule>
+    <rule ref="category/java/performance.xml"/>
+    <rule ref="category/java/security.xml"/>
 
-    <rule ref="rulesets/java/optimizations.xml">
-    <exclude name="LocalVariableCouldBeFinal"/>
-        <exclude name="MethodArgumentCouldBeFinal"/>
-        <exclude name="AvoidInstantiatingObjectsInLoops"/>
-    </rule>
-
-    <!-- Custom rules for our code base -->
-
-    <!-- The next three rules replace the functionliaty of the naming/VariableNamingConventions rule.  We want to
-         allow "logger" as a special case of static final.  The other two rules are re-implemnetations of
-         functionality from the builtin rule in XPath since we disabled it, but we want them to be run. -->
+    <!-- The next three rules replace the functionality of the naming/VariableNamingConventions rule.  We want to
+        allow "logger" as a special case of static final.  The other two rules are re-implementations of
+        functionality from the builtin rule in XPath since we disabled it, but we want them to be run. -->
 
     <rule name="StaticFieldsUpperCaseExceptLogger"
           language="java"
           message="Variables that are final and static should be in all caps."
-          class="net.sourceforge.pmd.lang.rule.XPathRule">
-    <description>
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
             Static final fields should have names in all upper case
         </description>
         <properties>
             <property name="xpath">
-                <value>
-                    <![CDATA[
-        //FieldDeclaration[@Static='true' and @Final='true']/VariableDeclarator/VariableDeclaratorId[upper-case(@Image) != @Image and @Image != 'logger']
-                    ]]>
-                </value>
+                <value><![CDATA[
+                //FieldDeclaration[ ModifierList/Modifier[@Kind='STATIC'] and ModifierList/Modifier[@Kind='FINAL'] ]
+                //VariableId[ upper-case(@Image) != @Image and @Image != 'logger' ]
+            ]]></value>
             </property>
         </properties>
-        <example>
-            <![CDATA[
-                private static final String lower = "foo"; // don't do this!
-            ]]>
-        </example>
+
+        <example><![CDATA[
+        private static final String lower = "foo"; // violation
+        private static final Logger logger = ...;  // ok
+        private static final String CONSTANT = "BAR"; // ok
+    ]]></example>
     </rule>
 
     <rule name="VariableNamesStartWithLowerCaseLetter"
           language="java"
           message="Variables should start with a lowercase character"
-          class="net.sourceforge.pmd.lang.rule.XPathRule">
-    <description>
-            Normal variables should start with lower case letters
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+
+        <description>
+            Normal (non-static, non-final) variables should start with a lowercase letter.
         </description>
+
         <properties>
             <property name="xpath">
-                <value>
-                    <![CDATA[
-        //VariableDeclaratorId[lower-case(substring(@Image,1,1))!=substring(@Image,1,1)]/../..[@Static='false' and @Final='false']
-                    ]]>
-                </value>
+                <value><![CDATA[
+                //VariableDeclarator[ not(ancestor::FieldDeclaration [ModifierList/Modifier[@Kind='STATIC'] or ModifierList/Modifier[@Kind='FINAL']] ) ]
+                /VariableId[ lower-case(substring(@Image, 1, 1)) != substring(@Image, 1, 1) ]
+            ]]></value>
             </property>
         </properties>
-        <example>
-            <![CDATA[
-                public void foo() {
-                    int XYZ; // Don't do this
-                }
-            ]]>
-        </example>
+
+        <example><![CDATA[
+        public void foo() {
+            int XYZ; // violation
+            int goodName; // ok
+        }
+
+        private static final int CONSTANT = 1; // ignored
+    ]]></example>
     </rule>
 
     <rule name="VariableNamesShouldNotContainUnderscore"
           language="java"
           message="Variables that are not final should not contain underscores"
-          class="net.sourceforge.pmd.lang.rule.XPathRule">
-    <description>
+          class="net.sourceforge.pmd.lang.rule.xpath.XPathRule">
+        <description>
             Non-final variables should not have underscores in the name
         </description>
         <properties>
             <property name="xpath">
                 <value>
                     <![CDATA[
-        //VariableDeclaratorId[contains(@Image,'_')]/../..[@Final='false']
+    //VariableDeclaratorId[contains(@name,'_')]/ancestor::VariableDeclarator[not(@final='true')]
                     ]]>
                 </value>
             </property>
@@ -131,5 +132,4 @@
             ]]>
         </example>
     </rule>
-
 </ruleset>

@@ -6,521 +6,516 @@ new FormModel {
 		auxiliary() {
 			"JavaCodeGenerator.defaultVariableLocal": true
 		}
-		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, linegap, default"
+		} ) {
 			name: "this"
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-				"$columnSpecs": "default:grow"
-				"$rowSpecs": "default, linegap, default"
+				"$columnSpecs": "default, labelcompgap, default:grow"
+				"$rowSpecs": "default"
 			} ) {
-				name: "formPanel"
-				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-					"$columnSpecs": "default, labelcompgap, default:grow"
-					"$rowSpecs": "default"
-				} ) {
-					name: "textFieldPanel"
-					add( new FormComponent( "javax.swing.JLabel" ) {
-						name: "locationLabel"
-						"text": "Location:"
-						auxiliary() {
-							"JavaCodeGenerator.variableLocal": false
-						}
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 1
-						"gridY": 1
-					} )
-					add( new FormComponent( "gov.takx.commons.swing.JXTextFieldExt" ) {
-						name: "locationTextField"
-						"prompt": "Enter Location Here"
-						"focusBehavior": enum org.jdesktop.swingx.prompt.PromptSupport$FocusBehavior SHOW_PROMPT
-						"foreground": new com.jformdesigner.model.SwingColor( "Label.disabledForeground" )
-						auxiliary() {
-							"JavaCodeGenerator.variableLocal": false
-						}
-						addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "locationTextFocusLost", false ) )
-					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-						"gridX": 3
-					} )
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-				} )
-				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-					"$columnSpecs": "default:grow"
-					"$rowSpecs": "default"
-				} ) {
-					name: "detailsPanel"
-					"border": new javax.swing.border.CompoundBorder( new javax.swing.border.TitledBorder( new javax.swing.border.MatteBorder( 0, 1, 1, 1, new com.jformdesigner.model.SwingColor( "Component.borderColor" ) ), "", 4, 0, null, sfield java.awt.Color white ), static com.jgoodies.forms.factories.Borders createEmptyBorder( "0dlu, 4dlu, 4dlu, 4dlu" ) )
+				name: "textFieldPanel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "locationLabel"
+					"text": "Location:"
 					auxiliary() {
 						"JavaCodeGenerator.variableLocal": false
 					}
-					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-						"$columnSpecs": "default:grow"
-						"$rowSpecs": "default, linegap, default"
-					} ) {
-						name: "detailsFormPanel"
-						add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
-							name: "tabPane"
-							auxiliary() {
-								"JavaCodeGenerator.variableLocal": false
-							}
-							addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "tabPaneStateChanged", false ) )
-							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-								"$columnSpecs": "40dlu, labelcompgap, 20dlu, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, default"
-								"$rowSpecs": "fill:default, linegap, default"
-								"$columnGroupIds": "0, 0, 2, 0, 2, 0, 2, 0, 2, 0, 0"
-							} ) {
-								name: "mgrsPanel"
-								"border": &Borders$EmptyBorder0 static com.jgoodies.forms.factories.Borders createEmptyBorder( "4dlu, 0dlu, 0dlu, 0dlu" )
-								auxiliary() {
-									"JavaCodeGenerator.variableLocal": false
-								}
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label18"
-									"text": "Grid:"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 1
-									"gridY": 1
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JXTextFieldExt" ) {
-									name: "gzdField"
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "mgrsChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 3
-									"gridY": 1
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JXTextFieldExt" ) {
-									name: "sqrField"
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "mgrsChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 5
-									"gridY": 1
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JXTextFieldExt" ) {
-									name: "easField"
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "mgrsChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 7
-									"gridY": 1
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JXTextFieldExt" ) {
-									name: "norField"
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "mgrsChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 9
-									"gridY": 1
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-							}, new FormLayoutConstraints( null ) {
-								"title": "MGRS"
-							} )
-							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-								"$columnSpecs": "40dlu, labelcompgap, 50dlu, labelcompgap, default"
-								"$rowSpecs": "fill:default, linegap, default"
-								"$columnGroupIds": "0, 0, 0, 0, 2"
-							} ) {
-								name: "degPanel"
-								"border": #Borders$EmptyBorder0
-								"alignmentX": 0.0f
-								auxiliary() {
-									"JavaCodeGenerator.variableLocal": false
-								}
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "degLatLabel"
-									"text": "Latitude:"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 1
-									"gridY": 1
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dLatDegField"
-									"model": new javax.swing.SpinnerNumberModel( 0.0, -90.0, 90.0, 1.0 )
-									"maximumSize": new java.awt.Dimension( 100, 34 )
-									"minimumSize": new java.awt.Dimension( 100, 0 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 3
-									"gridY": 1
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label4"
-									"text": "°"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 5
-									"gridY": 1
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "degLonLabel"
-									"text": "Longitude:"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridY": 3
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dLonDegField"
-									"model": new javax.swing.SpinnerNumberModel( 0.0, -180.0, 180.0, 1.0 )
-									"maximumSize": new java.awt.Dimension( 100, 34 )
-									"minimumSize": new java.awt.Dimension( 100, 0 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 3
-									"gridY": 3
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label15"
-									"text": "°"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 5
-									"gridY": 3
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-								} )
-							}, new FormLayoutConstraints( null ) {
-								"title": "Deg"
-							} )
-							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-								"$columnSpecs": "40dlu, labelcompgap, 50dlu, labelcompgap, default, labelcompgap, default, labelcompgap, default"
-								"$rowSpecs": "fill:default, linegap, default"
-								"$columnGroupIds": "0, 0, 1, 0, 2, 0, 1, 0, 2"
-							} ) {
-								name: "degMinPanel"
-								"border": #Borders$EmptyBorder0
-								auxiliary() {
-									"JavaCodeGenerator.variableLocal": false
-								}
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "dmLatLabel"
-									"text": "Latitude:"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dmLatDegField"
-									"model": new javax.swing.SpinnerNumberModel( 0, -90, 90, 1 )
-									"maximumSize": new java.awt.Dimension( 100, 34 )
-									"minimumSize": new java.awt.Dimension( 100, 0 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 3
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label5"
-									"text": "°"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 5
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dmLatMinField"
-									"model": new javax.swing.SpinnerNumberModel( 0.0, 0.0, 60.0, 1.0 )
-									"maximumSize": new java.awt.Dimension( 100, 34 )
-									"minimumSize": new java.awt.Dimension( 100, 0 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 7
-									"gridY": 1
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label7"
-									"text": "'"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 9
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "dmLonDegLabel"
-									"text": "Longitude:"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridY": 3
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dmLonDegField"
-									"model": new javax.swing.SpinnerNumberModel( 0, -180, 180, 1 )
-									"maximumSize": new java.awt.Dimension( 100, 34 )
-									"minimumSize": new java.awt.Dimension( 100, 0 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 3
-									"gridY": 3
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label6"
-									"text": "°"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 5
-									"gridY": 3
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dmLonMinField"
-									"model": new javax.swing.SpinnerNumberModel( 0.0, 0.0, 60.0, 1.0 )
-									"maximumSize": new java.awt.Dimension( 100, 34 )
-									"minimumSize": new java.awt.Dimension( 100, 0 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 7
-									"gridY": 3
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label8"
-									"text": "'"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 9
-									"gridY": 3
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
-								} )
-							}, new FormLayoutConstraints( null ) {
-								"title": "Deg/Min"
-							} )
-							add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-								"$columnSpecs": "40dlu, labelcompgap, 50dlu, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, default"
-								"$rowSpecs": "fill:default:grow, linegap, default"
-								"$columnGroupIds": "0, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2"
-							} ) {
-								name: "degMinSecPanel"
-								"border": #Borders$EmptyBorder0
-								auxiliary() {
-									"JavaCodeGenerator.variableLocal": false
-								}
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "dmLatLabel2"
-									"text": "Latitude:"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dmsLatDegField"
-									"model": new javax.swing.SpinnerNumberModel( 0, -90, 90, 1 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 3
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label9"
-									"text": "°"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 5
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dmsLatMinField"
-									"model": new javax.swing.SpinnerNumberModel( 0, 0, 60, 1 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 7
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label10"
-									"text": "'"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 9
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dmsLatSecField"
-									"model": new javax.swing.SpinnerNumberModel( 0.0, 0.0, 60.0, 1.0 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 11
-									"gridY": 1
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label13"
-									"text": "\""
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 13
-									"gridY": 1
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "dmLonLabel2"
-									"text": "Longitude:"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridY": 3
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dmsLonDegField"
-									"model": new javax.swing.SpinnerNumberModel( 0, -180, 180, 1 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 3
-									"gridY": 3
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label11"
-									"text": "°"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 5
-									"gridY": 3
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dmsLonMinField"
-									"model": new javax.swing.SpinnerNumberModel( 0, 0, 60, 1 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 7
-									"gridY": 3
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label12"
-									"text": "'"
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 9
-									"gridY": 3
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
-								} )
-								add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-									name: "dmsLonSecField"
-									"model": new javax.swing.SpinnerNumberModel( 0.0, 0.0, 60.0, 1.0 )
-									auxiliary() {
-										"JavaCodeGenerator.variableLocal": false
-									}
-									addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 11
-									"gridY": 3
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-								} )
-								add( new FormComponent( "javax.swing.JLabel" ) {
-									name: "label14"
-									"text": "\""
-								}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-									"gridX": 13
-									"gridY": 3
-									"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
-									"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
-								} )
-							}, new FormLayoutConstraints( null ) {
-								"title": "Deg/Min/Sec"
-							} )
-						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-						} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "gov.takx.commons.swing.JXTextFieldExt" ) {
+					name: "locationTextField"
+					"prompt": "Enter Location Here"
+					"focusBehavior": enum org.jdesktop.swingx.prompt.PromptSupport$FocusBehavior SHOW_PROMPT
+					"foreground": new com.jformdesigner.model.SwingColor( "Label.disabledForeground" )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": false
+					}
+					addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "locationTextFocusLost", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "default"
+			} ) {
+				name: "detailsPanel"
+				"border": new javax.swing.border.CompoundBorder( new javax.swing.border.TitledBorder( new javax.swing.border.MatteBorder( 0, 1, 1, 1, new com.jformdesigner.model.SwingColor( "Component.borderColor" ) ), "", 4, 0, null, sfield java.awt.Color white ), static com.jgoodies.forms.factories.Borders createEmptyBorder( "0dlu, 4dlu, 4dlu, 4dlu" ) )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": false
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": "default, linegap, default"
+				} ) {
+					name: "detailsFormPanel"
+					add( new FormContainer( "javax.swing.JTabbedPane", new FormLayoutManager( class javax.swing.JTabbedPane ) ) {
+						name: "tabPane"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+						}
+						addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "tabPaneStateChanged", false ) )
 						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-							"$columnSpecs": "40dlu, labelcompgap, 50dlu, labelcompgap, default, labelcompgap, default:grow"
-							"$rowSpecs": "default"
+							"$columnSpecs": "40dlu, labelcompgap, 20dlu, labelcompgap, default, labelcompgap, default, labelcompgap, default"
+							"$rowSpecs": "fill:default, linegap, default"
+							"$columnGroupIds": "0, 0, 2, 0, 2, 0, 2, 0, 2"
 						} ) {
-							name: "elevationPanel"
+							name: "mgrsPanel"
+							"border": &Borders$EmptyBorder0 static com.jgoodies.forms.factories.Borders createEmptyBorder( "4dlu, 0dlu, 0dlu, 0dlu" )
 							auxiliary() {
 								"JavaCodeGenerator.variableLocal": false
 							}
 							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "elevationLabel"
-								"text": "Elevation:"
+								name: "label18"
+								"text": "Grid:"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 1
+								"gridY": 1
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JXTextFieldExt" ) {
+								name: "gzdField"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "mgrsChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"gridY": 1
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JXTextFieldExt" ) {
+								name: "sqrField"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "mgrsChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 5
+								"gridY": 1
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JXTextFieldExt" ) {
+								name: "easField"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "mgrsChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 7
+								"gridY": 1
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JXTextFieldExt" ) {
+								name: "norField"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "mgrsChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 9
+								"gridY": 1
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+						}, new FormLayoutConstraints( null ) {
+							"title": "MGRS"
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+							"$columnSpecs": "40dlu, labelcompgap, 40dlu, labelcompgap, default"
+							"$rowSpecs": "fill:default, linegap, default"
+							"$columnGroupIds": "0, 0, 0, 0, 2"
+						} ) {
+							name: "degPanel"
+							"border": #Borders$EmptyBorder0
+							"alignmentX": 0.0f
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "degLatLabel"
+								"text": "Latitude:"
 							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 								"gridX": 1
 								"gridY": 1
 							} )
 							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
-								name: "elevationField"
-								"model": new javax.swing.SpinnerNumberModel {
-									stepSize: 1.0
-									value: 0.0
-								}
+								name: "dLatDegField"
+								"model": new javax.swing.SpinnerNumberModel( 0.0, -90.0, 90.0, 1.0 )
+								"maximumSize": new java.awt.Dimension( 100, 34 )
+								"minimumSize": new java.awt.Dimension( 100, 0 )
 								auxiliary() {
 									"JavaCodeGenerator.variableLocal": false
 								}
-								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "elevationChanged", false ) )
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degChanged", false ) )
 							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 								"gridX": 3
 								"gridY": 1
 								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 							} )
 							add( new FormComponent( "javax.swing.JLabel" ) {
-								name: "label16"
+								name: "label4"
 								"text": "°"
-								"visible": false
 							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
 								"gridX": 5
+								"gridY": 1
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
 							} )
-							add( new FormComponent( "gov.takx.platform.ui.units.AltitudeUnitComboBox" ) {
-								name: "elevationUnitField"
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "degLonLabel"
+								"text": "Longitude:"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 3
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dLonDegField"
+								"model": new javax.swing.SpinnerNumberModel( 0.0, -180.0, 180.0, 1.0 )
+								"maximumSize": new java.awt.Dimension( 100, 34 )
+								"minimumSize": new java.awt.Dimension( 100, 0 )
 								auxiliary() {
 									"JavaCodeGenerator.variableLocal": false
 								}
-								addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "elevationUnitFieldChanged", false ) )
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"gridY": 3
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label15"
+								"text": "°"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 5
+								"gridY": 3
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+							} )
+						}, new FormLayoutConstraints( null ) {
+							"title": "Deg"
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+							"$columnSpecs": "40dlu, labelcompgap, 40dlu, labelcompgap, default, labelcompgap, default, labelcompgap, default"
+							"$rowSpecs": "fill:default, linegap, default"
+							"$columnGroupIds": "0, 0, 1, 0, 2, 0, 1, 0, 2"
+						} ) {
+							name: "degMinPanel"
+							"border": #Borders$EmptyBorder0
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "dmLatLabel"
+								"text": "Latitude:"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dmLatDegField"
+								"model": new javax.swing.SpinnerNumberModel( 0, -90, 90, 1 )
+								"maximumSize": new java.awt.Dimension( 100, 34 )
+								"minimumSize": new java.awt.Dimension( 100, 0 )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label5"
+								"text": "°"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 5
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dmLatMinField"
+								"model": new javax.swing.SpinnerNumberModel( 0.0, 0.0, 60.0, 1.0 )
+								"maximumSize": new java.awt.Dimension( 100, 34 )
+								"minimumSize": new java.awt.Dimension( 100, 0 )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinChanged", false ) )
 							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 								"gridX": 7
 								"gridY": 1
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label7"
+								"text": "'"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 9
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
 								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
 							} )
-						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-							"gridY": 3
-							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "dmLonDegLabel"
+								"text": "Longitude:"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 3
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dmLonDegField"
+								"model": new javax.swing.SpinnerNumberModel( 0, -180, 180, 1 )
+								"maximumSize": new java.awt.Dimension( 100, 34 )
+								"minimumSize": new java.awt.Dimension( 100, 0 )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"gridY": 3
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label6"
+								"text": "°"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 5
+								"gridY": 3
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dmLonMinField"
+								"model": new javax.swing.SpinnerNumberModel( 0.0, 0.0, 60.0, 1.0 )
+								"maximumSize": new java.awt.Dimension( 100, 34 )
+								"minimumSize": new java.awt.Dimension( 100, 0 )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 7
+								"gridY": 3
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label8"
+								"text": "'"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 9
+								"gridY": 3
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+							} )
+						}, new FormLayoutConstraints( null ) {
+							"title": "Deg/Min"
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+							"$columnSpecs": "40dlu, labelcompgap, 40dlu, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, default"
+							"$rowSpecs": "fill:default:grow, linegap, default"
+							"$columnGroupIds": "0, 0, 1, 0, 2, 0, 1, 0, 2, 0, 1, 0, 2"
+						} ) {
+							name: "degMinSecPanel"
+							"border": #Borders$EmptyBorder0
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "dmLatLabel2"
+								"text": "Latitude:"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dmsLatDegField"
+								"model": new javax.swing.SpinnerNumberModel( 0, -90, 90, 1 )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label9"
+								"text": "°"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 5
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dmsLatMinField"
+								"model": new javax.swing.SpinnerNumberModel( 0, 0, 60, 1 )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 7
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label10"
+								"text": "'"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 9
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dmsLatSecField"
+								"model": new javax.swing.SpinnerNumberModel( 0.0, 0.0, 60.0, 1.0 )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 11
+								"gridY": 1
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label13"
+								"text": "\""
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 13
+								"gridY": 1
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "dmLonLabel2"
+								"text": "Longitude:"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 3
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dmsLonDegField"
+								"model": new javax.swing.SpinnerNumberModel( 0, -180, 180, 1 )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"gridY": 3
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label11"
+								"text": "°"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 5
+								"gridY": 3
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dmsLonMinField"
+								"model": new javax.swing.SpinnerNumberModel( 0, 0, 60, 1 )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 7
+								"gridY": 3
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label12"
+								"text": "'"
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 9
+								"gridY": 3
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+								name: "dmsLonSecField"
+								"model": new javax.swing.SpinnerNumberModel( 0.0, 0.0, 60.0, 1.0 )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": false
+								}
+								addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "degMinSecChanged", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 11
+								"gridY": 3
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "label14"
+								"text": "\""
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 13
+								"gridY": 3
+								"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+								"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+							} )
+						}, new FormLayoutConstraints( null ) {
+							"title": "Deg/Min/Sec"
 						} )
 					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "40dlu, labelcompgap, 50dlu, labelcompgap, default, labelcompgap, default:grow"
+						"$rowSpecs": "default"
+					} ) {
+						name: "elevationPanel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+						}
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "elevationLabel"
+							"text": "Elevation:"
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 1
+							"gridY": 1
+						} )
+						add( new FormComponent( "gov.takx.commons.swing.JSpinnerExt" ) {
+							name: "elevationField"
+							"model": new javax.swing.SpinnerNumberModel {
+								stepSize: 1.0
+								value: 0.0
+							}
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+							addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "elevationChanged", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 1
+							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "label16"
+							"text": "°"
+							"visible": false
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"vAlign": sfield com.jgoodies.forms.layout.CellConstraints TOP
+							"gridX": 5
+						} )
+						add( new FormComponent( "gov.takx.platform.ui.units.AltitudeUnitComboBox" ) {
+							name: "elevationUnitField"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+							addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "elevationUnitFieldChanged", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 7
+							"gridY": 1
+							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 3
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
 				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 1
-					"gridY": 3
 					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 				} )
-			}, new FormLayoutConstraints( class java.lang.String ) {
-				"value": "Center"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 490, 365 )
+			"size": new java.awt.Dimension( 465, 270 )
 		} )
 		add( new FormComponent( "org.jdesktop.swingx.JXButton" ) {
 			name: "copyButton"

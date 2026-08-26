@@ -16,13 +16,11 @@ import gov.takx.api.persist.IPersistableState;
 import gov.takx.api.persist.IPluginStatePersist;
 import gov.takx.api.ping.IGeoPingService;
 import gov.takx.api.platform.ICoreExecutorService;
-import gov.takx.api.platform.IExperimentalServices;
 import gov.takx.api.plugin.IPluginDelegate;
 import gov.takx.api.plugin.PluginCategory;
 import gov.takx.api.processmanager.IProcessManager;
 import gov.takx.api.project.IProjectAssistant;
 import gov.takx.api.project.IProjectManager;
-import gov.takx.api.propertymanager.ISystemPropertyManager;
 import gov.takx.api.registry.IPluginInspector;
 import gov.takx.api.tasks.ITaskManager;
 import gov.takx.api.tasks.ITaskRunnable;
@@ -120,12 +118,6 @@ public abstract class APluginDelegate extends InjectableContainerSupport impleme
     }
 
     @Override
-    public ISystemPropertyManager getSystemPropertyManager()
-    {
-        return getBean(ISystemPropertyManager.class);
-    }
-
-    @Override
     public IPluginInspector getPluginInspector()
     {
         return getBean(PluginInspectorManager.class).getPluginInspector();
@@ -201,12 +193,6 @@ public abstract class APluginDelegate extends InjectableContainerSupport impleme
     public String getProgramDataDirectory()
     {
         return getBean(ProgramEnvironment.class).getProgramRoot();
-    }
-
-    @Override
-    public IExperimentalServices getExperimentalServices()
-    {
-        return getBean(IExperimentalServices.class);
     }
 
     @Override

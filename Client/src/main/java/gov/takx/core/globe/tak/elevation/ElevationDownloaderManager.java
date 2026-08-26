@@ -158,7 +158,7 @@ public class ElevationDownloaderManager implements MapRenderer.OnCameraChangedLi
      * @return the {@link File} that points to where downloaded DTED files are saved
      * @since 5.2
      */
-    File getDtedDir()
+    public File getDtedDir()
     {
         return dtedDir;
     }
