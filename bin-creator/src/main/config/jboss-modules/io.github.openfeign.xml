@@ -1,0 +1,21 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="io.github.openfeign">
+        <match>
+            <includes>
+                <include>
+                    <groupId>io.github.openfeign</groupId>
+                </include>
+            </includes>
+        </match>
+
+        <apply-to-module>
+            <!-- Feign can use any JSON backend, so we must declare which one we use -->
+            <dependencies>
+                <module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
+                <module name="com.fasterxml.jackson.core.jackson-annotations"/>
+                <module name="com.fasterxml.jackson.core.jackson-core"/>
+                <module name="com.fasterxml.jackson.core.jackson-databind"/>
+            </dependencies>
+        </apply-to-module>
+    </module>
+</modules>

@@ -1,0 +1,78 @@
+// Dependencies for the Client module.  This file is included from that sub-project and the bin-creator
+// script.  Further, this script is published for use in creating the TAKX base installer.
+
+// A note on 'api' vs. 'implementation' here: No project (other than our own tests) should have a dependency on
+// 'client', so the choice of 'api' vs. 'implementation' is simply for avoiding redundant dependency declarations in
+// the test sub-projects.
+
+dependencies {
+    api "org.jboss.modules:jboss-modules:$jbossModulesVersion"
+    api "com.fazecast:jSerialComm:$jSerialCommVersion"
+    api "com.formdev:flatlaf:$flatLafVersion"
+    // TODO KMB: Not sure if these are needed on client API
+    api "com.formdev:flatlaf-swingx:$flatLafVersion"
+    api "com.formdev:flatlaf-extras:$flatLafVersion"
+    api "com.vividsolutions:jts-core:$jtsVersion"
+    api "commons-net:commons-net:$commonsNetVersion"
+    api "org.apache.commons:commons-collections4:$commonsCollectionsVersion"
+    api "org.hsqldb:hsqldb:$hsqldbVersion"
+    api "org.jboss:jboss-vfs:$jbossVfsVersion"
+
+    implementation "org.jogamp.jogl:jogl-all:$joglVersion"
+    implementation "org.jogamp.gluegen:gluegen-rt:$joglVersion"
+    implementation "org.bytedeco:ffmpeg:$ffmpegVersion"
+    implementation "org.jfree:jfreechart:$jfreeVersion"
+
+    implementation "org.mapsforge:mapsforge-core:$mapsforgeVersion"
+    implementation "org.mapsforge:mapsforge-map:$mapsforgeVersion"
+    implementation "org.mapsforge:mapsforge-map-reader:$mapsforgeVersion"
+    implementation "org.mapsforge:mapsforge-themes:$mapsforgeVersion"
+    implementation("org.mapsforge:mapsforge-map-awt:$mapsforgeVersion") {
+        exclude module: "ant"
+    }
+
+    api "org.netbeans:wizard:$wizardVersion"
+
+    implementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
+    runtimeOnly "org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion"
+
+    api "net.sf.opencsv:opencsv:$opencsvVersion"
+    implementation "io.github.openfeign:feign-jackson:$feignVersion"
+    implementation "io.github.openfeign:feign-java11:$feignVersion"
+
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
+    implementation "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+
+    implementation "com.drewnoakes:metadata-extractor:$metadataExtractorVersion"
+    api "org.greenrobot:eventbus-java:$eventbusVersion"
+
+    implementation "org.dockingframes:docking-frames-common:$dockingFramesVersion"
+    implementation "org.dockingframes:docking-frames-core:$dockingFramesVersion"
+
+    api "org.apache.commons:commons-lang3:$commonsLang3Version"
+    api "org.apache.commons:commons-text:$commonsTextVersion"
+    implementation "commons-io:commons-io:$commonsIoVersion"
+
+    implementation "com.jgoodies:forms:$jgoodiesFormsVersion"
+    implementation "net.java.dev:colorchooser:$colorchooserVersion"
+    implementation "org.swinglabs.swingx:swingx-all:$swingxVersion"
+    implementation "org.postgresql:postgresql:$postgresJdbcVersion"
+    implementation "com.github.lgooddatepicker:LGoodDatePicker:$lGoodDatePickerVersion"
+
+    runtimeOnly "org.hibernate.orm:hibernate-hikaricp:$hibernateCoreVersion"
+    implementation "org.hibernate.orm:hibernate-ant:$hibernateCoreVersion"
+
+    implementation "raven.toast:swing-toast-notifications:$swingToastVersion"
+    implementation "uk.m0nom:javaapiforkml:$javaApiForKmlVersion"
+
+    implementation("com.sun.xml.bind:jaxb-ri") {
+        version {
+            strictly jaxbVersion
+        }
+    }
+
+    api "org.jboss.weld.se:weld-se-core:$weldVersion"
+    implementation "org.jboss.weld:weld-core-impl:$weldVersion"
+}

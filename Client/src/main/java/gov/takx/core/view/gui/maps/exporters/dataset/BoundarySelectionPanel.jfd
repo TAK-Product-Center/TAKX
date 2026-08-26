@@ -1,0 +1,213 @@
+JFDML JFormDesigner: "5.2.5.0.333" Java: "1.8.0_112" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "labelcompgap, default:grow, labelcompgap, default:grow, labelcompgap, default:grow, labelcompgap"
+			"$rowSpecs": "linegap, default, linegap, default, pargap, default, narrowlinegap, default, linegap, default, linegap"
+		} ) {
+			name: "this"
+			"name": "panelBoundarySelection"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) {
+				"alignment": 0
+			} ) {
+				name: "shapeSelectionPanel"
+				add( new FormComponent( "javax.swing.JRadioButton" ) {
+					name: "rectangleRadioButton"
+					"text": "Rectangle"
+					"selected": true
+					"$buttonGroup": new FormReference( "shapeSelectionButtonGroup" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "rectangleRadioButtonActionPerformed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JRadioButton" ) {
+					name: "polygonRadioButton"
+					"text": "Polygon"
+					"$buttonGroup": new FormReference( "shapeSelectionButtonGroup" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "polygonRadioButtonActionPerformed", true ) )
+				} )
+				add( new FormComponent( "javax.swing.JRadioButton" ) {
+					name: "pathRadioButton"
+					"text": "Path"
+					"$buttonGroup": new FormReference( "shapeSelectionButtonGroup" )
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "pathRadioButtonActionPerformed", true ) )
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 2
+				"gridY": 2
+				"gridWidth": 5
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow, labelcompgap, default:grow"
+				"$rowSpecs": "default"
+			} ) {
+				name: "buttonPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "drawButton"
+					"text": "Draw"
+					auxiliary() {
+						"JavaCodeGenerator.variableName": "drawButton"
+						"JavaCodeGenerator.variableLocal": true
+					}
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "drawButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "clearButton"
+					"text": "Clear"
+					auxiliary() {
+						"JavaCodeGenerator.variableName": "clearButton"
+						"JavaCodeGenerator.variableLocal": true
+					}
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "clearButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 2
+				"gridY": 4
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label1"
+				"text": "Bounding Box Upper Left Corner"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 2
+				"gridY": 6
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label2"
+				"text": "Bounding Box Lower Right Corner"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 4
+				"gridY": 6
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label3"
+				"text": "Center Point"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 6
+				"gridY": 6
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "textFieldNorthWest"
+				"name": "upperLeft"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 2
+				"gridY": 8
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "textFieldSouthEast"
+				"name": "lowerRight"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 4
+				"gridY": 8
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "textFieldCenter"
+				"name": "center"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 6
+				"gridY": 8
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, unrelgap, default, labelcompgap, 15dlu:grow, unrelgap, default, labelcompgap, 15dlu:grow, unrelgap, default, labelcompgap, default:grow, unrelgap"
+				"$rowSpecs": "bottom:default"
+			} ) {
+				name: "boundaryDataPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label4"
+					"text": "Box Dimensions:"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label5"
+					"text": "Width:"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "widthValueLabel"
+					"text": "0.00"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label7"
+					"text": "Height:"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "heightValueLabel"
+					"text": "0.00"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label9"
+					"text": "Area:"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 11
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "computedAreaLabel"
+					"text": "0.00"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 13
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 2
+				"gridY": 10
+				"gridWidth": 5
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 580, 195 )
+		} )
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "shapeSelectionButtonGroup"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 305 )
+		} )
+	}
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="11" to="12">
+    <add refXpath="node[@name='Notifications']" where="after">
+        <!-- Configuration for the Playback subsystem -->
+        <node name="Playback">
+            <map>
+                <!-- When true, instead of stopping at the currently displayed end of the timeline, the timeline is scrolled
+                     and playback continues. When false, playback stops at the timeline end.-->
+                <entry key="autoScrollAtEnd" value="false"/>
+                <!-- When true, the 'live' icon will be displayed when in playback mode. Otherwise, the live icon will not be shown. -->
+                <entry key="showLiveMarkers" value="true"/>
+            </map>
+        </node>
+    </add>
+</migration>

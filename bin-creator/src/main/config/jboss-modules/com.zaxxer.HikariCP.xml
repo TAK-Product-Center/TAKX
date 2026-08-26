@@ -1,0 +1,18 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="com.zaxxer.HikariCP">
+        <match>
+            <includes>
+                <include>
+                    <groupId>com.zaxxer</groupId>
+                </include>
+            </includes>
+        </match>
+
+        <apply-to-module>
+            <dependencies>
+                <module name="org.postgresql" export="true"/>
+                <module name="org.hsqldb" export="true"/>
+            </dependencies>
+        </apply-to-module>
+    </module>
+</modules>

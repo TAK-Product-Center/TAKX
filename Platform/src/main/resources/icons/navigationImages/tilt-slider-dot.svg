@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="83.762711"
+        height="62.762711"
+        viewBox="0 0 83.762711 62.762711"
+        version="1.1"
+        id="tilt-slider-dot">
+    <title
+            id="title4">Tilt-Slider-Dot
+    </title>
+    <g
+            id="g832"
+            transform="rotate(90,181.32403,146.70539)">
+        <path
+                style="fill:#2d2d2d;fill-opacity:1;fill-rule:evenodd;stroke:#2d2d2d;stroke-width:1.79426491;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                id="background"
+                d="m 90.509232,295.79139 c 0,13.53599 -10.973244,24.50924 -24.509232,24.50924 -13.535989,0 -24.509231,-10.97311 -24.509231,-24.5091 l -10e-7,-19.28695 c 0,-13.53599 10.973243,-24.5091 24.509232,-24.5091 13.535988,0 24.509232,10.97331 24.509232,24.50929 z"/>
+        <path
+                style="fill:#2d2d2d;fill-opacity:0;fill-rule:evenodd;stroke:#ffffff;stroke-width:2.31900001;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                id="circle"
+                d="m 87.431787,295.78018 c 0,14.13064 -9.595414,21.33653 -21.431787,21.33653 -11.836374,0 -21.431786,-7.20588 -21.431786,-21.33653 l -10e-7,-19.26425 c 0,-14.13064 9.595413,-21.33652 21.431787,-21.33652 11.836373,0 21.431787,7.20588 21.431787,21.33652 z"/>
+    </g>
+</svg>

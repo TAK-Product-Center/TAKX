@@ -1,0 +1,11 @@
+// Postgres dependency mapped by OS Family
+//
+// Note: these versions will not necessarily align due to availability of pre-built libraries on each platform
+
+ext {
+    postgresVersions = [
+            'windows': [group: 'postgresql', name: "postgresql-windows", version: '15.5', ext: 'zip'],
+            'linux'  : [group: 'postgresql', name: "postgresql-linux", version: '15.5', ext: 'tgz'],
+            'macosx' : [group: 'postgresql', name: "postgresql-macosx", version: '15.5', ext: 'zip'],
+    ]
+}

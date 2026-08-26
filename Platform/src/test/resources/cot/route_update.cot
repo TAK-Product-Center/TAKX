@@ -1,0 +1,16 @@
+<?xml version='1.0' standalone='yes'?>
+<event how="h-e" stale="2021-07-04T14:27:26.00Z" start="2021-06-04T14:27:26.00Z" time="2021-06-04T14:27:26.00Z"
+       type="b-m-r" uid="a05a0a32-fa3c-4c1b-a746-92e0ec37de4b" version="2.0">
+    <detail>
+        <_flow-tags_ debug="2021-06-04T14:29:00.00Z"/>
+        <contact callsign="Route 1 Updated"/>
+        <link callsign="Route 1 TGT" point="34,-88" type="b-m-p-w" uid="baa78d0e-85d0-4831-8dc3-6adeeb6987af"/>
+        <link point="36,-86" type="b-m-p-c" uid="c09e3a07-c416-4364-96fd-15e8a4dd5912"/>
+        <link point="35,-86" type="b-m-p-c" uid="5bce9e49-ba59-4af9-a242-c1f7a983d123"/>
+        <link callsign="New WP" point="35,-85" type="b-m-p-w" uid="90bf3d63-722b-4867-b468-5bf119916042"/>
+        <link callsign="Home" point="34,-85" type="b-m-p-w" uid="2dbe9e49-ca89-44f8-a242-d157a983d033"/>
+        <link_attr color="-16711936" direction="Infil" method="Driving" order="Ascending Check Points"
+                   prefix="ABC" routetype="Primary" stroke="2.0"/>
+    </detail>
+    <point ce="9999999." hae="0." lat="0." le="9999999." lon="0."/>
+</event>

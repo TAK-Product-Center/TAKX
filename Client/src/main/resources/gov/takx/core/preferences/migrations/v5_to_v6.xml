@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="5" to="6">
+    <add refXpath="node[@name='program']/map/entry[@key='defaultWMSOfflineMode']" where="before">
+        <!-- This entry controls whether TAKX treats the network as "closed", meaning it will not have
+             access to the broader internet.  If "true", then no attempts to contact tak.gov (for elevation
+             data or layer definitions) will be made and all the default system-managed imagery layers
+             will be disabled. It will be up to the user, or the installer, to define any needed imagery
+             and elevation data sources. -->
+        <entry key="closedNetwork" value="false"/>
+    </add>
+</migration>

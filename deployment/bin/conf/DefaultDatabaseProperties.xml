@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
+<preferences EXTERNAL_XML_VERSION="1.0">
+    <root type="user">
+        <map/>
+        <node name="rx">
+            <map/>
+            <node name="database">
+                <map/>
+
+                <!--
+                =========================================================================
+                PostgreSQL configuration
+                =========================================================================
+                -->
+                <node name="postgres">
+                    <map/>
+                    <node name="configuration">
+                        <map>
+                            <!-- Base port for server, the application instance number is added to this. -->
+                            <entry key="basePort" value="5433"/>
+                        </map>
+                    </node>
+                </node>
+
+                <!--
+                =========================================================================
+                HSQLDB configuration
+                =========================================================================
+                -->
+                <node name="hsqldb">
+                    <map/>
+                    <node name="configuration">
+                        <map>
+                            <entry key="coreStorage" value="file"/>
+                            <entry key="testStorage" value="mem"/>
+                            <entry key="hsqldb.sqllog" value="0"/>
+                            <entry key="hsqldb.applog" value="0"/>
+                            <entry key="hsqldb.reconfig_logging" value="false"/>
+                        </map>
+                    </node>
+                </node>
+            </node>
+        </node>
+    </root>
+</preferences>

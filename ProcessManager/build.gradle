@@ -1,0 +1,9 @@
+description = 'Process Manager'
+
+ext {
+    producesLoadJar = true // Causes jar copy task to be configured
+}
+
+dependencies {
+    implementation "org.slf4j:slf4j-api:$slf4jApiVersion"
+}

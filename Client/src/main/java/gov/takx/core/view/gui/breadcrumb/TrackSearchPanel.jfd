@@ -1,0 +1,210 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, linegap, default, linegap, default, linegap, default, linegap, default, unrelgap, default, linegap, default, linegap, default, linegap, fill:default:grow"
+		} ) {
+			name: "this"
+			"border": sfield com.jgoodies.forms.factories.Borders DLU4_BORDER
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "titleLabel"
+				"text": "Track Search"
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 4, false )
+				"horizontalAlignment": 0
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default:grow"
+				"$rowSpecs": "default"
+			} ) {
+				name: "markerSelectionPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "markerLabel"
+					"text": "Marker"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "markerComboBox"
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "Marker"
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default:grow, labelcompgap, default"
+				"$rowSpecs": "default, default"
+			} ) {
+				name: "querySliderPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "startDateLabel"
+					"text": "Start"
+					"horizontalAlignment": 0
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "endDateLabel"
+					"text": "End"
+					"horizontalAlignment": 0
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+				} )
+				add( new FormComponent( "gov.takx.core.view.gui.breadcrumb.TrackDatePanel" ) {
+					name: "startDatePanel"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 2
+				} )
+				add( new FormComponent( "gov.takx.core.view.gui.components.RangedSlider" ) {
+					name: "slider"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 2
+				} )
+				add( new FormComponent( "gov.takx.core.view.gui.breadcrumb.TrackDatePanel" ) {
+					name: "endDatePanel"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 2
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default:grow"
+				"$rowSpecs": "default"
+			} ) {
+				name: "searchServerPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "serverCheckbox"
+					"text": "Search server"
+					"enabled": false
+					"toolTipText": "Enable server search (if a server is available)"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "serverComboBox"
+					"enabled": false
+					"toolTipText": "Select a server to search"
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "ITakServerConnection"
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 7
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow, labelcompgap, default"
+				"$rowSpecs": "default"
+			} ) {
+				name: "searchAndProgressPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JProgressBar" ) {
+					name: "progressBar"
+					"stringPainted": true
+					"string": "Searching..."
+					"indeterminate": true
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "searchButton"
+					"text": "Search"
+					"enabled": false
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 9
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "resultsLabel"
+				"text": "Search Results"
+				"horizontalAlignment": 0
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 11
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default, labelcompgap, default, labelcompgap, default"
+				"$rowSpecs": "default"
+			} ) {
+				name: "searchInfoPanel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "selectedMarkerLabel"
+					"text": "marker"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "fromDateLabel"
+					"text": "start"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "toLabel"
+					"text": "to"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "toDateLabel"
+					"text": "end"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 13
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+			} )
+			add( new FormComponent( "gov.takx.core.view.gui.breadcrumb.TrackListAndDetailsPanel" ) {
+				name: "trackListAndDetailsPanel"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 17
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 680 )
+		} )
+	}
+}

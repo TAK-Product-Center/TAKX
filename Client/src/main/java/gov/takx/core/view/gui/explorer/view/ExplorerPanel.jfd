@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="21.0.9" class="java.beans.XMLDecoder">
+ <object class="com.jformdesigner.model.FormModel">
+  <void property="contentType">
+   <string>form/swing</string>
+  </void>
+  <void property="root">
+   <object class="com.jformdesigner.model.FormRoot" id="FormRoot0">
+    <void method="auxiliary">
+     <void method="setProperty">
+      <string>JavaCodeGenerator.defaultVariableModifiers</string>
+      <int>4</int>
+     </void>
+    </void>
+    <void method="add">
+     <object class="com.jformdesigner.model.FormContainer">
+      <string>javax.swing.JPanel</string>
+      <object class="com.jformdesigner.model.FormLayoutManager">
+       <class>java.awt.BorderLayout</class>
+      </object>
+      <void property="name">
+       <string>this</string>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormContainer">
+        <string>javax.swing.JPanel</string>
+        <object class="com.jformdesigner.model.FormLayoutManager">
+         <class>com.jgoodies.forms.layout.FormLayout</class>
+         <void method="setProperty">
+          <string>$columnSpecs</string>
+          <string>default:grow</string>
+         </void>
+         <void method="setProperty">
+          <string>$rowSpecs</string>
+          <string>default:grow</string>
+         </void>
+        </object>
+        <void property="name">
+         <string>mainPanel</string>
+        </void>
+        <void method="add">
+         <object class="com.jformdesigner.model.FormContainer">
+          <string>javax.swing.JPanel</string>
+          <object class="com.jformdesigner.model.FormLayoutManager">
+           <class>com.jgoodies.forms.layout.FormLayout</class>
+           <void method="setProperty">
+            <string>$columnSpecs</string>
+            <string>default:grow</string>
+           </void>
+           <void method="setProperty">
+            <string>$rowSpecs</string>
+            <string>fill:default:grow</string>
+           </void>
+          </object>
+          <void property="name">
+           <string>explorablePanel</string>
+          </void>
+          <void method="add">
+           <object class="com.jformdesigner.model.FormContainer">
+            <string>javax.swing.JSplitPane</string>
+            <object class="com.jformdesigner.model.FormLayoutManager">
+             <class>javax.swing.JSplitPane</class>
+            </object>
+            <void method="setProperty">
+             <string>resizeWeight</string>
+             <double>0.6</double>
+            </void>
+            <void property="name">
+             <string>splitPane</string>
+            </void>
+            <void method="add">
+             <object class="com.jformdesigner.model.FormContainer">
+              <string>javax.swing.JScrollPane</string>
+              <object class="com.jformdesigner.model.FormLayoutManager">
+               <class>javax.swing.JScrollPane</class>
+              </object>
+              <void property="name">
+               <string>treeScrollPane</string>
+              </void>
+              <void method="add">
+               <object class="com.jformdesigner.model.FormComponent" id="FormComponent0">
+                <string>gov.takx.commons.swing.entity.EntityTreeTable</string>
+                <void method="setProperty">
+                 <string>dropMode</string>
+                 <object class="java.lang.Enum" id="DropMode0" method="valueOf">
+                  <class>javax.swing.DropMode</class>
+                  <string>ON_OR_INSERT</string>
+                 </object>
+                </void>
+                <void method="setProperty">
+                 <string>showsRootHandles</string>
+                 <boolean>true</boolean>
+                </void>
+                <void method="setProperty">
+                 <string>rootVisible</string>
+                 <boolean>true</boolean>
+                </void>
+                <void property="name">
+                 <string>explorerTree</string>
+                </void>
+                <void method="auxiliary">
+                 <void method="setProperty">
+                  <string>JavaCodeGenerator.variableGetter</string>
+                  <boolean>true</boolean>
+                 </void>
+                 <void method="setProperty">
+                  <string>JavaCodeGenerator.typeParameters</string>
+                  <string>IExplorable</string>
+                 </void>
+                </void>
+               </object>
+              </void>
+             </object>
+             <object class="com.jformdesigner.model.FormLayoutConstraints">
+              <class>java.lang.String</class>
+              <void method="setProperty">
+               <string>value</string>
+               <string>left</string>
+              </void>
+             </object>
+            </void>
+            <void method="add">
+             <object class="com.jformdesigner.model.FormContainer">
+              <string>javax.swing.JScrollPane</string>
+              <object class="com.jformdesigner.model.FormLayoutManager">
+               <class>javax.swing.JScrollPane</class>
+              </object>
+              <void property="name">
+               <string>tableScrollPane</string>
+              </void>
+              <void method="add">
+               <object class="com.jformdesigner.model.FormComponent" id="FormComponent1">
+                <string>gov.takx.commons.swing.entity.common.CommonEntityTable</string>
+                <void method="setProperty">
+                 <string>dropMode</string>
+                 <object idref="DropMode0"/>
+                </void>
+                <void method="setProperty">
+                 <string>rowSelectionAllowed</string>
+                 <boolean>false</boolean>
+                </void>
+                <void property="name">
+                 <string>explorerTable</string>
+                </void>
+                <void method="auxiliary">
+                 <void method="setProperty">
+                  <string>JavaCodeGenerator.variableGetter</string>
+                  <boolean>true</boolean>
+                 </void>
+                 <void method="setProperty">
+                  <string>JavaCodeGenerator.typeParameters</string>
+                  <string>IExplorable</string>
+                 </void>
+                </void>
+               </object>
+              </void>
+             </object>
+             <object class="com.jformdesigner.model.FormLayoutConstraints">
+              <class>java.lang.String</class>
+              <void method="setProperty">
+               <string>value</string>
+               <string>right</string>
+              </void>
+             </object>
+            </void>
+           </object>
+           <object class="com.jformdesigner.model.FormLayoutConstraints">
+            <class>com.jgoodies.forms.layout.CellConstraints</class>
+            <void method="setProperty">
+             <string>gridX</string>
+             <int>1</int>
+            </void>
+            <void method="setProperty">
+             <string>gridY</string>
+             <int>1</int>
+            </void>
+           </object>
+          </void>
+         </object>
+         <object class="com.jformdesigner.model.FormLayoutConstraints">
+          <class>com.jgoodies.forms.layout.CellConstraints</class>
+          <void method="setProperty">
+           <string>hAlign</string>
+           <object class="com.jgoodies.forms.layout.CellConstraints" field="FILL"/>
+          </void>
+          <void method="setProperty">
+           <string>vAlign</string>
+           <object class="com.jgoodies.forms.layout.CellConstraints" field="FILL"/>
+          </void>
+         </object>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>java.lang.String</class>
+        <void method="setProperty">
+         <string>value</string>
+         <string>Center</string>
+        </void>
+       </object>
+      </void>
+     </object>
+     <object class="com.jformdesigner.model.FormLayoutConstraints">
+      <null/>
+      <void method="setProperty">
+       <string>location</string>
+       <object class="java.awt.Point">
+        <int>0</int>
+        <int>0</int>
+       </object>
+      </void>
+      <void method="setProperty">
+       <string>size</string>
+       <object class="java.awt.Dimension">
+        <int>420</int>
+        <int>555</int>
+       </object>
+      </void>
+     </object>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>

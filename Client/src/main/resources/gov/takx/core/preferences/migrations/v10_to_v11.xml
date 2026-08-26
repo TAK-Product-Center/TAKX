@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="10" to="11">
+    <add refXpath="node[@name='program']/map/entry[@key='systemMessageShowExceptionStack']" where="after">
+        <!-- Set true to show the System Messages Notification (counts) panel in the bottom toolbar, false to hide it -->
+        <entry key="systemMessageNotificationsVisible" value="true"/>
+    </add>
+</migration>

@@ -1,0 +1,178 @@
+// Tasks to build out the 'bin' directory with needed libraries, modules, Postgres, etc.
+description = 'bin creator tasks'
+
+ext {
+    publishArtifactsToArtifactory = true // We have artifacts that should go to Artifactory on a release build
+
+    nativeDir = new File(deploymentBinDir, 'native')
+    deploymentModulesDir = new File(deploymentBinDir, 'modules')
+
+    // Configure inputs to binCreator.gradle script
+    modulesConfigDir = 'src/main/config/jboss-modules'
+    customModulesSourceDir = 'src/main/resources/modules' // Our custom-defined modules
+}
+
+jar.enabled = false // No jar file, we create a zip
+
+// We need to publish enough of our configuration so that the installer can reproduce the "bin" directory contents.
+// So, bundle the gradle scripts, custom module definitions, and module configurations we need so it can be published.
+
+task assembleBinCreator(type: Tar, group: 'build') {
+    description = "Assemble $archiveFileName into ${relativePath(destinationDirectory)}"
+    compression = Compression.GZIP
+
+    from(rootProject.file('gradle')) {
+        include 'versions.gradle'
+        include 'postgresVersions.gradle'
+        include 'resolutionStrategy.gradle'
+        include 'binCreator.gradle'
+        include 'platformDependencies.gradle'
+        include 'clientDependencies.gradle'
+    }
+    from sourceSets.main.resources.matching { include 'modules/**' } // Custom modules definitions
+    from(modulesConfigDir) { into 'jboss-modules' } // Module configurations
+}
+
+tasks.assemble.configure {
+    dependsOn assembleBinCreator, 'createBin'
+}
+
+publishing {
+    publications {
+        binCreatorDistro(MavenPublication) {
+            artifact assembleBinCreator
+        }
+    }
+}
+
+//==============================================================================
+// This next script is responsible for generating all the artifacts that need to end up in deployment/bin
+// in order to actually run from a development environment.  It needs two input variables:
+//
+//    deploymentBinDir - the location of the 'bin' dir being constructed (defined in the root project)
+//    customModulesSourceDir - the location of the custom modules 'source' directory (defined above)
+
+apply from: rootProject.file('gradle/binCreator.gradle')
+
+// Clean up all the artifacts we put in "bin"
+clean {
+    delete deploymentLibDir
+    delete deploymentModulesDir
+    delete nativeDir
+}
+
+//==============================================================================
+// Everything below here is for extracting the proper Postgres binaries into bin
+
+ext {
+    // Load in the Postgres versions per platform
+    apply from: rootProject.file('gradle/postgresVersions.gradle')
+
+    postgresDependency = postgresVersions[osFamily] as Map
+    postgresVersion = postgresDependency['version']
+
+    if (!postgresVersion) throw new GradleException("Failed to obtain Postgres version for OS '${osFamily}'" as String)
+
+    postgresFamilyDir = new File(deploymentBinDir, 'programs/' + osFamily)
+}
+
+configurations.create('postgres') { transitive = false }
+dependencies.add('postgres', "${postgresDependency['group']}:${postgresDependency['name']}:${postgresDependency['version']}@${postgresDependency['ext']}")
+
+/**
+ * Task to extract the contents of the appropriate postgres bundle into bin/programs.
+ * The destination is 'deployment/bin/programs/<OS family>/postgresql/<version>'.
+ */
+task extractPostgres(type: Copy) {
+    dependsOn configurations.postgres
+
+    def postgresBundleFile = configurations.postgres.singleFile
+    def postgresDestDir = rootProject.file("$postgresFamilyDir/postgresql/$postgresVersion")
+
+    // Zip files on Windows and Mac, Tar files on Linux
+    from os.isLinux() ? tarTree(postgresBundleFile) : zipTree(postgresBundleFile)
+    into postgresDestDir
+
+    // The zip archive uses a top-level directory of 'pgsql' - strip that off
+    eachFile { FileCopyDetails fcp ->
+        fcp.relativePath = new RelativePath(!fcp.isDirectory(), fcp.relativePath.segments[1..-1].toArray(new String[0]))
+    }
+
+    includeEmptyDirs = false
+
+    doFirst {
+        deletePostgresFiles()
+
+        postgresDestDir.mkdirs()
+        logger.lifecycle("Extracting ${postgresBundleFile.getName()} into $postgresDestDir")
+    }
+}
+
+/**
+ * Untar/unzip the postgres bundle on linux/Mac, as a workaround for the Gradle bug documented at
+ * https://github.com/gradle/gradle/issues/3982
+ *
+ * TODO: remove this task when Gradle bug is fixed (right, it's been 8 years since it was reported, and still no fix).
+ */
+task extractPostgresLinuxOrMac(type: Exec) {
+    dependsOn configurations.postgres
+
+    def postgresBundleFile = configurations.postgres.singleFile
+    def postgresDestDir = rootProject.file("$postgresFamilyDir/postgresql/$postgresVersion")
+
+    // Ensure that this operation is properly incremental
+    inputs.file postgresBundleFile
+    outputs.dir postgresDestDir
+
+    workingDir postgresDestDir
+
+    // Run tar command, stripping the unwanted root-level 'pgsql'
+    if (os.isLinux()) {
+        executable 'tar'
+        args(['xzf', postgresBundleFile, '--strip=1'])
+    } else {
+        // Run a one-line shell script to unzip postgres, stripping the unwanted root-level 'pgsql'
+        String unzipCommandLine = "unzip -q $postgresBundleFile && " +
+                "rm -rf $postgresDestDir/__MACOSX/ && " +
+                "mv $postgresDestDir/pgsql/* $postgresDestDir && " +
+                "rm -rf $postgresDestDir/pgsql"
+
+        commandLine 'sh', '-c', unzipCommandLine
+    }
+
+    doFirst {
+        deletePostgresFiles()
+
+        postgresDestDir.mkdirs()
+        logger.lifecycle("Extracting ${postgresBundleFile.getName()} into $postgresDestDir")
+    }
+}
+
+// TODO: remove the OS check and use extractPostgres, once the Gradle tarTree bug is fixed
+//       (see https://github.com/gradle/gradle/issues/1321)
+if (os.isLinux() || os.isMacOsX()) {
+    tasks.assemble.dependsOn 'extractPostgresLinuxOrMac'
+} else {
+    tasks.assemble.dependsOn 'extractPostgres'
+}
+
+/**
+ * Delete any existing PG directories to avoid problems when the PG plugin doesn't choose the
+ * correct one as the "newest" installation.  Also delete any zip'ed pgdata archives.
+ *
+ * This was only extracted into a method to avoid a bunch of duplicate code when the
+ * Linux-specific postgres extract task was added.  This code can be merged back into the
+ * doFirst/doLast sections of the extractPostgres task when the tar extract bug is fixed in gradle.
+ */
+void deletePostgresFiles() {
+
+    // Sadly, the gradle 'delete' method won't delete the
+    // empty parent directories when matched by wildcard, so downshift to groovy.
+
+    if (postgresFamilyDir.exists()) {
+        postgresFamilyDir.eachDirMatch(~/postgresql.*/) { dir ->
+            logger.lifecycle "Deleting: $dir"
+            delete dir
+        }
+    }
+}

@@ -1,0 +1,112 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"border": new javax.swing.border.EmptyBorder( 4, 4, 0, 0 )
+			addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "mainPanelMouseClicked", true ) )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "panel1"
+				"border": new javax.swing.border.EmptyBorder( 4, 0, 0, 0 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JSeparator" ) {
+					name: "separator1"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "South"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "contentPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "mainPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "titleLabel"
+						"text": "Title"
+						"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 1, false )
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "mainPanelMouseClicked", true ) )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "North"
+					} )
+					add( new FormComponent( "javax.swing.JTextArea" ) {
+						name: "descriptionTextArea"
+						"text": "description"
+						"editable": false
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						"opaque": false
+						auxiliary() {
+							"JavaCodeGenerator.variableModifiers": 4
+						}
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "mainPanelMouseClicked", true ) )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "valueDisplayHolder"
+					"border": new javax.swing.border.EmptyBorder( 0, 0, 0, 4 )
+					"opaque": false
+					auxiliary() {
+						"JavaCodeGenerator.variableModifiers": 4
+					}
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "mainPanelMouseClicked", true ) )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "East"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow, labelcompgap, default, labelcompgap, default"
+					"$rowSpecs": "default, linegap, default"
+				} ) {
+					name: "editorPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableModifiers": 4
+					}
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+						name: "editorControlHolder"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+						"gridWidth": 5
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "okButton"
+						"text": "OK"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 3
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "cancelButton"
+						"text": "Cancel"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridY": 3
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 125 )
+		} )
+	}
+}

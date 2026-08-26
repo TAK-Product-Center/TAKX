@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Defines our standard appenders, Console and Roller -->
+
+<Appenders>
+    <Routing name="Console">
+        <Routes pattern="$${sys:LOG_BUILD}">
+            <Route ref="ConsoleDebug" key="DEBUG" />
+            <Route ref="ConsoleRelease" />
+        </Routes>
+    </Routing>
+    <Console name="ConsoleDebug" target="SYSTEM_OUT">
+        <PatternLayout pattern="${LOG_PATTERN}"/>
+    </Console>
+
+    <Console name="ConsoleRelease" target="SYSTEM_OUT">
+        <PatternLayout pattern="${LOG_PATTERN}"/>
+        <xi:include href="log4j-release-filters.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
+    </Console>
+
+    <RollingFile name="Roller" fileName="takx${sys:takx.instance.suffix}.log"
+                 filePattern="takx${sys:takx.instance.suffix}.log.%i">
+        <PatternLayout pattern="${LOG_PATTERN}"/>
+        <Policies>
+            <SizeBasedTriggeringPolicy size="5 MB"/>
+        </Policies>
+        <DefaultRolloverStrategy max="3"/>
+    </RollingFile>
+</Appenders>

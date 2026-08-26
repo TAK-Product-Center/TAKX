@@ -1,0 +1,106 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default, labelcompgap, default:grow"
+			"$rowSpecs": "default, linegap, default, linegap, default, linegap, default"
+		} ) {
+			name: "this"
+			"border": new javax.swing.border.CompoundBorder( new javax.swing.border.LineBorder( new com.jformdesigner.model.SwingColor( "Component.borderColor" ), 1, false ), new javax.swing.border.EmptyBorder( 10, 10, 10, 10 ) )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "previewLabel"
+				"text": "Preview"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "center:default:grow"
+				"$rowSpecs": "default:grow"
+			} ) {
+				name: "previewWrapper"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "previewDisplayLabel"
+					"border": new javax.swing.border.LineBorder( new com.jformdesigner.model.SwingColor( "Component.borderColor" ), 1, true )
+					auxiliary() {
+						"JavaCodeGenerator.postCreateCode": "Dimension previewDimensions = new Dimension(PREVIEW_SIZE, PREVIEW_SIZE);\npreviewDisplayLabel.setMinimumSize(previewDimensions);\npreviewDisplayLabel.setPreferredSize(previewDimensions);"
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 1
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "affiliationLabel"
+				"text": "Affiliation"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JComboBox" ) {
+				name: "affiliationComboBox"
+				auxiliary() {
+					"JavaCodeGenerator.typeParameters": "Affiliation"
+				}
+				addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "onStateChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "presenceLabel"
+				"text": "Presence"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JComboBox" ) {
+				name: "presenceComboBox"
+				auxiliary() {
+					"JavaCodeGenerator.typeParameters": "Presence"
+				}
+				addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "onStateChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "echelonLabel"
+				"text": "Echelon"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 7
+			} )
+			add( new FormComponent( "javax.swing.JComboBox" ) {
+				name: "echelonComboBox"
+				auxiliary() {
+					"JavaCodeGenerator.typeParameters": "Echelon"
+				}
+				addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "onStateChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 7
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 255 )
+		} )
+	}
+}

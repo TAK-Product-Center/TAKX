@@ -1,0 +1,11 @@
+<!-- Considered to be a digital-pointer "delete" because "start" and "stale" times are equal -->
+<event version="2.0" uid="ANDROID-d24e89057ef19bee.SPI1" type="b-m-p-s-p-i" time="2023-11-20T22:21:08.03Z"
+       start="2023-11-20T22:21:08.03Z" stale="2023-11-20T22:21:08.03Z" how="h-e" access="Undefined">
+    <point lat="39.7040716" lon="-104.8471382" hae="1663.849" ce="9999999" le="9999999"/>
+    <detail>
+        <hideLabel/>
+        <link uid="ANDROID-d24e89057ef19bee" type="a-f-G-U-C" relation="p-p"/>
+        <precisionlocation altsrc="DTED0"/>
+        <contact callsign="TESTCALLSIGN.DP1"/>
+    </detail>
+</event>

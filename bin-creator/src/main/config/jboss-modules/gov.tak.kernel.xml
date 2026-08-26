@@ -1,0 +1,20 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="gov.tak.kernel">
+        <match>
+            <includes>
+                <include>
+                    <groupId>gov.tak.*</groupId>
+                </include>
+            </includes>
+        </match>
+
+        <apply-to-module>
+            <dependencies>
+                <module name="jakarta.persistence.jakarta.persistence-api"/>
+                <module name="com.fasterxml.jackson.core.jackson-annotations"/>
+                <module name="com.fasterxml.jackson.core.jackson-core"/>
+                <module name="org.jogamp.jogl"/>
+            </dependencies>
+        </apply-to-module>
+    </module>
+</modules>

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
+<preferences EXTERNAL_XML_VERSION="1.0">
+    <root type="user">
+        <map/>
+        <node name="rx">
+            <map/>
+            <node name="project">
+                <map/>
+                <node name="ViewBookmarks">
+                    <map/>
+                    <!--<node name="Default">
+                        <map>
+                            <entry key="Description" value="Default"/>
+                            <entry key="Latitude" value="38.0"/>
+                            <entry key="Longitude" value="-105.0"/>
+                            <entry key="Elevation" value="0.0"/>
+                            <entry key="Heading" value="0.0"/>
+                            <entry key="Pitch" value="0.0"/>
+                            <entry key="Zoom" value="1.9134411E7"/>
+                        </map>
+                    </node>-->
+                </node>
+                <node name="ProjectLabels">
+                    <map/>
+                    <!--<node name="UpperCenterLabel">-->
+                    <!--<map>-->
+                    <!--<entry key="Text" value="Label Text1"/>-->
+                    <!--<entry key="Color" value="ffff00"/>-->
+                    <!--<entry key="Size" value="24"/>-->
+                    <!--</map>-->
+                    <!--</node>-->
+                    <!--<node name="LowerCenterLabel">-->
+                    <!--<map>-->
+                    <!--<entry key="Text" value="Label Text2"/>-->
+                    <!--<entry key="Color" value="ffff00"/>-->
+                    <!--<entry key="Size" value="24"/>-->
+                    <!--</map>-->
+                    <!--</node>-->
+                    <!--<node name="UpperRightLabel">-->
+                    <!--<map>-->
+                    <!--<entry key="Text" value="Label Text3"/>-->
+                    <!--<entry key="Color" value="ffff00"/>-->
+                    <!--<entry key="Size" value="24"/>-->
+                    <!--</map>-->
+                    <!--</node>-->
+                    <!--<node name="UpperLeftLabel">-->
+                    <!--<map>-->
+                    <!--<entry key="Text" value="Label Text4"/>-->
+                    <!--<entry key="Color" value="ffff00"/>-->
+                    <!--<entry key="Size" value="24"/>-->
+                    <!--</map>-->
+                    <!--</node>-->
+                    <!--<node name="LowerRightLabel">-->
+                    <!--<map>-->
+                    <!--<entry key="Text" value="Label Tex5t"/>-->
+                    <!--<entry key="Color" value="ffff00"/>-->
+                    <!--<entry key="Size" value="24"/>-->
+                    <!--</map>-->
+                    <!--</node>-->
+                    <!--<node name="LowerLeftLabel">-->
+                    <!--<map>-->
+                    <!--<entry key="Text" value="lower Left Label"/>-->
+                    <!--<entry key="Color" value="ffff00"/>-->
+                    <!--<entry key="Size" value="24"/>-->
+                    <!--</map>-->
+                    <!--</node>-->
+                </node>
+            </node>
+        </node>
+    </root>
+</preferences>

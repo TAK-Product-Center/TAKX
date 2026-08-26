@@ -1,0 +1,28 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.hibernate">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.hibernate.orm</groupId>
+                </include>
+                <include>
+                    <groupId>org.hibernate.common</groupId>
+                </include>
+            </includes>
+            <excludes>
+                <exclude>
+                    <groupId>org.hibernate.validator</groupId>
+                    <artifactId>hibernate-validator</artifactId>
+                </exclude>
+            </excludes>
+        </match>
+        <apply-to-module>
+            <dependencies>
+                <module name="com.fasterxml.jackson.datatype.jackson-datatype-jsr310"/>
+                <module name="com.fasterxml.jackson.core.jackson-annotations"/>
+                <module name="com.fasterxml.jackson.core.jackson-core"/>
+                <module name="com.fasterxml.jackson.core.jackson-databind"/>
+            </dependencies>
+        </apply-to-module>
+    </module>
+</modules>

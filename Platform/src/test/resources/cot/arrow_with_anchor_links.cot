@@ -1,0 +1,20 @@
+<event version="2.0" uid="36551a8c-f62b-4195-82d0-3578efeee4ee" type="u-rb-a" time="2021-10-21T15:59:35.97Z"
+       start="2021-10-21T15:59:35.97Z" stale="2021-10-22T15:59:35.97Z" how="h-e">
+    <point lat="36.3475771" lon="-114.3861669" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <contact callsign="Arrow 1"/>
+        <anchorUID value="startAnchor" key="marker"/>
+        <rangeUID value="rangeAnchor" key="marker"/>
+        <range value="115028.861951243"/>
+        <bearing value="94.821640958284"/>
+        <inclination value="0"/>
+        <rangeUnits value="1"/>
+        <bearingUnits value="0"/>
+        <northRef value="1"/>
+        <color value="-65536"/>
+        <strokeColor value="-65536"/>
+        <strokeWeight value="3.0"/>
+        <archive/>
+        <remarks/>
+    </detail>
+</event>

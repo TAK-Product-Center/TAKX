@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
+<preferences EXTERNAL_XML_VERSION="1.0">
+    <root type="user">
+        <map/>
+        <node name="rx">
+            <map>
+                <!-- Defines the schema version of our program properties. DO NOT MODIFY!! -->
+                <entry key="schemaVersion" value="1"/>
+            </map>
+            <node name="program">
+                <map>
+                    <!-- Enable the setting of a fetch size hint when querying for an RDM ResultSet.  Disable if
+                         running pgAudit with Postgres as the former has a catastrophic bug associated with the
+                         setFetchSize hint. -->
+                    <entry key="enableSetFetchSize" value="true"/>
+
+                    <!-- Email address to show in the error reporting dialog -->
+                    <entry key="supportEmail" value="takx@tak.gov"/>
+                </map>
+
+                <!-- The location provider to use.  The core provides 3 built-in providers:
+                     NoLocationProvider - always returns a null location
+                     FixedLocationProvider - always returns a specific configured location
+                     MapObjectTrackingLocationProvider - returns the location of a configured MapObject
+
+                     Plugins can also contribute location providers.
+                -->
+                <node name="locationProvider">
+                    <map>
+                        <entry key="selectedProvider" value="NoLocationProvider"/>
+
+                        <!-- If true, then the current location will be indicated with a place marker -->
+                        <entry key="showCurrentLocationMarker" value="true"/>
+                    </map>
+
+                    <node name="configurations">
+                        <map/>
+                    </node>
+                </node>
+            </node>
+        </node>
+    </root>
+</preferences>

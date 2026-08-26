@@ -1,0 +1,109 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "8dlu, labelcompgap, default:grow, labelcompgap, 24dlu"
+			"$rowSpecs": "fill:24dlu, default, linegap, default, linegap, default"
+		} ) {
+			name: "this"
+			"border": static com.jgoodies.forms.factories.Borders createEmptyBorder( "4dlu, 2dlu, 4dlu, 2dlu" )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "colorLabel"
+				"background": sfield java.awt.Color red
+				"opaque": true
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridHeight": 4
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "trackNameLabel"
+				"text": "text"
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 2, false )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "visibleButton"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 1
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "currentTrackLabel"
+				"text": "This is your current active track"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 2
+				"gridX": 3
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow, labelcompgap, 24dlu, labelcompgap, 24dlu, labelcompgap, 24dlu"
+				"$rowSpecs": "fill:24dlu"
+			} ) {
+				name: "detailsAndButtonsPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow, labelcompgap, default:grow"
+					"$rowSpecs": "default, narrowlinegap, default"
+					"$columnGroupIds": "1, 0, 1"
+				} ) {
+					name: "detailsPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "elapsedLabel"
+						"text": "elapsed"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "distanceLabel"
+						"text": "distance"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "durationLabel"
+						"text": "duration"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 3
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "detailsButton"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "exportButton"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "deleteButton"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 4
+				"gridWidth": 3
+				"gridX": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 450, 320 )
+		} )
+	}
+}

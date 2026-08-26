@@ -1,0 +1,49 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "fill:24dlu, fill:default:grow"
+		} ) {
+			name: "this"
+			"border": sfield com.jgoodies.forms.factories.Borders DLU2_BORDER
+			"name": "trackListPanel"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "24dlu, labelcompgap, default:grow"
+				"$rowSpecs": "fill:default:grow"
+			} ) {
+				name: "titlePanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "backButton"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "titleLabel"
+					"text": "text"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 2, false )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormComponent( "gov.takx.core.view.gui.breadcrumb.TrackListAndDetailsPanel" ) {
+				name: "trackListAndDetailsPanel"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 2
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 420 )
+		} )
+	}
+}

@@ -1,0 +1,14 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.bytedeco.javacpp">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.bytedeco</groupId>
+                </include>
+                <include>
+                    <groupId>org.bytedeco.javacpp-presets</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>

@@ -1,0 +1,25 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.jboss.weld">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.jboss.weld</groupId>
+                </include>
+                <include>
+                    <groupId>org.jboss.weld.*</groupId>
+                </include>
+            </includes>
+        </match>
+
+        <apply-to-module>
+            <dependencies>
+                <module name="log4j"/>
+                <module name="org.jboss.jandex"/>
+                <module name="jakarta.enterprise.jakarta.enterprise.cdi-api" export="true"/>
+                <module name="jakarta.inject.jakarta.inject-api" export="true"/>
+                <module name="jakarta.annotation.jakarta.annotation-api" export="true"/>
+                <module name='jakarta.interceptor.jakarta.interceptor-api' export="true"/>
+            </dependencies>
+        </apply-to-module>
+    </module>
+</modules>

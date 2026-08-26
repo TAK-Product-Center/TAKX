@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  ** Transformation to turn dfuse data into Raptor XML format.
+  **
+  ** Source schema: http://xml.p2s.com/dfuse_to_nightowl.xsd
+  ** Target schema:
+  **
+  ** Author: Parker Abercrombie
+  -->
+
+<stx:transform xmlns:stx="http://stx.sourceforge.net/2002/ns"
+               version="1.0"
+               exclude-result-prefixes="#all"
+               stxpath-default-namespace="http://xml.p2s.com/dfuse_to_nightowl"
+               output-method="xml">
+
+    <stx:template match="LocationUpdates">
+       <raptordata>
+
+          <mapObjectDefinition>
+             <family>dfuse</family>
+             <type>dfuse</type>
+             <version>1.0.0</version>
+             <dataStructure>
+                 <structType>generic</structType>
+                 <field name="datum" type="string"/>
+                 <field name="systemType" type="string"/>
+             </dataStructure>
+          </mapObjectDefinition>
+
+          <stx:process-children />
+       </raptordata>
+    </stx:template>
+
+    <stx:template match="NodeLocationUpdate">
+       <dataMessage>
+           <messageType>generic</messageType>
+           <mapObjectType>dfuse</mapObjectType>
+           <version>1.0.0</version>
+           <mapObjectId><stx:value-of select="@nodeId"/></mapObjectId>
+           <time><stx:value-of select="@timestamp"/></time>
+           <stx:process-children />
+       </dataMessage>
+    </stx:template>
+
+    <stx:template match="Location/LatLonLocation">
+       <lat><stx:value-of select="@latitude" /></lat>
+       <lng><stx:value-of select="@longitude" /></lng>
+
+        <stx:if test="@datum">
+            <field name="datum" type="string"><stx:value-of select="@datum"/></field>
+        </stx:if>
+    </stx:template>
+
+    <stx:template match="NodeLocationUpdate/Altitude/text()">
+          <elevation><stx:value-of select="." /></elevation>
+    </stx:template>
+
+<!--     <stx:template match="NodeType"> -->
+<!--         <field name="systemName" type="string"><stx:value-of select="@systemName"/></field> -->
+<!--     </stx:template> -->
+
+    <stx:template match="NodeType/text">
+        <field type="string" name="SystemType"><stx:value-of select="."/></field>
+    </stx:template>
+
+</stx:transform>

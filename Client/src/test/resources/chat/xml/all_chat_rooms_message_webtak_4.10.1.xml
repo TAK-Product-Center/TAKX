@@ -1,0 +1,14 @@
+<event version="2.0" uid="GeoChat.432230f8-47ae-2e45-8234-5c2a6a2e4625.e4a09281-1efa-0239-85a1-73513d06af32"
+       type="b-t-f" time="2024-04-03T18:36:06.662Z" start="2024-04-03T18:36:06.659Z" stale="2024-07-28T12:22:46.662Z"
+       how="h-g-i-g-o" access="Undefined">
+    <point lat="47.26152998" lon="-126.44693350" hae="999999.00000000" ce="999999.00000000" le="999999.00000000"/>
+    <detail>
+        <__chat chatroom="All Chat Rooms" senderCallsign="OPTIMUS WebTAK M1" parent="RootContactGroup"
+                groupOwner="false" id="All Chat Rooms">
+            <chatgrp id="All Chat Rooms" uid0="432230f8-47ae-2e45-8234-5c2a6a2e4625" uid1="All Chat Rooms"/>
+        </__chat>
+        <remarks time="2024-04-03T18:36:06Z" source="432230f8-47ae-2e45-8234-5c2a6a2e4625" to="All Chat Rooms">hello
+        </remarks>
+        <link relation="p-p" type="a-f-G-U-C-I" uid="432230f8-47ae-2e45-8234-5c2a6a2e4625"/>
+    </detail>
+</event>

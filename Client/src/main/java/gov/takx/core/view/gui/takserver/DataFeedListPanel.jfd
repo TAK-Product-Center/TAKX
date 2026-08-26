@@ -1,0 +1,135 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "pref:grow"
+			"$rowSpecs": "pref, linegap, fill:default:grow"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "pref:grow, labelcompgap, pref, labelcompgap, default, labelcompgap, pref"
+				"$rowSpecs": "pref"
+			} ) {
+				name: "filterPanel"
+				"border": &EmptyBorder0 new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+				add( new FormComponent( "gov.takx.commons.swing.PlaceholderTextField" ) {
+					name: "filterTextfield"
+					"toolTipText": "Filter feeds by name"
+					addEvent( new FormEvent( "java.awt.event.KeyListener", "keyReleased", "filterFeeds", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "gov.takx.commons.swing.JButtonExt" ) {
+					name: "createFeedButton"
+					"text": "Create Feed"
+					"disabledToolTipText": "No Active Connections"
+					"toolTipText": "Create a new feed"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "createFeed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "serverComboBox"
+					"toolTipText": "Feed item server filter"
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "ITakServerConnection"
+					}
+					addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "sortFeeds", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "sortByComboBox"
+					"model": new javax.swing.DefaultComboBoxModel {
+						selectedItem: "Feed Status"
+						addElement( "Feed Status" )
+						addElement( "Modified Time" )
+						addElement( "Name" )
+						addElement( "Unread items" )
+					}
+					"toolTipText": "Feed item sort preference"
+					addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "sortFeeds", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormContainer( "javax.swing.JLayeredPane", new FormLayoutManager( class javax.swing.JLayeredPane ) ) {
+				name: "layeredContentPanel"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 460, 300 )
+		} )
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "center:default:grow"
+			"$rowSpecs": "default:grow"
+		} ) {
+			name: "noFeedsPanel"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "noFeedsLabel"
+				"text": "No feeds available"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 310 )
+			"size": new java.awt.Dimension( 460, 125 )
+		} )
+		add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+			name: "scrollWrapper"
+			"verticalScrollBarPolicy": 22
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "left:default:grow"
+				"$rowSpecs": "default:grow"
+			} ) {
+				name: "feedsList"
+				"border": #EmptyBorder0
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 470, 190 )
+			"size": new java.awt.Dimension( 345, 110 )
+		} )
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "scrollWrapperWrapper"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 470, 5 )
+			"size": new java.awt.Dimension( 345, 175 )
+		} )
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "center:default:grow"
+			"$rowSpecs": "default:grow"
+		} ) {
+			name: "populatingMessagePanel"
+			"border": new javax.swing.border.LineBorder( new com.jformdesigner.model.SwingColor( "Component.borderColor" ), 1, false )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "populatingLabel"
+				"text": "Fetching feeds..."
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 470, 310 )
+			"size": new java.awt.Dimension( 340, 125 )
+		} )
+	}
+}

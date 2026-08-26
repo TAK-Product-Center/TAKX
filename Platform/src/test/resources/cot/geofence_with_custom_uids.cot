@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<event uid="SHAPE UID" type="u-d-c-c" access="Undefined" how="h-g-i-g-o" stale="2024-10-18T15:39:12.880Z" start="2024-10-11T15:39:12.880Z" time="2024-10-11T15:39:12.880Z" version="2.0">
+    <point ce="9999999.0" hae="1513.14197166" lat="39.01569863" le="9999999.0" lon="-103.42497593"/>
+    <detail>
+        <fillColor value="-2130706433"/>
+        <strokeColor value="-1"/>
+        <strokeWeight value="3"/>
+        <clamped value="True"/>
+        <remarks/>
+        <color argb="-1" value="-1"/>
+        <height value="0.00">0.00</height>
+        <height_unit>4</height_unit>
+        <precisionlocation altsrc="DTED0"/>
+        <archive/>
+        <shape>
+            <ellipse angle="360" major="249373.372666858" minor="249373.372666858"/>
+        </shape>
+        <__geofence boundingSphere="75000" elevationMonitored="false" monitor="Custom" tracking="True" trigger="Both">
+            <monitor uid="UID1"/>
+            <monitor uid="UID2"/>
+            <monitor uid="UID3"/>
+        </__geofence>
+        <contact callsign="Circle 2"/>
+    </detail>
+</event>

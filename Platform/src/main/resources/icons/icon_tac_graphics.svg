@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M 25.116 21.216 C 25.472 21.216 25.766 21.48 25.812 21.824 L 25.819 21.919 L 25.819 27.611 C 25.819 28 25.504 28.314 25.116 28.314 C 24.76 28.314 24.465 28.05 24.419 27.707 L 24.412 27.611 L 24.412 21.919 C 24.412 21.531 24.727 21.216 25.116 21.216 Z" fill="white" id="path2"/>
+  <path d="M 27.961 24.062 C 28.349 24.062 28.664 24.376 28.664 24.765 C 28.664 25.121 28.4 25.415 28.056 25.461 L 27.961 25.468 L 22.269 25.468 C 21.881 25.468 21.566 25.153 21.566 24.765 C 21.566 24.409 21.831 24.115 22.174 24.068 L 22.269 24.062 L 27.961 24.062 Z" fill="white" id="path4"/>
+  <circle style="fill: transparent; stroke: rgb(255, 255, 255); stroke-width: 1.25pt;" cx="14.381" cy="14.305" r="10.651"/>
+  <text style="white-space: pre; fill: rgb(255, 255, 255); font-family: Arial, sans-serif; font-size: 7pt; font-weight: bolder;" x="5.304" y="17.545">TAC</text>
+</svg>

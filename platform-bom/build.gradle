@@ -1,0 +1,45 @@
+plugins {
+    id 'java-platform'
+}
+
+// This project publishes a BOM for consuming projects so they don't have to declare the version on any
+// library that TAKX provides at runtime.
+
+buildSupport.configurePublishing(project)
+
+rootProject.assemble.dependsOn project.tasks.assemble // Tie in to the top-level lifecycle
+tasks.build.finalizedBy 'publish' // Always publish artifacts after a build
+tasks.publish.dependsOn 'build' // Make sure that artifacts are built before we try to publish if the publish task is run directly
+
+// We need a resolvable configuration to retrieve the transitive dependencies of the declared runtimeOnly dependencies.
+project(':platform').configurations {
+    runtimeOnlyTransitive {
+        extendsFrom runtimeOnly
+        canBeResolved = true
+    }
+}
+
+// During script evaluation (even in an afterEvaluate), the configuration dependencies are not available (well,
+// they are empty), so we have to do it during task execution, after 'platform' has finished assembling.
+
+def implementationConfiguration = project(':platform').configurations.implementation
+def runtimeConfiguration = project(':platform').configurations.runtimeOnlyTransitive
+
+tasks.register('configureConstraints') {
+    doLast {
+        dependencies.constraints {
+                // Declare all of the dependencies from the 'implementation' configuration as our 'api' constraints.
+                implementationConfiguration.dependencies.each {
+                    api "${it.group}:${it.name}:${it.version}"
+                }
+
+                // Declare all of the dependencies from the 'runtimeOnlyTransitive' configuration as 'runtime' constraints
+                runtimeConfiguration.resolvedConfiguration.resolvedArtifacts.each {
+                    def id = it.moduleVersion.id
+                    runtime "${id.group}:${id.name}:${id.version}"
+                }
+            }
+    }
+}
+
+tasks.assemble.dependsOn project(':platform').assemble, configureConstraints

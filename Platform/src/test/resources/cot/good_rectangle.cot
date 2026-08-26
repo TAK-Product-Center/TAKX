@@ -1,0 +1,16 @@
+<?xml version='1.0' standalone='yes'?>
+<event version="2.0" uid="b8878fee-d040-486a-96cb-b5d45dc2fcb6" type="u-d-r" time="2018-07-25T01:47:47.986Z"
+       start="2018-07-25T01:47:47.986Z" stale="2018-07-26T01:47:47.986Z" how="h-e">
+    <point lat="0.0" lon="0.0" hae="9999999.0" ce="9999999.0" le="9999999.0"/>
+    <detail>
+        <strokeColor value="-256"/>
+        <fillColor value="-1761607681"/>
+        <strokeWeight value="4.0"/>
+        <link point="31,-122,9999999.0"/>
+        <link point="30,-122,113.75690835549472"/>
+        <link point="30,-120,113.5616718300324"/>
+        <link point="31,-120,9999999.0"/>
+        <contact callsign="Rectangle 1"/>
+        <precisionlocation altsrc="???" geopointsrc="???"/>
+    </detail>
+</event>

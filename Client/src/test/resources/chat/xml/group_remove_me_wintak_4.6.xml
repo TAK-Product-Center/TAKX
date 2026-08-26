@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<event version="2.0"
+       uid="GeoChat.S-1-5-21-2739727742-677502536-3530350016-1000.fd0eb98e-ef03-4ac1-b6f5-9e27a0de7fe9.ebb1b001-7bed-4705-8498-47375c065569"
+       type="b-t-f" time="2022-08-23T23:22:24.870Z" start="2022-08-23T23:22:24.870Z" stale="2022-08-24T23:22:24.870Z"
+       how="h-g-i-g-o">
+    <point lat="0.00000000" lon="0.00000000" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <__chat id="fd0eb98e-ef03-4ac1-b6f5-9e27a0de7fe9" chatroom="New Group" senderCallsign="OPTIMUS WT"
+                groupOwner="true" messageId="ebb1b001-7bed-4705-8498-47375c065569">
+            <chatgrp id="fd0eb98e-ef03-4ac1-b6f5-9e27a0de7fe9" uid0="S-1-5-21-2739727742-677502536-3530350016-1000"/>
+            <hierarchy>
+                <group uid="UserGroups" name="Groups">
+                    <group uid="fd0eb98e-ef03-4ac1-b6f5-9e27a0de7fe9" name="New Group">
+                        <contact uid="ANDROID-R32M700HZ2X" name="OPTIMUS ATAK"/>
+                        <contact uid="S-1-5-21-2739727742-677502536-3530350016-1000" name="OPTIMUS WT"/>
+                    </group>
+                </group>
+            </hierarchy>
+        </__chat>
+        <link uid="S-1-5-21-2739727742-677502536-3530350016-1000" type="a-f-G-U-C-I" relation="p-p"/>
+        <remarks source="BAO.F.WinTAK.S-1-5-21-2739727742-677502536-3530350016-1000"
+                 sourceID="S-1-5-21-2739727742-677502536-3530350016-1000" to="fd0eb98e-ef03-4ac1-b6f5-9e27a0de7fe9"
+                 time="2022-08-23T23:22:24.87Z">[KICKED FROM GROUP]
+        </remarks>
+    </detail>
+</event>

@@ -1,0 +1,11 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.mapsforge">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.mapsforge</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>

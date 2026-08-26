@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+     Used by 'DependencyCheck to suppress reporting of vulnerabilities.  We
+     *only* suppress reporting when we have fully analyzed the vulnerability
+     and updated the Confluence page to explain the issue.  Note, we
+     suppress anything that has been fully analyzed - even if the vulnerability
+     is 'real'.
+
+  -->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+    <suppress>
+        <notes><![CDATA[
+            org.eclipse is only used during our build by the Spotless plugin, to format our code
+        ]]></notes>
+        <gav regex="true">^org\.eclipse\.platform:.*:.*$</gav>
+        <cve>CVE-2021-41033</cve>
+        <cve>CVE-2023-4218</cve>
+        <cve>CVE-2014-125035</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+            org.eclipse is only used during our build by the Spotless plugin, to format our code
+        ]]></notes>
+        <gav regex="true">^org\.eclipse\.jdt:.*:.*$</gav>
+        <cve>CVE-2023-4218</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+            Indirect CVE on commons-net, but we are using a newer version of commons-net at runtime
+        ]]></notes>
+        <filePath regex="true">.*</filePath>
+        <cve>CVE-2021-37533</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+            CVE is out of date, and version 2024030 of JSON has addressed the potential issues
+        ]]></notes>
+        <filePath regex="true">.*</filePath>
+        <cve>CVE-2022-45688</cve>
+        <cve>CVE-2023-5072</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+            We do not use either of the methods documented in the CVE.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/com\.google\.guava/guava@.*$</packageUrl>
+        <cve>CVE-2020-8908</cve>
+        <cve>CVE-2023-2976</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+            We do not use the web service of this component, so we're not vulnerable to this CVE.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.github\.missioncommand/JavaLineArray@.*$</packageUrl>
+        <cve>CVE-2015-0897</cve>
+    </suppress>
+
+    <suppress>
+        <notes><![CDATA[
+            We don't use this feature of the library, so not vulnerable
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/io\.github\.missioncommand/JavaRendererUtils@.*$</packageUrl>
+        <cve>CVE-2021-4277</cve>
+    </suppress>
+</suppressions>

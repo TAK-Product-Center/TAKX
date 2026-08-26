@@ -1,0 +1,12 @@
+apply plugin: 'gov.tak.gradle.plugins.coverage-report-aggregator'
+
+// Configure the creation of an aggregate code coverage report for all subprojects
+jacocoAggregation {
+    // Emit HTML reports
+    outputHtml = true
+    // Emit XML reports
+    outputXml = true
+    // Allows runtime instrumented classes by mocking framework to be included in the report even when
+    // the class hash in the build directory does not match what was present at runtime.
+    remapClassIds = true
+}

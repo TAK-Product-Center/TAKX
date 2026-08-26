@@ -1,0 +1,44 @@
+JFDML JFormDesigner: "7.0.5.1.409" Java: "11.0.12" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow, labelcompgap, default, labelcompgap, default"
+			"$rowSpecs": "fill:default, linegap, fill:default"
+		} ) {
+			name: "this"
+			"border": new javax.swing.border.TitledBorder( "Task Name" )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "lblStatus"
+				"text": "task status message"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "javax.swing.JProgressBar" ) {
+				name: "progressBar"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "btnCancel"
+				"toolTipText": "Cancel this task"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnCancelActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "btnGoTo"
+				"toolTipText": "Go to location"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnGoToActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 305, 75 )
+		} )
+	}
+}

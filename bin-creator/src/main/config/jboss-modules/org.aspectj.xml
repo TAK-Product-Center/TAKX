@@ -1,0 +1,11 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.aspectj">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.aspectj</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>

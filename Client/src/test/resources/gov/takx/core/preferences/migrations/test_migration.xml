@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="1" to="2">
+    <!-- You can have comments in the migration script -->
+    <modify refXpath="node[@name='locationProvider']/map/entry[@key='selectedProvider']" oldValue="NoLocationProvider"
+            newValue="FixedLocationProvider"/>
+
+    <add refXpath="node[@name='locationProvider']" where="after">
+        <!-- some comment -->
+        <node name="RibbonBarConfiguration">
+            <map>
+                <entry key="DisplayDefaultConfiguration" value="false"/>
+                <entry key="ActiveConfiguration" value="SpecialK"/>
+            </map>
+        </node>
+    </add>
+
+    <add refXpath="node[@name='locationProvider']/map/entry[@key='showCurrentLocationMarker']" where="after">
+        <!-- another comment -->
+    </add>
+
+    <remove refXpath="map/entry[@key='supportEmail']"/>
+
+    <add refXpath="node[@name='locationProvider']/node[@name='configurations']/map" where="append">
+        <!-- a new map entry -->
+        <entry key="someKey" value="someValue"/>
+    </add>
+
+    <add refXpath="map" where="prepend">
+        <!-- prepended comment -->
+        <entry key="newKey" value="newValue"/>
+    </add>
+
+    <add refXpath="map/entry[@key='newKey']" where="before">
+        <entry key="newFirstKey" value="newFirstValue"/>
+    </add>
+</migration>

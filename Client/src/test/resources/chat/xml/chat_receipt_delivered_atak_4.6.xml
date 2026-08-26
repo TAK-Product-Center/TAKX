@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<event version="2.0" uid="956a2c3d-dd37-43db-b1a2-70db5c861240" type="b-t-f-d" time="2003-01-23T12:29:10.738Z"
+       start="2003-01-23T12:29:10.738Z" stale="2003-01-24T12:29:10.738Z" how="m-g">
+    <point lat="33.10757216" lon="-116.30770988" hae="164.18400000" ce="6.00000000" le="9999999"/>
+    <detail>
+        <__chatreceipt parent="RootContactGroup" groupOwner="false" messageId="956a2c3d-dd37-43db-b1a2-70db5c861240"
+                       chatroom="OPTIMUS TAKX" id="ebc53795-403f-540f-99c6-983696f0bc16" senderCallsign="OPTIMUS ATAK">
+            <chatgrp uid0="ANDROID-R32M700HZ2X" uid1="ebc53795-403f-540f-99c6-983696f0bc16"
+                     id="ebc53795-403f-540f-99c6-983696f0bc16"/>
+        </__chatreceipt>
+        <link uid="ANDROID-R32M700HZ2X" type="a-f-G-U-C" relation="p-p"/>
+        <__serverdestination destinations="192.168.1.251:4242:tcp:ANDROID-R32M700HZ2X"/>
+    </detail>
+</event>

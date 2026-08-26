@@ -1,0 +1,88 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "Mesh Encryption"
+			"modal": true
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPane"
+				"border": sfield com.jgoodies.forms.factories.Borders DIALOG
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "min(default;200dlu):grow"
+					"$rowSpecs": "fill:default:grow"
+				} ) {
+					name: "contentPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "optionsLabel"
+						"text": "<html>Enables encryption of mesh traffic between devices. Once configured, no plaintext traffic will be processed on the mesh network.</html>"
+						"border": sfield com.jgoodies.forms.factories.Borders DLU4_BORDER
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "glue, button, relgap, button, relgap, button"
+					"$rowSpecs": "pref"
+				} ) {
+					name: "buttonBar"
+					"border": sfield com.jgoodies.forms.factories.Borders BUTTON_BAR_PAD
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "loadButton"
+						"text": "Load Key"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "load", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 2
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "forgetButton"
+						"text": "Forget Key"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "forget", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 4
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "generateButton"
+						"text": "Generate Key"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "generate", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 6
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 175 )
+		} )
+	}
+}

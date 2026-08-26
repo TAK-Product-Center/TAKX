@@ -1,0 +1,91 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "min(default;200dlu):grow, labelcompgap, default"
+			"$rowSpecs": "default, unrelgap, default, default"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "default, linegap, default"
+			} ) {
+				name: "descriptionPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "descriptionPanelMouseClicked", true ) )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "descriptionLabel"
+					"text": "Description"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 2, false )
+					auxiliary() {
+						"JavaCodeGenerator.variableModifiers": 0
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "uriLabel"
+					"text": "uri"
+					auxiliary() {
+						"JavaCodeGenerator.variableModifiers": 0
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "center:default, unrelgap, center:default"
+				"$rowSpecs": "default"
+			} ) {
+				name: "enableAndDeletePanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "enableCheckBox"
+					auxiliary() {
+						"JavaCodeGenerator.variableModifiers": 0
+					}
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "enableCheckboxActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "deleteButton"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "delete", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 1
+			} )
+			add( new FormComponent( "gov.takx.core.view.gui.preferences.network.NetworkInputOutputEditPanel" ) {
+				name: "editingPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableModifiers": 0
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "javax.swing.JSeparator" ) {
+				name: "separator1"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 4
+				"gridWidth": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 220 )
+		} )
+	}
+}

@@ -1,0 +1,63 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal() // Include public Gradle plugin portal
+        mavenLocal()
+    }
+}
+
+plugins {
+    id 'com.gradle.develocity' version '3.17.3'
+}
+
+develocity {
+    buildScan {
+        termsOfUseUrl = 'https://gradle.com/terms-of-service';
+        termsOfUseAgree = 'yes'
+        publishing.onlyIf { false }
+    }
+}
+
+buildCache {
+    local {
+        enabled = true
+        directory = new File(rootDir, 'build/cache')
+    }
+}
+
+rootProject.name = 'takx' // Making this lower-case to match the repo name you get when cloning as a workaround for an
+                          // IntelliJ bug that doesn't handle this value being different than the directory name.
+                          // https://youtrack.jetbrains.com/issue/IDEA-317606
+
+// Special handling for the bootstrap operation of getting the credentials set, which is required
+// to access Artifactory repos, which is required to properly resolve all the sub-project dependencies.
+// In the case that the 'addCredentials' or 'removeCredentials' task is being run, skip including all the sub-projects.
+
+def intersection = startParameter.taskNames.intersect(['addCred', 'addCredentials', 'remCred', 'removeCred', 'removeCredentials'])
+if (intersection) {
+    println "Minimal config installed for $intersection"
+    return
+}
+
+include ':bootstrap'
+include ':bin-creator'
+include ':binary-compatibility'
+include ':client'
+include ':deployment'
+include ':func-test'
+include ':processmanager'
+include ':platform'
+include ':platform-bom'
+include ':test'
+include ':test-bom'
+
+project(':bin-creator').projectDir = "$rootDir/bin-creator" as File
+project(':binary-compatibility').projectDir = "$rootDir/binary-compatibility" as File
+project(':bootstrap').projectDir = "$rootDir/Bootstrap" as File
+project(':client').projectDir = "$rootDir/Client" as File
+project(':deployment').projectDir = "$rootDir/deployment" as File
+project(':func-test').projectDir = "$rootDir/FunctionalTests" as File
+project(':processmanager').projectDir = "$rootDir/ProcessManager" as File
+project(':platform').projectDir = "$rootDir/Platform" as File
+project(':platform-bom').projectDir = "$rootDir/platform-bom" as File
+project(':test').projectDir = "$rootDir/TestSupport" as File
+project(':test-bom').projectDir = "$rootDir/test-bom" as File

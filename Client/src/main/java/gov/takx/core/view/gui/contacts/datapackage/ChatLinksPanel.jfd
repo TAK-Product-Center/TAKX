@@ -1,0 +1,53 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "max(default;200dlu):grow"
+			"$rowSpecs": "default, linegap, default, linegap, fill:default:grow, linegap, default"
+		} ) {
+			name: "this"
+			"border": sfield com.jgoodies.forms.factories.Borders DLU4_BORDER
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "conversationLabel"
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 2, false )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "countLabel"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane"
+				"horizontalScrollBarPolicy": 31
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": ""
+				} ) {
+					name: "chatLinksPanel"
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "folderButton"
+				"focusable": false
+				"toolTipText": "Open packages folder"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 7
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 430, 300 )
+		} )
+	}
+}

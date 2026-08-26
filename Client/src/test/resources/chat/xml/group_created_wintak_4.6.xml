@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<event version="2.0"
+       uid="GeoChat.S-1-5-21-2739727742-677502536-3530350016-1000.ea47f25a-1e16-435f-b0e3-24f438a89645.4d9dc882-f693-4d48-bacc-07e2361b0567"
+       type="b-t-f" time="2022-08-23T23:19:58.490Z" start="2022-08-23T23:19:58.490Z" stale="2022-08-24T23:19:58.490Z"
+       how="h-g-i-g-o">
+    <point lat="0.00000000" lon="0.00000000" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <__chat id="ea47f25a-1e16-435f-b0e3-24f438a89645" chatroom="New Group 4" senderCallsign="OPTIMUS WT"
+                groupOwner="true" messageId="4d9dc882-f693-4d48-bacc-07e2361b0567">
+            <chatgrp id="ea47f25a-1e16-435f-b0e3-24f438a89645" uid0="S-1-5-21-2739727742-677502536-3530350016-1000"
+                     uid1="ANDROID-R32M700HZ2X" uid2="ebc53795-403f-540f-99c6-983696f0bc16"/>
+            <hierarchy>
+                <group uid="UserGroups" name="Groups">
+                    <group uid="ea47f25a-1e16-435f-b0e3-24f438a89645" name="New Group 4">
+                        <contact uid="ANDROID-R32M700HZ2X" name="OPTIMUS ATAK"/>
+                        <contact uid="ebc53795-403f-540f-99c6-983696f0bc16" name="PEPSI"/>
+                        <contact uid="S-1-5-21-2739727742-677502536-3530350016-1000" name="OPTIMUS WT"/>
+                    </group>
+                </group>
+            </hierarchy>
+        </__chat>
+        <link uid="S-1-5-21-2739727742-677502536-3530350016-1000" type="a-f-G-U-C-I" relation="p-p"/>
+        <remarks source="BAO.F.WinTAK.S-1-5-21-2739727742-677502536-3530350016-1000"
+                 sourceID="S-1-5-21-2739727742-677502536-3530350016-1000" to="ea47f25a-1e16-435f-b0e3-24f438a89645"
+                 time="2022-08-23T23:19:58.49Z">Roger
+        </remarks>
+    </detail>
+</event>

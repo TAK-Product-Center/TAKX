@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:jxb="https://jakarta.ee/xml/ns/jaxb" jxb:version="3.0"
+            targetNamespace="http://www.doe.gov/2015/ConnectionTemplateSchema" version="1.0"
+            xmlns="http://www.doe.gov/2015/ConnectionTemplateSchema">
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">Proprietary Connection Definitions which can contain
+            one or more connection definitions / configurations to import into TAKX.
+            Constructed with IDEA 14.1.4 XML to XSD generator.
+        </xsd:documentation>
+        <xsd:appinfo>
+            <jxb:schemaBindings>
+                <jxb:package name="gov.takx.platform.schema.connection"/>
+            </jxb:schemaBindings>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+    <xsd:element name="ConnectionDefinitions" type="ConnectionDefinitionsType"/>
+    <xsd:complexType name="ConnectionDefinitionType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">Identifier for the connection based on family
+                and type, with the additional parameter to auto-connect (as opposed to just
+                adding the connection to the connections panel) and the name to differentiate
+                between connections of the same family and type.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element type="xsd:string" name="Family"/>
+            <xsd:element type="xsd:string" name="Type"/>
+            <xsd:element type="xsd:string" name="Name"/>
+            <xsd:element type="xsd:boolean" name="AutoConnect"/>
+            <xsd:element type="PropertiesType" name="Properties"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PropertiesType">
+        <xsd:sequence>
+            <xsd:element type="PropertyType" name="Property" maxOccurs="unbounded" minOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="ConnectionDefinitionsType">
+        <xsd:sequence>
+            <xsd:element type="ConnectionDefinitionType" name="ConnectionDefinition" maxOccurs="unbounded"
+                         minOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <xsd:complexType name="PropertyType">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">Connection properties in a key/value ordering. For example
+                this is where you would send port configuration parameters, Name = IP Address, Value = 127.0.0.1
+                in such a manner that the plugin can understand.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element type="xsd:string" name="Name"/>
+            <xsd:element type="xsd:string" name="Value"/>
+        </xsd:sequence>
+    </xsd:complexType>
+</xsd:schema>

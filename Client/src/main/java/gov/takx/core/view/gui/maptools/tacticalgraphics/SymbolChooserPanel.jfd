@@ -1,0 +1,33 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "24dlu, linegap, fill:default:grow, linegap, 24dlu"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "titleLabel"
+				"text": "Choose A New Symbol"
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "cancelButton"
+				"text": "Cancel"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 5
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

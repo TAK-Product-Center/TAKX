@@ -1,0 +1,123 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		"$setComponentNames": true
+		add( new FormWindow( "gov.takx.platform.ui.AStandardDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "Group"
+			"minimumSize": new java.awt.Dimension( 500, 50 )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPanel"
+				"border": sfield com.jgoodies.forms.factories.Borders DIALOG_BORDER
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default, labelcompgap, default:grow"
+					"$rowSpecs": "default, linegap, default, linegap, default, linegap, default"
+				} ) {
+					name: "formPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "nameLabel"
+						"text": "Name:"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "nameField"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "typeLabel"
+						"text": "Type:"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 3
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default, labelcompgap, default"
+						"$rowSpecs": "default"
+					} ) {
+						name: "typePanel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "javax.swing.JRadioButton" ) {
+							name: "typeStandardField"
+							"text": "Standard"
+							"$buttonGroup": new FormReference( "typeButtonGroup" )
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "typeChanged", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+						add( new FormComponent( "javax.swing.JRadioButton" ) {
+							name: "typeRuleField"
+							"text": "Rules-Based"
+							"$buttonGroup": new FormReference( "typeButtonGroup" )
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "typeChanged", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 3
+					} )
+					add( new FormComponent( "gov.takx.commons.swing.DualList" ) {
+						name: "groupMembersField"
+						"rowHeight": 30
+						"selectedText": "Selected Map Objects:"
+						"unselectedText": "Available Map Objects:"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+							"JavaCodeGenerator.typeParameters": "IExplorable"
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 5
+						"gridWidth": 3
+					} )
+					add( new FormComponent( "gov.takx.core.view.gui.explorer.view.RuleGroupPanel" ) {
+						name: "rulePanel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 7
+						"gridWidth": 3
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormComponent( "gov.takx.commons.swing.FormButtonBar" ) {
+					name: "buttonBar"
+					"deleteButtonVisible": false
+					addEvent( new FormEvent( "gov.takx.commons.swing.FormButtonBar$ApplyListener", "apply", "buttonBarApply", false ) )
+					addEvent( new FormEvent( "gov.takx.commons.swing.FormButtonBar$DeleteListener", "delete", "buttonBarDelete", true ) )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 20 )
+			"size": new java.awt.Dimension( 500, 435 )
+		} )
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "typeButtonGroup"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 160, 520 )
+		} )
+	}
+}

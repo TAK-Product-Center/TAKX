@@ -1,0 +1,36 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow, labelcompgap, default, labelcompgap, 100dlu"
+			"$rowSpecs": "fill:default"
+		} ) {
+			name: "this"
+			"border": sfield com.jgoodies.forms.factories.Borders DLU2_BORDER
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "symbolNameLabel"
+				"text": "MilSym Details"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "clearSymbolButton"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 1
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "chooseSymbolButton"
+				"text": "text"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 1
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 40 )
+		} )
+	}
+}

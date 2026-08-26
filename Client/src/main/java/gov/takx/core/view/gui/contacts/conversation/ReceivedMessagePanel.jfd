@@ -1,0 +1,55 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default, labelcompgap, default:grow"
+			"$rowSpecs": "fill:6dlu, linegap, default, linegap, fill:max(pref;10dlu):grow, linegap, default"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "timeLabel"
+				"text": "Time"
+				"foreground": new java.awt.Color( 255, 73, 60, 255 )
+				"$client.FlatLaf.styleClass": "small"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "senderLabel"
+				"text": "Sender"
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+				"foreground": new java.awt.Color( 255, 73, 60, 255 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JTextArea" ) {
+				name: "messageTextArea"
+				"text": "Message"
+				"opaque": false
+				"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+				"lineWrap": true
+				"wrapStyleWord": true
+				"editable": false
+				"$client.FlatLaf.styleClass": "large"
+				"font": new java.awt.Font( "SansSerif", 0, 12 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "moreDetailsButton"
+				"text": "Details"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 7
+				"gridWidth": 3
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 155, 110 )
+		} )
+	}
+}

@@ -1,0 +1,18 @@
+<!-- Invalid because of missing range value -->
+<event version="2.0" uid="36551a8c-f62b-4195-82d0-3578efeee4ee" type="u-rb-a" time="2021-10-21T00:00:14.62Z"
+       start="2021-10-21T00:00:14.62Z" stale="2021-10-22T00:00:14.62Z" how="h-e">
+    <point lat="35.8047537361172" lon="-114.015049437726" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <contact callsign="Arrow 1"/>
+        <bearing value="90.5309603949347"/>
+        <inclination value="0"/>
+        <rangeUnits value="1"/>
+        <bearingUnits value="0"/>
+        <northRef value="1"/>
+        <color value="-65536"/>
+        <strokeColor value="-65536"/>
+        <strokeWeight value="3.0"/>
+        <archive/>
+        <remarks/>
+    </detail>
+</event>

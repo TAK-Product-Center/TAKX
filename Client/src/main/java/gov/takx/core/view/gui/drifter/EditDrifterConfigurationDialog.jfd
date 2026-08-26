@@ -1,0 +1,217 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		auxiliary() {
+			"JavaCodeGenerator.defaultVariableLocal": true
+		}
+		add( new FormWindow( "gov.takx.platform.ui.AStandardDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "Drifter Configuration"
+			"minimumSize": new java.awt.Dimension( 400, 75 )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPanel"
+				"border": sfield com.jgoodies.forms.factories.Borders DIALOG_BORDER
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default, labelcompgap, default:grow"
+					"$rowSpecs": "default, unrelgap, default, linegap, default, linegap, default, linegap, default, linegap, default"
+				} ) {
+					name: "formPanel"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "mapObjectLabel"
+						"text": "Map Object:"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+					} )
+					add( new FormComponent( "gov.takx.core.mapobject.gui.MapObjectField" ) {
+						name: "mapObjectField"
+						"editable": false
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+							"JavaCodeGenerator.typeParameters": "IMapObject"
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "pausedLabel"
+						"text": "Paused"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 3
+					} )
+					add( new FormComponent( "javax.swing.JCheckBox" ) {
+						name: "pausedField"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 3
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "speedLabel"
+						"text": "Speed:"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 5
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default:grow, labelcompgap, default"
+						"$rowSpecs": "default"
+					} ) {
+						name: "speedPanel"
+						add( new FormComponent( "javax.swing.JSpinner" ) {
+							name: "speedField"
+							"model": new javax.swing.SpinnerNumberModel {
+								minimum: 0.0
+								stepSize: 1.0
+								value: 0.0
+							}
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+						add( new FormComponent( "gov.takx.core.view.gui.maptools.SpeedUnitComboBox" ) {
+							name: "speedUnitField"
+							"spinner": new FormReference( "speedField" )
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 5
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "typeLabel"
+						"text": "Heading:"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 7
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default, labelcompgap, default"
+						"$rowSpecs": "default"
+					} ) {
+						name: "typePanel"
+						add( new FormComponent( "javax.swing.JRadioButton" ) {
+							name: "typeConstantField"
+							"text": "Constant"
+							"$buttonGroup": new FormReference( "typeButtonGroup" )
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "typeChanged", true ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 1
+							"gridY": 1
+						} )
+						add( new FormComponent( "javax.swing.JRadioButton" ) {
+							name: "typeRouteField"
+							"text": "Route"
+							"$buttonGroup": new FormReference( "typeButtonGroup" )
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "typeChanged", true ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 1
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 7
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "routeLabel"
+						"text": "Route:"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 9
+					} )
+					add( new FormComponent( "gov.takx.core.mapobject.gui.MapObjectField" ) {
+						name: "routeField"
+						"emptyText": "No Route Selected"
+						"selectPrompt": "Select a Route to drift on."
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+							"JavaCodeGenerator.typeParameters": "IRouteMapObject"
+						}
+						addEvent( new FormEvent( "gov.takx.core.mapobject.gui.MapObjectField$NewObjectActionListener", "actionPerformed", "routeFieldNewActionPerformed", true ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 9
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "bearingLabel"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 11
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default:grow, labelcompgap, default"
+						"$rowSpecs": "default"
+					} ) {
+						name: "bearingPanel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+						}
+						add( new FormComponent( "javax.swing.JSpinner" ) {
+							name: "bearingField"
+							"model": new javax.swing.SpinnerNumberModel {
+								minimum: 0.0
+								stepSize: 0.5
+								value: 0.0
+							}
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+						add( new FormComponent( "gov.takx.core.view.gui.maptools.BearingUnitComboBox" ) {
+							name: "bearingUnitField"
+							"spinner": new FormReference( "bearingField" )
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 11
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormComponent( "gov.takx.commons.swing.FormButtonBar" ) {
+					name: "buttonBar"
+					"deleteButtonVisible": false
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": false
+					}
+					addEvent( new FormEvent( "gov.takx.commons.swing.FormButtonBar$ApplyListener", "apply", "buttonBarApply", true ) )
+					addEvent( new FormEvent( "gov.takx.commons.swing.FormButtonBar$DeleteListener", "delete", "buttonBarDelete", true ) )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 505, 375 )
+		} )
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "typeButtonGroup"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 80, 455 )
+		} )
+	}
+}

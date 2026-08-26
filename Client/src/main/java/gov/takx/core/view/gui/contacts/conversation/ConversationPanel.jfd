@@ -1,0 +1,138 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"name": "conversationPanel"
+			"minimumSize": new java.awt.Dimension( 228, 80 )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "center:default, relgap, center:default, labelcompgap, center:default, labelcompgap, center:default, labelcompgap, center:default"
+				"$rowSpecs": "default"
+			} ) {
+				name: "headerPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "backButton"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "backButtonClicked", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "conversationLabel"
+					"text": "Conversation Name"
+					"$client.FlatLaf.styleClass": "large"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "editGroupButton"
+					"toolTipText": "Edit Group"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "editGroupButtonClicked", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "addSubgroupButton"
+					"toolTipText": "New Subgroup"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addGroupActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "deleteSubgroupButton"
+					"toolTipText": "Delete Subgroup"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "removeGroupActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "First"
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "messagesScrollPane"
+				"horizontalScrollBarPolicy": 31
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+					"$columnSpecs": "0:1.0"
+					"$rowSpecs": "0"
+					"$alignTop": true
+					"$alignLeft": true
+				} ) {
+					name: "messageRowsPanel"
+					"border": sfield com.jgoodies.forms.factories.Borders DLU2_BORDER
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "textPanel"
+				"border": new javax.swing.border.EmptyBorder( 2, 2, 2, 2 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JTextArea" ) {
+					name: "messageTextArea"
+					"lineWrap": true
+					"wrapStyleWord": true
+					"font": new java.awt.Font( "SansSerif", 0, 12 )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "2dlu, default, 2dlu, default"
+					"$rowSpecs": "bottom:default:grow"
+				} ) {
+					name: "buttonPanel"
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "dataPackageButton"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "dataPackageButtonActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 1
+						"gridX": 2
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "sendButton"
+						"text": "Send"
+						"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "sendButtonActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 4
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "East"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": "20dlu"
+				} ) {
+					name: "conversationDisabledPanel"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "conversationDisabledLabel"
+						"text": "Conversation not accessible"
+						"horizontalAlignment": 0
+						"foreground": sfield java.awt.Color gray
+						"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 1, false )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "North"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Last"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 10, 0 )
+			"size": new java.awt.Dimension( 475, 135 )
+		} )
+	}
+}

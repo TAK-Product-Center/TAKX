@@ -1,0 +1,11 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="com.vividsolutions.jts-core">
+        <match>
+            <includes>
+                <include>
+                    <groupId>com.vividsolutions</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>

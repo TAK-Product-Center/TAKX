@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://www.doe.gov/2011/RaptorConnectingLineSchema"
+            xmlns:jxb="https://jakarta.ee/xml/ns/jaxb" jxb:version="3.0"
+            targetNamespace="http://www.doe.gov/2011/RaptorConnectingLineSchema" version="1.0">
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">Proprietary Information Connecting Lines provide a means to
+            remember a complete connecting line definition. The schema defines a mechanism for capturing
+            which attributes are expressly defined, and which attributes should be defined by
+            reaching back to the connecting line parent. Explicitly omitting a connecting line attribute
+            results in a null value on parsing, thus indicating a request for explicit reach back.
+
+            In the case of a ScopeType.Global, there is no explicit reach back capability. The connecting
+            line is created with default values for all attributes, and only those connecting line attributes
+            explicitly set in the XML are re-defined.
+        </xsd:documentation>
+        <xsd:appinfo>
+            <jxb:schemaBindings>
+                <jxb:package name="gov.takx.platform.schema.connectingline"/>
+            </jxb:schemaBindings>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+    <xsd:complexType name="MetadataType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">Metadata always consists of a sequential key-value
+                pair. Both the key and the value are String based. Consult the TAKX SDK
+                documentation for complete documentation on the full set of standardized keys that
+                may be used.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="Key" type="xsd:string"/>
+            <xsd:element name="Value" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="SizeType" final="#all">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="Minimum"/>
+            <xsd:enumeration value="Small"/>
+            <xsd:enumeration value="Normal"/>
+            <xsd:enumeration value="Large"/>
+            <xsd:enumeration value="Maximum"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="ScopeType" final="#all">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="Global"/>
+            <xsd:enumeration value="User"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:simpleType name="LineStyleType" final="#all">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="None"/>
+            <xsd:enumeration value="Solid"/>
+            <xsd:enumeration value="Dashed"/>
+            <xsd:enumeration value="LongDashed"/>
+            <xsd:enumeration value="Dotted"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="ConnectingLineDefinitionType" final="#all">
+        <xsd:sequence>
+            <xsd:element name="Family" type="xsd:string"/>
+            <xsd:element name="Type" type="xsd:string"/>
+            <xsd:element name="UniqueKey" type="xsd:string"/>
+            <xsd:element name="DisplayName" type="xsd:string"/>
+            <xsd:element name="Scope" type="ScopeType" default="User" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>User scoped connecting line definitions are always parented by the global
+                        connecting line definition. At most, one global connecting line definition can be defined in
+                        a document that is an instance of this schema. If more than one global connecting line
+                        definition is defined, the first one defined in the file is accepted, while the others are
+                        thrown away.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="UserDefined" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="Color" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="Opacity" type="xsd:float" minOccurs="0"/>
+            <xsd:element name="Width" type="SizeType" minOccurs="0"/>
+            <xsd:element name="ElevationThreshold" type="xsd:int" minOccurs="0"/>
+            <xsd:element name="ShowDirectionalArrow" type="xsd:boolean" minOccurs="0"/>
+            <xsd:element name="Style" type="LineStyleType" minOccurs="0"/>
+            <xsd:element name="Metadata" type="MetadataType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ConnectingLineDefinitionsCollection" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>Collection of 1 or more connecting line definitions.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="ConnectingLineDefinition" type="ConnectingLineDefinitionType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="ConnectingLineDefinitions" type="ConnectingLineDefinitionsCollection"/>
+
+
+</xsd:schema>

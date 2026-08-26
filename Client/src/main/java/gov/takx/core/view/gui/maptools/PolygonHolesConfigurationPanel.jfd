@@ -1,0 +1,45 @@
+JFDML JFormDesigner: "7.0.5.1.409" Java: "11.0.14.1" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "fill:default"
+		} ) {
+			name: "this"
+			"border": new javax.swing.border.TitledBorder( "Polygon Holes" )
+			"name": "panelPolygonHolesPreferences"
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane1"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JTable" ) {
+					name: "holesTable"
+					"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector, new java.util.Vector {
+						add( "Hole" )
+						add( "Eligible Polygons" )
+					}, new java.util.Vector {
+						add( class java.lang.Boolean )
+						add( null )
+					}, new java.util.Vector {
+						add( null )
+						add( false )
+					}, new java.util.Vector {
+						add( new com.jformdesigner.model.SwingTableColumn( null, 35, 0, 100, true ) )
+						add( null )
+					} )
+					"autoCreateRowSorter": true
+					"preferredScrollableViewportSize": new java.awt.Dimension( 100, 200 )
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

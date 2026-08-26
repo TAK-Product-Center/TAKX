@@ -1,0 +1,231 @@
+package gov.takx.core.media.writer;
+
+import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import gov.takx.api.ui.IResourceCleaner;
+import gov.takx.core.media.FfmpegUtils;
+import gov.takx.core.media.MediaException;
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import org.bytedeco.ffmpeg.avcodec.AVCodecContext;
+import org.bytedeco.ffmpeg.avcodec.AVPacket;
+import org.bytedeco.ffmpeg.avformat.AVFormatContext;
+import org.bytedeco.ffmpeg.avformat.AVStream;
+import org.bytedeco.ffmpeg.avutil.AVFrame;
+import org.bytedeco.ffmpeg.global.avformat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.invoke.MethodHandles;
+
+import static org.bytedeco.ffmpeg.global.avcodec.av_packet_ref;
+import static org.bytedeco.ffmpeg.global.avcodec.av_packet_rescale_ts;
+import static org.bytedeco.ffmpeg.global.avcodec.av_packet_unref;
+import static org.bytedeco.ffmpeg.global.avcodec.avcodec_receive_packet;
+import static org.bytedeco.ffmpeg.global.avcodec.avcodec_send_frame;
+import static org.bytedeco.ffmpeg.global.avutil.AVERROR_EOF;
+import static org.bytedeco.ffmpeg.global.avutil.av_q2d;
+import static org.bytedeco.ffmpeg.presets.avutil.AVERROR_EAGAIN;
+
+/**
+ * Abstract superclass for capturing or processing media streams
+ *
+ * @since 5.1.0
+ */
+public abstract class AMediaStream implements IResourceCleaner
+{
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private final int mediaType;
+    protected AVFormatContext outputFormatContext;
+
+    protected AVStream inputStream;
+    protected AVStream outputStream;
+    // The index into the output streams
+    protected int outputStreamIndex;
+    protected AVCodecContext encoderContext;
+    protected AVPacket encodedPacket;
+    protected AVPacket encodedPacketRef;
+    private boolean interleaved = false;
+    private long framesWritten = 0;
+
+    /**
+     * Construct a media stream for the given media type
+     *
+     * @param mediaType           Tye media type for this stream.
+     * @param outputFormatContext The overall ffmpeg output context
+     * @param inputStream         The input stream we are mapping to our output stream
+     */
+    protected AMediaStream(int mediaType, @Nonnull AVFormatContext outputFormatContext, @Nonnull AVStream inputStream)
+    {
+        this.mediaType = mediaType;
+        this.outputFormatContext = outputFormatContext;
+        this.inputStream = inputStream;
+    }
+
+    /**
+     * Get the outputstream to which we write packets.
+     *
+     * @return The {@code AVStream} corresponding to this processing pipeline.
+     */
+    public AVStream getOutputStream()
+    {
+        return outputStream;
+    }
+
+    /**
+     * Set the output stream. Expected to be called from the constructor once the output stream is generated.
+     *
+     * @param outputStream The newly created output stream.
+     */
+    protected void setOutputStream(@Nonnull AVStream outputStream)
+    {
+        this.outputStream = outputStream;
+        outputStreamIndex = outputStream.index();
+    }
+
+    /**
+     * Get the media type for this stream.
+     *
+     * @return The {@code AVMediaType} for this stream.
+     */
+    public int getMediaType()
+    {
+        return mediaType;
+    }
+
+    /**
+     * Set whether we write interleaved packets, or write packets.
+     *
+     * @param interleaved {@code true} if we invoke write interleaved frame, {@code false} if we invoke write frame
+     * @see #writePacket(AVPacket)
+     */
+    protected void setInterleaved(boolean interleaved)
+    {
+        this.interleaved = interleaved;
+    }
+
+    /**
+     * Get whether we write interleaved packets, or write packets.
+     *
+     * @return {@code true} if we invoke {@code av_interleaved_write_frame}, {@code false} if we invoke {@code av_write_frame}.
+     * @see #writePacket(AVPacket)
+     */
+    public boolean isInterleaved()
+    {
+        return interleaved;
+    }
+
+    /**
+     * Get the number of frames written by this stream so far.
+     *
+     * @return The number of frames written by this stream
+     */
+    public long getFramesWritten()
+    {
+        return framesWritten;
+    }
+
+    /**
+     * Process a packet for a stream. The packet may be {@code null} if we are flushing the end of the
+     * stream.
+     *
+     * @param frame Compress the frame and write it out.
+     * @return An int giving the status of the write frame op, or of the encode frame op if an error.
+     */
+    public int encodeAndWriteFrame(@Nullable AVFrame frame)
+    {
+        int ret = avcodec_send_frame(encoderContext, frame);
+        if (ret < 0)
+        {
+            // Probably a transient error, log it and get the next frame.
+            logger.error("Error encoding frame: {}.", FfmpegUtils.formatError(ret));
+            return ret;
+        }
+
+        // Now read any frames generated by the encoder
+        while (ret >= 0)
+        {
+            ret = avcodec_receive_packet(encoderContext, encodedPacket);
+            if (ret == AVERROR_EAGAIN() || ret == AVERROR_EOF)
+            {
+                return ret;
+            }
+
+            encodedPacket.stream_index(outputStreamIndex);
+
+            av_packet_rescale_ts(encodedPacket,
+                    encoderContext.time_base(),
+                    outputStream.time_base());
+
+            if (logger.isDebugEnabled())
+            {
+                logger.debug("Writing packet to stream {} with timestamp {}, time {}", outputStreamIndex, encodedPacket.pts(), encodedPacket.pts() * av_q2d(outputStream.time_base()));
+            }
+
+            if ((ret = av_packet_ref(encodedPacketRef, encodedPacket)) < 0)
+            {
+                logger.error("Error copying packet: {}.", FfmpegUtils.formatError(ret));
+                return ret;
+            }
+            writePacket(encodedPacketRef);
+            av_packet_unref(encodedPacket);
+        }
+        return ret;
+    }
+
+    /**
+     * Write and unreference an encoded packet to the output context.
+     *
+     * @param encodedPacket The encoded packet. The packet will be unreferenced before this method returns.
+     * @return An int giving the return value from the last invoked ffmpeg method.
+     */
+    protected int writePacket(@Nonnull AVPacket encodedPacket)
+    {
+        framesWritten++;
+        int ret;
+        if (interleaved)
+        {
+            if ((ret = avformat.av_interleaved_write_frame(outputFormatContext, encodedPacket)) < 0)
+            {
+                logger.error("av_interleaved_write_frame() failed: {}", FfmpegUtils.formatError(ret));
+            }
+        } else
+        {
+            if ((ret = avformat.av_write_frame(outputFormatContext, encodedPacket)) < 0)
+            {
+                logger.error("av_write_frame() failed: {}", FfmpegUtils.formatError(ret));
+            }
+
+            // only free this in the non interleaved case, in the interleaved case it is freed automatically.
+            av_packet_unref(encodedPacket);
+        }
+        return ret;
+    }
+
+    /**
+     * Feed a pack for processing.
+     *
+     * @param packet The packet to process, for example it might decode, resample, then encode
+     * @return An int with the status of the last ffmpeg operation.
+     * @throws MediaException On a significant error.
+     */
+    public abstract int processPacket(@Nonnull AVPacket packet)
+            throws MediaException;
+
+    /**
+     * Flush the encoder if it has retained frames. Subclasses that are capable of flushing their stream should
+     * override this method.
+     */
+    @OverridingMethodsMustInvokeSuper
+    public void flush()
+    {
+    }
+
+    /**
+     * Each stream is expected to implement a version of this method that releases any needed resources.
+     */
+    @Override
+    @OverridingMethodsMustInvokeSuper
+    public void releaseResources()
+    {
+    }
+}

@@ -1,0 +1,90 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "fill:max(default;200dlu):grow, linegap, default"
+		} ) {
+			name: "this"
+			"minimumSize": new java.awt.Dimension( 300, 100 )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "contactsScrollPane"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": "default, default"
+				} ) {
+					name: "contactsPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JTree" ) {
+						name: "groupsTree"
+						"rootVisible": false
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormComponent( "gov.takx.core.view.gui.contacts.lists.ImprovedSelectionJList" ) {
+						name: "individualList"
+						auxiliary() {
+							"JavaCodeGenerator.typeParameters": "IndividualContactCheckListItem"
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 2
+					} )
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default, max(default;1dlu):grow, default"
+				"$rowSpecs": "default"
+				"$columnGroupIds": "1, 0, 1, 0, 1"
+			} ) {
+				name: "buttonsPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "sendButton"
+					"text": "Send"
+					"enabled": false
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "send", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "broadcastButton"
+					"text": "Broadcast"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "broadcast", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "cancelButton"
+					"text": "Cancel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "cancel", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 390, 385 )
+		} )
+	}
+}

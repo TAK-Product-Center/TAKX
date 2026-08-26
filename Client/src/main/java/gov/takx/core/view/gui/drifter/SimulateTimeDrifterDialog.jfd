@@ -1,0 +1,64 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		auxiliary() {
+			"JavaCodeGenerator.defaultVariableLocal": true
+		}
+		add( new FormWindow( "gov.takx.platform.ui.AStandardDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "Simulate Time Delay"
+			"maximumSize": new java.awt.Dimension( 290, 155 )
+			"preferredSize": new java.awt.Dimension( 290, 155 )
+			"resizable": false
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPanel"
+				"border": sfield com.jgoodies.forms.factories.Borders DIALOG_BORDER
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default, labelcompgap, default:grow"
+					"$rowSpecs": "default"
+				} ) {
+					name: "formPanel"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "delayLabel"
+						"text": "Delay:"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+						"insets": new java.awt.Insets( 15, 0, 0, 0 )
+					} )
+					add( new FormComponent( "gov.takx.commons.swing.TimePicker" ) {
+						name: "delayField"
+						"time": 0l
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormComponent( "gov.takx.commons.swing.FormButtonBar" ) {
+					name: "buttonBar"
+					"applyButtonVisible": false
+					"errorLabelVisible": false
+					"deleteButtonVisible": false
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": false
+					}
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 310, 155 )
+		} )
+	}
+}

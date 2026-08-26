@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="1" to="2">
+    <add refXpath="//node[@name='iDoNotExist']" where="after">
+        <!-- won't happen -->
+    </add>
+</migration>

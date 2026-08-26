@@ -1,0 +1,11 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="rome">
+        <match>
+            <includes>
+                <include>
+                    <groupId>rome</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>

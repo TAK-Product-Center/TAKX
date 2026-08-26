@@ -1,0 +1,6 @@
+<?xml version='1.0' standalone='yes'?>
+<!-- bad because there is no detail element -->
+<event version="2.0" uid="8add4fbf-6d3f-474f-97c9-d0122d667222" type="u-d-f-m" time="2021-10-10T18:15:22.58Z"
+       start="2021-10-10T18:15:22.58Z" stale="2021-10-17T18:15:22.58Z" how="h-e">
+    <point lat="0" lon="0" hae="9999999" ce="9999999" le="9999999"/>
+</event>

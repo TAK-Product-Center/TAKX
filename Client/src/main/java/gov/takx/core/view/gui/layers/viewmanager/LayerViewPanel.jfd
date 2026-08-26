@@ -1,0 +1,138 @@
+JFDML JFormDesigner: "8.0.1.0.199" Java: "11.0.13" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, linegap, default, linegap, fill:min:grow, linegap, default"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default, labelcompgap, default, labelcompgap, default"
+				"$rowSpecs": "default"
+			} ) {
+				name: "buttonsPane"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "gov.takx.commons.swing.SplitButton" ) {
+					name: "addButton"
+					"horizontalTextPosition": 0
+					"verticalTextPosition": 3
+					"toolTipText": "Add Layer"
+					"text": "Add"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "deleteButton"
+					"horizontalTextPosition": 0
+					"verticalTextPosition": 3
+					"verifyInputWhenFocusTarget": false
+					"toolTipText": "Delete Layer"
+					"text": "Delete"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "deleteButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "goToButton"
+					"horizontalTextPosition": 0
+					"verticalTextPosition": 3
+					"toolTipText": "Go To Layer"
+					"text": "Go To"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "gotoButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "propertiesButton"
+					"horizontalTextPosition": 0
+					"verticalTextPosition": 3
+					"toolTipText": "Show Layer Properties"
+					"text": "Properties"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "propertiesButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 1
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+			} )
+			add( new FormComponent( "javax.swing.JSeparator" ) {
+				name: "separator5"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 2
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "default:grow"
+			} ) {
+				name: "searchPane"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JSeparator" ) {
+				name: "separator4"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 4
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "groupsScrollPane"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": "default, linegap, default:grow"
+				} ) {
+					name: "groupsMainPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 1
+					} ) {
+						name: "groupsPane"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "checkBoxOnline"
+				"text": "<html>Connect to Imagery and Elevation Servers "
+				"selected": true
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, -1, false )
+				"toolTipText": "If checked, TAKX will automatically connect to WMS servers associated with imagery and elevation layers to obtain data for those layers."
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "checkBoxOnlineActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 7
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

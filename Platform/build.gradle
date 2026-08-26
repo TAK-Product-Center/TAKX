@@ -1,0 +1,160 @@
+plugins {
+    id 'io.freefair.aspectj' version '9.1.0'
+}
+
+description = 'Platform'
+
+ext {
+    producesLoadJar = true // Causes jar copy task to be configured
+    xjcSchemasDir = file('src/main/resources/schemas') // Input for xjc schema compilation
+}
+
+dependencies {
+    implementation project(':bootstrap')
+
+    implementation "com.google.auto.value:auto-value-annotations:$autoValueVersion"
+    annotationProcessor "com.google.auto.value:auto-value:$autoValueVersion"
+    annotationProcessor "org.greenrobot:eventbus-annotation-processor:$eventbusVersion"
+
+    testImplementation project(':client')
+    testImplementation project(':test')
+}
+
+apply from: rootProject.file('gradle/platformDependencies.gradle')
+
+buildSupport.configureXjc(project)
+buildSupport.configureJavaTemplates(project)
+
+compileJava {
+    enabled = true // The aspectj plugin disables this task by default, so re-enable it
+
+    // Required argument for green-robot annotation processing, need to tell it where to put the generated index file
+    options.compilerArgs << '-AeventBusIndex=gov.takx.core.event.PlatformEventIndex'
+}
+
+// The AspectJ plugin wants to perform compile time weaving, so we need to prevent that and re-enable the normal test compilation
+tasks.named('compileTestAspectj') { enabled = false }
+tasks.named('compileTestJava') { enabled = true }
+
+// Configure ajc to compile aspects ONLY (no weaving)
+tasks.named('compileAspectj').configure {
+    dependsOn(tasks.named('compileJava'))
+
+    // Needed for type resolution only
+    classpath += files(tasks.named('compileJava').flatMap { it.destinationDirectory })
+
+    source = sourceSets.main.aspectj // Point ajc strictly to the aspectj source set
+
+    ajcOptions {
+        // Explicitly empty these to prevent weaving into main classes
+        inpath.setFrom(files())
+        aspectpath.setFrom(files())
+
+        outxml = true
+        outxmlfile = 'aop/aop.xml'
+        compilerArgs += ['-XhasMember', '-Xlint:ignore']
+    }
+}
+
+ext {
+    def moduleMapping = [
+            'com.formdev.flatlaf-swingx'     : 'com.formdev.flatlaf-swingx',
+            'com.koloboke'                   : 'com.koloboke',
+            'io.github.openfeign'            : 'io.github.openfeign',
+            'org.apache.logging.log4j'       : 'log4j',
+            'org.bytedeco'                   : 'org.bytedeco:javacpp',
+            'org.dockingframes'              : 'org.dockingframes',
+            'org.hibernate'                  : 'org.hibernate',
+            'org.jboss.modules'              : 'org.jboss.modules',
+            'org.jboss.weld'                 : 'org.jboss.weld',
+            'org.jboss.weld.se'              : 'org.jboss.weld',
+            'org.jogamp.jogl'                : 'org.jogamp.jogl',
+            'org.jogamp.jocl'                : 'org.jogamp.jogl',
+            'org.jogamp.gluegen'             : 'org.jogamp.jogl',
+            'org.ow2.asm'                    : 'org.ow2.asm',
+            'org.swinglabs.swingx.swingx-all': 'org.swinglabs.swingx.swingx-all',
+    ]
+
+    def excludedApiGroups = ['gov.nasa', 'gov.tak.kernel', 'jakarta.enterprise', 'jcommoncommo', 'org.slf4j']
+    def excludedRuntimeGroups = ['com.google.auto.value', 'org.aspectj', 'com.zaxxer']
+
+    def allRuntimeDependencies = [] as Set
+    allRuntimeDependencies.addAll(configurations.implementation.dependencies)
+    allRuntimeDependencies.addAll(configurations.runtimeOnly.dependencies)
+
+    // The properties below are used in the JavaDocs for gov.takx.bom in java-templates.
+    templateProperties = [
+            'constants'                : generateVersionConstants(),
+            'runtimeLibraryVersionList':
+                    generateLibraryVersionList(allRuntimeDependencies, excludedRuntimeGroups, moduleMapping),
+            'apiLibraryVersionList'    :
+                    generateLibraryVersionList(configurations.api.dependencies, excludedApiGroups, moduleMapping),
+    ]
+}
+
+/**
+ * Generate the list of Enum constants for all the minor versions.
+ *
+ * @return Constant declarations to insert into the code template
+ */
+@SuppressWarnings('GrMethodMayBeStatic')
+String generateVersionConstants() {
+    def constants = []
+
+    // Hard-coded handling for V3
+    int major = 3
+    (0..5).each { minor -> constants << makeVersionConstant(major, minor) }
+
+    // Now the current version, note we skipped version 4.x
+    major = platformVersion.getMajor() as int
+    (0..(platformVersion.minor)).each { minor -> constants << makeVersionConstant(major, minor) }
+
+    return constants.join('\n')
+}
+
+/**
+ * @return the enum constant declaration for a given major/minor version.
+ */
+static String makeVersionConstant(int major, int minor) {
+    return """
+    /** @since ${major}.${minor} */
+    V${major}_${minor}(new PlatformVersion(${major}, ${minor}, 0)),"""
+}
+
+/**
+ * Generate the javadoc table entries for all the given dependencies.
+ *
+ * @param dependencies Dependency set to process
+ * @param exclusions List of groups to exclude from output
+ * @param moduleMapping Mapping from group name to module name
+ * @return a table of the list of our runtime-supplied libraries.
+ */
+static String generateLibraryVersionList(Set<Dependency> dependencies, def exclusions = [], Map moduleMapping = [:]) {
+    def libs = []
+
+    // Sort by group:name
+    dependencies.sort { "${it.group}:${it.name}" }.each {
+        def group = it.group
+        def name = it.name
+
+        if (group.startsWith('gov.tak')) return ""
+        if (exclusions.contains(it.group)) return ""
+
+        // If the group ends with the name, then collapse to just the group
+        def defaultModuleName = group == name || group.endsWith(".$name") ? group : "${group}.${name}"
+
+        // Apply any mapping by group name
+        def moduleName = moduleMapping.getOrDefault(group, defaultModuleName)
+
+        libs << """
+ * <tr>
+ * <td>{@code ${it.group}:${it.name}}</td>
+ * <td>{@code ${it.version}}</td>
+ * <td>{@code ${moduleName}}</td>
+ * </tr>"""
+    }
+
+    return libs.join('\n')
+}
+
+apply from: rootProject.file('gradle/standardTestSetup.gradle')

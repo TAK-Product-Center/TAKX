@@ -1,0 +1,46 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "Select an Object"
+			"minimumSize": new java.awt.Dimension( 150, 250 )
+			"maximumSize": new java.awt.Dimension( 250, 250 )
+			"preferredSize": new java.awt.Dimension( 250, 250 )
+			"modal": true
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPanel"
+				"border": sfield com.jgoodies.forms.factories.Borders DIALOG_BORDER
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane"
+					add( new FormComponent( "org.jdesktop.swingx.JXTable" ) {
+						name: "table"
+						"editable": false
+						"rowHeight": 32
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormComponent( "gov.takx.commons.swing.FormButtonBar" ) {
+					name: "buttonBar"
+					"applyButtonVisible": false
+					"errorLabelVisible": false
+					"deleteButtonVisible": false
+					addEvent( new FormEvent( "gov.takx.commons.swing.FormButtonBar$ApplyListener", "apply", "buttonBarApply", true ) )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 250, 250 )
+		} )
+	}
+}

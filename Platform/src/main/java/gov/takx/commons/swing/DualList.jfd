@@ -1,0 +1,101 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		auxiliary() {
+			"JavaCodeGenerator.defaultVariableModifiers": 4
+		}
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow, labelcompgap, default, labelcompgap, default:grow"
+			"$rowSpecs": "fill:default, relgap, default:grow, linegap"
+		} ) {
+			name: "this"
+			"$locationPolicy": 0
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "unselectedLabel"
+				"text": "Unselected:"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "selectedLabel"
+				"text": "Selected:"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "unselectedScrollPane"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "org.jdesktop.swingx.JXTable" ) {
+					name: "unselectedTable"
+					"preferredScrollableViewportSize": new java.awt.Dimension( 100, 200 )
+					"showHorizontalLines": false
+					"showVerticalLines": false
+					"autoResizeMode": 4
+					auxiliary() {
+						"JavaCodeGenerator.variableGetter": true
+					}
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				"gridY": 3
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default"
+				"$rowSpecs": "default, linegap, default"
+			} ) {
+				name: "buttonPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "addButton"
+					"text": "Add"
+					"horizontalTextPosition": 0
+					"verticalTextPosition": 1
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "removeButton"
+					"text": "Remove"
+					"horizontalTextPosition": 0
+					"verticalTextPosition": 1
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "removeButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "selectedScrollPane"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "org.jdesktop.swingx.JXTable" ) {
+					name: "selectedTable"
+					"preferredScrollableViewportSize": new java.awt.Dimension( 100, 200 )
+					"showHorizontalLines": false
+					"showVerticalLines": false
+					"autoResizeMode": 4
+					auxiliary() {
+						"JavaCodeGenerator.variableGetter": true
+					}
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				"gridY": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 435, 340 )
+		} )
+	}
+}

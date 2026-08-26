@@ -1,0 +1,2 @@
+Placeholder file to ensure the plugins directory exists. Otherwise, when testing plugins, you will get an error trying
+to install to the plugins directory.

@@ -1,0 +1,153 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "gov.takx.api.ui.AProgramPreferencesPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, linegap, default, linegap"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, default:grow"
+				"$rowSpecs": "default, linegap, default:grow, linegap, default"
+			} ) {
+				name: "toolbarConfigPanel"
+				"border": new javax.swing.border.CompoundBorder( new javax.swing.border.TitledBorder( new javax.swing.border.TitledBorder( "text" ), "Toolbar Configuration" ), new javax.swing.border.EmptyBorder( 3, 3, 3, 3 ) )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "createConfigButton"
+					"toolTipText": "Create a new toolbar configuration"
+					"text": "Add"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "createConfigButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "editConfigButton"
+					"toolTipText": "Edit selected toolbar configuration"
+					"enabled": false
+					"text": "Edit"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "editConfigButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "deleteConfigButton"
+					"text": "Delete"
+					"toolTipText": "Delete a toolbar configuration"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "deleteConfigButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "importConfigButton"
+					"text": "Import"
+					"toolTipText": "Import a toolbar configuration from a file"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "importConfigButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "exportConfigButton"
+					"text": "Export"
+					"toolTipText": "Export the selected toolbar configuration to a file"
+					"enabled": false
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "exportConfigButtonActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+					"gridY": 1
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "toolbarConfigListScrollPane"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JList" ) {
+						name: "toolbarConfigList"
+						"selectionMode": 0
+						auxiliary() {
+							"JavaCodeGenerator.typeParameters": "ToolbarConfiguration"
+							"JavaCodeGenerator.postCreateCode": "${field}.setCellRenderer(new ToolbarConfigurationListCellRenderer());"
+						}
+						addEvent( new FormEvent( "javax.swing.event.ListSelectionListener", "valueChanged", "toolbarConfigListSelectionChanged", false ) )
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "toolbarConfigListMouseClicked", true ) )
+						addEvent( new FormEvent( "java.awt.event.KeyListener", "keyReleased", "toolbarConfigListKeyReleased", true ) )
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 3
+					"gridWidth": 11
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "100dlu, labelcompgap, left:default:grow"
+					"$rowSpecs": "default"
+				} ) {
+					name: "labelLocationPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "toolbarLabelLocationLabel"
+						"text": "Toolbar button label location"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormComponent( "javax.swing.JComboBox" ) {
+						name: "toolbarLabelLocationComboBox"
+						auxiliary() {
+							"JavaCodeGenerator.typeParameters": "ToolbarButtonLabelLocation"
+							"JavaCodeGenerator.variableModifiers": 4
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "toolbarLabelLocationComboBoxChanged", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 5
+					"gridWidth": 11
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "100dlu, labelcompgap, default:grow"
+				"$rowSpecs": "default"
+			} ) {
+				name: "skinsPanel"
+				"border": new javax.swing.border.TitledBorder( "Skins" )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "skinLabel"
+					"text": "Skin"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "skinComboBox"
+					"model": new javax.swing.DefaultComboBoxModel {
+						selectedItem: "Dark"
+						addElement( "Dark" )
+						addElement( "Light" )
+					}
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "String"
+						"JavaCodeGenerator.variableModifiers": 4
+					}
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "skinComboBoxActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints LEFT
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 635, 370 )
+		} )
+	}
+}

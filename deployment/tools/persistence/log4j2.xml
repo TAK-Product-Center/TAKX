@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns:xi="http://www.w3.org/2001/XInclude">
+
+    <xi:include href="../../bin/log4j-properties.xml" />
+    <xi:include href="../../bin/log4j-appenders.xml" />
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+        </Root>
+
+        <!-- Silence this warning: HHH000181: No appropriate connection provider encountered-->
+        <Logger name="org.hibernate.engine.jdbc.connections.internal.ConnectionProviderInitiator" level="error"/>
+    </Loggers>
+</Configuration>

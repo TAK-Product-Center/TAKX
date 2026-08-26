@@ -1,0 +1,81 @@
+description = 'Test'
+
+dependencies {
+    api "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    api "org.junit.jupiter:junit-jupiter-params:$junitVersion"
+    api "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    api "org.junit.platform:junit-platform-launcher:1.9.1"
+    api "org.mockito:mockito-core:$mockitoVersion"
+    api "gov.tak:cdi-blacksmith:$blacksmithVersion"
+
+    implementation project(":client")
+    implementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
+    implementation "org.assertj:assertj-core:$assertjVersion"
+}
+
+ext {
+    publishArtifactsToArtifactory = true // We have artifacts that should go to Artifactory on a release build
+}
+
+// Disable warnings, so error prone checks don't flood us with output
+tasks.compileTestJava.options.warnings = false
+
+jar {
+    // Add in the preferences factory classes from the Bootstrap (which is in a special source set)
+    from project(':bootstrap').sourceSets.preferences.output.classesDirs
+
+    // Add in 'conf' files so they are available as resources
+    into('conf') {
+        from fileTree(deploymentConfDir) {
+            include 'Default*.xml', '*.properties'
+        }
+    }
+}
+
+buildSupport.configureJavaTemplates(project)
+
+def projectExt = project.ext
+
+// Need to postpone the generation of the template properties until the dependencies have been resolved.
+tasks.copyJavaTemplates {
+    doFirst {
+        projectExt.with {
+            def allRuntimeDependencies = [] as Set<Dependency>
+            allRuntimeDependencies.addAll(configurations.implementation.dependencies)
+            allRuntimeDependencies.addAll(configurations.runtimeOnly.dependencies)
+
+            // The properties below are used in the JavaDocs for gov.takx.text.bom in java-templates.
+            templateProperties = [
+                    'runtimeLibraryVersionList': generateLibraryVersionList(allRuntimeDependencies),
+                    'apiLibraryVersionList'    : generateLibraryVersionList(configurations.api.dependencies),
+            ]
+        }
+    }
+}
+
+/**
+ * Generate the javadoc table entries for all the given dependencies.
+ *
+ * @param dependencies Dependency set to process
+ * @return a table of the list of our runtime-supplied libraries.
+ */
+static String generateLibraryVersionList(Collection<Dependency> dependencies) {
+    def libs = []
+
+    // Sort by group:name
+    dependencies.sort { "${it.group}:${it.name}" }.each {
+        def group = it.group
+        if (group.startsWith('gov.tak')) return ""
+
+        libs << """
+ * <tr>
+ * <td>{@code ${it.group}:${it.name}}</td>
+ * <td>{@code ${it.version}}</td>
+ * </tr>"""
+    }
+
+    return libs.join('\n')
+}
+
+// Configure our test execution
+apply from: rootProject.file('gradle/standardTestSetup.gradle')

@@ -1,0 +1,1648 @@
+
+    alter table AnnotationMapObject 
+        drop constraint FKDA9EE12C4F13C0AE;
+
+    alter table ChannelDef 
+        drop constraint FK3BBA8226F9877C8;
+
+    alter table ChannelDef_AChannelFilter 
+        drop constraint FK7E14C55788CF9EFE;
+
+    alter table ChannelDef_AChannelFilter 
+        drop constraint FK7E14C5577970A1BC;
+
+    alter table ChannelStats 
+        drop constraint FK44C557C55479C6B;
+
+    alter table ChannelStats 
+        drop constraint FK44C557CA3E9AE7D;
+
+    alter table ClientIconMapObject 
+        drop constraint FKF3F1611717E0F035;
+
+    alter table ConnectingLineDefinition 
+        drop constraint FKA712AD5F7F1B1B37;
+
+    alter table ConnectingLineDefinitionMetadataPair 
+        drop constraint FK2960DA889F1E6C2;
+
+    alter table FieldMetaData 
+        drop constraint FK9B8A49D21165C8;
+
+    alter table FileMapObject 
+        drop constraint FK372C857F7ADFAC2A;
+
+    alter table FileMapObject 
+        drop constraint FK372C857F716EDF52;
+
+    alter table FileMetaData 
+        drop constraint FKA355610B1A295875;
+
+    alter table FileTransfer 
+        drop constraint FKA8F29A788CF9EFE;
+
+    alter table FileTransfer 
+        drop constraint FKA8F29A7716EDF52;
+
+    alter table GeoSpatialFilter 
+        drop constraint FKBB4491EBD5F4A6F8;
+
+    alter table GeoSpatialFilter_locations 
+        drop constraint FKD58BA0AEB9C077D;
+
+    alter table IconMapObject 
+        drop constraint FK29CECB22603D7842;
+
+    alter table IconMapObject 
+        drop constraint FK29CECB224CC50842;
+
+    alter table IconMapObject 
+        drop constraint FK29CECB224F13C0AE;
+
+    alter table IconMapObject 
+        drop constraint FK29CECB2289F1E6C2;
+
+    alter table IconMapObject 
+        drop constraint FK29CECB22934793EA;
+
+    alter table IndexDefinition 
+        drop constraint FKE6B193A594098CB2;
+
+    alter table IndexDefinitionColumn 
+        drop constraint FK22FF435BFB6F8EDB;
+
+    alter table MapObject 
+        drop constraint FKA606DF9BDBADDB12;
+
+    alter table MapObject 
+        drop constraint FKA606DF9B3367C7E9;
+
+    alter table MapObject 
+        drop constraint FKA606DF9B4E4D8183;
+
+    alter table MapObject 
+        drop constraint FKA606DF9BFACF3107;
+
+    alter table MapObjectFilter 
+        drop constraint FK9BF736F3D5F4A6F8;
+
+    alter table MapObjectFilter 
+        drop constraint FK9BF736F3F2AB8DB2;
+
+    alter table MapObjectOwnerAppPlugin 
+        drop constraint FK5FD53FBC97AD9FFB;
+
+    alter table MapObjectOwnerFeaturePlugin 
+        drop constraint FK4EBAC8D197AD9FFB;
+
+    alter table MapObjectOwnerImportExportPlugin 
+        drop constraint FK38B6724497AD9FFB;
+
+    alter table MapObjectOwnerMapObject 
+        drop constraint FK3A9206C397AD9FFB;
+
+    alter table MapObjectProxy 
+        drop constraint FKC388839387B6E7D2;
+
+    alter table MapObjectProxy 
+        drop constraint FKC3888393A3F97552;
+
+    alter table MapPoint 
+        drop constraint FKDB11DB4501CDBC2;
+
+    alter table MapPoint 
+        drop constraint FKDB11DB494098CB2;
+
+    alter table PersistableExtrudedLine 
+        drop constraint FKB872A8743E855450ceaa4621;
+
+    alter table PersistableExtrudedPolygon 
+        drop constraint FKB872A8743E855450b6bb73ed;
+
+    alter table PersistableLine 
+        drop constraint FKB872A8743E8554503478da22;
+
+    alter table PersistablePolygon 
+        drop constraint FKB872A8743E8554501974d44c;
+
+    alter table PersistableSurfacePolygon 
+        drop constraint FKB872A8743E855450c1989c7b;
+
+    alter table PersistableSurfacePolyline 
+        drop constraint FKB872A8743E855450717d229f;
+
+    alter table RigidShapeMapObject 
+        drop constraint FKC8CC44059B2555D;
+
+    alter table ShapeBoxMapObject 
+        drop constraint FK749C3051EFBD4047;
+
+    alter table ShapeCircleMapObject 
+        drop constraint FK9AC0D30A9B2555D;
+
+    alter table ShapeConeMapObject 
+        drop constraint FK28A951D7EFBD4047;
+
+    alter table ShapeCylinderMapObject 
+        drop constraint FKF9811B04EFBD4047;
+
+    alter table ShapeEllipseMapObject 
+        drop constraint FK962BF1E9B2555D;
+
+    alter table ShapeEllipsoidMapObject 
+        drop constraint FK6D56E159EFBD4047;
+
+    alter table ShapeExtrudedPolygonMapObject 
+        drop constraint FK2DEB8FC127A84F38;
+
+    alter table ShapeMapObject 
+        drop constraint FK3581613A4F13C0AE;
+
+    alter table ShapePathMapObject 
+        drop constraint FK33D21F159B2555D;
+
+    alter table ShapePolygon3DMapObject 
+        drop constraint FKCB5A28317ED9476C;
+
+    alter table ShapePolygonMapObject 
+        drop constraint FKAE2D4D4227A84F38;
+
+    alter table ShapePolyline3DMapObject 
+        drop constraint FK22377D4927A84F38;
+
+    alter table ShapePyramidMapObject 
+        drop constraint FK4598D5ECEFBD4047;
+
+    alter table ShapeRangeFanMapObject 
+        drop constraint FKF9E66449B2555D;
+
+    alter table ShapeRectangleMapObject 
+        drop constraint FKB3437C6D9B2555D;
+
+    alter table ShapeSphereMapObject 
+        drop constraint FKA12934AD9B2555D;
+
+    alter table ShapeSquareMapObject 
+        drop constraint FK80E7BD5D9B2555D;
+
+    alter table ShapeWedgeMapObject 
+        drop constraint FK9BAC548EFBD4047;
+
+    alter table StructureAssociation 
+        drop constraint FK7C19B52E94098CB2;
+
+    alter table StructureAssociation 
+        drop constraint FK7C19B52EA3F97552;
+
+    alter table StructureField 
+        drop constraint FK2826BF6794098CB2;
+
+    alter table StructureMetaData 
+        drop constraint FK919B9DC294098CB2;
+
+    alter table SurfaceStructureRelationship 
+        drop constraint FK9D8E78BE8D9D384F;
+
+    alter table TrackStyleDefinitionMetadataPair 
+        drop constraint FK19A3CA82603D7842;
+
+    alter table VFSFile 
+        drop constraint FK417E2BBF11932FC2;
+
+    alter table channeldef_objecttype 
+        drop constraint FKD2DF033688CF9EFE;
+
+    alter table channeldef_objecttype 
+        drop constraint FKD2DF0336A649D8E;
+
+    alter table channeldef_structure 
+        drop constraint FK2623299688CF9EFE;
+
+    alter table channeldef_structure 
+        drop constraint FK262329964FED63DE;
+
+    alter table channeldef_vfsnamespace 
+        drop constraint FK919B05F588CF9EFE;
+
+    alter table channeldef_vfsnamespace 
+        drop constraint FK919B05F58335F47F;
+
+    alter table file_channeldef 
+        drop constraint FKE7899EC51A295875;
+
+    alter table file_channeldef 
+        drop constraint FKE7899EC588CF9EFE;
+
+    alter table mappointmessage_channel 
+        drop constraint FKF9B464979531B5B2;
+
+    alter table mappointmessage_channel 
+        drop constraint FKF9B46497A3E9AE7D;
+
+    drop table AChannelFilter cascade;
+
+    drop table AnnotationMapObject cascade;
+
+    drop table Application cascade;
+
+    drop table ChannelDef cascade;
+
+    drop table ChannelDef_AChannelFilter cascade;
+
+    drop table ChannelStats cascade;
+
+    drop table ClientIconMapObject cascade;
+
+    drop table ClientLayer cascade;
+
+    drop table ConnectingLineDefinition cascade;
+
+    drop table ConnectingLineDefinitionMetadataPair cascade;
+
+    drop table Connection_ cascade;
+
+    drop table CustomDataMonitor cascade;
+
+    drop table ExceptionLog cascade;
+
+    drop table FieldMetaData cascade;
+
+    drop table FileMapObject cascade;
+
+    drop table FileMetaData cascade;
+
+    drop table FileSystemNamespace cascade;
+
+    drop table FileTransfer cascade;
+
+    drop table GeoSpatialFilter cascade;
+
+    drop table GeoSpatialFilter_locations cascade;
+
+    drop table IconMapObject cascade;
+
+    drop table IndexDefinition cascade;
+
+    drop table IndexDefinitionColumn cascade;
+
+    drop table MapEntity cascade;
+
+    drop table MapObject cascade;
+
+    drop table MapObjectFilter cascade;
+
+    drop table MapObjectOwner cascade;
+
+    drop table MapObjectOwnerAppPlugin cascade;
+
+    drop table MapObjectOwnerFeaturePlugin cascade;
+
+    drop table MapObjectOwnerImportExportPlugin cascade;
+
+    drop table MapObjectOwnerMapObject cascade;
+
+    drop table MapObjectProxy cascade;
+
+    drop table MapObjectState cascade;
+
+    drop table MapObjectType cascade;
+
+    drop table MapPoint cascade;
+
+    drop table PersistableExtrudedLine cascade;
+
+    drop table PersistableExtrudedPolygon cascade;
+
+    drop table PersistableLine cascade;
+
+    drop table PersistablePolygon cascade;
+
+    drop table PersistableSurfacePolygon cascade;
+
+    drop table PersistableSurfacePolyline cascade;
+
+    drop table PluginState cascade;
+
+    drop table ProgramVersion cascade;
+
+    drop table RigidShapeMapObject cascade;
+
+    drop table ShapeBoxMapObject cascade;
+
+    drop table ShapeCircleMapObject cascade;
+
+    drop table ShapeConeMapObject cascade;
+
+    drop table ShapeCylinderMapObject cascade;
+
+    drop table ShapeEllipseMapObject cascade;
+
+    drop table ShapeEllipsoidMapObject cascade;
+
+    drop table ShapeExtrudedPolygonMapObject cascade;
+
+    drop table ShapeMapObject cascade;
+
+    drop table ShapePathMapObject cascade;
+
+    drop table ShapePolygon3DMapObject cascade;
+
+    drop table ShapePolygonMapObject cascade;
+
+    drop table ShapePolyline3DMapObject cascade;
+
+    drop table ShapePyramidMapObject cascade;
+
+    drop table ShapeRangeFanMapObject cascade;
+
+    drop table ShapeRectangleMapObject cascade;
+
+    drop table ShapeSphereMapObject cascade;
+
+    drop table ShapeSquareMapObject cascade;
+
+    drop table ShapeWedgeMapObject cascade;
+
+    drop table Structure cascade;
+
+    drop table StructureAssociation cascade;
+
+    drop table StructureDef cascade;
+
+    drop table StructureField cascade;
+
+    drop table StructureMetaData cascade;
+
+    drop table SurfaceStructureRelationship cascade;
+
+    drop table SurfaceStructureRelationshipType cascade;
+
+    drop table TrackInfo cascade;
+
+    drop table TrackStyleDefinition cascade;
+
+    drop table TrackStyleDefinitionMetadataPair cascade;
+
+    drop table VFSFile cascade;
+
+    drop table "class" cascade;
+
+    drop table channeldef_objecttype cascade;
+
+    drop table channeldef_structure cascade;
+
+    drop table channeldef_vfsnamespace cascade;
+
+    drop table eventlog cascade;
+
+    drop table file_channeldef cascade;
+
+    drop table mappointmessage_channel cascade;
+
+    drop sequence hibernate_sequence;
+
+    drop table hibernate_sequences cascade;
+
+    create table AChannelFilter (
+        id  serial not null,
+        description varchar(255),
+        name varchar(255),
+        uuid_msb int8,
+        uuid_lsb int8,
+        primary key (id)
+    );
+
+    create table AnnotationMapObject (
+        backgroundColor bytea,
+        font bytea,
+        maxActiveAltitude float8 not null,
+        minActiveAltitude float8 not null,
+        opacity float8 not null,
+        text varchar(2048),
+        textAlign int4 not null,
+        textColor bytea,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table Application (
+        id  serial not null,
+        family varchar(255),
+        type varchar(255),
+        primary key (id),
+        unique (family, type)
+    );
+
+    create table ChannelDef (
+        id  serial not null,
+        description varchar(255),
+        ipAddress varchar(255),
+        name varchar(255),
+        port int4 not null,
+        remote bool,
+        sequenceNumber int4 not null,
+        supportsNonDevices bool,
+        uuid_msb int8,
+        uuid_lsb int8,
+        class_id int2,
+        primary key (id)
+    );
+
+    create table ChannelDef_AChannelFilter (
+        ChannelDef_id int4 not null,
+        filters_id int4 not null,
+        primary key (ChannelDef_id, filters_id)
+    );
+
+    create table ChannelStats (
+        id  serial not null,
+        lastRPMReceivedTime int8 not null,
+        lastRPMSentTime int8 not null,
+        channel_id int4,
+        mo_id int4,
+        primary key (id),
+        unique (mo_id, channel_id)
+    );
+
+    create table ClientIconMapObject (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ClientLayer (
+        id  serial not null,
+        className varchar(255),
+        configFileName varchar(255),
+        deleted bool not null,
+        displayName varchar(255),
+        editable bool not null,
+        iconPath varchar(255),
+        key_ varchar(255),
+        layerGroup varchar(255),
+        maxActiveAltitude float8 not null,
+        maxActiveAltitudeEnabled bool not null,
+        minActiveAltitude float8 not null,
+        minActiveAltitudeEnabled bool not null,
+        name varchar(255),
+        networkRetrievalEnabled bool not null,
+        opacity float8 not null,
+        orderkey int4,
+        permanent bool not null,
+        pickable bool not null,
+        restoreStateXML text,
+        splitScale float8 not null,
+        visible bool not null,
+        primary key (id)
+    );
+
+    create table ConnectingLineDefinition (
+        id  serial not null,
+        displayName varchar(255),
+        elevationThreshold float8,
+        family varchar(255),
+        isUserDefined bool,
+        lineColorValue int4,
+        lineOpacity float4,
+        lineStyle int4,
+        lineWidth int4,
+        showDirectionalArrow bool,
+        type varchar(255),
+        uniqueKey varchar(255) unique,
+        parent_id int4,
+        primary key (id)
+    );
+
+    create table ConnectingLineDefinitionMetadataPair (
+        id  serial not null,
+        metadataKey varchar(255),
+        metadataValue varchar(255),
+        connectingLineDefinition_id int4,
+        primary key (id)
+    );
+
+    create table Connection_ (
+        id  serial not null,
+        family varchar(255),
+        name varchar(255),
+        type varchar(255),
+        uniqueKey varchar(255),
+        primary key (id),
+        unique (uniqueKey)
+    );
+
+    create table CustomDataMonitor (
+        id  serial not null,
+        ackReq bool not null,
+        alarmFilename varchar(255),
+        alarmState int4,
+        clearable bool not null,
+        comparisonType int4,
+        defaultState int4,
+        displayName varchar(255),
+        family varchar(255),
+        fieldName varchar(255),
+        fieldType int4,
+        holdState bool not null,
+        moKey varchar(255),
+        showValue bool not null,
+        structureName varchar(255),
+        threshold varchar(255),
+        type varchar(255),
+        useAudio bool not null,
+        primary key (id)
+    );
+
+    create table ExceptionLog (
+        id  serial not null,
+        exception_ text,
+        object text,
+        primary key (id)
+    );
+
+    create table FieldMetaData (
+        id  serial not null,
+        metadataKey varchar(255),
+        metadataValue varchar(255),
+        field_id int4,
+        primary key (id)
+    );
+
+    create table FileMapObject (
+        id int4 not null,
+        vfsFile_id int4,
+        primary key (id)
+    );
+
+    create table FileMetaData (
+        id  serial not null,
+        metadataKey varchar(255),
+        metadataValue varchar(255),
+        file_id int4,
+        primary key (id)
+    );
+
+    create table FileSystemNamespace (
+        id  serial not null,
+        namespace varchar(255),
+        primary key (id)
+    );
+
+    create table FileTransfer (
+        transferType varchar(31) not null,
+        id  serial not null,
+        bytesTransferred int8 not null,
+        fileName varchar(255),
+        server bytea,
+        totalBytes int8 not null,
+        uuid bytea,
+        channelDef_id int4,
+        vfsFile_id int4,
+        primary key (id)
+    );
+
+    create table GeoSpatialFilter (
+        inclusive bool not null,
+        needsLocation bool not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table GeoSpatialFilter_locations (
+        GeoSpatialFilter_id int4 not null,
+        elevation float8,
+        hasElevation bool,
+        latitude float8,
+        longitude float8,
+        INDEX_COL int4 not null,
+        primary key (GeoSpatialFilter_id, INDEX_COL)
+    );
+
+    create table IconMapObject (
+        contained bool not null,
+        id int4 not null,
+        connectingLineDefinition_id int4,
+        parent_id int4,
+        stopRecordsTrackStyleDefinition_id int4,
+        trackStyleDefinition_id int4,
+        primary key (id)
+    );
+
+    create table IndexDefinition (
+        id  serial not null,
+        uniqueIdx bool not null,
+        structure_id int4 not null,
+        primary key (id)
+    );
+
+    create table IndexDefinitionColumn (
+        id  serial not null,
+        columnName varchar(255),
+        idef_id int4 not null,
+        primary key (id)
+    );
+
+    create table MapEntity (
+        id  serial not null,
+        family varchar(255),
+        type varchar(255),
+        version varchar(255),
+        primary key (id),
+        unique (family, type, version)
+    );
+
+    create table MapObject (
+        id  serial not null,
+        allowDeviceContainment bool not null,
+        allowDrag bool not null,
+        bucketMode int4,
+        defaultPreferencesTab varchar(255),
+        defaultTrackColor bytea,
+        description varchar(255),
+        displayableType varchar(255),
+        groupName varchar(255),
+        hasLocalElevation bool,
+        hasHeading bool not null,
+        iconScale float8 not null,
+        imageURI varchar(255),
+        infoText text,
+        elevation float8,
+        hasElevation bool,
+        latitude float8,
+        longitude float8,
+        mostRecentCommunicationTime int8 not null,
+        name varchar(255),
+        oldestCommunicationTime int8 not null,
+        securityFilter int4,
+        snapIconToSurface bool not null,
+        unitID varchar(255),
+        visible bool not null,
+        mostate_id int4,
+        owner_id int4,
+        ownerObject_id int4,
+        trackInfo_id int4,
+        primary key (id)
+    );
+
+    create table MapObjectFilter (
+        id int4 not null,
+        mapObjectType_id int4,
+        primary key (id)
+    );
+
+    create table MapObjectOwner (
+        id  serial not null,
+        primary key (id)
+    );
+
+    create table MapObjectOwnerAppPlugin (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table MapObjectOwnerFeaturePlugin (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table MapObjectOwnerImportExportPlugin (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table MapObjectOwnerMapObject (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table MapObjectProxy (
+        id  serial not null,
+        subType varchar(255),
+        topic varchar(255),
+        mapentity_id int4 not null,
+        mapobject_id int4,
+        primary key (id),
+        unique (mapentity_id, mapobject_id)
+    );
+
+    create table MapObjectState (
+        id  serial not null,
+        state int4,
+        primary key (id)
+    );
+
+    create table MapObjectType (
+        id  serial not null,
+        family varchar(255),
+        type varchar(255),
+        unitid varchar(255),
+        primary key (id)
+    );
+
+    create table MapPoint (
+        DTYPE varchar(1) not null,
+        id  serial not null,
+        source varchar(255),
+        uuid_msb int8,
+        uuid_lsb int8,
+        associatedFilePath varchar(255),
+        elevation float8,
+        eventName varchar(255),
+        groupKey varchar(32),
+        has3dOrientation bool,
+        hasElevation bool,
+        hasHeading bool,
+        hasLocation bool,
+        hasMotion bool,
+        hasSpeed bool,
+        hasTime bool,
+        heading float8,
+        isManualLocation bool,
+        isRenderable bool,
+        latitude float8,
+        longitude float8,
+        motionDuration int8,
+        overrideTrackStyleId int4,
+        pitch float8,
+        priority int4,
+        receiveTime int8,
+        relevantTime timestamp,
+        roll float8,
+        sourceName varchar(255),
+        sourceType int4,
+        speed float8,
+        time int8,
+        trackStyleId int4,
+        creationTime int8,
+        mapObjectProxy_id int4 not null,
+        structure_id int4,
+        primary key (id),
+        unique (uuid_msb, uuid_lsb)
+    );
+
+    create table PersistableExtrudedLine (
+        id int4 not null,
+        description varchar(255),
+        elevation float8,
+        hasElevation bool,
+        latitude float8,
+        longitude float8,
+        name varchar(255),
+        restorableMetadata text,
+        url varchar(255),
+        uuid bytea,
+        layer_id int4,
+        altitudeMode int4 not null,
+        isExtrude bool not null,
+        isTesselate bool not null,
+        numOfVertices int4 not null,
+        sector bytea,
+        vertices bytea,
+        primary key (id)
+    );
+
+    create table PersistableExtrudedPolygon (
+        id int4 not null,
+        description varchar(255),
+        elevation float8,
+        hasElevation bool,
+        latitude float8,
+        longitude float8,
+        name varchar(255),
+        restorableMetadata text,
+        url varchar(255),
+        uuid bytea,
+        layer_id int4,
+        altitudeMode int4 not null,
+        blockCoordCount bytea,
+        extrudeHeight bytea,
+        isExtrude bool not null,
+        numOfVertices int4 not null,
+        numberOfBlocks int4 not null,
+        sector bytea,
+        vertices bytea,
+        primary key (id)
+    );
+
+    create table PersistableLine (
+        id int4 not null,
+        description varchar(255),
+        elevation float8,
+        hasElevation bool,
+        latitude float8,
+        longitude float8,
+        name varchar(255),
+        restorableMetadata text,
+        url varchar(255),
+        uuid bytea,
+        layer_id int4,
+        blockCoordCount bytea,
+        numOfVertices int4 not null,
+        numberOfBlocks int4 not null,
+        sector bytea,
+        vertices bytea,
+        primary key (id)
+    );
+
+    create table PersistablePolygon (
+        id int4 not null,
+        description varchar(255),
+        elevation float8,
+        hasElevation bool,
+        latitude float8,
+        longitude float8,
+        name varchar(255),
+        restorableMetadata text,
+        url varchar(255),
+        uuid bytea,
+        layer_id int4,
+        blockCoordCount bytea,
+        numOfVertices int4 not null,
+        numberOfBlocks int4 not null,
+        sector bytea,
+        vertices bytea,
+        primary key (id)
+    );
+
+    create table PersistableSurfacePolygon (
+        id int4 not null,
+        description varchar(255),
+        elevation float8,
+        hasElevation bool,
+        latitude float8,
+        longitude float8,
+        name varchar(255),
+        restorableMetadata text,
+        url varchar(255),
+        uuid bytea,
+        layer_id int4,
+        interior bytea,
+        outerBoundary bytea,
+        sector bytea,
+        primary key (id)
+    );
+
+    create table PersistableSurfacePolyline (
+        id int4 not null,
+        description varchar(255),
+        elevation float8,
+        hasElevation bool,
+        latitude float8,
+        longitude float8,
+        name varchar(255),
+        restorableMetadata text,
+        url varchar(255),
+        uuid bytea,
+        layer_id int4,
+        interior bytea,
+        outerBoundary bytea,
+        sector bytea,
+        primary key (id)
+    );
+
+    create table PluginState (
+        id  serial not null,
+        state text,
+        uniqueKey varchar(255),
+        primary key (id)
+    );
+
+    create table ProgramVersion (
+        id  serial not null,
+        upgraderCount int4,
+        version varchar(255),
+        primary key (id)
+    );
+
+    create table RigidShapeMapObject (
+        halfHeight float8 not null,
+        pitch float8 not null,
+        roll float8 not null,
+        semiMajorAxis float8 not null,
+        semiMinorAxis float8 not null,
+        skewMajorAxis float8 not null,
+        skewMinorAxis float8 not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeBoxMapObject (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeCircleMapObject (
+        radius float8 not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeConeMapObject (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeCylinderMapObject (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeEllipseMapObject (
+        semiMajorAxis float8 not null,
+        semiMinorAxis float8 not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeEllipsoidMapObject (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeExtrudedPolygonMapObject (
+        height float8 not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeMapObject (
+        editable bool not null,
+        fillColor int4,
+        lineColor int4,
+        lineWidth float8,
+        orientationDegrees float8,
+        published bool not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapePathMapObject (
+        encodedPoints bytea,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapePolygon3DMapObject (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapePolygonMapObject (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapePolyline3DMapObject (
+        elevation float8,
+        hasElevation bool,
+        latitude float8,
+        longitude float8,
+        lowerAltitude float8 not null,
+        lowerAltitudeReferenceMode varchar(255),
+        upperAltitude float8 not null,
+        upperAltitudeReferenceMode varchar(255),
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapePyramidMapObject (
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeRangeFanMapObject (
+        interval float8 not null,
+        maxDistance float8 not null,
+        minDistance float8 not null,
+        rangeType int4 not null,
+        sampleDistance float8 not null,
+        showEdges bool not null,
+        showOrientation bool not null,
+        showRangeValues bool not null,
+        sweep float8 not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeRectangleMapObject (
+        halfheight float8 not null,
+        halfwidth float8 not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeSphereMapObject (
+        radius float8 not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeSquareMapObject (
+        halfwidth float8 not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table ShapeWedgeMapObject (
+        wedgeAngle float8 not null,
+        id int4 not null,
+        primary key (id)
+    );
+
+    create table Structure (
+        id  serial not null,
+        hashValue varchar(255),
+        isRenderable bool not null,
+        messageType varchar(255),
+        sqlTypes varchar(255),
+        version varchar(255),
+        primary key (id),
+        unique (hashValue)
+    );
+
+    create table StructureAssociation (
+        mapentity_id int4 not null,
+        structure_id int4 not null
+    );
+
+    create table StructureDef (
+        id  serial not null,
+        messageType varchar(255),
+        version varchar(255),
+        primary key (id)
+    );
+
+    create table StructureField (
+        id  serial not null,
+        defaultValue varchar(255),
+        fieldLength int4,
+        fieldName varchar(255),
+        fieldType int4 not null,
+        ordinalPosition int4 not null,
+        sharedFlag bool,
+        structure_id int4,
+        primary key (id)
+    );
+
+    create table StructureMetaData (
+        id  serial not null,
+        metadataKey varchar(255),
+        metadataValue varchar(255),
+        structure_id int4,
+        primary key (id)
+    );
+
+    create table SurfaceStructureRelationship (
+        id  serial not null,
+        source_id int4,
+        target_id int4,
+        type_id int4,
+        primary key (id)
+    );
+
+    create table SurfaceStructureRelationshipType (
+        id  serial not null,
+        forward varchar(255),
+        reverse varchar(255),
+        primary key (id)
+    );
+
+    create table TrackInfo (
+        id  serial not null,
+        corners bytea,
+        numberOfTracks int4 not null,
+        originText varchar(255),
+        trackEndDate int8 not null,
+        trackStartDate int8 not null,
+        primary key (id)
+    );
+
+    create table TrackStyleDefinition (
+        id  serial not null,
+        bucketMode int4,
+        displayName varchar(255),
+        elevationThreshold float8,
+        fadedOverTimeFlag bool,
+        family varchar(255),
+        glyphConstantOpacity float4,
+        glyphConstantSize int4,
+        glyphResource varchar(255),
+        glyphVerticalAlignment int4,
+        glyphVerticalOffset float8,
+        groupability int4,
+        isUserDefined bool,
+        linkGlyphOpacityToTrackOpacity bool,
+        linkGlyphSizeToTrackSize bool,
+        linkGlyphToHeading bool,
+        linkTrackShapeToHeading bool,
+        showHeading bool,
+        snapToSurface bool,
+        timeThreshold int8,
+        trackShape int4,
+        trackShapeConstantColor int4,
+        trackShapeConstantOpacity float4,
+        trackShapeConstantSize int4,
+        type varchar(255),
+        uniqueKey varchar(255) unique,
+        visible bool,
+        primary key (id)
+    );
+
+    create table TrackStyleDefinitionMetadataPair (
+        id  serial not null,
+        metadataKey varchar(255),
+        metadataValue varchar(255),
+        trackStyleDefinition_id int4,
+        primary key (id)
+    );
+
+    create table VFSFile (
+        id  serial not null,
+        creationDate int8 not null,
+        creator varchar(255),
+        creator_uuid_msb int8,
+        creator_uuid_lsb int8,
+        hashValue varchar(255),
+        packageIgnore bool,
+        pathOnDisk varchar(255),
+        ready bool not null,
+        relativePath varchar(255),
+        remote bool not null,
+        remoteFileSize int8 not null,
+        uuid_msb int8,
+        uuid_lsb int8,
+        vfsNamespace_id int4,
+        primary key (id)
+    );
+
+    create table "class" (
+        id int2 not null,
+        name varchar(255),
+        primary key (id)
+    );
+
+    create table channeldef_objecttype (
+        channeldef_id int4 not null,
+        objecttype_id int4 not null,
+        primary key (channeldef_id, objecttype_id)
+    );
+
+    create table channeldef_structure (
+        channeldef_id int4 not null,
+        structuredef_id int4 not null,
+        primary key (channeldef_id, structuredef_id)
+    );
+
+    create table channeldef_vfsnamespace (
+        channeldef_id int4 not null,
+        namespace_id int4 not null,
+        primary key (channeldef_id, namespace_id)
+    );
+
+    create table eventlog (
+        id int4 not null,
+        details varchar(255),
+        logDate timestamp,
+        mapObjectFamily varchar(255),
+        mapObjectType varchar(255),
+        mapObjectUnitId varchar(255),
+        message varchar(255),
+        name varchar(255),
+        state int4,
+        target varchar(255),
+        type int4 not null,
+        primary key (id)
+    );
+
+    create table file_channeldef (
+        file_id int4 not null,
+        channeldef_id int4 not null
+    );
+
+    create table mappointmessage_channel (
+        id  serial not null,
+        sequenceNumber int4 not null,
+        channel_id int4,
+        message_id int4,
+        primary key (id)
+    );
+
+    alter table AnnotationMapObject 
+        add constraint FKDA9EE12C4F13C0AE 
+        foreign key (id) 
+        references MapObject;
+
+    alter table ChannelDef 
+        add constraint FK3BBA8226F9877C8 
+        foreign key (class_id) 
+        references "class";
+
+    alter table ChannelDef_AChannelFilter 
+        add constraint FK7E14C55788CF9EFE 
+        foreign key (ChannelDef_id) 
+        references ChannelDef;
+
+    alter table ChannelDef_AChannelFilter 
+        add constraint FK7E14C5577970A1BC 
+        foreign key (filters_id) 
+        references AChannelFilter;
+
+    alter table ChannelStats 
+        add constraint FK44C557C55479C6B 
+        foreign key (mo_id) 
+        references MapObject;
+
+    alter table ChannelStats 
+        add constraint FK44C557CA3E9AE7D 
+        foreign key (channel_id) 
+        references ChannelDef;
+
+    alter table ClientIconMapObject 
+        add constraint FKF3F1611717E0F035 
+        foreign key (id) 
+        references IconMapObject;
+
+    alter table ConnectingLineDefinition 
+        add constraint FKA712AD5F7F1B1B37 
+        foreign key (parent_id) 
+        references ConnectingLineDefinition;
+
+    alter table ConnectingLineDefinitionMetadataPair 
+        add constraint FK2960DA889F1E6C2 
+        foreign key (connectingLineDefinition_id) 
+        references ConnectingLineDefinition;
+
+    create index moKey on CustomDataMonitor (moKey);
+
+    alter table FieldMetaData 
+        add constraint FK9B8A49D21165C8 
+        foreign key (field_id) 
+        references StructureField;
+
+    alter table FileMapObject 
+        add constraint FK372C857F7ADFAC2A 
+        foreign key (id) 
+        references ClientIconMapObject;
+
+    alter table FileMapObject 
+        add constraint FK372C857F716EDF52 
+        foreign key (vfsFile_id) 
+        references VFSFile;
+
+    alter table FileMetaData 
+        add constraint FKA355610B1A295875 
+        foreign key (file_id) 
+        references VFSFile;
+
+    alter table FileTransfer 
+        add constraint FKA8F29A788CF9EFE 
+        foreign key (channelDef_id) 
+        references ChannelDef;
+
+    alter table FileTransfer 
+        add constraint FKA8F29A7716EDF52 
+        foreign key (vfsFile_id) 
+        references VFSFile;
+
+    alter table GeoSpatialFilter 
+        add constraint FKBB4491EBD5F4A6F8 
+        foreign key (id) 
+        references AChannelFilter;
+
+    alter table GeoSpatialFilter_locations 
+        add constraint FKD58BA0AEB9C077D 
+        foreign key (GeoSpatialFilter_id) 
+        references GeoSpatialFilter;
+
+    alter table IconMapObject 
+        add constraint FK29CECB22603D7842 
+        foreign key (trackStyleDefinition_id) 
+        references TrackStyleDefinition;
+
+    alter table IconMapObject 
+        add constraint FK29CECB224CC50842 
+        foreign key (stopRecordsTrackStyleDefinition_id) 
+        references TrackStyleDefinition;
+
+    alter table IconMapObject 
+        add constraint FK29CECB224F13C0AE 
+        foreign key (id) 
+        references MapObject;
+
+    alter table IconMapObject 
+        add constraint FK29CECB2289F1E6C2 
+        foreign key (connectingLineDefinition_id) 
+        references ConnectingLineDefinition;
+
+    alter table IconMapObject 
+        add constraint FK29CECB22934793EA 
+        foreign key (parent_id) 
+        references IconMapObject;
+
+    alter table IndexDefinition 
+        add constraint FKE6B193A594098CB2 
+        foreign key (structure_id) 
+        references Structure;
+
+    alter table IndexDefinitionColumn 
+        add constraint FK22FF435BFB6F8EDB 
+        foreign key (idef_id) 
+        references IndexDefinition;
+
+    alter table MapObject 
+        add constraint FKA606DF9BDBADDB12 
+        foreign key (trackInfo_id) 
+        references TrackInfo;
+
+    alter table MapObject 
+        add constraint FKA606DF9B3367C7E9 
+        foreign key (mostate_id) 
+        references MapObjectState;
+
+    alter table MapObject 
+        add constraint FKA606DF9B4E4D8183 
+        foreign key (ownerObject_id) 
+        references MapObjectOwnerMapObject;
+
+    alter table MapObject 
+        add constraint FKA606DF9BFACF3107 
+        foreign key (owner_id) 
+        references MapObjectOwner;
+
+    alter table MapObjectFilter 
+        add constraint FK9BF736F3D5F4A6F8 
+        foreign key (id) 
+        references AChannelFilter;
+
+    alter table MapObjectFilter 
+        add constraint FK9BF736F3F2AB8DB2 
+        foreign key (mapObjectType_id) 
+        references MapObjectType;
+
+    alter table MapObjectOwnerAppPlugin 
+        add constraint FK5FD53FBC97AD9FFB 
+        foreign key (id) 
+        references MapObjectOwner;
+
+    alter table MapObjectOwnerFeaturePlugin 
+        add constraint FK4EBAC8D197AD9FFB 
+        foreign key (id) 
+        references MapObjectOwner;
+
+    alter table MapObjectOwnerImportExportPlugin 
+        add constraint FK38B6724497AD9FFB 
+        foreign key (id) 
+        references MapObjectOwner;
+
+    alter table MapObjectOwnerMapObject 
+        add constraint FK3A9206C397AD9FFB 
+        foreign key (id) 
+        references MapObjectOwner;
+
+    alter table MapObjectProxy 
+        add constraint FKC388839387B6E7D2 
+        foreign key (mapobject_id) 
+        references MapObject;
+
+    alter table MapObjectProxy 
+        add constraint FKC3888393A3F97552 
+        foreign key (mapentity_id) 
+        references MapEntity;
+
+    create index rdm_receivetime_idx on MapPoint (receiveTime);
+
+    create index rdm_longitude_idx on MapPoint (longitude);
+
+    create index rdm_groupKey_idx on MapPoint (groupKey);
+
+    create index rdm_devicetime_idx on MapPoint (time);
+
+    create index rdm_latitude_idx on MapPoint (latitude);
+
+    alter table MapPoint 
+        add constraint FKDB11DB4501CDBC2 
+        foreign key (mapObjectProxy_id) 
+        references MapObjectProxy;
+
+    alter table MapPoint 
+        add constraint FKDB11DB494098CB2 
+        foreign key (structure_id) 
+        references Structure;
+
+    alter table PersistableExtrudedLine 
+        add constraint FKB872A8743E855450ceaa4621 
+        foreign key (layer_id) 
+        references ClientLayer;
+
+    alter table PersistableExtrudedPolygon 
+        add constraint FKB872A8743E855450b6bb73ed 
+        foreign key (layer_id) 
+        references ClientLayer;
+
+    alter table PersistableLine 
+        add constraint FKB872A8743E8554503478da22 
+        foreign key (layer_id) 
+        references ClientLayer;
+
+    alter table PersistablePolygon 
+        add constraint FKB872A8743E8554501974d44c 
+        foreign key (layer_id) 
+        references ClientLayer;
+
+    alter table PersistableSurfacePolygon 
+        add constraint FKB872A8743E855450c1989c7b 
+        foreign key (layer_id) 
+        references ClientLayer;
+
+    alter table PersistableSurfacePolyline 
+        add constraint FKB872A8743E855450717d229f 
+        foreign key (layer_id) 
+        references ClientLayer;
+
+    alter table RigidShapeMapObject 
+        add constraint FKC8CC44059B2555D 
+        foreign key (id) 
+        references ShapeMapObject;
+
+    alter table ShapeBoxMapObject 
+        add constraint FK749C3051EFBD4047 
+        foreign key (id) 
+        references RigidShapeMapObject;
+
+    alter table ShapeCircleMapObject 
+        add constraint FK9AC0D30A9B2555D 
+        foreign key (id) 
+        references ShapeMapObject;
+
+    alter table ShapeConeMapObject 
+        add constraint FK28A951D7EFBD4047 
+        foreign key (id) 
+        references RigidShapeMapObject;
+
+    alter table ShapeCylinderMapObject 
+        add constraint FKF9811B04EFBD4047 
+        foreign key (id) 
+        references RigidShapeMapObject;
+
+    alter table ShapeEllipseMapObject 
+        add constraint FK962BF1E9B2555D 
+        foreign key (id) 
+        references ShapeMapObject;
+
+    alter table ShapeEllipsoidMapObject 
+        add constraint FK6D56E159EFBD4047 
+        foreign key (id) 
+        references RigidShapeMapObject;
+
+    alter table ShapeExtrudedPolygonMapObject 
+        add constraint FK2DEB8FC127A84F38 
+        foreign key (id) 
+        references ShapePathMapObject;
+
+    alter table ShapeMapObject 
+        add constraint FK3581613A4F13C0AE 
+        foreign key (id) 
+        references MapObject;
+
+    alter table ShapePathMapObject 
+        add constraint FK33D21F159B2555D 
+        foreign key (id) 
+        references ShapeMapObject;
+
+    alter table ShapePolygon3DMapObject 
+        add constraint FKCB5A28317ED9476C 
+        foreign key (id) 
+        references ShapePolyline3DMapObject;
+
+    alter table ShapePolygonMapObject 
+        add constraint FKAE2D4D4227A84F38 
+        foreign key (id) 
+        references ShapePathMapObject;
+
+    alter table ShapePolyline3DMapObject 
+        add constraint FK22377D4927A84F38 
+        foreign key (id) 
+        references ShapePathMapObject;
+
+    alter table ShapePyramidMapObject 
+        add constraint FK4598D5ECEFBD4047 
+        foreign key (id) 
+        references RigidShapeMapObject;
+
+    alter table ShapeRangeFanMapObject 
+        add constraint FKF9E66449B2555D 
+        foreign key (id) 
+        references ShapeMapObject;
+
+    alter table ShapeRectangleMapObject 
+        add constraint FKB3437C6D9B2555D 
+        foreign key (id) 
+        references ShapeMapObject;
+
+    alter table ShapeSphereMapObject 
+        add constraint FKA12934AD9B2555D 
+        foreign key (id) 
+        references ShapeMapObject;
+
+    alter table ShapeSquareMapObject 
+        add constraint FK80E7BD5D9B2555D 
+        foreign key (id) 
+        references ShapeMapObject;
+
+    alter table ShapeWedgeMapObject 
+        add constraint FK9BAC548EFBD4047 
+        foreign key (id) 
+        references RigidShapeMapObject;
+
+    alter table StructureAssociation 
+        add constraint FK7C19B52E94098CB2 
+        foreign key (structure_id) 
+        references Structure;
+
+    alter table StructureAssociation 
+        add constraint FK7C19B52EA3F97552 
+        foreign key (mapentity_id) 
+        references MapEntity;
+
+    alter table StructureField 
+        add constraint FK2826BF6794098CB2 
+        foreign key (structure_id) 
+        references Structure;
+
+    alter table StructureMetaData 
+        add constraint FK919B9DC294098CB2 
+        foreign key (structure_id) 
+        references Structure;
+
+    alter table SurfaceStructureRelationship 
+        add constraint FK9D8E78BE8D9D384F 
+        foreign key (type_id) 
+        references SurfaceStructureRelationshipType;
+
+    alter table TrackStyleDefinitionMetadataPair 
+        add constraint FK19A3CA82603D7842 
+        foreign key (trackStyleDefinition_id) 
+        references TrackStyleDefinition;
+
+    alter table VFSFile 
+        add constraint FK417E2BBF11932FC2 
+        foreign key (vfsNamespace_id) 
+        references FileSystemNamespace;
+
+    alter table channeldef_objecttype 
+        add constraint FKD2DF033688CF9EFE 
+        foreign key (channeldef_id) 
+        references ChannelDef;
+
+    alter table channeldef_objecttype 
+        add constraint FKD2DF0336A649D8E 
+        foreign key (objecttype_id) 
+        references MapObjectType;
+
+    alter table channeldef_structure 
+        add constraint FK2623299688CF9EFE 
+        foreign key (channeldef_id) 
+        references ChannelDef;
+
+    alter table channeldef_structure 
+        add constraint FK262329964FED63DE 
+        foreign key (structuredef_id) 
+        references StructureDef;
+
+    alter table channeldef_vfsnamespace 
+        add constraint FK919B05F588CF9EFE 
+        foreign key (channeldef_id) 
+        references ChannelDef;
+
+    alter table channeldef_vfsnamespace 
+        add constraint FK919B05F58335F47F 
+        foreign key (namespace_id) 
+        references FileSystemNamespace;
+
+    alter table file_channeldef 
+        add constraint FKE7899EC51A295875 
+        foreign key (file_id) 
+        references VFSFile;
+
+    alter table file_channeldef 
+        add constraint FKE7899EC588CF9EFE 
+        foreign key (channeldef_id) 
+        references ChannelDef;
+
+    create index cr_sequence_idx on mappointmessage_channel (sequenceNumber);
+
+    alter table mappointmessage_channel 
+        add constraint FKF9B464979531B5B2 
+        foreign key (message_id) 
+        references MapPoint;
+
+    alter table mappointmessage_channel 
+        add constraint FKF9B46497A3E9AE7D 
+        foreign key (channel_id) 
+        references ChannelDef;
+
+    create sequence hibernate_sequence;
+
+    create table hibernate_sequences (
+         sequence_name varchar(255),
+         sequence_next_hi_value int4 
+    ) ;

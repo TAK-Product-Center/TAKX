@@ -1,0 +1,54 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "gov.takx.api.ui.AProgramPreferencesPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow, labelcompgap, button"
+			"$rowSpecs": "default, linegap, default, linegap, default"
+		} ) {
+			name: "this"
+			"border": sfield com.jgoodies.forms.factories.Borders DLU2_BORDER
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "label1"
+				"text": "Select a Location Provider"
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 1, false )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 1
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "javax.swing.JComboBox" ) {
+				name: "providerComboBox"
+				auxiliary() {
+					"JavaCodeGenerator.typeParameters": "ProviderAndConfig"
+				}
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "providerComboBoxActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "btnConfigure"
+				"text": "Configure..."
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnConfigureActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "lblConfig"
+				"text": "This location provider requires configuration"
+				"foreground": new java.awt.Color( 0, 255, 0, 255 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 5
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 85 )
+		} )
+	}
+}

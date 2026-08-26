@@ -1,0 +1,40 @@
+// Gradle script to apply the jacoco plugin
+
+apply plugin: 'jacoco'
+
+ext {
+    coverageEnabled = true
+
+    // The lists of packages we want to include/exclude from the coverage report
+    includedCoveragePackages = [
+            'gov/takx/**',
+            'gov/tak/**'
+    ]
+    excludedCoveragePackages = [
+            '**/gui/**',
+            'gov/takx/commons/swing/**',
+            'gov/takx/core/view/**',
+            'gov/takx/core/globe/**',
+            'gov/takx/platform/globe/**',
+            'gov/takx/platform/io/panels/**',
+            'gov/takx/platform/ui/**',
+            // We don't test our test classes
+            'gov/takx/test/**',
+            'gov/tak/test/**',
+            '**/*Test',
+            '**/*Test$*',
+            // Generated code
+            '**/*HibernateProxy*',
+            '**/*WeldClientProxy*',
+            '**/*AjcClosure*',
+    ]
+}
+
+test {
+    // Configure JaCoCo to test only TAK/TAKX packages.
+    jacoco {
+        // Prevent instrumenting and dumping of classes we don't care about.
+        includes = includedCoveragePackages
+        excludes = excludedCoveragePackages
+    }
+}

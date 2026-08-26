@@ -1,0 +1,461 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:jxb="https://jakarta.ee/xml/ns/jaxb" jxb:version="3.0"
+            targetNamespace="http://www.doe.gov/2010/RaptorStructureSchema" version="1.0"
+            xmlns="http://www.doe.gov/2010/RaptorStructureSchema">
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+            Structures represent a collection of strongly typed fields.
+            A device plugin has the opportunity to define one or more structures.
+            Structures are uniquely defined based on a hash key generated from the following pieces of information:
+
+            * structure name
+            * structure version
+            * structure metadata
+            * for each field, the name, datatype, ordinal position, default value, and metadata
+
+            Any structure offered to TAKX that presents with an identical hash key already found in the
+            database is considered to be an exact copy, and as
+            such, is not re-installed into the database. This behavior allows different software development teams,
+            perhaps separated across organizational or corporate
+            boundaries, to share structures. The ability to share structures is crucial when developers use the SDK to
+            publish Features and perform map object to map object
+            communication.
+
+            Since so many case-sensitive, whitespace sensitive items, e.g. metadata, are included in the hash key, this
+            schema can be used to publish and share structures
+            across organizational or corporate boundaries. The primary benefit is that developers do not have to re-key
+            complex structures in Java only to realize that
+            an inadvertent whitespace was introduced, creating a different hash key.
+        </xsd:documentation>
+        <xsd:appinfo>
+            <jxb:schemaBindings>
+                <jxb:package name="gov.takx.platform.schema.structure"/>
+            </jxb:schemaBindings>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+    <xsd:complexType name="MetadataType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">
+                Metadata always consists of a sequential key-value pair. Both the key and the value are String based.
+                Consult the TAKX SDK documentation
+                for complete documentation on the full set of standardized keys that may be used.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="Key" type="xsd:string"/>
+            <xsd:element name="Value" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+
+    <xsd:complexType name="BaseFieldType" abstract="true">
+        <xsd:annotation>
+            <xsd:documentation>
+                Abstract base type used to represent the most intrinsic TAKX structure field definitions. Every
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="0">
+            <xsd:element name="Metadata" type="MetadataType"/>
+        </xsd:sequence>
+        <xsd:attribute name="name" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Name of the field. This name may be seen by the user if they choose to display the TAKX Device
+                    Log Dialog.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="displayProcessor" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Field display processor class to override default method on how the field should be
+                    interpreted in places like the device log. Class must implement IFieldDisplayProcessor.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="position" type="xsd:short" default="-1">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Ordinal position in absolute terms of this field with relation to other fields. Defining an ordinal
+                    position is intended to be an
+                    all or nothing decision. Defining an ordinal position for only some of the fields results in an
+                    undefined field order.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="indexed" type="xsd:boolean" default="false">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Specifies whether the field should be indexed in the underlying database. This is only an index, not
+                    a uniqueness constraint.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="fieldLength" type="xsd:integer"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="BooleanFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Boolean fields must define a name attribute, and may define a position attribute.
+                A default value may also be defined.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:sequence>
+                    <xsd:element name="DefaultValue" type="xsd:boolean" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:simpleType name="DateFormatPatternType">
+        <xsd:annotation>
+            <xsd:documentation>Must define a valid java.text.SimpleDateFormat pattern. See
+                http://java.sun.com/j2se/1.5.0/docs/api/index.html?java/sql/Date.html for more information.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:restriction base="xsd:string"/>
+    </xsd:simpleType>
+
+    <xsd:complexType name="StringFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                String fields must define a name attribute, and may define position and nillable attributes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:sequence>
+                    <xsd:element name="DefaultValue" type="xsd:string" minOccurs="0"/>
+                </xsd:sequence>
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ByteArrayFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Byte array fields must define a name attribute, and may define position and nillable attributes.
+                A default value may also be defined using Base64 encoding to represent the bytes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:sequence>
+                    <xsd:element name="DefaultValue" type="xsd:base64Binary" minOccurs="0"/>
+                </xsd:sequence>
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="BooleanArrayFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Array fields must define a name attribute, and may define position and nillable attributes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="StringArrayFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Array fields must define a name attribute, and may define position and nillable attributes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ShortArrayFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Array fields must define a name attribute, and may define position and nillable attributes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="IntArrayFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Array fields must define a name attribute, and may define position and nillable attributes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="LongArrayFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Array fields must define a name attribute, and may define position and nillable attributes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="FloatArrayFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Array fields must define a name attribute, and may define position and nillable attributes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="DoubleArrayFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Array fields must define a name attribute, and may define position and nillable attributes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="DateArrayFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Array fields must define a name attribute, and may define position and nillable attributes.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="ShortFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Short fields must define a name attribute, and may define position and nillable attributes.
+                A default value may also be defined.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:sequence>
+                    <xsd:element name="DefaultValue" type="xsd:short" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="IntegerFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Integer fields must define a name attribute, and may define position and nillable attributes.
+                A default value may also be defined.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:sequence>
+                    <xsd:element name="DefaultValue" type="xsd:integer" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="LongFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Long fields must define a name attribute, and may define position and nillable attributes.
+                A default value may also be defined.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:sequence>
+                    <xsd:element name="DefaultValue" type="xsd:long" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="FloatFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Float fields must define a name attribute, and may define position and nillable attributes.
+                A default value may also be defined.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:sequence>
+                    <xsd:element name="DefaultValue" type="xsd:float" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="DoubleFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Double fields must define a name attribute, and may define position and nillable attributes.
+                A default value may also be defined.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:sequence>
+                    <xsd:element name="DefaultValue" type="xsd:double" minOccurs="0"/>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="DateTimeFieldType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                DateTime fields must define a name attribute, and may define position and nillable attributes.
+                Date fields not based on the date format CCYY-MM-DDThh:mm:ssZ *must* define a datetime format pattern.
+                A default value may also be defined.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexContent>
+            <xsd:extension base="BaseFieldType">
+                <xsd:sequence>
+                    <xsd:element name="DefaultValue" type="xsd:dateTime" minOccurs="0"/>
+                    <xsd:element name="Format" type="DateFormatPatternType" minOccurs="0"/>
+                </xsd:sequence>
+                <xsd:attribute name="Nillable" type="xsd:boolean" default="false"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="FieldCollection" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Collection of 0 or more custom structure fields. A structure that does not define any custom structure
+                fields will be a structure built strictly from the default fields that all structures are built from,
+                including latitude, longitude, elevation, etc.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence maxOccurs="unbounded">
+            <xsd:choice>
+                <xsd:element name="StringField" type="StringFieldType"/>
+                <xsd:element name="BooleanField" type="BooleanFieldType"/>
+                <xsd:element name="IntegerField" type="IntegerFieldType"/>
+                <xsd:element name="FloatField" type="FloatFieldType"/>
+                <xsd:element name="ShortField" type="ShortFieldType"/>
+                <xsd:element name="LongField" type="LongFieldType"/>
+                <xsd:element name="DoubleField" type="DoubleFieldType"/>
+                <xsd:element name="DateTimeField" type="DateTimeFieldType"/>
+                <xsd:element name="BytesField" type="ByteArrayFieldType"/>
+                <xsd:element name="BooleanArrayField" type="BooleanArrayFieldType"/>
+                <xsd:element name="StringArrayField" type="StringArrayFieldType"/>
+                <xsd:element name="ShortArrayField" type="ShortArrayFieldType"/>
+                <xsd:element name="IntArrayField" type="IntArrayFieldType"/>
+                <xsd:element name="LongArrayField" type="LongArrayFieldType"/>
+                <xsd:element name="FloatArrayField" type="FloatArrayFieldType"/>
+                <xsd:element name="DoubleArrayField" type="DoubleArrayFieldType"/>
+                <xsd:element name="DateArrayField" type="DateArrayFieldType"/>
+            </xsd:choice>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="IndexType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Specifies an index to be created in the structure's underlying database representation.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="field" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="unique" type="xsd:boolean" default="false">
+            <xsd:annotation>
+                <xsd:documentation>
+                    Specifies whether structure values must be unique within the index. Default is false.
+                </xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="IndexCollection" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Collection of 0 or more field index definitions.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="Index" type="IndexType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="StructureType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Every structure must be defined to include a unique message type name, a version, an optional collection
+                of custom structure fields, and optional metadata describing the structure as a whole.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="MessageType" type="xsd:string"/>
+            <xsd:element name="Version" type="xsd:string"/>
+            <xsd:element name="Fields" type="FieldCollection" minOccurs="0"/>
+            <xsd:element name="Indexes" type="IndexCollection" minOccurs="0"/>
+            <xsd:element name="Metadata" type="MetadataType" minOccurs="0"/>
+            <xsd:element name="Renderable" type="xsd:boolean" minOccurs="0" default="true">
+                <xsd:annotation>
+                    <xsd:documentation>
+                        Renderable indicates the default rendering state for RDMs generated from this structure type.
+                        When
+                        renderable is false, any RDM passing through the TAKX core that returns true for
+                        hasLocation() and
+                        false for isRenderable() will not be rendered on the globe.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="StructuresCollection" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>
+                Collection of 1 or more Raptor Data Structure definitions.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="Structure" type="StructureType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="Structures" type="StructuresCollection"/>
+
+</xsd:schema>

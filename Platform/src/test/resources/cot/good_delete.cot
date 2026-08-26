@@ -1,0 +1,9 @@
+<?xml version='1.0' standalone='yes'?>
+<event version="2.0" uid="b8878fee-d040-486a-96cb-b5d45dc2fcb6" type="t-x-d-d" time="2018-07-25T01:47:47.986Z"
+       start="2018-07-25T01:47:47.986Z" stale="2018-07-26T01:47:47.986Z" how="m-g">
+    <detail>
+        <!-- the UID in this link must match the UID used in good_rectangle.cot -->
+        <link uid="b8878fee-d040-486a-96cb-b5d45dc2fcb6" relation="none" type="none"/>
+        <__forcedelete/>
+    </detail>
+</event>

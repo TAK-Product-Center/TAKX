@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:jxb="https://jakarta.ee/xml/ns/jaxb" jxb:version="3.0"
+            targetNamespace="http://www.doe.gov/2011/ButtonSchema" version="1.0"
+            xmlns="http://www.doe.gov/2011/ButtonSchema">
+
+    <xsd:annotation>
+        <xsd:appinfo>
+            <jxb:schemaBindings>
+                <jxb:package name="gov.takx.platform.schema.buttonhelp"/>
+            </jxb:schemaBindings>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+    <xsd:complexType name="TargetDefinitionType">
+        <xsd:choice>
+            <xsd:element name="uri" type="xsd:anyURI"/>
+            <xsd:element name="file" type="xsd:string"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <xsd:complexType name="ButtonDefinitionType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>Every button must be assigned a name, description, icon, and target.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="name" type="xsd:string"/>
+            <xsd:element name="description" type="xsd:string"/>
+            <xsd:element name="icon" type="xsd:string"/>
+            <xsd:element name="target" type="TargetDefinitionType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ButtonsCollection" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>Collection of 1 or more help button definitions.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="button" type="ButtonDefinitionType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="buttons" type="ButtonsCollection"/>
+
+</xsd:schema>

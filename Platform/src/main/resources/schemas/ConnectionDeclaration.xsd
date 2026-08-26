@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:jxb="https://jakarta.ee/xml/ns/jaxb" jxb:version="3.0"
+            targetNamespace="http://www.doe.gov/2010/RaptorConnectionSchema" version="1.0"
+            xmlns="http://www.doe.gov/2010/RaptorConnectionSchema">
+
+    <xsd:annotation>
+        <xsd:documentation>
+            Every connection must be defined to include a family, type, version, format, in addition to declaring
+            which base connection type it extends.
+        </xsd:documentation>
+        <xsd:appinfo>
+            <jxb:schemaBindings>
+                <jxb:package name="gov.takx.platform.schema.plugin.connection"/>
+            </jxb:schemaBindings>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+    <xsd:complexType name="ConnectionDeclaration" final="#all">
+        <xsd:sequence>
+            <xsd:element name="Family" type="xsd:string"/>
+            <xsd:element name="Type" type="xsd:string"/>
+            <xsd:element name="Version" type="xsd:string"/>
+            <xsd:element name="Format" type="xsd:string"/>
+            <xsd:element name="Extends" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="Connection" type="ConnectionDeclaration"/>
+
+</xsd:schema>

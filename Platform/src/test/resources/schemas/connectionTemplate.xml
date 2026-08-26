@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ConnectionDefinitions>
+	<ConnectionDefinition>
+		<Family>gov.takx.CursorOnTarget</Family>
+		<Type>CoT Subscribe</Type>
+		<Name>CoT Subscribe 18000</Name>
+		<AutoConnect>true</AutoConnect>
+		<Properties>
+			<Property>
+				<Name>Protocol</Name>
+				<Value>UDP</Value>
+			</Property>
+			<Property>
+				<Name>Multicast</Name>
+				<Value>false</Value>
+			</Property>
+			<Property>
+				<Name>Port</Name>
+				<Value>18000</Value>
+			</Property>
+		</Properties>
+	</ConnectionDefinition>
+	<ConnectionDefinition>
+		<Family>gov.takx.acme</Family>
+		<Type>Acme</Type>
+		<Name>Acme 127.0.0.1:12000</Name>
+		<AutoConnect>true</AutoConnect>
+		<Properties>
+			<Property>
+				<Name>IP Address</Name>
+				<Value>127.0.0.1</Value>
+			</Property>
+			<Property>
+				<Name>Port</Name>
+				<Value>12000</Value>
+			</Property>
+		</Properties>
+	</ConnectionDefinition>
+</ConnectionDefinitions>

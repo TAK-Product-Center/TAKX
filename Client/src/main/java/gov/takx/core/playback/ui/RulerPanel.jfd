@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.7.0_40" class="java.beans.XMLDecoder">
+ <object class="com.jformdesigner.model.FormModel">
+  <void property="contentType">
+   <string>form/swing</string>
+  </void>
+  <void property="root">
+   <object class="com.jformdesigner.model.FormRoot">
+    <void method="add">
+     <object class="com.jformdesigner.model.FormContainer">
+      <string>javax.swing.JPanel</string>
+      <object class="com.jformdesigner.model.FormLayoutManager">
+       <class>com.jgoodies.forms.layout.FormLayout</class>
+       <void method="setProperty">
+        <string>$columnSpecs</string>
+        <string>default:grow</string>
+       </void>
+       <void method="setProperty">
+        <string>$rowSpecs</string>
+        <string>20px, 15px</string>
+       </void>
+      </object>
+      <void method="setProperty">
+       <string>maximumSize</string>
+       <object class="java.awt.Dimension">
+        <int>2147483647</int>
+        <int>35</int>
+       </object>
+      </void>
+      <void property="name">
+       <string>this</string>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormContainer">
+        <string>javax.swing.JPanel</string>
+        <object class="com.jformdesigner.model.FormLayoutManager">
+         <class>com.jgoodies.forms.layout.FormLayout</class>
+         <void method="setProperty">
+          <string>$columnSpecs</string>
+          <string>default:grow</string>
+         </void>
+         <void method="setProperty">
+          <string>$rowSpecs</string>
+          <string>fill:20px</string>
+         </void>
+        </object>
+        <void property="name">
+         <string>tickPane</string>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>1</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>1</int>
+        </void>
+        <void method="setProperty">
+         <string>vAlign</string>
+         <object class="com.jgoodies.forms.layout.CellConstraints" field="FILL"/>
+        </void>
+        <void method="setProperty">
+         <string>hAlign</string>
+         <object class="com.jgoodies.forms.layout.CellConstraints" field="FILL"/>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormContainer">
+        <string>javax.swing.JPanel</string>
+        <object class="com.jformdesigner.model.FormLayoutManager">
+         <class>com.jgoodies.forms.layout.FormLayout</class>
+         <void method="setProperty">
+          <string>$columnSpecs</string>
+          <string>default:grow</string>
+         </void>
+         <void method="setProperty">
+          <string>$rowSpecs</string>
+          <string>fill:15px</string>
+         </void>
+        </object>
+        <void property="name">
+         <string>timeLabelPane</string>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>1</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>2</int>
+        </void>
+        <void method="setProperty">
+         <string>vAlign</string>
+         <object class="com.jgoodies.forms.layout.CellConstraints" field="FILL"/>
+        </void>
+        <void method="setProperty">
+         <string>hAlign</string>
+         <object class="com.jgoodies.forms.layout.CellConstraints" field="FILL"/>
+        </void>
+       </object>
+      </void>
+     </object>
+     <object class="com.jformdesigner.model.FormLayoutConstraints">
+      <null/>
+      <void method="setProperty">
+       <string>location</string>
+       <object class="java.awt.Point">
+        <int>0</int>
+        <int>0</int>
+       </object>
+      </void>
+      <void method="setProperty">
+       <string>size</string>
+       <object class="java.awt.Dimension">
+        <int>475</int>
+        <int>40</int>
+       </object>
+      </void>
+     </object>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<event version="2.0"
+       uid="GeoChat.ANDROID-R32M700HZ2X.f6cb1dfe-1271-45b0-981b-1a1f43303575.9e86f9cc-e2fe-4ae1-9180-429487829670"
+       type="b-t-f" time="2003-01-07T23:39:47.949Z" start="2003-01-07T23:39:47.949Z" stale="2003-01-08T23:39:47.949Z"
+       how="h-g-i-g-o">
+    <point lat="33.10757216" lon="-116.30770988" hae="161.38400000" ce="4.00000000" le="9999999"/>
+    <detail>
+        <__chat parent="UserGroups" groupOwner="true" messageId="7f0a333c-99ed-4368-b7dd-2c17ac1d11a3" chatroom="4"
+                id="f6cb1dfe-1271-45b0-981b-1a1f43303575" senderCallsign="OPTIMUS ATAK">
+            <chatgrp uid2="ebc53795-403f-540f-99c6-983696f0bc16" uid0="ANDROID-R32M700HZ2X"
+                     uid1="S-1-5-21-2739727742-677502536-3530350016-1000" id="f6cb1dfe-1271-45b0-981b-1a1f43303575"/>
+            <hierarchy>
+                <group uid="UserGroups" name="Groups">
+                    <group uid="f6cb1dfe-1271-45b0-981b-1a1f43303575" name="4">
+                        <contact uid="S-1-5-21-2739727742-677502536-3530350016-1000" name="OPTIMUS WT"/>
+                        <contact uid="ANDROID-R32M700HZ2X" name="OPTIMUS ATAK"/>
+                        <contact uid="ebc53795-403f-540f-99c6-983696f0bc16" name="PEPSI"/>
+                    </group>
+                </group>
+            </hierarchy>
+        </__chat>
+        <link uid="ANDROID-R32M700HZ2X" type="a-f-G-U-C" relation="p-p"/>
+        <__serverdestination destinations="192.168.1.252:4242:tcp:ANDROID-R32M700HZ2X"/>
+        <remarks source="BAO.F.ATAK.ANDROID-R32M700HZ2X" time="2003-01-07T23:39:47.949Z">[UPDATED CONTACTS]</remarks>
+    </detail>
+</event>

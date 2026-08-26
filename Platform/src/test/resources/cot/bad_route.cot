@@ -1,0 +1,14 @@
+<?xml version='1.0' standalone='yes'?>
+<!-- bad because not enough points (need 2+) -->
+<event how="h-e" stale="2021-07-04T14:27:26.00Z" start="2021-06-04T14:27:26.00Z" time="2021-06-04T14:27:26.00Z"
+       type="b-m-r" uid="a05a0a32-fa3c-4c1b-a746-92e0ec37de4b" version="2.0">
+    <detail>
+        <_flow-tags_ debug="2021-06-04T14:29:00.00Z"/>
+        <contact callsign="Route 1"/>
+        <link callsign="Route 1 TGT" point="34.111119,-87.431295" type="b-m-p-w"
+              uid="baa78d0e-85d0-4831-8dc3-6adeeb6987af"/>
+        <link_attr color="-16776961" direction="Exfil" method="Walking" order="Descending Check Points"
+                   routetype="Secondary"/>
+    </detail>
+    <point ce="9999999." hae="0." lat="0." le="9999999." lon="0."/>
+</event>

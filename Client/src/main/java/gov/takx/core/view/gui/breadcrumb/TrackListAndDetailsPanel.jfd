@@ -1,0 +1,77 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.CardLayout ) ) {
+			name: "this"
+			"border": sfield com.jgoodies.forms.factories.Borders DLU2_BORDER
+			"name": "trackListPanel"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "default, linegap, fill:default:grow, linegap, default"
+			} ) {
+				name: "trackListPanel"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default, labelcompgap, default"
+					"$rowSpecs": "default"
+				} ) {
+					name: "filtersPanel"
+					add( new FormComponent( "javax.swing.JCheckBox" ) {
+						name: "hideTempCheckBox"
+						"text": "Hide Temp"
+						"toolTipText": "A \"temp\" track has a duration shorter than 10 min and a total distance less than 100m"
+						"selected": true
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "hideTempActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JCheckBox" ) {
+						name: "showAllCheckBox"
+						"text": "Show All"
+						"toolTipText": "When not selected, only the last 15 tracks are displayed"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showAllActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "trackScrollPane"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default:grow"
+						"$rowSpecs": ""
+					} ) {
+						name: "trackEntriesPanel"
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 3
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "filterCountLabel"
+					"text": "text"
+					"horizontalAlignment": 0
+					"toolTipText": "Use the \"Hide Temp\" and \"Show All\" options to modify filters"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 5
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "trackListPanel"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 440 )
+		} )
+		add( new FormComponent( "gov.takx.core.view.gui.breadcrumb.TrackInfoPanel" ) {
+			name: "trackInfoPanel"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 450, 5 )
+		} )
+	}
+}

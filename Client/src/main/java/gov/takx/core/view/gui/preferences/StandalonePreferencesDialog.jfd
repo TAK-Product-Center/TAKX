@@ -1,0 +1,72 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "title"
+			"modal": true
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPane"
+				"border": new javax.swing.border.EmptyBorder( 12, 12, 12, 12 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "contentPanel"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "glue, button, relgap, button, labelcompgap, button"
+						"$rowSpecs": "pref"
+					} ) {
+						name: "buttonBar"
+						"border": sfield com.jgoodies.forms.factories.Borders BUTTON_BAR_GAP_BORDER
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "okButton"
+							"text": "OK"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "ok", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 2
+							"gridY": 1
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "cancelButton"
+							"text": "Cancel"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "cancel", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 4
+							"gridY": 1
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "applyButton"
+							"text": "Apply"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "apply", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 6
+							"gridY": 1
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "South"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

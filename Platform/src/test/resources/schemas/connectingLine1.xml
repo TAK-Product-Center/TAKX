@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns1:ConnectingLineDefinitions xmlns:ns1="http://www.doe.gov/2011/RaptorConnectingLineSchema"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.doe.gov/2011/RaptorConnectingLineSchema file:/C:/src/Designs/schemas/Connecting%20Line/ConnectingLines.xsd">
+    <ConnectingLineDefinition>
+        <Family>Family0</Family>
+        <Type>Type0</Type>
+        <UniqueKey>UniqueKey0</UniqueKey>
+        <DisplayName>DisplayName0</DisplayName>
+        <Scope>User</Scope>
+        <UserDefined>false</UserDefined>
+        <Color>0</Color>
+        <Opacity>0</Opacity>
+        <Width>Minimum</Width>
+        <ElevationThreshold>1000</ElevationThreshold>
+        <ShowDirectionalArrow>false</ShowDirectionalArrow>
+        <Style>Solid</Style>
+        <Metadata>
+            <Key>Key0</Key>
+            <Value>Value0</Value>
+            <Key>Key1</Key>
+            <Value>Value1</Value>
+        </Metadata>
+    </ConnectingLineDefinition>
+    <ConnectingLineDefinition>
+        <Family>Family1</Family>
+        <Type>Type1</Type>
+        <UniqueKey>UniqueKey1</UniqueKey>
+        <DisplayName>DisplayName1</DisplayName>
+        <Scope>User</Scope>
+        <UserDefined>false</UserDefined>
+        <Color>0</Color>
+        <Opacity>0</Opacity>
+        <Width>Minimum</Width>
+        <ElevationThreshold>0</ElevationThreshold>
+        <ShowDirectionalArrow>false</ShowDirectionalArrow>
+        <Style>Solid</Style>
+        <Metadata>
+            <Key>Key2</Key>
+            <Value>Value2</Value>
+            <Key>Key3</Key>
+            <Value>Value3</Value>
+        </Metadata>
+    </ConnectingLineDefinition>
+</ns1:ConnectingLineDefinitions>

@@ -1,0 +1,20 @@
+# Ensure that shell scripts don't get carriage returns added on windows
+*.sh text eol=lf
+gradlew text eol=lf
+
+# Force conversion to LF on push
+*.cot text
+*.csv text
+*.gradle text
+*.groovy text
+*.java text
+*.json text
+*.md text
+*.nmea text
+*.properties text
+*.txt text
+*.xml text
+*.xsd text
+*.yml text
+
+platformVersion.txt merge=ours

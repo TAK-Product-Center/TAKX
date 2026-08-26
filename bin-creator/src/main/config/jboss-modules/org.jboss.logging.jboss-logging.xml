@@ -1,0 +1,17 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.jboss.logging.jboss-logging">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.jboss.logging</groupId>
+                </include>
+            </includes>
+        </match>
+
+        <apply-to-module>
+            <dependencies>
+                <module name="log4j"/>
+            </dependencies>
+        </apply-to-module>
+    </module>
+</modules>

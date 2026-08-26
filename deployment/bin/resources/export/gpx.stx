@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<stx:transform xmlns:stx="http://stx.sourceforge.net/2002/ns"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xmlns:gpx="http://www.topografix.com/GPX/1/1"
+               xmlns:long="java:java.lang.Long"
+               xmlns:date="java:java.util.Date"
+               xmlns:calendar="java:java.util.Calendar"
+               xmlns:tz="java:java.util.TimeZone"
+               xmlns:df="java:java.text.SimpleDateFormat"
+               exclude-result-prefixes="long date df tz calendar"
+               version="1.0"
+               output-method="xml">
+
+    <stx:variable name="formatString">yyyy-MM-dd'T'HH:mm:ss</stx:variable>
+
+    <!-- SimpleDateFormat format = new SimpleDateFormat(formatString) -->
+    <stx:variable name="format" select="df:new($formatString)"/>
+    <stx:variable name="dummy" select="df:setTimeZone($format, tz:getTimeZone('UTC'))"/>
+
+    <!-- Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC")) -->
+    <stx:variable name="cal" select="calendar:getInstance()"/>
+
+    <stx:variable name="latitude"/>
+    <stx:variable name="longitude"/>
+    <stx:variable name="elevation"/>
+    <stx:variable name="mapObjectType"/>
+    <stx:variable name="unitID"/>
+    <stx:variable name="time"/>
+    <stx:variable name="pointtype"/>
+
+    <stx:procedure name="clearVariables">
+        <stx:assign name="latitude"/>
+        <stx:assign name="longitude"/>
+        <stx:assign name="elevation"/>
+        <stx:assign name="mapObjectType"/>
+        <stx:assign name="unitID"/>
+        <stx:assign name="time"/>
+        <stx:assign name="pointtype"/>
+    </stx:procedure>
+
+    <stx:template match="/">
+        <stx:variable name="timestamp" select="date:new()"/>
+
+        <gpx:gpx version="1.1" creator="TAKX"
+             xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+
+            <gpx:metadata>
+                <gpx:name><![CDATA[Export from TAKX]]></gpx:name>
+                <gpx:desc><![CDATA[Export from TAKX]]></gpx:desc>
+                <gpx:time>
+                    <stx:value-of select="df:format($format, $timestamp)"/>
+                </gpx:time>
+            </gpx:metadata>
+
+            <gpx:trk>
+              <gpx:name><stx:value-of select="$mapObjectType"/><stx:value-of select="$unitID"/></gpx:name>
+              <gpx:trkseg>
+                <stx:process-children />
+              </gpx:trkseg>
+            </gpx:trk>
+        </gpx:gpx>
+
+    </stx:template>
+
+    <stx:template match="dataMessage">
+        <stx:call-procedure name="clearVariables"/>
+
+        <stx:process-children/>
+
+        <stx:element name="gpx:trkpt">
+          <stx:attribute name="lat" select="$latitude"/>
+          <stx:attribute name="lon" select="$longitude"/>
+          <!-- Only include type if it is not empty -->
+          <stx:if test="string-length(normalize-space($pointtype)) > 0">
+              <gpx:type><stx:value-of select="$pointtype"/></gpx:type>
+          </stx:if>
+          <gpx:ele><stx:value-of select="$elevation"/></gpx:ele>
+          <gpx:time><stx:value-of select="$time"/></gpx:time>
+        </stx:element>
+    </stx:template>
+
+    <stx:template match="lat/text()">
+       <stx:assign name="latitude" select="."/>
+    </stx:template>
+
+    <stx:template match="lng/text()">
+       <stx:assign name="longitude" select="."/>
+    </stx:template>
+
+    <stx:template match="elevation/text()">
+       <stx:assign name="elevation" select="."/>
+    </stx:template>
+
+    <stx:template match="field[@name='pointtype']/text()">
+       <stx:assign name="pointtype" select="."/>
+    </stx:template>
+
+    <stx:template match="mapObjectType/text()">
+       <stx:assign name="mapObjectType" select="."/>
+    </stx:template>
+
+    <stx:template match="mapObjectId/text()">
+       <stx:assign name="unitID" select="."/>
+    </stx:template>
+
+    <stx:template match="time/text()">
+        <!-- Call into Java to do date formatting -->
+
+        <!-- cal.setTimeInMillis(time) -->
+<!--         <stx:value-of select="calendar:setTimeInMillis($cal, long:new(.))"/> -->
+
+        <!-- Date d = new Date(time) -->
+<!--         <stx:variable name="d" select="date:new(calendar:getTime($cal))"/> -->
+        <stx:variable name="d" select="date:new(long:new(.))"/>
+
+        <stx:assign name="time"><stx:value-of select="df:format($format, $d)"/>Z</stx:assign>
+    </stx:template>
+
+</stx:transform>

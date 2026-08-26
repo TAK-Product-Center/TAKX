@@ -1,0 +1,109 @@
+JFDML JFormDesigner: "8.0.3.0.246" Java: "17.0.5" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, linegap, default:grow, linegap, default:grow"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "right:default, labelcompgap, default:grow, labelcompgap, default"
+				"$rowSpecs": "default, linegap, default, linegap, default, linegap, default, linegap"
+			} ) {
+				name: "panelContent"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label1"
+					"text": "Directory:"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "textFieldDir"
+					"columns": 40
+					auxiliary() {
+						"JavaCodeGenerator.variableGetter": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "buttonDirSelect"
+					"text": "..."
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "buttonDirSelectActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label2"
+					"text": "Name:"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 3
+				} )
+				add( new FormComponent( "javax.swing.JTextField" ) {
+					name: "textFieldName"
+					auxiliary() {
+						"JavaCodeGenerator.variableGetter": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 3
+					"gridWidth": 3
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label3"
+					"text": "Full Path:"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 5
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "labelFullPath"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 5
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					"gridWidth": 3
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label4"
+					"text": "Approx Size:"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 7
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "sizeLabel"
+					"text": "text"
+					auxiliary() {
+						"JavaCodeGenerator.variableGetter": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 7
+					"gridWidth": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "center:default:grow"
+				"$rowSpecs": "default"
+			} ) {
+				name: "panel1"
+				"border": sfield com.jgoodies.forms.factories.Borders TABBED_DIALOG_BORDER
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "labelExists"
+					"horizontalAlignment": 0
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 5
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 5, 0 )
+			"size": new java.awt.Dimension( 415, 200 )
+		} )
+	}
+}

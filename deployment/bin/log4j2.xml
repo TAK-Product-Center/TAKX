@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns:xi="http://www.w3.org/2001/XInclude" status="warn" monitorInterval="10">
+
+    <xi:include href="log4j-properties.xml" />
+    <xi:include href="log4j-appenders.xml" />
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Roller"/>
+        </Root>
+
+        <!-- Quiet down various subsystems (since our root log level is INFO) -->
+        <Logger name="org.hibernate" level="warn"/>
+        <Logger name="org.jboss.weld" level="warn"/>
+        <Logger name="com.zaxxer.hikari" level="warn"/>
+        <Logger name="rendering.debug" level="warn"/>
+    </Loggers>
+</Configuration>

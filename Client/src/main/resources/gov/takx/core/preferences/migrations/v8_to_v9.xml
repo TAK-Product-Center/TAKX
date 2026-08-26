@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="8" to="9">
+    <remove refXpath="node[@name='program']/map/entry[@key='explorerTextSizeScalingPercent']"/>
+    <add refXpath="node[@name='DockingFrames']" where="after">
+        <!-- Sub-node containing configurable properties for the Explorer Tree -->
+        <node name="ExplorerTree">
+            <map>
+                <!-- Size in pixels for icons rendered in the Explorer Tree nodes.  Default is 24. -->
+                <entry key="iconSize" value="24"/>
+
+                <!-- Percent scaling for Explorer Tree text font.  Default is 130% -->
+                <entry key="textSizeScalingPercent" value="130"/>
+            </map>
+        </node>
+    </add>
+</migration>

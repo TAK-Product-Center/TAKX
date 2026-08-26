@@ -1,0 +1,74 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "gov.takx.commons.swing.entity.common.CommonEntityTable" ) {
+					name: "table"
+					"focusable": false
+					"rowSelectionAllowed": false
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "IMapObject"
+					}
+					addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "tableMouseClicked", true ) )
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 595, 300 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "addButton"
+			"text": "Add"
+			"toolTipText": "Add or Edit a Drifter Configuration"
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addActionPerformed", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 40, 365 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "pauseButton"
+			"text": "Pause"
+			"toolTipText": "Pause All Drifter Configurations"
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "pauseActionPerformed", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 140, 365 )
+			"size": new java.awt.Dimension( 86, 34 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "resumeButton"
+			"text": "Resume"
+			"toolTipText": "Resume All Drifter Configurations"
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "resumeActionPerformed", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 235, 365 )
+			"size": new java.awt.Dimension( 96, 34 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "delayButton"
+			"text": "Delay"
+			"toolTipText": "Delay All Drifter Configurations"
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "delayActionPerformed", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 345, 365 )
+			"size": new java.awt.Dimension( 84, 34 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "restartButton"
+			"text": "Restart"
+			"toolTipText": "Restart All Drifter Configurations"
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "restartActionPerformed", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 450, 365 )
+			"size": new java.awt.Dimension( 91, 34 )
+		} )
+	}
+}

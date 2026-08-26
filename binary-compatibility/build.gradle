@@ -1,0 +1,73 @@
+plugins {
+    id 'java-library'
+    id 'gov.raptor.gradle.plugins.binary-compatibility' version '2.1.0'
+}
+
+binaryCompatibility {
+    projectName = 'TAKX'
+    apiProjects = [project(':platform')]
+    compatibilityBaselineVersion = '5.6.0'
+
+    // Additional classes needed because they are visible from our API
+    // For now we're using the same versions for baseline and current, but this may need to change
+    // in the future.
+    def additionalDeps = [
+            "gov.tak.kernel:takkernel-engine:$takKernelVersion",
+            "gov.tak.kernel:takkernel-shared:$takKernelVersion",
+            "com.formdev:flatlaf:$flatLafVersion",
+            "gov.nasa:worldwind:$worldwindVersion",
+            "jakarta.enterprise:jakarta.enterprise.cdi-api:$jakartaCdiApiVersion",
+            "org.swinglabs.swingx:swingx-all:$swingxVersion"
+    ]
+
+    additionalBaselineDependencies = additionalDeps
+    additionalCurrentDependencies = additionalDeps
+
+    packageExcludes = ['gov.takx.api.aspects', 'gov.takx.platform.cdi']
+}
+
+tasks.register('cleanAndPushAcceptedApiChanges', CleanAndPushAcceptedApiChanges)
+
+/**
+ * Custom task to clean the accepted API changes file, commit it, and push to the origin repo.
+ * This is intended for use in jenkins job as part of the standard "branch and roll" process.
+ *
+ * @since 2.38
+ */
+class CleanAndPushAcceptedApiChanges extends DefaultTask {
+    CleanAndPushAcceptedApiChanges() {
+        group = 'Release'
+        description = '''Clean out all existing accepted API changes, commit it, and push to origin repo.
+Options:
+\t-Pnopush\tDon't push anything to the remote
+\t-Pnoexec\tDon't actually execute operations, just print what would occur
+'''
+
+        dependsOn 'cleanAcceptedApiChanges'
+
+        // When used as part of the branch-and-roll pipeline, we need to ensure that this task runs after
+        // the version has been rolled.
+        mustRunAfter ':rollMinorVersion'
+    }
+
+    /**
+     * The cleanAcceptedApiChanges task has already emptied the file, so just commit the change and push it up.
+     */
+    @TaskAction
+    void commitAndPush() {
+        String changesFile = 'binary-compatibility/accepted-public-api-changes.json'
+
+        logger.lifecycle "git add $changesFile"
+        if (!project.noExec) project.grgit.add(patterns: [changesFile])
+
+        def commitMessage = "Clean accepted API changes on new branch"
+        logger.lifecycle "git commit -m '$commitMessage'"
+        if (!project.noExec) project.grgit.commit(message: commitMessage)
+
+        def branchName = project.grgit.branch.current.fullName
+        logger.lifecycle "git push $branchName ${project.noPush ? '(skipped)' : ''}"
+        if (!project.noExec && !project.noPush) {
+            project.grgit.push(refsOrSpecs: [branchName])
+        }
+    }
+}

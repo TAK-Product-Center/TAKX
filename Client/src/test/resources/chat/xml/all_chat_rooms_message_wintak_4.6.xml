@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<event version="2.0"
+       uid="GeoChat.S-1-5-21-2739727742-677502536-3530350016-1000.All Chat Rooms.a0ab7162-5a20-49d8-a977-6db7be5208fd"
+       type="b-t-f" time="2022-08-23T20:50:00.360Z" start="2022-08-23T20:50:00.360Z" stale="2022-08-24T20:50:00.360Z"
+       how="h-g-i-g-o">
+    <point lat="0.00000000" lon="0.00000000" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <__chat id="All Chat Rooms" chatroom="All Chat Rooms" senderCallsign="OPTIMUS WT" groupOwner="false"
+                messageId="a0ab7162-5a20-49d8-a977-6db7be5208fd">
+            <chatgrp id="All Chat Rooms" uid0="S-1-5-21-2739727742-677502536-3530350016-1000" uid1="All Chat Rooms"/>
+        </__chat>
+        <link uid="S-1-5-21-2739727742-677502536-3530350016-1000" type="a-f-G-U-C-I" relation="p-p"/>
+        <remarks source="BAO.F.WinTAK.S-1-5-21-2739727742-677502536-3530350016-1000"
+                 sourceID="S-1-5-21-2739727742-677502536-3530350016-1000" to="All Chat Rooms"
+                 time="2022-08-23T20:50:00.36Z">Roger
+        </remarks>
+    </detail>
+</event>

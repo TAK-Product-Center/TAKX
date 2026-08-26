@@ -1,0 +1,17 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.swinglabs.swingx.swingx-all">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.swinglabs.swingx</groupId>
+                </include>
+            </includes>
+        </match>
+
+        <apply-to-module>
+            <dependencies>
+                <module name="com.formdev.flatlaf-swingx"/>
+            </dependencies>
+        </apply-to-module>
+    </module>
+</modules>

@@ -1,0 +1,33 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default"
+		} ) {
+			name: "this"
+			"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "fillerLabel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "templateButton"
+			"border": new javax.swing.border.EmptyBorder( 3, 6, 3, 9 )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 316 )
+			"size": new java.awt.Dimension( 87, 34 )
+		} )
+	}
+}

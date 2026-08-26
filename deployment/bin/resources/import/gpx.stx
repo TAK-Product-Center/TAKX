@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  ** Transformation to turn GPX 1.1 or GPX 1.0 into TAKX XML 1.0.
+  -->
+
+<stx:transform xmlns:stx="http://stx.sourceforge.net/2002/ns"
+               xmlns:gpx11="http://www.topografix.com/GPX/1/1"
+               xmlns:gpx10="http://www.topografix.com/GPX/1/0"
+               xmlns:uuid="java:java.util.UUID"
+               stxpath-default-namespace="http://www.topografix.com/GPX/1/1"
+               version="1.0"
+               exclude-result-prefixes="uuid gpx11 gpx10"
+               output-method="xml">
+
+  <!-- These parameters can be passed in by the program running the
+       transformation to override the default settings -->
+  <stx:param name="family" required="no">GPX</stx:param>
+  <stx:param name="type" required="no">GPX</stx:param>
+  <stx:param name="version" required="no">1.1</stx:param>
+  <stx:param name="unitId" required="no">1</stx:param>
+
+  <stx:variable name="name" />
+  <stx:variable name="comment" />
+  <stx:variable name="description" />
+  <stx:variable name="source" />
+  <stx:variable name="url"/>
+  <stx:variable name="link" />
+  <stx:variable name="link_text" />
+  <stx:variable name="link_type" />
+  <stx:variable name="number" />
+  <stx:variable name="time" />
+
+  <stx:variable name="metaDataWritten" select="false"/>
+
+  <stx:template match="gpx11:gpx | gpx10:gpx">
+    <raptordata>
+
+      <mapObjectDefinition>
+        <family><stx:value-of select="$family"/></family>
+        <type><stx:value-of select="$type"/></type>
+        <version><stx:value-of select="$version"/></version>
+
+        <dataStructure>
+          <structType>GPX_METADATA</structType>
+          <field name="name" type="string"/>
+          <field name="comment" type="string"/>
+          <field name="description" type="string"/>
+          <field name="source" type="string"/>
+		  <field name="url" type="string"/>
+          <field name="link" type="string"/>
+          <field name="link_text" type="string"/>
+          <field name="link_type" type="string"/>
+          <field name="number" type="string"/>
+        </dataStructure>
+
+        <dataStructure>
+          <structType>GPX_POINT</structType>
+
+          <!-- Position info -->
+          <field name="ele" type="double"/>
+          <field name="time" type="date"/>
+          <field name="magvar" type="double"/>
+          <field name="geoidheight" type="double"/>
+          <!-- Description info -->
+          <field name="name" type="string" />
+          <field name="cmt" type="string" />
+          <field name="desc" type="string" />
+          <field name="src" type="string" />
+          <field name="sym" type="string" />
+          <field name="pointtype" type="string" />
+          <!-- Accuracy info -->
+          <field name="fix" type="string" />
+          <field name="sat" type="int" />
+          <field name="hdop" type="double" />
+          <field name="vdop" type="double" />
+          <field name="pdop" type="double" />
+          <field name="ageofdgpsdata" type="double" />
+          <field name="dgpsid" type="integer" />
+        </dataStructure>
+
+      </mapObjectDefinition>
+
+      <mapObject>
+	    <family><stx:value-of select="$family"/></family>
+        <type><stx:value-of select="$type"/></type>
+        <id><stx:value-of select="$unitId"/></id>
+        <version><stx:value-of select="$version"/></version>
+      </mapObject>
+
+      <stx:process-children />
+    </raptordata>
+  </stx:template>
+
+  <stx:procedure name="clearVariables">
+    <stx:assign name="name"/>
+    <stx:assign name="comment"/>
+    <stx:assign name="description"/>
+    <stx:assign name="source"/>
+	<stx:assign name="url"/>
+    <stx:assign name="link"/>
+    <stx:assign name="link_text"/>
+    <stx:assign name="link_type"/>
+    <stx:assign name="number"/>
+  </stx:procedure>
+
+  <stx:procedure name="writeMetaData">
+    <stx:if test="$name != ''">
+      <field name="name" type="string"><stx:value-of select="$name"/></field>
+    </stx:if>
+    <stx:if test="$comment != ''">
+      <field name="comment" type="string"><stx:value-of select="$comment"/></field>
+    </stx:if>
+    <stx:if test="$comment != ''">
+      <field name="description" type="string"><stx:value-of select="$description"/></field>
+    </stx:if>
+    <stx:if test="$source != ''">
+      <field name="source" type="string"><stx:value-of select="$source"/></field>
+    </stx:if>
+    <stx:if test="$url != ''">
+      <field name="url" type="string"><stx:value-of select="$url"/></field>
+    </stx:if>
+    <stx:if test="$link != ''">
+      <field name="link" type="string"><stx:value-of select="$link"/></field>
+    </stx:if>
+    <stx:if test="$link_text != ''">
+      <field name="link_text" type="string"><stx:value-of select="$link_text"/></field>
+    </stx:if>
+    <stx:if test="$link_type != ''">
+      <field name="link_type" type="string"><stx:value-of select="$link_type"/></field>
+    </stx:if>
+    <stx:if test="$number != ''">
+      <field name="number" type="string"><stx:value-of select="$number"/></field>
+    </stx:if>
+  </stx:procedure>
+
+  <stx:template match="gpx11:gpx/gpx11:wpt |
+                       gpx10:gpx/gpx10:wpt">
+    <stx:call-procedure name="clearVariables"/>
+
+    <dataMessage>
+      <messageType>point</messageType>
+      <messageVersion>1.0.0</messageVersion>
+      <mapObjectFamily><stx:value-of select="$family"/></mapObjectFamily>
+      <mapObjectId><stx:value-of select="$unitId"/></mapObjectId>
+      <mapObjectType><stx:value-of select="$type"/></mapObjectType>
+      <mapObjectVersion><stx:value-of select="$version"/></mapObjectVersion>
+
+      <lat><stx:value-of select="@lat"/></lat>
+      <lng><stx:value-of select="@lon"/></lng>
+
+      <stx:process-children/>
+
+      <time><stx:value-of select="$time"/></time>
+
+      <stx:call-procedure name="writeMetaData"/>
+    </dataMessage>
+  </stx:template>
+
+  <stx:template match="gpx11:gpx/gpx11:rte |
+                       gpx10:gpx/gpx10:rte">
+    <stx:call-procedure name="clearVariables"/>
+
+    <stx:assign name="metaDataWritten">false</stx:assign>
+
+    <stx:process-children/>
+
+  </stx:template>
+
+  <stx:template match="gpx11:gpx/gpx11:rte/gpx11:rtept |
+                       gpx10:gpx/gpx10:rte/gpx10:rtept">
+    <stx:if test="$metaDataWritten = 'false'">
+      <dataMessage>
+        <messageType>metadata</messageType>
+        <messageVersion>1.0.0</messageVersion>
+        <mapObjectFamily><stx:value-of select="$family"/></mapObjectFamily>
+        <mapObjectId><stx:value-of select="$unitId"/></mapObjectId>
+        <mapObjectType><stx:value-of select="$type"/></mapObjectType>
+        <mapObjectVersion><stx:value-of select="$version"/></mapObjectVersion>
+        <stx:call-procedure name="writeMetaData"/>
+      </dataMessage>
+
+      <stx:assign name="metaDataWritten">true</stx:assign>
+    </stx:if>
+
+    <dataMessage>
+      <messageType>point</messageType>
+      <messageVersion>1.0.0</messageVersion>
+      <mapObjectFamily><stx:value-of select="$family"/></mapObjectFamily>
+      <mapObjectId><stx:value-of select="$unitId"/></mapObjectId>
+      <mapObjectType><stx:value-of select="$type"/></mapObjectType>
+        <mapObjectVersion><stx:value-of select="$version"/></mapObjectVersion>
+
+      <lat><stx:value-of select="@lat"/></lat>
+      <lng><stx:value-of select="@lon"/></lng>
+
+      <stx:process-children/>
+
+      <time><stx:value-of select="$time"/></time>
+      <stx:call-procedure name="writeMetaData"/>
+    </dataMessage>
+  </stx:template>
+
+  <stx:template match="gpx11:gpx/gpx11:trk | gpx10:gpx/gpx10:trk">
+    <stx:call-procedure name="clearVariables"/>
+
+    <stx:assign name="metaDataWritten">false</stx:assign>
+
+    <stx:process-children/>
+  </stx:template>
+
+  <stx:template match="gpx11:gpx/gpx11:trk/gpx11:trkseg/gpx11:trkpt |
+                       gpx10:gpx/gpx10:trk/gpx10:trkseg/gpx10:trkpt">
+    <stx:if test="$metaDataWritten = 'false'">
+      <dataMessage>
+        <messageType>metadata</messageType>
+        <messageVersion>1.0.0</messageVersion>
+        <mapObjectFamily><stx:value-of select="$family"/></mapObjectFamily>
+        <mapObjectId><stx:value-of select="$unitId"/></mapObjectId>
+        <mapObjectType><stx:value-of select="$type"/></mapObjectType>
+        <mapObjectVersion><stx:value-of select="$version"/></mapObjectVersion>
+        <stx:call-procedure name="writeMetaData"/>
+      </dataMessage>
+
+      <stx:call-procedure name="clearVariables"/>
+      <stx:assign name="metaDataWritten">true</stx:assign>
+    </stx:if>
+
+    <dataMessage>
+      <messageType>point</messageType>
+      <messageVersion>1.0.0</messageVersion>
+      <mapObjectFamily><stx:value-of select="$family"/></mapObjectFamily>
+      <mapObjectId><stx:value-of select="$unitId"/></mapObjectId>
+      <mapObjectType><stx:value-of select="$type"/></mapObjectType>
+      <mapObjectVersion><stx:value-of select="$version"/></mapObjectVersion>
+
+      <lat><stx:value-of select="@lat"/></lat>
+      <lng><stx:value-of select="@lon"/></lng>
+
+      <stx:process-children/>
+
+      <time><stx:value-of select="$time"/></time>
+      <stx:call-procedure name="writeMetaData"/>
+    </dataMessage>
+  </stx:template>
+
+  <stx:template match="gpx11:name/text() | gpx10:name/text()">
+    <stx:assign name="name" select="."/>
+  </stx:template>
+
+  <stx:template match="gpx11:cmt/text() | gpx10:cmt/text()">
+    <stx:assign name="comment" select="."/>
+  </stx:template>
+
+  <stx:template match="gpx11:desc/text() | gpx10:desc/text()">
+    <stx:assign name="description" select="."/>
+  </stx:template>
+
+  <stx:template match="gpx11:src/text() | gpx10:src/text()">
+    <stx:assign name="source" select="."/>
+  </stx:template>
+
+  <stx:template match="gpx11:url/text() | gpx10:url/text()">
+    <stx:assign name="url" select="."/>
+  </stx:template>
+
+  <stx:template match="gpx11:urlname/text() | gpx10:urlname/text">
+    <stx:assign name="urlname" select="."/>
+  </stx:template>
+
+  <stx:template match="gpx11:link | gpx10:link">
+    <stx:assign name="link" select="@href"/>
+  </stx:template>
+
+  <stx:template match="gpx11:link/gpx11:text/text() | gpx10:link/gpx10:text/text()">
+    <stx:assign name="link_text" select="."/>
+  </stx:template>
+
+  <stx:template match="gpx11:link/gpx11:type/text() | gpx10:link/gpx10:type/text()">
+    <stx:assign name="link_type" select="."/>
+  </stx:template>
+
+  <stx:template match="gpx11:ele/text() | gpx10:ele/text()">
+    <elevation><stx:value-of select="."/></elevation>
+  </stx:template>
+
+  <stx:template match="gpx11:time/text() | gpx10:time/text()">
+    <stx:assign name="time" select="."/>
+  </stx:template>
+
+  <stx:template match="gpx11:magvar/text() | gpx10:magvar/text()">
+    <field name="magvar" type="double"><stx:value-of select="."/></field>
+  </stx:template>
+
+  <stx:template match="gpx11:geoidheight/text() | gpx10:geoidheight/text()">
+    <field name="geoidheight" type="double"><stx:value-of select="."/></field>
+  </stx:template>
+
+  <stx:template match="gpx11:sym/text() | gpx10:sym/text()">
+    <field name="sym" type="string"><stx:value-of select="."/></field>
+  </stx:template>
+
+  <stx:template match="gpx11:type/text() | gpx10:type/text()">
+    <field name="pointtype" type="string"><stx:value-of select="."/></field>
+  </stx:template>
+
+  <stx:template match="gpx11:fix/text() | gpx10:fix/text()">
+    <field name="fix" type="string"><stx:value-of select="."/></field>
+  </stx:template>
+
+  <stx:template match="gpx11:sat/text() | gpx10:sat/text()">
+    <field name="pdop" type="int"><stx:value-of select="."/></field>
+  </stx:template>
+
+  <stx:template match="gpx11:hdop/text() | gpx10:hdop/text()">
+    <field name="hdop" type="double"><stx:value-of select="."/></field>
+  </stx:template>
+
+  <stx:template match="gpx11:vdop/text() | gpx10:vdop/text()">
+    <field name="vdop" type="double"><stx:value-of select="."/></field>
+  </stx:template>
+
+  <stx:template match="gpx11:pdop/text() | gpx10:pdop/text()">
+    <field name="pdop" type="double"><stx:value-of select="."/></field>
+  </stx:template>
+
+  <stx:template match="gpx11:ageofdgpsdata/text() | gpx10:ageofdgpsdata/text()">
+    <field name="ageofdgpsdata" type="double"><stx:value-of select="."/></field>
+  </stx:template>
+
+  <stx:template match="gpx11:dpgsid/text() | gpx10:dgpsid/text()">
+    <field name="dgpsid" type="int"><stx:value-of select="."/></field>
+  </stx:template>
+
+</stx:transform>

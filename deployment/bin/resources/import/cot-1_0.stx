@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  ** Transformation to convert Cursor On Target to Raptor XML format.
+  **
+  ** Author: Parker Abercrombie
+  -->
+
+<stx:transform xmlns:stx="http://stx.sourceforge.net/2002/ns"
+               version="1.0"
+               exclude-result-prefixes="#all"
+               output-method="xml">
+
+    <stx:template match="/">
+       <raptordata>
+
+          <mapObjectDefinition>
+             <family>cot</family>
+             <type>cot</type>
+             <version>1.0.0</version>
+             <dataStructure>
+                 <structType>generic</structType>
+                 <field name="version" type="string"/>
+                 <field name="how" type="string"/>
+                 <field name="type" type="string"/>
+                 <field name="start" type="date"/>
+                 <field name="stale" type="date"/>
+                 <field name="ce" type="double"/>
+                 <field name="le" type="double"/>
+             </dataStructure>
+          </mapObjectDefinition>
+
+          <stx:process-children />
+       </raptordata>
+    </stx:template>
+
+    <stx:template match="event">
+       <dataMessage>
+           <messageType>generic</messageType>
+           <mapObjectId><stx:value-of select="@uid"/></mapObjectId>
+           <mapObjectType>cot</mapObjectType>
+           <messageVersion>1.0.0</messageVersion>
+           <mapObjectVersion>1.0.0</mapObjectVersion>
+           <time><stx:value-of select="@time"/></time>
+	   <field name="version" type="string"><stx:value-of select="@version"/></field>
+	   <field name="how" type="string"><stx:value-of select="@how"/></field>
+	   <field name="type" type="string"><stx:value-of select="@type"/></field>
+	   <field name="start" type="date"><stx:value-of select="@start"/></field>
+	   <field name="stale" type="date"><stx:value-of select="@stale"/></field>
+           <stx:process-children />
+       </dataMessage>
+    </stx:template>
+
+    <stx:template match="event/point">
+       <lat><stx:value-of select="@lat" /></lat>
+       <lng><stx:value-of select="@lon" /></lng>
+       <elevation><stx:value-of select="@hae" /></elevation>
+       <field name="ce" type="double"><stx:value-of select="@ce" /></field>
+       <field name="le" type="double"><stx:value-of select="@le" /></field>
+    </stx:template>
+
+</stx:transform>

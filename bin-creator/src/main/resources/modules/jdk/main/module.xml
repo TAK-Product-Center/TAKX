@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Pull in the JDK modules we want to expose. -->
+<module xmlns="urn:jboss:module:1.9" name="jdk">
+    <dependencies>
+        <module name="java.se" export="true"/>
+        <module name="java.smartcardio" export="true"/>
+        <module name="jdk.unsupported" export="true"/>
+        <module name="jdk.unsupported.desktop" export="true" optional="true"/>
+        <module name="jdk.accessibility" export="true"/>
+        <module name="jdk.crypto.cryptoki" export="true"/>
+        <module name="jdk.crypto.ec" export="true"/>
+        <module name="jdk.crypto.mscapi" export="true" optional="true"/>
+        <module name="jdk.httpserver" export="true"/>
+        <module name="jdk.management" export="true"/>
+        <module name="jdk.management.agent" export="true" optional="true"/>
+        <module name="jdk.naming.dns" export="true"/>
+        <module name="jdk.naming.ldap" export="true" optional="true"/>
+        <module name="jdk.naming.rmi" export="true"/>
+        <module name="jdk.net" export="true"/>
+        <module name="jdk.sctp" export="true"/>
+        <module name="jdk.security.auth" export="true"/>
+        <module name="jdk.security.jgss" export="true"/>
+    </dependencies>
+</module>

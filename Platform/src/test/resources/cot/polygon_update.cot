@@ -1,0 +1,17 @@
+<?xml version='1.0' standalone='yes'?>
+<!-- test updating of existing polygon shape -->
+<event version='2.0' uid='c112202e-dd33-4fc7-8d3d-09a14e296011' type='u-d-f' time='2020-12-16T19:59:34.921Z'
+       start='2020-12-16T19:59:34.921Z' stale='2020-12-17T19:59:34.921Z' how='h-e'>
+    <point lat='38.837566759240914' lon='-77.06585180074342' hae='9999999.0' ce='9999999.0' le='9999999.0'/>
+    <detail>
+        <link point='30,-70'/>
+        <link point='40,-80'/>
+        <link point='40,-70'/>
+        <link point='30,-70'/>
+        <strokeColor value='-1'/>
+        <strokeWeight value='4.0'/>
+        <fillColor value='-1761607681'/>
+        <contact callsign='Polygon 1'/>
+        <color value='-1'/>
+    </detail>
+</event>

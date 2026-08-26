@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<event version="2.0" uid="GeoChat.S-1-5-21-2739727742-677502536-3530350016-1000.K9.9d05bf98-bfd4-4520-8152-a275cca14d56"
+       type="b-t-f" time="2023-07-25T19:38:52.260Z" start="2023-07-25T19:38:52.260Z" stale="2023-07-26T19:38:52.260Z"
+       how="h-g-i-g-o">
+    <point lat="0.00000000" lon="0.00000000" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <__chat id="K9" chatroom="K9" senderCallsign="OPTIMUS WINTAK" groupOwner="false"
+                messageId="9d05bf98-bfd4-4520-8152-a275cca14d56">
+            <chatgrp id="K9" uid0="S-1-5-21-2739727742-677502536-3530350016-1000"
+                     uid1="5057659b-e1ca-5cad-9558-f6fabc02d68c"/>
+            <hierarchy>
+                <group uid="K9" name="K9">
+                    <contact uid="S-1-5-21-2739727742-677502536-3530350016-1000" name="OPTIMUS WINTAK"/>
+                </group>
+            </hierarchy>
+        </__chat>
+        <link uid="S-1-5-21-2739727742-677502536-3530350016-1000" type="a-f-G-U-C-I" relation="p-p"/>
+        <remarks source="BAO.F.WinTAK.S-1-5-21-2739727742-677502536-3530350016-1000"
+                 sourceID="S-1-5-21-2739727742-677502536-3530350016-1000" to="K9" time="2023-07-25T19:38:52.26Z">Roger
+        </remarks>
+    </detail>
+</event>

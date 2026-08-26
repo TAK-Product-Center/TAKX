@@ -1,0 +1,244 @@
+JFDML JFormDesigner: "8.0.0.0.194" Java: "11.0.13" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "Toolbar Configuration"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPane"
+				"border": sfield com.jgoodies.forms.factories.Borders DIALOG_BORDER
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": "default, linegap, fill:default:grow"
+				} ) {
+					name: "contentPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default, labelcompgap, default:grow"
+						"$rowSpecs": "default"
+					} ) {
+						name: "namePanel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "nameLabel"
+							"text": "Configuration Name"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+						add( new FormComponent( "javax.swing.JTextField" ) {
+							name: "configNameTextField"
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default:grow, labelcompgap, default, labelcompgap, default:grow, labelcompgap, default"
+						"$rowSpecs": "default, linegap, fill:default:grow, linegap, default, linegap, default, linegap, fill:default:grow, linegap, default, linegap, default"
+						"$columnGroupIds": "1, 0, 0, 0, 1, 0, 0"
+					} ) {
+						name: "toolbarPanel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "availableButtonsLabel"
+							"text": "Available Buttons:"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "toolbarLabel"
+							"text": "Toolbar:"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 5
+						} )
+						add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+							name: "buttonListScrollPane"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							add( new FormComponent( "javax.swing.JList" ) {
+								name: "buttonList"
+								"dragEnabled": true
+								"dropMode": enum javax.swing.DropMode INSERT
+								auxiliary() {
+									"JavaCodeGenerator.typeParameters": "ToolbarButton"
+									"JavaCodeGenerator.postCreateCode": "${field}.setCellRenderer(new ToolbarButtonListCellRenderer());\n${field}.setTransferHandler(new ToolbarButtonListTransferHandler(this));"
+								}
+								addEvent( new FormEvent( "javax.swing.event.ListSelectionListener", "valueChanged", "buttonListValueChanged", false ) )
+							} )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 3
+							"gridHeight": 8
+						} )
+						add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+							name: "toolbarScrollPane"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							add( new FormComponent( "gov.takx.commons.swing.GrowingRowTree" ) {
+								name: "toolbarConfigTree"
+								"rootVisible": false
+								"dragEnabled": true
+								"dropMode": enum javax.swing.DropMode ON_OR_INSERT
+								addEvent( new FormEvent( "javax.swing.event.TreeSelectionListener", "valueChanged", "toolbarConfigTreeSelectionChanged", false ) )
+								addEvent( new FormEvent( "java.awt.event.KeyListener", "keyReleased", "toolbarConfigTreeKeyReleased", true ) )
+								addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "toolbarConfigTreeMouseClicked", true ) )
+								addEvent( new FormEvent( "java.awt.event.KeyListener", "keyPressed", "toolbarConfigTreeKeyPressed", true ) )
+							} )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 5
+							"gridY": 3
+							"gridHeight": 8
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "addButton"
+							"text": "Add >>"
+							"enabled": false
+							"toolTipText": "Adds the selected button(s) to the selected tab"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addButtonActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 5
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "moveUpButton"
+							"text": "Move Up"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "moveUpButtonActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 7
+							"gridY": 5
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "removeButton"
+							"text": "<< Remove"
+							"enabled": false
+							"toolTipText": "Removes the selected button from the toolbar"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "removeButtonActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 7
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "moveDownButton"
+							"text": "Move Down"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "moveDownButtonActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 7
+							"gridY": 7
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+							"$columnSpecs": "default, labelcompgap, default, labelcompgap, default:grow"
+							"$rowSpecs": "linegap, fill:default"
+						} ) {
+							name: "toolbarButtonsPanel"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "addTabButton"
+								"text": "Add Tab"
+								"toolTipText": "Adds a new tab below the currently selected task (or at the end if no task selected)"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+								addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addTabButtonActionPerformed", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 2
+							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "addSeparatorButton"
+								"text": "Add Separator"
+								"toolTipText": "Adds a separator to the currently selected tab"
+								"enabled": false
+								addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addSeparatorActionButtonPerformed", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 2
+								"gridX": 3
+							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "renameButton"
+								"text": "Rename..."
+								"enabled": false
+								addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "renameButtonActionPerformed", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 5
+								"gridY": 2
+							} )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 5
+							"gridY": 11
+						} )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "minimizeToolbarCheckBox"
+							"text": "Minimize Toolbar"
+							"visible": false
+							addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "minimizeToolbarCheckBoxStateChanged", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 1
+							"gridY": 13
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 3
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "labelcompgap, default, labelcompgap, default, glue, button, relgap, button"
+					"$rowSpecs": "pref"
+				} ) {
+					name: "buttonBar"
+					"border": sfield com.jgoodies.forms.factories.Borders BUTTON_BAR_GAP_BORDER
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "saveButton"
+						"text": "Save"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "saveButtonActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 6
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "cancelButton"
+						"text": "Cancel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "cancelButtonActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 8
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 775, 545 )
+		} )
+	}
+}

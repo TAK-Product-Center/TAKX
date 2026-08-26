@@ -1,0 +1,319 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.6" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "0dlu, labelcompgap, right:default, labelcompgap, default, labelcompgap, 0dlu"
+			"$rowSpecs": "0dlu, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, 0dlu"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "nameLabel"
+				"text": "Name"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "nameField"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "nameFieldChanged", false ) )
+				addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "nameFieldChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "centerLabel"
+				"text": "Center"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 5
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "default, linegap, min:grow"
+			} ) {
+				name: "panel1"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "centerButton"
+					"text": "text"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "centerButtonClicked", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "gov.takx.platform.ui.location.LegacyLocationInputPanel" ) {
+					name: "locationInputPanel"
+					"visible": false
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 5
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "directionLabel"
+				"text": "Direction"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 7
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow, labelcompgap, default:grow, labelcompgap, default:grow"
+				"$rowSpecs": "default"
+			} ) {
+				name: "directionPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "directionButton"
+					"text": "From Center"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "directionButtonClicked", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "bearingUnitsButton"
+					"text": "Degrees"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "bearingUnitsButtonClicked", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "northReferenceButton"
+					"text": "TN"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "northReferenceButtonClicked", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 7
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "radiusLabel"
+				"text": "Bullseye Radius"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 9
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "default, linegap, default"
+			} ) {
+				name: "panel2"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "radiusEdit"
+					"text": "text"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "radiusEditClicked", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow, labelcompgap, default, labelcompgap, default"
+					"$rowSpecs": "default"
+				} ) {
+					name: "radiusInputPanel"
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "radiusField"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JComboBox" ) {
+						name: "radiusUnits"
+						auxiliary() {
+							"JavaCodeGenerator.typeParameters": "Span"
+							"JavaCodeGenerator.customCreateCode": "new JComboBox<>(Span.values());"
+						}
+						addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "radiusUnitsItemChanged", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "applyRadius"
+						"text": "Apply"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "applyRadiusClicked", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 9
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "showRingsLabel"
+				"text": "Show Range Rings"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 11
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "showRingsCheckbox"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showRingsCheckboxClicked", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 11
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "ringRadiusLabel"
+				"text": "Ring Radius"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 13
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "default, linegap, default"
+			} ) {
+				name: "panel3"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "ringRadiusEdit"
+					"text": "text"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "ringRadiusEditClicked", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow, labelcompgap, default, labelcompgap, default"
+					"$rowSpecs": "default"
+				} ) {
+					name: "ringRadiusInputPanel"
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "ringRadiusField"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JComboBox" ) {
+						name: "ringRadiusUnits"
+						auxiliary() {
+							"JavaCodeGenerator.typeParameters": "Span"
+							"JavaCodeGenerator.customCreateCode": "new JComboBox<>(Span.values());"
+						}
+						addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "ringRadiusUnitsItemChanged", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "applyRingRadius"
+						"text": "Apply"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "applyRingRadiusClicked", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 13
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "ringCountLabel"
+				"text": "Rings"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 15
+			} )
+			add( new FormComponent( "javax.swing.JSpinner" ) {
+				name: "ringCountSpinner"
+				addEvent( new FormEvent( "javax.swing.event.ChangeListener", "stateChanged", "ringCountSpinnerChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 15
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "remarksLabel"
+				"text": "Remarks"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 17
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "remarksField"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "remarksFieldChanged", false ) )
+				addEvent( new FormEvent( "java.awt.event.FocusListener", "focusLost", "remarksFieldChanged", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 17
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "authorLabel"
+				"text": "Original Author"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 19
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "authorField"
+				"editable": false
+				"enabled": false
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 19
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 425, 455 )
+		} )
+	}
+}
+

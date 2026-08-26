@@ -1,0 +1,365 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, unrelgap, fill:default:grow"
+		} ) {
+			name: "this"
+			"border": sfield com.jgoodies.forms.factories.Borders DLU2_BORDER
+			"name": "trackInfoPanel"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "24dlu, labelcompgap, default:grow, labelcompgap, 24dlu, labelcompgap, 24dlu, labelcompgap, 24dlu"
+				"$rowSpecs": "fill:24dlu"
+			} ) {
+				name: "headerPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "backButton"
+					"visible": false
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "visibilityButton"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "elevationChartButton"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "exportButton"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "24dlu, unrelgap, 36dlu, labelcompgap, default:grow, labelcompgap, 36dlu, labelcompgap, default:grow"
+				"$rowSpecs": "fill:24dlu, linegap, fill:24dlu, unrelgap, fill:24dlu, linegap, fill:24dlu, linegap, fill:24dlu, linegap, fill:24dlu, linegap, fill:24dlu"
+				"$rowGroupIds": "0, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1"
+			} ) {
+				name: "contentsPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "trackNameLabel"
+					"text": "Track:"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow, default"
+					"$rowSpecs": "fill:default:grow"
+				} ) {
+					name: "namePanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "nameTextField"
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "nameTextFieldMouseClicked", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "24dlu, labelcompgap, 24dlu"
+						"$rowSpecs": "fill:default:grow"
+					} ) {
+						name: "nameButtonsPanel"
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "nameApplyButton"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "nameApplyActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 1
+							"gridY": 1
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "nameCancelButton"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "nameCancelActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 1
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 2
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridWidth": 7
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "styleLabel"
+					"text": "Style:"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 3
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow, labelcompgap, 24dlu"
+					"$rowSpecs": "fill:default:grow"
+				} ) {
+					name: "stylePanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JComboBox" ) {
+						name: "styleComboBox"
+						auxiliary() {
+							"JavaCodeGenerator.typeParameters": "Track.Style"
+						}
+						addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "styleComboBoxItemStateChanged", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "colorLabel"
+						"background": new java.awt.Color( 255, 255, 0, 255 )
+						"opaque": true
+						addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "colorLabelMouseClicked", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 3
+					"gridWidth": 7
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "startButton"
+					"enabled": false
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 5
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "startDateLabel"
+					"text": "Date:"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 5
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "startDateValueLabel"
+					"text": "start date"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 5
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "startTimeLabel"
+					"text": "Time:"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 5
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "startTimeValueLabel"
+					"text": "start time"
+					"horizontalAlignment": 11
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+					"gridY": 5
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "endButton"
+					"enabled": false
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 7
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "distanceLabel"
+					"text": "Dist:"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 7
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "distanceValueLabel"
+					"text": "distance"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 7
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "elapsedTimeLabel"
+					"text": "Elapsed:"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 7
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "elapsedTimeValueLabel"
+					"text": "elapsed time (end)"
+					"horizontalAlignment": 11
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+					"gridY": 7
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "elevationLabel"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 9
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "minElevationButton"
+					"text": "Min:"
+					"enabled": false
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 9
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "elevationMinValueLabel"
+					"text": "unset"
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 9
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "maxElevationButton"
+					"text": "Max:"
+					"enabled": false
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 9
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "elevationMaxValueLabel"
+					"text": "unset"
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+					"gridY": 9
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "speedLabel"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 11
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "maxSpeedButton"
+					"text": "Max:"
+					"enabled": false
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 11
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "maxSpeedValueLabel"
+					"text": "unset"
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 11
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "averageSpeedLabel"
+					"text": "Avg:"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 11
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "averageSpeedValueLabel"
+					"text": "unset"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+					"gridY": 11
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "elevationDeltaLabel"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 13
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "elevationGainLabel"
+					"text": "Gain:"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 13
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "elevationGainValueLabel"
+					"text": "unset"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 13
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "elevationLossLabel"
+					"text": "Loss:"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 13
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "elevationLossValueLabel"
+					"text": "unset"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+					"gridY": 13
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 475, 485 )
+		} )
+	}
+}

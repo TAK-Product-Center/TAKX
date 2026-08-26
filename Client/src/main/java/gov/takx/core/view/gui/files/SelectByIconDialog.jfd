@@ -1,0 +1,99 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"modal": true
+			"title": "Complete Action Using"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPane"
+				"border": sfield com.jgoodies.forms.factories.Borders DIALOG_BORDER
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": "default, linegap, fill:default:grow"
+				} ) {
+					name: "contentPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "instructionsLabel"
+						"text": "Hover over importer for details"
+						"horizontalAlignment": 0
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "tableScrollPane"
+						add( new FormComponent( "javax.swing.JTable" ) {
+							name: "tableIconEntries"
+							"showVerticalLines": false
+							"fillsViewportHeight": true
+							"preferredScrollableViewportSize": new java.awt.Dimension( 200, 200 )
+							"selectionMode": 0
+							"rowHeight": 80
+							"showHorizontalLines": false
+							"cellSelectionEnabled": true
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 3
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "glue, button, relgap, button, labelcompgap, default"
+					"$rowSpecs": "pref"
+				} ) {
+					name: "buttonBar"
+					"border": sfield com.jgoodies.forms.factories.Borders BUTTON_BAR_GAP_BORDER
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "buttonOnce"
+						"text": "Just Once"
+						"enabled": false
+						"toolTipText": "Just Use the Importer On This One File"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "buttonOnceActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+						"gridX": 2
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "buttonAll"
+						"text": "All Similar"
+						"enabled": false
+						"toolTipText": "Use the Importer On This and All Similar Files"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "buttonAllActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 4
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "buttonAlways"
+						"text": "Always"
+						"enabled": false
+						"toolTipText": "Always Use the Importer For This Type of File"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "buttonAlwaysActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 6
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 10, 0 )
+			"size": new java.awt.Dimension( 305, 380 )
+		} )
+	}
+}

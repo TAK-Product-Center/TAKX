@@ -1,0 +1,50 @@
+package gov.tak.api.comms.takserver.mission.call.mission;
+
+import gov.tak.api.comms.takserver.mission.call.AbstractEndpointCaller;
+import gov.tak.api.comms.takserver.mission.call.IClientAssociatedEndpointCaller;
+import gov.tak.api.comms.takserver.mission.call.ParameterInfo;
+import gov.tak.api.comms.takserver.mission.data.Mission;
+import gov.tak.api.comms.takserver.mission.feign.FeignMissionApi;
+import jakarta.annotation.Nonnull;
+
+import java.util.Map;
+
+/**
+ * Endpoint caller to set an expiration time on a {@link Mission} instance.
+ *
+ * @since 5.7
+ */
+public class SetMissionExpirationByGuid extends AbstractEndpointCaller<Void> implements IClientAssociatedEndpointCaller<Void>
+{
+    private static final Map<String, ParameterInfo> PARAM_MAP = map(
+            paramOptional("expiration", -1L));
+
+    /**
+     * @param api API reference.
+     * @param missionGuid Guid of the mission to update.
+     */
+    public SetMissionExpirationByGuid(@Nonnull FeignMissionApi api, @Nonnull String missionGuid)
+    {
+        super(devoid((headers, params) -> api.setMissionExpirationByGuid(headers, params, missionGuid)), PARAM_MAP);
+    }
+
+    @Nonnull
+    @Override
+    public String clientUidKey()
+    {
+        return "creatorUid";
+    }
+
+    /**
+     * Sets the expiration timestamp.
+     *
+     * @param expiration Timestamp in epoch millis for the mission to delete itself.
+     *
+     * @return Self.
+     */
+    @Nonnull
+    public SetMissionExpirationByGuid withExpirationMillis(long expiration)
+    {
+        return setParam("expiration", expiration);
+    }
+}

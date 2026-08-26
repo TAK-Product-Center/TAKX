@@ -1,0 +1,13 @@
+<?xml version='1.0' standalone='yes'?>
+<event version="2.0" uid="31c57f66-d135-4180-a771-f2ede16629dc" type="u-d-c-e" time="2021-04-15T18:42:26.83Z"
+       start="2021-04-15T18:42:26.83Z" stale="2021-04-22T18:42:26.83Z" how="h-g-i-g-o">
+    <point lat="25.0" lon="-90.0" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <shape>
+            <ellipse major="70000.0" minor="50000.0" angle="230"/>
+            <link relation="p-p-CenterAnchor" uid="centerAnchor"/>
+        </shape>
+        <labels_on value="true"/>
+        <contact callsign="Ellipse 1"/>
+    </detail>
+</event>

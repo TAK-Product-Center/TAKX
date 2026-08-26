@@ -1,0 +1,91 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "pref:grow"
+			"$rowSpecs": "fill:pref:grow"
+		} ) {
+			name: "this"
+			"preferredSize": new java.awt.Dimension( 300, 400 )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.CardLayout ) ) {
+				name: "cardContainer"
+				"preferredSize": new java.awt.Dimension( 106, 300 )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow, labelcompgap, default, labelcompgap, center:default, labelcompgap, center:default"
+					"$rowSpecs": "default, linegap, fill:default:grow(0.5)"
+				} ) {
+					name: "chatPanel"
+					"name": "chatPanel"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "userLabel"
+						"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+						"opaque": true
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "removeIndividualContactButton"
+						"toolTipText": "Remove user"
+						"visible": false
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "removeIndividualContactButtonActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "addGroupButton"
+						"toolTipText": "Add group"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addGroupButtonActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "removeGroupButton"
+						"enabled": false
+						"toolTipText": "Remove group"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "removeGroupButtonActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 7
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane"
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+							"$columnSpecs": "default:grow"
+							"$rowSpecs": "top:default, fill:default:grow"
+						} ) {
+							name: "groupAndIndividualPanel"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							add( new FormComponent( "javax.swing.JTree" ) {
+								name: "groupContactTree"
+								"rootVisible": false
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 1
+								"gridY": 1
+							} )
+							add( new FormComponent( "gov.takx.core.view.gui.contacts.lists.ImprovedSelectionJList" ) {
+								name: "individualContactList"
+								auxiliary() {
+									"JavaCodeGenerator.typeParameters": "IIndividualContact"
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 1
+								"gridY": 2
+							} )
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 3
+						"gridWidth": 7
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "chatPanel"
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 430, 370 )
+		} )
+	}
+}

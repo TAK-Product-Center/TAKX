@@ -1,0 +1,449 @@
+plugins {
+    id 'distribution'
+}
+
+description = 'TAKX distribution'
+
+apply from: "$rootDir/gradle/javadoc.gradle"
+
+ext {
+    publishArtifactsToArtifactory = true // We have artifacts that should go to Artifactory on a release build
+
+    // Determine if we are producing a distro (release build or 'makeDistro' task invoked)
+
+    // This little nugget takes all the tasks named from the command line and makes the camel-case abbreviation
+    // So, for example, something like 'publishToMavenLocal' becomes 'pTML'
+    tasksInvoked = gradle.startParameter.taskNames.collect {
+        def index = it.indexOf(':') // Handle things like deployment:makeDistro
+        String taskName = (index >= 0) ? it.substring(index + 1) : it
+        taskName.split('(?=\\p{Upper})').collect({ it.charAt(0) }).join()
+    }
+
+    // And if any of the invoked tasks is equivalent to 'makeDistro', then enable the distribution
+    creatingDistro = isRelease || tasksInvoked.contains('mD')
+}
+
+buildSupport.configureJavaTemplates(project)
+
+project.ext.templateProperties = [:]
+tasks.copyJavaTemplates.dependsOn 'findInjectables', 'findDeprecations'
+tasks.javadoc.dependsOn tasks.copyJavaTemplates
+
+// Pull these values to avoid referencing 'project' in task actions
+def projectExt = project.ext
+def buildDir = project.getLayout().buildDirectory.get()
+
+/**
+ * This task executes a java class to scan and find all our injectable services.  It takes the output of that process
+ * and parses it into variables that are used in the copyJavaTemplates task to get it all included in our javadoc.
+ */
+tasks.register('findInjectables', JavaExec) {
+    group = 'build'
+    description = 'Generate the list of injectable services'
+    dependsOn ':client:assemble'
+
+    classpath = project(':client').sourceSets.main.runtimeClasspath
+    setMainClass 'gov.takx.cdi.InjectableServiceListGenerator'
+    args = [buildDir] + project(':client').sourceSets.main.output.classesDirs.files + project(':platform').sourceSets.main.output.classesDirs.files
+
+    standardOutput = new ByteArrayOutputStream() // Capture the output
+
+    doLast {
+        def output = standardOutput.toString()
+        def parts = output.split('<cut here>')
+
+        projectExt.templateProperties += [
+                'serviceList'    : parts[0],
+                'producerTable'  : parts[1],
+                'qualifiersTable': parts[2]
+        ]
+    }
+}
+
+/**
+ * This task executes a java class to scan and find all deprecations in our API.  It takes the output of that process
+ * and parses it into variables that are used in the copyJavaTemplates task to get it all included in our javadoc.
+ */
+tasks.register('findDeprecations', JavaExec) {
+    group = 'build'
+    description = 'Generate the list of API deprecations'
+    dependsOn ':platform:assemble'
+
+    classpath = project(':client').sourceSets.main.runtimeClasspath
+    setMainClass 'gov.takx.javadoc.DeprecationListsGenerator'
+    args = [buildDir] + project(':platform').sourceSets.main.output.classesDirs.files
+
+    standardOutput = new ByteArrayOutputStream() // Capture the output
+
+    doLast {
+        projectExt.templateProperties += ['apiDeprecationsList': standardOutput.toString()]
+    }
+}
+
+distributions {
+    main {
+        distributionBaseName = 'takx'
+        contents {
+            from('bin') {
+                // Bring in ONLY what we want, no random cruft from the local build environment
+                include 'boot/**'
+                include 'conf/**'
+                include 'native/**'
+                include 'gazetteer/**'
+
+                include 'resources/**'
+                exclude 'resources/plugins'
+                exclude 'resources/templates'
+                exclude 'resources/ShapeFiles'
+                exclude 'resources/tak-assets'
+
+                include 'bootstrap.log4j2.xml'
+                include 'log4j*.xml'
+                include 'template-64bit.vmoptions'
+
+                exclude '*.bat'
+                exclude '*.sh'
+            }
+        }
+    }
+}
+
+tasks.distTar {
+    // Need to ensure that all the other parts are "assembled" prior to making the distro
+    dependsOn ':bin-creator:assemble'
+    dependsOn ':bootstrap:copyToBin'
+
+    enabled = creatingDistro
+    compression = Compression.GZIP
+}
+
+tasks.jar.enabled = false // We don't have content, so don't make a jar
+tasks.distZip.enabled = false // We don't want a zip file
+tasks.javadoc.enabled = creatingDistro
+
+/**
+ * Task to force the creation of the distro tarball and javadoc on non-release builds.
+ */
+tasks.register('makeDistro') {
+    group = 'Distribution'
+    description = 'Force creation of distro tarball and javadoc on non-release builds'
+    dependsOn publish
+}
+
+if (creatingDistro) {
+    // Add the publication for our distro content: tar ball and javadoc
+    publishing {
+        publications {
+            takxDist(MavenPublication) {
+                artifact distTar
+                artifact javadocJar
+            }
+        }
+    }
+}
+
+//=========================================================
+// Support for installing plugin sets defined by installers
+
+tasks.register('installStandardPlugins') {
+    group = 'Build'
+    description = 'Install the "standard" plugins from the TAKX base installer'
+
+    doFirst {
+        project.ext.bom = "takx-installer:$buildVersion" // Use current build version
+        installSelectedPlugins()
+    }
+}
+
+tasks.register('uninstallStandardPlugins') {
+    group = 'Build'
+    description = 'Uninstall the "standard" plugins from the TAKX base installer'
+
+    doFirst {
+        project.ext.bom = "takx-installer:$buildVersion" // Use current build version
+        getAndCleanPluginDeps()
+    }
+}
+
+tasks.register('installPlugins') {
+    group = 'Build'
+    description = 'Install the plugins from a published installer BOM\n' +
+            '\tUse -Pbom=<installer-name>:<version> to select the installer to use'
+
+    doFirst {
+        installSelectedPlugins()
+    }
+}
+
+tasks.register('uninstallPlugins') {
+    group = 'Build'
+    description = 'Uninstall the plugins from a published installer BOM\n' +
+            '\tUse -Pbom=<installer-name>:<version> to select the installer to use'
+
+    doFirst {
+        getAndCleanPluginDeps()
+    }
+}
+
+/**
+ * Install the plugins selected by the 'bom' project property.
+ */
+void installSelectedPlugins() {
+    configurations.create('requiredPlugins') { transitive = false }
+
+    getAndCleanPluginDeps().each { dep -> dependencies.add('requiredPlugins', dep) }
+
+    configurations.requiredPlugins.asList().each { plugin ->
+        logger.lifecycle "install: $plugin.name"
+        copy {
+            from plugin
+            into pluginsDir
+        }
+    }
+}
+
+/**
+ * Get the plugin dependencies from the installer's plugin BOM and delete any existing plugins with the same base name.
+ *
+ * @return Array of dependency specifications from the BOM
+ */
+List<String> getAndCleanPluginDeps() {
+    buildSupport.setupRepositories(project)
+
+    String[] pluginDeps = getRequiredPluginDeps()
+    deletePriorPlugins(pluginDeps)
+    return pluginDeps
+}
+
+/**
+ * Download the installer's plugin BOM file and parse it into an array of plugin dependencies.
+ *
+ * @return Array of dependency specifications from the BOM
+ */
+List<String> getRequiredPluginDeps() {
+    def JDK = project.findProperty('JDK')
+    if (JDK == '8') throw new GradleException("JDK 8 is no longer supported; unset 'JDK' to use '17'")
+    if (JDK == '11') throw new GradleException("JDK 11 is no longer supported; unset 'JDK' to use '17'")
+
+    def jdkExtension = !JDK ? '-jdk17' : "-jdk$JDK"
+    def packageFlavorPrefix = buildFlavor == 'civ' ? '' : "$buildFlavor-"
+
+    String[] parts = project.getProperty('bom').split(':')
+    String bomDependency = "gov.takx.${packageFlavorPrefix}installers${jdkExtension}:${parts[0]}-plugins:${parts[1]}@bom"
+
+    configurations.create('pluginBom') { transitive = false }
+    project.dependencies.add('pluginBom', bomDependency)
+
+    return project.configurations.pluginBom.singleFile.readLines()
+}
+
+/**
+ * Delete any existing versions of the plugins we are about to install.
+ *
+ * We don't want to remove just the exact archive name, which includes a version number.  We want to
+ * remove the 'base' name, so that any old jars (from before a version change) are also removed.
+ *
+ * @param pluginDeps
+ */
+void deletePriorPlugins(String[] pluginDeps) {
+    pluginDeps.each { dep ->
+        // Each plugin dependency looks like 'group:name:version', so pull out the middle part (the base name)
+        def baseName = dep.split(':')[1]
+        def installedFiles = fileTree(pluginsDir).include { f -> f.name =~ $/^${baseName}-[0-9]+.*\.jar/$ }
+
+        def filesToDelete = installedFiles.files
+        if (filesToDelete.size() > 0) logger.lifecycle "Deleting: ${filesToDelete*.name.join(', ')}"
+        delete installedFiles
+    }
+}
+
+//=====================================================
+// Support for generation of the DDL from our DB schema
+
+configurations {
+    schemaGen
+}
+
+dependencies {
+    schemaGen(project(':client')) {
+        exclude(module: 'hibernate-hikaricp') // Prevent hibernate trying to load HikariCP
+    }
+}
+
+tasks.register('generateSchema', JavaExec) {
+    group = 'Build'
+    description = 'Generate the schema DDL to tools/persistence'
+    ext.ddlFile = file("tools/persistence/takx-ddl-${rootVersion}.sql")
+
+    classpath = configurations.schemaGen
+    mainClass.set('org.hibernate.tool.hbm2ddl.SchemaExport')
+    workingDir = project.file('tools/persistence')
+
+    systemProperty('log4j2.configurationFile', 'file:./log4j2.xml')
+
+    args = [
+            '--format',
+            '--action=create',
+            '--target=script',
+            '--delimiter=;',
+            "--config=file:./hibernate.cfg.xml",
+            "--output=${ext.ddlFile.name}"
+    ]
+
+    doFirst {
+        delete ext.ddlFile // Hibernate 5 appends to (rather than replaces) the output file, so delete it first
+    }
+    doLast {
+        println "Generated $ext.ddlFile"
+    }
+}
+
+//=====================================================
+// Support for running TAKX
+
+tasks.register('runTakx', RunTakxTask) {
+    doFirst {
+        // Delay setting the classpath until our dependent tasks have run, since they create the needed jars
+        classpath = files(file('bin/boot').listFiles(), file('bin/conf'))
+        logger.info "command line: $commandLine"
+    }
+}
+
+import java.util.regex.Matcher
+
+/**
+ * Configure a java execution to run TAKX. Set the needed working dir, classpath, etc.
+ * Support additional command line args, via {@code --args='more args'}, allowing:
+ * <ul>
+ *     <li>{@code --instance=N | -i=N} to specify the takx instance number</li>
+ *     <li>{@code --debug | -d} to configure the JVM for remote debugging (note: does not suspend by default; use
+ *     -s to suspend.)</li>
+ *     <li>{@code --suspend | -s} to debug with suspend enabled, causing TAKX to suspend unless a debugger is
+ *     connected</li>
+ *     <li>{@code --dcevm} to use DCEVM and hotswap agent (implies -d), env var HOTSWAP_AGENT_JAR must be set</li>
+ *     <li>any other arguments are passed directly to TAKX unchanged</li>
+ * </ul>
+ * Note: To include multiple args, enclose them in quotes, e.g. {@code --args="-s --dcevm"} will use DCEVM with
+ * suspended debug.
+ * <p>
+ * Also process the EXTRA_JVM_OPTS environment var and add anything there to the JVM args.
+ */
+abstract class RunTakxTask extends JavaExec {
+
+    RunTakxTask() {
+        group = 'build'
+        dependsOn ':assemble'
+
+        description = '''Run TAKX - The additional arguments specified with --args may contain:
+
+   --instance=N | -i=N  to specify the takx instance number
+   --debug | -d         to configure the JVM for remote debugging (note: does not suspend by default; add -s to suspend.)
+   --suspend | -s       to debug with suspend enabled, causing the application to suspend until a debugger is connected
+   --dcevm              to use DCEVM and hotswap agent (implies -d), env var HOTSWAP_AGENT_JAR must be set
+
+   any other arguments (e.g., --headless, --create, etc.) are passed directly to TAKX unchanged
+'''
+
+        ext {
+            instance = 0
+            configureDebug = false
+            suspendDuringDebug = false
+        }
+
+        workingDir = project.file('bin')
+        mainClass.set('org.jboss.modules.Main')
+        jvmArgs getVmOptions()
+        systemProperties(['java.library.path': "$project.nativeLibPath"])
+
+        args = ['-mp', 'modules', 'takx-bootstrap']
+
+        String extraJvmOpts = getEnvironment()['EXTRA_JVM_OPTS']
+
+        if (extraJvmOpts) {
+            jvmArgs extraJvmOpts.split()
+        }
+    }
+
+    /**
+     * Process program arguments to offer shorthand notations.
+     */
+    void setExtraArgs(String extraArgs) {
+        logger.info "adding: $extraArgs"
+        extraArgs.split().each { processArg(it) }
+
+        // Handle debug (need to adjust port based on instance number)
+        if (configureDebug) {
+            debugOptions {
+                enabled = true
+                port = instance + 5005
+                server = true
+                suspend = suspendDuringDebug
+            }
+
+            logger.lifecycle "JVM Debug configured: port ${debugOptions.port.get()}, suspend=${debugOptions.suspend.get()}"
+        }
+    }
+
+    /**
+     * Override this to pre-process any program arguments specified via --args.
+     */
+    JavaExec setArgsString(String args) {
+        setExtraArgs(args)
+        return this
+    }
+
+    /**
+     * Process each extra argument and properly translate short-hand flags into fully specified flags.
+     *
+     * @param arg Argument to process
+     */
+    void processArg(String arg) {
+        switch (arg.toLowerCase()) {
+            case ~/^(?:--instance|-i)=(.*)$/:
+                String instanceStr = Matcher.lastMatcher[0][1]
+                instance = instanceStr as Integer
+                systemProperties(['instance': instanceStr])
+                break
+
+            case ['-d', '--debug']:
+                configureDebug = true
+                break
+
+            case ['-s', '--suspend']:
+                configureDebug = true // --suspend implies -d
+                suspendDuringDebug = true
+                break
+
+            case ['--dcevm']:
+                configureDebug = true // --dcevm implies -d
+                jvmArgs '-XX:+AllowEnhancedClassRedefinition'
+                jvmArgs '-XX:HotswapAgent=fatjar'
+                jvmArgs '-Xlog:redefine+class*=info'
+                break
+
+            case ['-help', '--help', '-h']:
+                args '-help'
+                break
+
+            case ~/-D.*/:
+                jvmArgs arg
+                break
+
+            default:
+                args arg // Everything else just gets added directly
+                break
+        }
+    }
+
+    /**
+     * @return The vmoptions to use for execution
+     */
+    private List<String> getVmOptions() {
+        File vmoptionsFile = project.file('bin/template-64bit.vmoptions')
+        List<String> vmOptions = vmoptionsFile.readLines()
+
+        if (project.osFamily == 'macosx') vmOptions << '-Dapple.eawt.quitStrategy=CLOSE_ALL_WINDOWS'
+
+        return vmOptions
+    }
+}

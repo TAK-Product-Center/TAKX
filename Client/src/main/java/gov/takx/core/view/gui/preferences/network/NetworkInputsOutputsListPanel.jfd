@@ -1,0 +1,58 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, linegap, fill:default:grow, linegap, default, linegap, default"
+		} ) {
+			name: "this"
+			"border": new javax.swing.border.EmptyBorder( 0, 4, 0, 4 )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class org.jdesktop.swingx.VerticalLayout ) ) {
+				name: "listPanel"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "addItemButton"
+				"text": "Add Item"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addItemButtonClicked", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 5
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "default, linegap, default"
+			} ) {
+				name: "addNewPanel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "addNewLabel"
+					"text": "Add New"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 1, false )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				} )
+				add( new FormComponent( "gov.takx.core.view.gui.preferences.network.NetworkInputOutputEditPanel" ) {
+					name: "addNewEditingPanel"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 3
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 7
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 340 )
+		} )
+	}
+}

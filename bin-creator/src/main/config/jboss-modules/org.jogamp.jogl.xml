@@ -1,0 +1,17 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.jogamp.jogl">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.jogamp.jogl</groupId>
+                </include>
+                <include>
+                    <groupId>org.jogamp.gluegen</groupId>
+                </include>
+                <include>
+                    <groupId>org.jogamp.jocl</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>
