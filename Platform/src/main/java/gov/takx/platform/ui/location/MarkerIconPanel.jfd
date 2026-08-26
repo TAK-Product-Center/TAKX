@@ -1,0 +1,101 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "16dlu, 16dlu, 16dlu, 16dlu, 16dlu, 16dlu"
+			"$rowSpecs": "16dlu"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "noMarkerButton"
+				"$buttonGroup": new FormReference( "iconButtonGroup" )
+				"icon": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				"selected": true
+				"border": &EmptyBorder0 new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+			} )
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "iconButton1"
+				"$buttonGroup": new FormReference( "iconButtonGroup" )
+				"border": #EmptyBorder0
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"gridX": 2
+			} )
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "iconButton2"
+				"$buttonGroup": new FormReference( "iconButtonGroup" )
+				"visible": false
+				"border": #EmptyBorder0
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"gridX": 3
+			} )
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "iconButton3"
+				"$buttonGroup": new FormReference( "iconButtonGroup" )
+				"visible": false
+				"border": #EmptyBorder0
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"gridX": 4
+			} )
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "iconButton4"
+				"$buttonGroup": new FormReference( "iconButtonGroup" )
+				"visible": false
+				"border": #EmptyBorder0
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"gridX": 5
+			} )
+			add( new FormComponent( "javax.swing.JToggleButton" ) {
+				name: "iconButton5"
+				"$buttonGroup": new FormReference( "iconButtonGroup" )
+				"visible": false
+				"border": #EmptyBorder0
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				"gridX": 6
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 385, 300 )
+		} )
+		add( new FormNonVisual( "javax.swing.ButtonGroup" ) {
+			name: "iconButtonGroup"
+			auxiliary() {
+				"JavaCodeGenerator.variableLocal": false
+			}
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 316 )
+		} )
+	}
+}

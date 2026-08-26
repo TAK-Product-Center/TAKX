@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+
+<!--
+  ** Schema for Raptor XML (RML) data format.
+  -->
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+
+    <xs:element name="RaptorData">
+        <xs:complexType>
+            <xs:sequence>
+
+                <!-- MapObjectDefinition defines the structure of a map object. -->
+                <xs:element name="MapObjectDefinition" type="MapObjectDefinition" minOccurs="0" maxOccurs="unbounded"/>
+
+                <!-- MapObject declares an instance of a previously defined mapObjectDefinition -->
+                <xs:element name="MapObject" type="MapObject" minOccurs="0" maxOccurs="unbounded"/>
+
+                <!-- DataMessage represents one data point for a mapObject -->
+                <xs:element name="DataMessage" type="DataMessage" minOccurs="0" maxOccurs="unbounded"/>
+
+                <!-- PropertyMessage represents properties of a mapObject -->
+                <xs:element name="PropertyMessage" type="PropertyMessage" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+        </xs:complexType>
+
+    </xs:element>
+
+    <xs:complexType name="MapObjectDefinition">
+        <xs:sequence>
+
+            <xs:element name="Family" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>String that identifies the map object family.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="Type" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>String that identifies the type of map object.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="Version" type="xs:string">
+                <xs:annotation>
+                    <xs:documentation>String that identifies the version of of the map object, for this type (for
+                        example, "1.0.0").
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+            <xs:element name="Structure" type="DataStructure" minOccurs="0" maxOccurs="unbounded">
+                <xs:annotation>
+                    <xs:documentation>Data structures associated with this map object.</xs:documentation>
+                </xs:annotation>
+            </xs:element>
+
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="MapObject">
+        <xs:sequence>
+            <xs:element name="ID" type="xs:string"/>
+            <xs:element name="Type" type="xs:string"/>
+            <xs:element name="Version" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DataMessage">
+        <xs:sequence>
+            <xs:element name="MessageType" type="xs:string"/>
+            <xs:element name="MapObjectId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="MapObjectType" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Version" type="xs:string" minOccurs="0" maxOccurs="1"/>
+
+            <xs:element name="Lat" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Lng" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Elevation" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Pitch" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Heading" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Roll" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Speed" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Time" type="xs:long" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="ReceiveTime" type="xs:long" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Motion" type="xs:string" minOccurs="0" maxOccurs="1"/>
+
+            <xs:element name="Field" type="DataStructureField"
+                        minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="PropertyMessage">
+        <xs:sequence>
+            <xs:element name="MessageType" type="xs:string"/>
+            <xs:element name="MapObjectId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="MapObjectType" type="xs:string" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="Version" type="xs:string" minOccurs="0" maxOccurs="1"/>
+
+            <xs:element name="ReceiveTime" type="xs:long" minOccurs="0" maxOccurs="1"/>
+
+            <xs:element name="Field" type="DataStructureField"
+                        minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DataStructure">
+        <xs:sequence>
+            <xs:element name="StructType" type="xs:string"/>
+            <xs:element name="Field" type="DataStructureField" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="DataStructureField">
+        <xs:attribute name="name" type="xs:string" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="string"/>
+                    <xs:enumeration value="double"/>
+                    <xs:enumeration value="int"/>
+                    <xs:enumeration value="boolean"/>
+                    <xs:enumeration value="float"/>
+                    <xs:enumeration value="short"/>
+                    <xs:enumeration value="long"/>
+                    <xs:enumeration value="bytes"/>
+                    <xs:enumeration value="date"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+
+        <xs:attribute name="type" type="xs:string" use="required"/>
+    </xs:complexType>
+
+</xs:schema>

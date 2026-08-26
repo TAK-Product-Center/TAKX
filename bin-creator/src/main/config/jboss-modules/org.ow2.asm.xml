@@ -1,0 +1,11 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.ow2.asm">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.ow2.asm</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>

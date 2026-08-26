@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns:xi="http://www.w3.org/2001/XInclude" status="warn">
+
+    <xi:include href="log4j-properties.xml" />
+    <xi:include href="log4j-appenders.xml" />
+
+    <Loggers>
+        <Root level="warn">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Roller"/>
+        </Root>
+        <Logger name="gov.takx" level="info"/>
+    </Loggers>
+</Configuration>

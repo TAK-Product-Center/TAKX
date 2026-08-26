@@ -1,0 +1,32 @@
+<!-- Not used in tests currently but this is an actual CoT message from WinTAK we can use for QA testing. -->
+<event version="2.0" uid="d4f646d1-a995-440e-8138-98524552b45a" type="u-r-b-c-c" time="2021-10-14T18:25:29.56Z"
+       start="2021-10-14T18:25:29.56Z" stale="2021-10-15T18:25:29.56Z" how="h-e">
+    <point lat="41.9597491" lon="-93.8551226" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <contact callsign="R&amp;B Circle 12"/>
+        <rangeUnits value="1"/>
+        <shape>
+            <ellipse minor="56858.32" angle="360" major="56858.32"/>
+            <link relation="p-c" uid="d4f646d1-a995-440e-8138-98524552b45a.Style" type="b-x-KmlStyle">
+                <Style>
+                    <LineStyle>
+                        <color>ffff0000</color>
+                        <width>3</width>
+                        <alpha>0</alpha>
+                    </LineStyle>
+                    <PolyStyle>
+                        <color>00ff0000</color>
+                    </PolyStyle>
+                </Style>
+            </link>
+            <link uid="7e06caa1-e364-40bc-a22b-c72c66c49976" type="a-f-G" relation="p-p-CenterAnchor" key="marker"/>
+            <link uid="22b668a7-e8a5-4fde-bf78-1e33087a4363" type="a-u-G" relation="p-p-RadiusAnchor" key="marker"/>
+        </shape>
+        <color argb="-65536"/>
+        <strokeColor value="-65536"/>
+        <strokeWeight value="3.0"/>
+        <fillColor value="16776960"/>
+        <archive/>
+        <remarks/>
+    </detail>
+</event>

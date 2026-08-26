@@ -1,0 +1,11 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.codehaus.jackson">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.codehaus.jackson</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>

@@ -1,0 +1,237 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "right:default, labelcompgap, default:grow, labelcompgap, default"
+			"$rowSpecs": "default, linegap, default, linegap, default, linegap, default, linegap, fill:default, default, fill:default:grow, bottom:default"
+		} ) {
+			name: "this"
+			"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, default"
+				"$rowSpecs": "default"
+			} ) {
+				name: "buttonPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "routesButton"
+					"text": "Routes"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "routesButtonPressed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "exportButton"
+					"enabled": false
+					"toolTipText": "Export"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "exportRouteButtonPressed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "elevationProfileButton"
+					"toolTipText": "Elevation Profile"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "elevationProfileButtonPressed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "adjustRouteSettingsButton"
+					"enabled": false
+					"toolTipText": "Adjust Route Settings"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "adjustRouteSettingsButtonPressed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "newWindowButton"
+					"enabled": false
+					"toolTipText": "New Window"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "newWindowButtonPressed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 11
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridWidth": 5
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "routeNameLabel"
+				"text": "Name"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "routeNameTextField"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "startNavigationButton"
+				"text": "GO"
+				"toolTipText": "Navigate Route"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "startNavigationButtonPressed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "colorLabel"
+				"text": "Color:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default, labelcompgap, default:grow"
+				"$rowSpecs": "default"
+			} ) {
+				name: "optionsPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "net.java.dev.colorchooser.ColorChooser" ) {
+					name: "colorChooser"
+					"font": new java.awt.Font( "Tahoma", 1, 14 )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "optionsLabel"
+					"text": "Options"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "routePropertiesButton"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "routePropertiesButtonPressed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+				"gridWidth": 3
+				"gridX": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "remarksLabel"
+				"text": "Remarks"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 7
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "remarksTextField"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 7
+				"gridWidth": 3
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "pref:grow"
+				"$rowSpecs": "fill:pref:grow, linegap"
+			} ) {
+				name: "propertiesPanelHolder"
+				add( new FormComponent( "gov.takx.core.view.gui.routes.RoutePropertiesPanel" ) {
+					name: "routePropertiesPanel"
+					addEvent( new FormEvent( "gov.takx.core.view.gui.routes.RoutePropertiesPanel$FinishListener", "finished", "routePropertiesPanelFinished", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 9
+				"gridWidth": 5
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "waypointScrollPane"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default, labelcompgap, center:default:grow, labelcompgap, default, labelcompgap, default, labelcompgap, default"
+					"$rowSpecs": "default"
+				} ) {
+					name: "waypointPanel"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "min(default;150px), labelcompgap, center:default:grow, labelcompgap, default, labelcompgap, default, labelcompgap, default"
+						"$rowSpecs": "default"
+					} ) {
+						name: "waypointTitlePanel"
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "totalTitleLabel"
+							"text": "Total"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "totalDistanceLabel"
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridWidth": 9
+					} )
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 10
+				"gridWidth": 5
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow, labelcompgap, default:grow, labelcompgap, default"
+				"$rowSpecs": "bottom:default"
+			} ) {
+				name: "sendEditPanel"
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "sendRouteButton"
+					"text": "SEND"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "sendRouteButtonPressed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "editRouteButton"
+					"text": "EDIT"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "editRouteButtonPressed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JToggleButton" ) {
+					name: "lockButton"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lockButtonActionPressed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 12
+				"gridWidth": 5
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 460, 500 )
+		} )
+	}
+}

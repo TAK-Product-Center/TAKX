@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0'
+       uid='GeoChat.S-1-5-21-2739727742-677502536-3530350016-1000.7bc0c2b9-dee4-4d9b-a386-25a6ffc595f4.1db8d860-c876-4eb8-92fe-c5489608aed5'
+       type='b-t-f' time='2023-04-11T20:08:52.440Z' start='2023-04-11T20:08:52.440Z' stale='2023-04-12T20:08:52.440Z'
+       how='h-g-i-g-o'>
+    <point lat="0.0" lon="0.0" hae="9999999.0" ce="9999999.0" le="9999999.0"/>
+    <detail>
+        <__chat deleteChild='0ca3bb63-7e95-4b8a-85a3-fbc72a47c2c4' groupOwner='true' chatroom='A'
+                messageId='1db8d860-c876-4eb8-92fe-c5489608aed5' id='7bc0c2b9-dee4-4d9b-a386-25a6ffc595f4'
+                senderCallsign='OPTIMUS WT'>
+            <chatgrp uid0='S-1-5-21-2739727742-677502536-3530350016-1000' uid1='a6848264-d5e2-58e2-adec-fec4d0ee77b5'
+                     id='7bc0c2b9-dee4-4d9b-a386-25a6ffc595f4'/>
+            <hierarchy>
+                <group uid='UserGroups' name='Groups'>
+                    <group uid='7bc0c2b9-dee4-4d9b-a386-25a6ffc595f4' name='A'>
+                        <contact uid='a6848264-d5e2-58e2-adec-fec4d0ee77b5' name='OPTIMUS TAKX'/>
+                        <contact uid='S-1-5-21-2739727742-677502536-3530350016-1000' name='OPTIMUS WT'/>
+                    </group>
+                </group>
+            </hierarchy>
+        </__chat>
+        <link uid='S-1-5-21-2739727742-677502536-3530350016-1000' type='a-f-G-U-C-I' relation='p-p'/>
+        <remarks sourceID='S-1-5-21-2739727742-677502536-3530350016-1000'
+                 source='BAO.F.WinTAK.S-1-5-21-2739727742-677502536-3530350016-1000'
+                 to='7bc0c2b9-dee4-4d9b-a386-25a6ffc595f4' time='2023-04-11T20:08:52.44Z'>Deleted group: B
+        </remarks>
+    </detail>
+</event>

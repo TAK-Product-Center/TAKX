@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!--
+  ** Transformation to convert Raptor XML format to Cursor On Target.
+  ** This transformation uses the first RaptorDataMessage, and exports
+  ** only a single point.
+  **
+  ** Author: Parker Abercrombie
+  -->
+
+<stx:transform xmlns:stx="http://stx.sourceforge.net/2002/ns"
+               xmlns:long="java:java.lang.Long"
+               xmlns:date="java:java.util.Date"
+               xmlns:df="java:java.text.SimpleDateFormat"
+               version="1.0"
+               exclude-result-prefixes="#all"
+               output-method="xml">
+
+    <stx:variable name="staleTimeout" select="60 * 5 * 1000"/> <!-- 5 minutes -->
+
+    <stx:variable name="formatString">yyyy-MM-dd'T'hh:mm:ssZZZ</stx:variable>
+
+    <!-- SimpleDateFormat format = new SimpleDateFormat(formatString) -->
+    <stx:variable name="format" select="df:new($formatString)"/>
+
+    <stx:variable name="latitude"/>
+    <stx:variable name="longitude"/>
+    <stx:variable name="elevation"/>
+    <stx:variable name="time"/>
+    <stx:variable name="mapObjectKey"/>
+
+    <stx:template match="dataMessage">
+
+        <stx:element name="event">
+           <stx:attribute name="version">2.0</stx:attribute>
+           <stx:attribute name="how">m-g</stx:attribute> <!-- Code for how the information was derived. 'm-g' is machine generated with a GPS receiver -->
+           <stx:attribute name="type">shgp</stx:attribute> <!-- MS2525b code to identify the event. 'shgp' is a present hostile ground -->
+
+           <stx:process-children/>
+
+           <!-- Call into Java to do date formatting -->
+           <!-- Date d = new Date(time) -->
+           <!-- Date stale = new Date(time + staleTimeout) -->
+           <stx:variable name="d" select="date:new(long:new($time))"/>
+           <stx:variable name="staleTime" select="date:new(long:new($time + $staleTimeout))"/>
+
+           <stx:attribute name="time"><stx:value-of select="df:format($format, $d)"/></stx:attribute>
+           <stx:attribute name="start"><stx:value-of select="df:format($format, $d)"/></stx:attribute>
+           <stx:attribute name="stale"><stx:value-of select="df:format($format, $staleTime)"/></stx:attribute>
+           <stx:attribute name="uid"><stx:value-of select="$mapObjectKey"/></stx:attribute>
+
+           <stx:element name="point">
+               <stx:attribute name="lat"><stx:value-of select="$latitude"/></stx:attribute>
+               <stx:attribute name="lon"><stx:value-of select="$longitude"/></stx:attribute>
+               <stx:attribute name="hae"><stx:value-of select="$elevation"/></stx:attribute>
+               <stx:attribute name="ce"/> <!-- Elevation error -->
+               <stx:attribute name="le"/> <!-- Elevation error -->
+           </stx:element>
+
+        </stx:element>
+
+    </stx:template>
+
+    <stx:template match="lat/text()">
+       <stx:assign name="latitude" select="."/>
+    </stx:template>
+
+    <stx:template match="lng/text()">
+       <stx:assign name="longitude" select="."/>
+    </stx:template>
+
+    <stx:template match="elevation/text()">
+       <stx:assign name="elevation" select="."/>
+    </stx:template>
+
+    <stx:template match="time/text()">
+       <stx:assign name="time" select="."/>
+    </stx:template>
+
+    <stx:template match="mapObjectKey/text()">
+       <stx:assign name="mapObjectKey" select="."/>
+    </stx:template>
+
+</stx:transform>

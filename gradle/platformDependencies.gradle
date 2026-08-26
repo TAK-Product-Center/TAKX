@@ -1,0 +1,118 @@
+// Dependencies for the Platform module.  This file is included from that sub-project and the bin-creator
+// script.  Further, this script is published for use in creating the TAKX base installer.
+
+dependencies {
+    api "org.slf4j:slf4j-api:$slf4jApiVersion"
+    implementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
+
+    // Make our log4j binding available as part of our platform-bom
+    runtimeOnly "org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion"
+
+    api("gov.nasa:worldwind:$worldwindVersion") {
+        exclude module: "gdal"
+    }
+
+    api "jakarta.annotation:jakarta.annotation-api:$jakartaAnnotationApiVersion"
+
+    // all `takkernel` JARs and transitive dependencies
+    api("gov.tak.kernel:takkernel-all:$takKernelVersion") {
+        exclude module: "guava"
+        exclude module: "jogl-all-main"
+        exclude module: "gluegen-rt-main"
+    }
+
+    // Need to specify these directly as they are no longer coming in from takkernel
+    api "org.jogamp.jogl:jogl-all:$joglVersion"
+    api "org.jogamp.gluegen:gluegen-rt:$joglVersion"
+
+    api("com.google.guava:guava:$guavaVersion") {
+        exclude module: "listenablefuture"
+        exclude module: "j2objc-annotations"
+    }
+
+    api "com.koloboke:koloboke-api-jdk8:$kolobokeVersion"
+    api "jakarta.enterprise:jakarta.enterprise.cdi-api:$jakartaCdiApiVersion"
+    api "jakarta.xml.bind:jakarta.xml.bind-api:$jaxbVersion"
+    api "jcommoncommo:jcommoncommo:$commonCommoVersion"
+    api "org.hibernate.orm:hibernate-core:$hibernateCoreVersion"
+    api "org.jboss:jandex:$jandexVersion"
+    api "org.jboss.weld:weld-api:$weldApiVersion"
+    api "org.zeroturnaround:zt-zip:$zeroturnaroundVersion"
+    api "com.github.weisj:jsvg:$jsvgVersion"
+
+    // TODO TAKX-4057: This was a transitive dependency and houses 'javax.annotation' items
+    //  - We moved to jakarta a while ago and will remove this in 5.9 which will eliminate that package from the classpath
+    api "com.google.code.findbugs:jsr305:3.0.2"
+
+    implementation "com.drewnoakes:metadata-extractor:$metadataExtractorVersion"
+    implementation "com.fasterxml.uuid:java-uuid-generator:$uuidGeneratorVersion"
+
+    implementation "io.github.openfeign:feign-jackson:$feignVersion"
+    implementation "io.github.openfeign:feign-java11:$feignVersion"
+
+    implementation "com.fasterxml.jackson.core:jackson-core:$jacksonVersion"
+    implementation "com.fasterxml.jackson.core:jackson-databind:$jacksonVersion"
+    implementation "com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:$jacksonVersion"
+
+    implementation "com.formdev:flatlaf:$flatLafVersion"
+    implementation "com.formdev:flatlaf-swingx:$flatLafVersion"
+    implementation "com.formdev:flatlaf-extras:$flatLafVersion"
+    implementation "com.jgoodies:forms:$jgoodiesFormsVersion"
+    implementation "com.miglayout:miglayout-swing:$migLayoutVersion"
+    implementation "commons-codec:commons-codec:$commonsCodecVersion"
+    implementation "commons-io:commons-io:$commonsIoVersion"
+    implementation "net.java.dev:colorchooser:$colorchooserVersion"
+    implementation "net.sf.opencsv:opencsv:$opencsvVersion"
+    implementation "org.apache.commons:commons-lang3:$commonsLang3Version"
+    implementation "org.apache.commons:commons-math3:$commonsMathVersion"
+    implementation "org.apache.commons:commons-text:$commonsTextVersion"
+    implementation "org.aspectj:aspectjrt:$aspectjVersion"
+    implementation "org.bytedeco:ffmpeg:$ffmpegVersion"
+    implementation "org.dockingframes:docking-frames-common:$dockingFramesVersion"
+    implementation "org.dockingframes:docking-frames-core:$dockingFramesVersion"
+    implementation "org.greenrobot:eventbus-java:$eventbusVersion"
+    implementation "org.javassist:javassist:$javassistVersion"
+    implementation "org.jboss.modules:jboss-modules:$jbossModulesVersion"
+    implementation "org.json:json:$jsonVersion"
+    implementation "org.swinglabs.swingx:swingx-all:$swingxVersion"
+    implementation "org.jboss.weld.se:weld-se-core:$weldVersion"
+
+    // bouncycastle (BKS keystore)
+    implementation "org.bouncycastle:bcprov-jdk18on:$bouncyCastleVersion"
+    implementation "org.bouncycastle:bcpkix-jdk18on:$bouncyCastleVersion"
+
+    // Include all the platform variants for takkernel runtimes.
+    //
+    // If environment variable 'TAKKERNEL_LOCAL' is defined, then only declare a dependency for the current platform.
+    // This allows building against takkernel versions built locally.
+    def platforms
+    if (System.getenv('TAKKERNEL_LOCAL')) {
+        def platformMapping = ['windows': 'win', 'linux': 'linux', 'macosx': 'macos']
+        platforms = [platformMapping[osFamily]]
+    } else {
+        platforms = ['win', 'linux']
+
+        // Re-enable this when the Mac builders are functional again on TPC
+//        platforms = ['win', 'linux', 'macos']
+    }
+
+    platforms.forEach { platform ->
+        runtimeOnly "gov.tak.kernel:takkernel-engine-rt-${platform}64:$takKernelVersion"
+    }
+
+    // All of the libraries we use (and provide) at runtime, but are not part of the compilation class path
+    runtimeOnly "com.adobe.xmp:xmpcore:$xmpcoreVersion"
+    runtimeOnly "com.github.jai-imageio:jai-imageio-core:$jaiImageIOVersion"
+    runtimeOnly "com.koloboke:koloboke-impl-jdk8:$kolobokeVersion"
+    runtimeOnly "com.zaxxer:HikariCP:$hikariCPVersion"
+    runtimeOnly "commons-logging:commons-logging:$commonsLoggingVersion"
+    runtimeOnly "net.sf.joost:joost:$joostVersion"
+    runtimeOnly "org.hibernate.common:hibernate-commons-annotations:$hibernateAnnotationsVersion"
+    runtimeOnly "org.jboss.logging:jboss-logging:$jbossLoggingVersion"
+    runtimeOnly "org.jboss.weld:weld-spi:$weldApiVersion"
+    runtimeOnly "org.jogamp.jocl:jocl-main:$joclVersion"
+    runtimeOnly "org.jogamp.gluegen:gluegen-rt:$joglVersion"
+    runtimeOnly "org.ow2.asm:asm:$ow2Version"
+    runtimeOnly "org.ow2.asm:asm-commons:$ow2Version"
+}

@@ -1,0 +1,480 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="11.0.8" class="java.beans.XMLDecoder">
+ <object class="com.jformdesigner.model.FormModel">
+  <void property="contentType">
+   <string>form/swing</string>
+  </void>
+  <void property="root">
+   <object class="com.jformdesigner.model.FormRoot">
+    <void method="add">
+     <object class="com.jformdesigner.model.FormContainer">
+      <string>javax.swing.JPanel</string>
+      <object class="com.jformdesigner.model.FormLayoutManager">
+       <class>com.jgoodies.forms.layout.FormLayout</class>
+       <void method="setProperty">
+        <string>$columnSpecs</string>
+        <string>default, labelcompgap, default, labelcompgap, default</string>
+       </void>
+       <void method="setProperty">
+        <string>$rowSpecs</string>
+        <string>default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default</string>
+       </void>
+      </object>
+      <void method="setProperty">
+       <string>border</string>
+       <object class="javax.swing.border.TitledBorder">
+        <null/>
+        <string>Default Communication Path</string>
+        <int>4</int>
+        <int>2</int>
+       </object>
+      </void>
+      <void property="name">
+       <string>this</string>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent">
+        <string>javax.swing.JRadioButton</string>
+        <void method="setProperty">
+         <string>text</string>
+         <string>None</string>
+        </void>
+        <void method="setProperty">
+         <string>$buttonGroup</string>
+         <object class="com.jformdesigner.model.FormReference">
+          <string>buttonGroup1</string>
+         </object>
+        </void>
+        <void property="name">
+         <string>noneRadioButton</string>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>3</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>1</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent">
+        <string>javax.swing.JRadioButton</string>
+        <void method="setProperty">
+         <string>text</string>
+         <string>Serial</string>
+        </void>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void method="setProperty">
+         <string>$buttonGroup</string>
+         <object class="com.jformdesigner.model.FormReference">
+          <string>buttonGroup1</string>
+         </object>
+        </void>
+        <void property="name">
+         <string>serialRadioButton</string>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>3</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>3</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent" id="FormComponent0">
+        <string>javax.swing.JComboBox</string>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void property="name">
+         <string>serialComboBox</string>
+        </void>
+        <void method="auxiliary">
+         <void method="setProperty">
+          <string>JavaCodeGenerator.typeParameters</string>
+          <string>String</string>
+         </void>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>5</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>3</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent">
+        <string>javax.swing.JRadioButton</string>
+        <void method="setProperty">
+         <string>text</string>
+         <string>TCP Client</string>
+        </void>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void method="setProperty">
+         <string>$buttonGroup</string>
+         <object class="com.jformdesigner.model.FormReference">
+          <string>buttonGroup1</string>
+         </object>
+        </void>
+        <void property="name">
+         <string>tcpClientRadioButton</string>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>3</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>5</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent" id="FormComponent1">
+        <string>javax.swing.JComboBox</string>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void property="name">
+         <string>tcpClientComboBox</string>
+        </void>
+        <void method="auxiliary">
+         <void method="setProperty">
+          <string>JavaCodeGenerator.variableName</string>
+          <string>tcpClientComboBox</string>
+         </void>
+         <void method="setProperty">
+          <string>JavaCodeGenerator.typeParameters</string>
+          <string>String</string>
+         </void>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>5</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>5</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent">
+        <string>javax.swing.JRadioButton</string>
+        <void method="setProperty">
+         <string>text</string>
+         <string>TCP Server</string>
+        </void>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void method="setProperty">
+         <string>$buttonGroup</string>
+         <object class="com.jformdesigner.model.FormReference">
+          <string>buttonGroup1</string>
+         </object>
+        </void>
+        <void property="name">
+         <string>tcpServerRadioButton</string>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>3</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>7</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent" id="FormComponent2">
+        <string>javax.swing.JComboBox</string>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void property="name">
+         <string>tcpServerComboBox</string>
+        </void>
+        <void method="auxiliary">
+         <void method="setProperty">
+          <string>JavaCodeGenerator.typeParameters</string>
+          <string>String</string>
+         </void>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>5</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>7</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent">
+        <string>javax.swing.JRadioButton</string>
+        <void method="setProperty">
+         <string>text</string>
+         <string>UDP Client</string>
+        </void>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void method="setProperty">
+         <string>$buttonGroup</string>
+         <object class="com.jformdesigner.model.FormReference">
+          <string>buttonGroup1</string>
+         </object>
+        </void>
+        <void property="name">
+         <string>udpClientRadioButton</string>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>3</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>9</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent" id="FormComponent3">
+        <string>javax.swing.JComboBox</string>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void property="name">
+         <string>udpClientComboBox</string>
+        </void>
+        <void method="auxiliary">
+         <void method="setProperty">
+          <string>JavaCodeGenerator.typeParameters</string>
+          <string>String</string>
+         </void>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>5</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>9</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent">
+        <string>javax.swing.JRadioButton</string>
+        <void method="setProperty">
+         <string>text</string>
+         <string>UDP Server</string>
+        </void>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void method="setProperty">
+         <string>$buttonGroup</string>
+         <object class="com.jformdesigner.model.FormReference">
+          <string>buttonGroup1</string>
+         </object>
+        </void>
+        <void property="name">
+         <string>udpRadioButton</string>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>3</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>11</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent" id="FormComponent4">
+        <string>javax.swing.JComboBox</string>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void property="name">
+         <string>udpComboBox</string>
+        </void>
+        <void method="auxiliary">
+         <void method="setProperty">
+          <string>JavaCodeGenerator.typeParameters</string>
+          <string>String</string>
+         </void>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>5</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>11</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent">
+        <string>javax.swing.JRadioButton</string>
+        <void method="setProperty">
+         <string>text</string>
+         <string>Iridium</string>
+        </void>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void method="setProperty">
+         <string>$buttonGroup</string>
+         <object class="com.jformdesigner.model.FormReference">
+          <string>buttonGroup1</string>
+         </object>
+        </void>
+        <void property="name">
+         <string>iridiumRadioButton</string>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>3</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>15</int>
+        </void>
+       </object>
+      </void>
+      <void method="add">
+       <object class="com.jformdesigner.model.FormComponent" id="FormComponent5">
+        <string>javax.swing.JComboBox</string>
+        <void method="setProperty">
+         <string>visible</string>
+         <boolean>false</boolean>
+        </void>
+        <void property="name">
+         <string>iridiumComboBox</string>
+        </void>
+        <void method="auxiliary">
+         <void method="setProperty">
+          <string>JavaCodeGenerator.typeParameters</string>
+          <string>String</string>
+         </void>
+        </void>
+       </object>
+       <object class="com.jformdesigner.model.FormLayoutConstraints">
+        <class>com.jgoodies.forms.layout.CellConstraints</class>
+        <void method="setProperty">
+         <string>gridX</string>
+         <int>5</int>
+        </void>
+        <void method="setProperty">
+         <string>gridY</string>
+         <int>15</int>
+        </void>
+       </object>
+      </void>
+     </object>
+     <object class="com.jformdesigner.model.FormLayoutConstraints">
+      <null/>
+      <void method="setProperty">
+       <string>location</string>
+       <object class="java.awt.Point">
+        <int>0</int>
+        <int>0</int>
+       </object>
+      </void>
+      <void method="setProperty">
+       <string>size</string>
+       <object class="java.awt.Dimension">
+        <int>315</int>
+        <int>225</int>
+       </object>
+      </void>
+     </object>
+    </void>
+    <void method="add">
+     <object class="com.jformdesigner.model.FormNonVisual">
+      <string>javax.swing.ButtonGroup</string>
+      <void property="name">
+       <string>buttonGroup1</string>
+      </void>
+     </object>
+     <object class="com.jformdesigner.model.FormLayoutConstraints">
+      <null/>
+      <void method="setProperty">
+       <string>location</string>
+       <object class="java.awt.Point">
+        <int>0</int>
+        <int>235</int>
+       </object>
+      </void>
+     </object>
+    </void>
+   </object>
+  </void>
+ </object>
+</java>

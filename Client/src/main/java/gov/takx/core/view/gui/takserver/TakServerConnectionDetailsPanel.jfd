@@ -1,0 +1,392 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "fill:default:grow, default"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "dialogPane"
+				"border": sfield com.jgoodies.forms.factories.Borders DIALOG_BORDER
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": "default, relgap, default, linegap, default, linegap, default"
+				} ) {
+					name: "contentPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default, labelcompgap, left:default:grow, labelcompgap, default, labelcompgap, right:default"
+						"$rowSpecs": "default, linegap, default, linegap, default"
+					} ) {
+						name: "connectionDetailsPanel"
+						"border": new javax.swing.border.TitledBorder( "Connection Details" )
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "serverLabel"
+							"text": "Name:"
+							"toolTipText": "The user defined name for the connection"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+								"JavaCodeGenerator.variableName": "nameLabel"
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+						add( new FormComponent( "gov.takx.commons.swing.PlaceholderTextField" ) {
+							name: "nameTextField"
+							"cursor": &Cursor0 new java.awt.Cursor( 2 )
+							"placeholderText": "<Descriptive Server Name>"
+							auxiliary() {
+								"JavaCodeGenerator.postInitCode": "${field}.getDocument().addDocumentListener(listener);"
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridWidth": 5
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "addressLabel"
+							"text": "Address:"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 3
+						} )
+						add( new FormComponent( "gov.takx.commons.swing.PlaceholderTextField" ) {
+							name: "addressTextField"
+							"placeholderText": "<Remote TAK Server IP or Hostname>"
+							auxiliary() {
+								"JavaCodeGenerator.postInitCode": "${field}.getDocument().addDocumentListener(listener);"
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 3
+							"gridWidth": 5
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "protocolLabel"
+							"text": "Protocol:"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 1
+							"gridY": 5
+						} )
+						add( new FormComponent( "javax.swing.JComboBox" ) {
+							name: "protocolComboBox"
+							"model": new javax.swing.DefaultComboBoxModel {
+								selectedItem: "SSL"
+								addElement( "SSL" )
+								addElement( "TCP" )
+							}
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "protocolComboBoxActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 5
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "portLabel"
+							"text": "Port:"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 5
+							"gridX": 5
+						} )
+						add( new FormComponent( "javax.swing.JSpinner" ) {
+							name: "portSpinner"
+							"model": new javax.swing.SpinnerNumberModel( 10000, 1, 65535, 1 )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 7
+							"gridY": 5
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default:grow, labelcompgap, default:grow"
+						"$rowSpecs": "default, default, default, default, default"
+					} ) {
+						name: "certsAndCredsWrapperPanel"
+						"border": new javax.swing.border.TitledBorder( "Certificates & Credentials" )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "useAuthCheckBox"
+							"text": "Use Authentication"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "useAuthCheckBoxActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "enrollForClientCertCheckBox"
+							"text": "Enroll for Client Certificate"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "enrollForClientCertCheckBoxActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+							"$columnSpecs": "default, labelcompgap, default:grow, labelcompgap, default"
+							"$rowSpecs": "unrelgap, default, linegap, fill:default"
+						} ) {
+							name: "credentialsPanel"
+							"visible": false
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "usernameLabel"
+								"text": "Username:"
+								"toolTipText": "The user defined name for the connection"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 2
+							} )
+							add( new FormComponent( "javax.swing.JTextField" ) {
+								name: "usernameTextField"
+								"cursor": #Cursor0
+								auxiliary() {
+									"JavaCodeGenerator.postInitCode": "${field}.getDocument().addDocumentListener(listener);"
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"gridY": 2
+								"gridWidth": 3
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "passwordLabel"
+								"text": "Password:"
+								"toolTipText": "The user defined name for the connection"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 4
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.ProtectedPasswordField" ) {
+								name: "passwordLogin"
+								"toolTipText": "<Login Password>"
+								auxiliary() {
+									"JavaCodeGenerator.postInitCode": "${field}.getDocument().addDocumentListener(listener);"
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 4
+								"gridX": 3
+								"gridWidth": 3
+							} )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 2
+							"gridWidth": 3
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+							"$columnSpecs": "default, labelcompgap, default:grow, labelcompgap, default"
+							"$rowSpecs": "unrelgap, default, linegap, fill:default, default"
+						} ) {
+							name: "trustStorePanel"
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "certAuthorityFileLabel"
+								"text": "CA File:"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 1
+								"gridY": 2
+							} )
+							add( new FormComponent( "javax.swing.JTextField" ) {
+								name: "certAuthorityTextField"
+								"toolTipText": "Certificate Authority file location"
+								auxiliary() {
+									"JavaCodeGenerator.postInitCode": "${field}.getDocument().addDocumentListener(listener);"
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"gridY": 2
+							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "selectCertAuthorityButton"
+								"text": "..."
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+								addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "selectCertAuthorityButtonActionPerformed", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 5
+								"gridY": 2
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "certAuthorityPasswordLabel"
+								"text": "CA Password:"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 1
+								"gridY": 4
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.ProtectedPasswordField" ) {
+								name: "passwordCertAuthority"
+								"toolTipText": "<Password for Certificate Authority>"
+								auxiliary() {
+									"JavaCodeGenerator.postInitCode": "${field}.getDocument().addDocumentListener(listener);"
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"gridY": 4
+								"gridWidth": 3
+							} )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 3
+							"gridWidth": 3
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+							"$columnSpecs": "default:grow"
+							"$rowSpecs": "linegap, default"
+						} ) {
+							name: "trustStoreOptionalPanel"
+							"visible": false
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "trustStoreOptionalLabel"
+								"text": "Client certificate is likely not required unless this is a restricted network."
+								"font": new com.jformdesigner.model.SwingDerivedFont( null, 2, 0, false )
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 2
+							} )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 4
+							"gridWidth": 3
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+							"$columnSpecs": "default, labelcompgap, default:grow, labelcompgap, default"
+							"$rowSpecs": "unrelgap, default, linegap, fill:default"
+						} ) {
+							name: "clientCertPanel"
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "clientCertFileLabel"
+								"text": "Client Cert File:"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 2
+							} )
+							add( new FormComponent( "javax.swing.JTextField" ) {
+								name: "clientCertTextField"
+								"toolTipText": "Client certificate file location"
+								auxiliary() {
+									"JavaCodeGenerator.postInitCode": "${field}.getDocument().addDocumentListener(listener);"
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"gridY": 2
+							} )
+							add( new FormComponent( "javax.swing.JButton" ) {
+								name: "selectClientCertButton"
+								"text": "..."
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+								addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "selectClientCertButtonActionPerformed", false ) )
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 5
+								"gridY": 2
+							} )
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "clientCertPasswordLabel"
+								"text": "Client Password:"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridY": 4
+							} )
+							add( new FormComponent( "gov.takx.commons.swing.ProtectedPasswordField" ) {
+								name: "passwordClientCert"
+								"toolTipText": "<Password for Certificate>"
+								auxiliary() {
+									"JavaCodeGenerator.postInitCode": "${field}.getDocument().addDocumentListener(listener);"
+								}
+							}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+								"gridX": 3
+								"gridY": 4
+								"gridWidth": 3
+							} )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 5
+							"gridWidth": 3
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 3
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "errorMessageLabel"
+						"text": "Error message"
+						"foreground": sfield java.awt.Color red
+						"visible": false
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 5
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "warningMessageLabel"
+						"visible": false
+						"foreground": sfield java.awt.Color orange
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 7
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "glue, button, relgap, button"
+					"$rowSpecs": "pref"
+				} ) {
+					name: "buttonBar"
+					"border": sfield com.jgoodies.forms.factories.Borders BUTTON_BAR_GAP_BORDER
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "okButton"
+						"text": "OK"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "okButtonActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 2
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "cancelButton"
+						"text": "Cancel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "cancelButtonActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 4
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormComponent( "javax.swing.JSeparator" ) {
+				name: "bottomSeparator"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 2
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 505, 570 )
+		} )
+	}
+}

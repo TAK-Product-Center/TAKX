@@ -1,0 +1,8 @@
+<event version="2.0" uid="S-1-5-21-451637131-3102226802-3310873526-1001-9-1-1" type="b-a-o-tbl" time="2026-02-20T16:14:40.21Z" start="2026-02-20T16:14:40.21Z" stale="2026-02-20T16:24:40.21Z" how="h-e" access="Undefined">
+    <point lat="41" lon="-91" hae="171.470427359349" ce="9999999" le="9999999" />
+    <detail>
+        <link type="a-f-G-U-C-I" uid="S-1-5-21-451637131-3102226802-3310873526-1001" relation="p-p" />
+        <contact callsign="DUCK-Alert" />
+        <emergency type="911 Alert">DUCK is in trouble</emergency>
+    </detail>
+</event>

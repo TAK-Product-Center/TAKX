@@ -1,0 +1,9 @@
+<aspectj>
+    <!--    <weaver options="-verbose -debug -showWeaveInfo">-->
+    <weaver options="-verbose -showWeaveInfo">
+
+        <!-- If you need to dump pore/post transform class files to the "./_ajdump" folder,
+             uncomment the next line and specify an appropriate package/class -->
+        <!--<dump within="gov.takx.api.ui.*" beforeandafter="false"/>-->
+    </weaver>
+</aspectj>

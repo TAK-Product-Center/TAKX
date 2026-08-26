@@ -1,0 +1,14 @@
+description = 'Functional tests for TAKX'
+
+dependencies {
+    testImplementation project(':test')
+    testImplementation project(':client')
+    testImplementation "com.koloboke:koloboke-impl-jdk8:$kolobokeVersion"
+    testImplementation "org.apache.logging.log4j:log4j-core:$log4jVersion"
+}
+
+// Disable warnings, so error prone checks don't flood us with output
+tasks.compileTestJava.options.warnings = false
+
+// Configure our test execution
+apply from: rootProject.file('gradle/standardTestSetup.gradle')

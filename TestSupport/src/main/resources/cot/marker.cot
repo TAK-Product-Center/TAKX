@@ -1,0 +1,17 @@
+<?xml version='1.0' standalone='yes'?>
+<event version="2.0" uid="21c57f66-d135-4180-a771-f2ede16629dc" type="a-f-G-U-C" time="2021-04-15T18:42:26.83Z"
+       start="2021-04-15T18:42:26.83Z" stale="2021-04-22T18:42:26.83Z" how="h-g-i-g-o" opex="E" qos="as if"
+       access="denied">
+    <point lat="50.0" lon="-112.0" hae="100" ce="9999999" le="9999999"/>
+    <detail>
+        <contact callsign="Unit 1"/>
+        <status readiness="true"/>
+        <initialBearing value="180.0"/>
+        <remarks>the remarks</remarks>
+        <archive/>
+        <__milsym id='INSPSCP-----**-'>
+            <unitmodifier code='X'>X marks the spot</unitmodifier>
+            <unitmodifier code='Y'>Y marks another spot</unitmodifier>
+        </__milsym>
+    </detail>
+</event>

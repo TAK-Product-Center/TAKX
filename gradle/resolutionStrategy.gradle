@@ -1,0 +1,31 @@
+// Gradle script to install version conflict resolution rules
+
+// In order to avoid touching configurations that are used for accessing Artifactory artifacts, we only apply these
+// rules to our "api" and "implementation" configurations.  If we don't limit this,
+// then when the installer script tries to apply this script after extracting it, it will get errors like:
+//
+//  > Cannot change strategy of configuration ':binCreatorArchive' after it has been resolved.
+
+['api', 'implementation', 'runtimeOnly'].each { name ->
+    configurations."$name" {
+        exclude group: 'org.glassfish.jaxb', module: 'jaxb-runtime'
+
+        // fail eagerly on version conflict (includes transitive dependencies)
+        // e.g. multiple different versions of the same dependency (group and name are equal)
+        resolutionStrategy.failOnVersionConflict()
+    }
+}
+
+['compileClasspath', 'runtimeClasspath'].each { name ->
+    configurations."$name" {
+        // This is here because the 'uk.m0nom:javaapiforkml' declares a hard dependency on a future
+        // version of the JAXB API and a specific JAXB implementation.
+        //
+        // See: TAKX-3325 and TAKX-3647
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'jakarta.xml.bind' || details.requested.group == 'org.glassfish.jaxb') {
+                details.useVersion jaxbVersion
+            }
+        }
+    }
+}

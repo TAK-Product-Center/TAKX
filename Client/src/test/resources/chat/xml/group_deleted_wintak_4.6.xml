@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<event version="2.0"
+       uid="GeoChat.S-1-5-21-2739727742-677502536-3530350016-1000.UserGroups.de44e561-4c88-43ce-b849-9ae8ad01aa01"
+       type="b-t-f" time="2022-08-17T23:12:04.510Z" start="2022-08-17T23:12:04.510Z" stale="2022-08-18T23:12:04.510Z"
+       how="h-g-i-g-o">
+    <point lat="0.00000000" lon="0.00000000" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+    
+    
+        <__chat id="UserGroups" chatroom="Groups" senderCallsign="OPTIMUS WT" groupOwner="false"
+                messageId="de44e561-4c88-43ce-b849-9ae8ad01aa01" deleteChild="72d4687c-fa1d-4928-a956-f4cf4bda3afb">
+            <chatgrp id="UserGroups" uid0="S-1-5-21-2739727742-677502536-3530350016-1000" uid1="ANDROID-R32M700HZ2X"
+                     uid2="ebc53795-403f-540f-99c6-983696f0bc16"/>
+            <hierarchy>
+                <group uid="UserGroups" name="Groups">
+                    <contact uid="S-1-5-21-2739727742-677502536-3530350016-1000" name="OPTIMUS WT"/>
+                </group>
+            </hierarchy>
+        </__chat>
+        <link uid="S-1-5-21-2739727742-677502536-3530350016-1000" type="a-f-G-U-C-I" relation="p-p"/>
+        <remarks source="BAO.F.WinTAK.S-1-5-21-2739727742-677502536-3530350016-1000"
+                 sourceID="S-1-5-21-2739727742-677502536-3530350016-1000" to="UserGroups"
+                 time="2022-08-17T23:12:04.51Z">Deleted group: New Group
+        </remarks>
+        
+        
+    </detail>
+</event>

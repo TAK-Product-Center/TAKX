@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<module xmlns="urn:jboss:module:1.9" name="takx-bootstrap">
+
+    <main-class name="gov.takx.bootstrap.Bootstrap"/>
+
+    <resources>
+        <resource-root path='../../../load/bootstrap-@platformVersion@.jar'/>
+        <resource-root path='../../../conf'/>
+    </resources>
+
+    <dependencies>
+        <module name="jdk" services="export"/>
+        <module name="log4j" services="export" />
+        <module name="org.slf4j.slf4j-api" />
+        <module name="org.jboss.modules" />
+        <module name="org.aspectj" />
+    </dependencies>
+</module>

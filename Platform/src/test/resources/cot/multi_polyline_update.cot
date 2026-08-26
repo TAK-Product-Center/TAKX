@@ -1,0 +1,14 @@
+<?xml version='1.0' standalone='yes'?>
+<event version="2.0" uid="8add4fbf-6d3f-474f-97c9-d0122d667222" type="u-d-f-m" time="2021-10-10T18:15:22.58Z"
+       start="2021-10-10T18:15:22.58Z" stale="2021-10-17T18:15:22.58Z" how="h-e">
+    <point lat="0" lon="0" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <contact callsign="Freehand 1 updated"/>
+        <title title="Freehand 1 updated"/>
+        <link line="&lt;?xml version='1.0' encoding='utf-8' standalone='yes'?&gt;&lt;event version='2.0' uid='90b4204b-17f8-4ddf-b080-fc0fab519ad2' type='u-d-f' time='2021-10-10T18:15:22.58Z' start='2021-10-10T18:15:22.58Z' stale='2021-10-17T18:15:22.58Z' how='h-e'&gt;&lt;point lat='35' lon='-88' hae='0' ce='9999999' le='9999999' /&gt;&lt;detail&gt;&lt;contact callsign='Freehand Blue updated' /&gt;&lt;strokeColor value='-16776961' /&gt;&lt;remarks /&gt;&lt;link point='34,-88' /&gt;&lt;link point='35,-88' /&gt;&lt;link point='36,-88' /&gt;&lt;height value='0.00' /&gt;&lt;archive /&gt;&lt;/detail&gt;&lt;/event&gt;"/>
+        <link line="&lt;?xml version='1.0' encoding='utf-8' standalone='yes'?&gt;&lt;event version='2.0' uid='39ca3e0b-4ad0-45b5-b4dc-7f4db6f80d27' type='u-d-f' time='2021-10-10T18:15:22.58Z' start='2021-10-10T18:15:22.58Z' stale='2021-10-17T18:15:22.58Z' how='h-e'&gt;&lt;point lat='36' lon='-89' hae='0' ce='9999999' le='9999999' /&gt;&lt;detail&gt;&lt;contact callsign='Freehand Green' /&gt;&lt;strokeColor value='-16711936' /&gt;&lt;remarks /&gt;&lt;link point='35,-89' /&gt;&lt;link point='36,-89' /&gt;&lt;link point='37,-89' /&gt;&lt;height value='0.00' /&gt;&lt;archive /&gt;&lt;/detail&gt;&lt;/event&gt;"/>
+        <height value="2.34"/>
+        <remarks/>
+        <archive/>
+    </detail>
+</event>

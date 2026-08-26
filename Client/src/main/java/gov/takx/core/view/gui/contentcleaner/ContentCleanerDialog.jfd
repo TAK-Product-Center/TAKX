@@ -1,0 +1,95 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"title": "Clear Content?"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "min(default;250dlu):grow"
+				"$rowSpecs": "default, unrelgap, default, unrelgap, default, unrelgap, default, linegap, default"
+			} ) {
+				name: "contentPanel"
+				"border": static com.jgoodies.forms.factories.Borders createEmptyBorder( "5dlu, 5dlu, 5dlu, 5dlu" )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "warningLabel"
+					"text": "Warning: All data will be permanantly erased"
+					"foreground": sfield java.awt.Color red
+					"horizontalAlignment": 0
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "infoLabel"
+					"text": "<html>Clearing content will permanently delete all data stored in the ProjectData directory and shut down the application. Default configurations will be restored when the application is restarted. This operation cannot be undone.</html>"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 3
+				} )
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "mapCacheCheckBox"
+					"text": "Clear maps & imagery"
+					"toolTipText": "Not yet supported"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 5
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "lockInfoLabel"
+					"text": "Lock both buttons to enable"
+					"horizontalAlignment": 0
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 7
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "24dlu, labelcompgap, 24dlu, labelcompgap, default:grow"
+					"$rowSpecs": "default"
+				} ) {
+					name: "lockPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JToggleButton" ) {
+						name: "lockButton2"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lockButtonClicked", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormComponent( "javax.swing.JToggleButton" ) {
+						name: "lockButton1"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "lockButtonClicked", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "clearContentButton"
+						"text": "Clear Content"
+						"enabled": false
+						"toolTipText": "Lock both switches to enable"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "clearContent", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 9
+					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 415, 235 )
+		} )
+	}
+}

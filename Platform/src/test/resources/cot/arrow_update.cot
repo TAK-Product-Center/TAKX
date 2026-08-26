@@ -1,0 +1,18 @@
+<event version="2.0" uid="36551a8c-f62b-4195-82d0-3578efeee4ee" type="u-rb-a" time="2021-10-21T00:00:14.62Z"
+       start="2021-10-21T00:00:14.62Z" stale="2021-10-22T00:00:14.62Z" how="h-e">
+    <point lat="25.0" lon="-90.0" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <contact callsign="Arrow 1"/>
+        <range value="25000.0"/>
+        <bearing value="115.0"/>
+        <inclination value="0"/>
+        <rangeUnits value="2"/>
+        <bearingUnits value="2"/>
+        <northRef value="2"/>
+        <color value="-17895936"/>
+        <strokeColor value="-17895936"/>
+        <strokeWeight value="8.0"/>
+        <archive/>
+        <remarks/>
+    </detail>
+</event>

@@ -1,0 +1,188 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, min, default, min, fill:default:grow, min, default"
+		} ) {
+			name: "this"
+			add( new FormContainer( "gov.takx.core.view.gui.layers.viewmanager.CollapsiblePanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "labelcompgap, default:grow, labelcompgap"
+				"$rowSpecs": "linegap, (40px<default<80px), linegap, default, linegap, default, linegap, default, linegap, top:max(default;125px), linegap"
+			} ) {
+				name: "addPointsPane"
+				"title": "Add Points"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane1"
+					"horizontalScrollBarPolicy": 31
+					"viewportBorder": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JTextArea" ) {
+						name: "instructionsLabel"
+						"text": "Select an icon to activate globe selection for dropping point(s). Deselect the icon or use ESC to cancel. You may also enter a location below instead of clicking on the globe."
+						"lineWrap": true
+						"wrapStyleWord": true
+						"editable": false
+						"focusable": false
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 2
+					"gridY": 2
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "iconSetComboBox"
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "IconSetSelection"
+					}
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "iconSetComboBoxActionPerformed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 4
+					"gridX": 2
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow, labelcompgap, default:grow, labelcompgap, default:grow, labelcompgap, default"
+					"$rowSpecs": "default"
+				} ) {
+					name: "nameFieldsPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "gov.takx.commons.swing.PlaceholderTextField" ) {
+						name: "prefixTextField"
+						"placeholderText": "Custom Prefix"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+					} )
+					add( new FormComponent( "gov.takx.commons.swing.PlaceholderTextField" ) {
+						name: "indexTextField"
+						"placeholderText": "Index"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+					add( new FormComponent( "gov.takx.commons.swing.PlaceholderTextField" ) {
+						name: "incrementTextField"
+						"placeholderText": "Increment"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "clearButton"
+						"text": "Clear"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "clearButtonActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 7
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 6
+					"gridX": 2
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow, labelcompgap, default"
+					"$rowSpecs": "default"
+				} ) {
+					name: "groupPanel"
+					add( new FormComponent( "javax.swing.JComboBox" ) {
+						name: "groupComboBox"
+						auxiliary() {
+							"JavaCodeGenerator.typeParameters": "String"
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "groupComboBoxActionPerformed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "colorSelectorButton"
+						"preferredSize": new java.awt.Dimension( 34, 34 )
+						"background": new java.awt.Color( 255, 255, 255, 255 )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showColorSelector", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 2
+					"gridY": 8
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "iconSelectionScrollPane"
+					"horizontalScrollBarPolicy": 31
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 10
+					"gridX": 2
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormContainer( "gov.takx.core.view.gui.layers.viewmanager.CollapsiblePanel", new FormLayoutManager( class java.awt.BorderLayout ) {
+				"vgap": 1
+				"hgap": 1
+			} ) {
+				name: "locationCollapsiblePane"
+				"title": "Location"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+			} )
+			add( new FormContainer( "gov.takx.core.view.gui.layers.viewmanager.CollapsiblePanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "linegap, default, linegap, fill:default:grow"
+			} ) {
+				name: "recentlyAddedPane"
+				"title": "Recently Added"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "labelcompgap, default, labelcompgap, default:grow, labelcompgap, default, labelcompgap"
+					"$rowSpecs": "linegap, default, linegap"
+				} ) {
+					name: "buttonsPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "importPointsButton"
+						"text": "Import Points"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 2
+						"gridY": 2
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 2
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "recentlyAddedScrollPane"
+					"horizontalScrollBarPolicy": 31
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JTable" ) {
+						name: "recentPointsTable"
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 4
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 370, 675 )
+		} )
+	}
+}

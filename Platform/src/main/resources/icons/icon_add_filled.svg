@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+        width="30"
+        height="30"
+        viewBox="0 0 30 30"
+        fill="none"
+        version="1.1"
+        id="svg8"
+        sodipodi:docname="icon_add_filled_mg.svg"
+        inkscape:export-filename="C:\Users\kbowman\Downloads\svgs\icon_add_filled.png"
+        inkscape:export-xdpi="153.60001"
+        inkscape:export-ydpi="153.60001"
+        inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+        xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+        xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+        xmlns="http://www.w3.org/2000/svg"
+>
+  <defs
+          id="defs12"/>
+  <sodipodi:namedview
+          id="namedview10"
+          pagecolor="#ffffff"
+          bordercolor="#111111"
+          borderopacity="1"
+          inkscape:pageshadow="0"
+          inkscape:pageopacity="0"
+          inkscape:pagecheckerboard="1"
+          showgrid="false"
+          inkscape:zoom="23.966667"
+          inkscape:cx="15"
+          inkscape:cy="15"
+          inkscape:window-width="1720"
+          inkscape:window-height="1377"
+          inkscape:window-x="3632"
+          inkscape:window-y="-8"
+          inkscape:window-maximized="0"
+          inkscape:current-layer="svg8"/>
+  <path
+          d="M21.3618 18.75C21.7178 18.75 22.012 19.0145 22.0585 19.3577L22.0649 19.4531V25.1455C22.0649 25.5338 21.7501 25.8486 21.3618 25.8486C21.0059 25.8486 20.7117 25.5841 20.6651 25.2409L20.6587 25.1455V19.4531C20.6587 19.0648 20.9735 18.75 21.3618 18.75Z"
+          fill="white"
+          id="path2"/>
+  <path
+          d="M24.2072 21.5957C24.5955 21.5957 24.9103 21.9105 24.9103 22.2988C24.9103 22.6548 24.6458 22.949 24.3026 22.9955L24.2072 23.002H18.5156C18.1273 23.002 17.8125 22.6872 17.8125 22.2988C17.8125 21.9429 18.077 21.6487 18.4202 21.6021L18.5156 21.5957H24.2072Z"
+          fill="white"
+          id="path4"/>
+  <path
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M14.9962 30C14.9962 30 17.2427 27.4558 19.721 24.0927V23.9397H18.5155C17.6094 23.9397 16.8749 23.2051 16.8749 22.299C16.8749 21.4677 17.4924 20.7821 18.2941 20.6733L18.3255 20.6691L18.484 20.6584H19.721V19.4531C19.721 18.547 20.4556 17.8125 21.3616 17.8125C22.193 17.8125 22.8786 18.43 22.9873 19.2317L22.9916 19.2631L22.9918 19.2653C24.7855 16.3217 26.1694 13.3469 26.1694 11.1751C26.1694 5.00226 21.1672 0 14.9962 0C8.82721 0 3.82495 5.00226 3.82495 11.1751C3.82495 17.3461 14.9962 30 14.9962 30ZM19.721 21.5959H18.5155L18.4201 21.6023C18.0769 21.6489 17.8124 21.9431 17.8124 22.299C17.8124 22.6874 18.1272 23.0022 18.5155 23.0022H19.721V21.5959ZM14.9973 14.4251C16.6427 14.4251 17.9762 13.0917 17.9762 11.4463C17.9762 9.79887 16.6427 8.46739 14.9973 8.46739C13.3499 8.46739 12.0184 9.79887 12.0184 11.4463C12.0184 13.0917 13.3499 14.4251 14.9973 14.4251Z"
+          fill="white"
+          id="path6"/>
+</svg>

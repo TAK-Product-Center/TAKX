@@ -1,0 +1,57 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "20dlu, relgap, default:grow, labelcompgap, default, labelcompgap, default"
+			"$rowSpecs": "default, linegap, fill:default:grow"
+		} ) {
+			name: "this"
+			"border": sfield com.jgoodies.forms.factories.Borders DLU2_BORDER
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "iconLabel"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "conversationNameLabel"
+				"text": "Conversation Name"
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 1, false )
+				"horizontalAlignment": 2
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "unreadCountLabel"
+				"toolTipText": "Unread messages in this conversation"
+				"horizontalTextPosition": 0
+				"iconTextGap": -1
+				"preferredSize": new java.awt.Dimension( 28, 22 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 1
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "dateTimeLabel"
+				"text": "time"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 7
+			} )
+			add( new FormComponent( "javax.swing.JTextArea" ) {
+				name: "messageTextArea"
+				"text": "Message"
+				"editable": false
+				"lineWrap": true
+				"wrapStyleWord": true
+				"font": new java.awt.Font( "SansSerif", 0, 12 )
+				"opaque": false
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+				"gridWidth": 5
+				"gridX": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 5, 0 )
+			"size": new java.awt.Dimension( 350, 95 )
+		} )
+	}
+}

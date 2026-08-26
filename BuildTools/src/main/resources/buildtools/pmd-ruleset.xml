@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<ruleset name="TAKX ruleset"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 http://pmd.sourceforge.net/ruleset_2_0_0.xsd"
+         xsi:noNamespaceSchemaLocation="http://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+
+    <description>
+        Custom ruleset for use on the TAKX code base
+    </description>
+
+    <!-- We'll use all of these in their entirety -->
+    <rule ref="rulesets/java/strings.xml"/>
+
+    <rule ref="rulesets/java/basic.xml"/>
+    <rule ref="rulesets/java/unusedcode.xml"/>
+    <rule ref="rulesets/java/imports.xml"/>
+    <rule ref="rulesets/java/strings.xml"/>
+    <rule ref="rulesets/java/codesize.xml"/>
+    <rule ref="rulesets/java/finalizers.xml"/>
+    <rule ref="rulesets/java/clone.xml"/>
+    <rule ref="rulesets/java/strictexception.xml"/>
+
+    <!-- Below here we're configuring specific exclusions on standard rule sets. -->
+
+    <rule ref="rulesets/java/coupling.xml">
+        <exclude name="LoosePackageCoupling"/>
+        <exclude name="LawOfDemeter"/>
+        <!-- Many of these are just plain stupid -->
+    </rule>
+
+    <rule ref="rulesets/java/braces.xml">
+    <exclude name="IfStmtsMustUseBraces"/>
+    </rule>
+
+    <rule ref="rulesets/java/design.xml">
+    <exclude name="SimpleDateFormatNeedsLocale"/>
+        <exclude name="UseLocaleWithCaseConversions"/>
+        <exclude name="ConfusingTernary"/>
+        <exclude name="EmptyMethodInAbstractClassShouldBeAbstract"/>
+    </rule>
+
+    <rule ref="rulesets/java/naming.xml">
+    <exclude name="ShortVariable"/>
+        <exclude name="LongVariable"/>
+        <exclude name="AbstractNaming"/>
+        <exclude name="VariableNamingConventions"/>
+    </rule>
+
+    <rule ref="rulesets/java/optimizations.xml">
+    <exclude name="LocalVariableCouldBeFinal"/>
+        <exclude name="MethodArgumentCouldBeFinal"/>
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
+
+    <!-- Custom rules for our code base -->
+
+    <!-- The next three rules replace the functionliaty of the naming/VariableNamingConventions rule.  We want to
+         allow "logger" as a special case of static final.  The other two rules are re-implemnetations of
+         functionality from the builtin rule in XPath since we disabled it, but we want them to be run. -->
+
+    <rule name="StaticFieldsUpperCaseExceptLogger"
+          language="java"
+          message="Variables that are final and static should be in all caps."
+          class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <description>
+            Static final fields should have names in all upper case
+        </description>
+        <properties>
+            <property name="xpath">
+                <value>
+                    <![CDATA[
+        //FieldDeclaration[@Static='true' and @Final='true']/VariableDeclarator/VariableDeclaratorId[upper-case(@Image) != @Image and @Image != 'logger']
+                    ]]>
+                </value>
+            </property>
+        </properties>
+        <example>
+            <![CDATA[
+                private static final String lower = "foo"; // don't do this!
+            ]]>
+        </example>
+    </rule>
+
+    <rule name="VariableNamesStartWithLowerCaseLetter"
+          language="java"
+          message="Variables should start with a lowercase character"
+          class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <description>
+            Normal variables should start with lower case letters
+        </description>
+        <properties>
+            <property name="xpath">
+                <value>
+                    <![CDATA[
+        //VariableDeclaratorId[lower-case(substring(@Image,1,1))!=substring(@Image,1,1)]/../..[@Static='false' and @Final='false']
+                    ]]>
+                </value>
+            </property>
+        </properties>
+        <example>
+            <![CDATA[
+                public void foo() {
+                    int XYZ; // Don't do this
+                }
+            ]]>
+        </example>
+    </rule>
+
+    <rule name="VariableNamesShouldNotContainUnderscore"
+          language="java"
+          message="Variables that are not final should not contain underscores"
+          class="net.sourceforge.pmd.lang.rule.XPathRule">
+    <description>
+            Non-final variables should not have underscores in the name
+        </description>
+        <properties>
+            <property name="xpath">
+                <value>
+                    <![CDATA[
+        //VariableDeclaratorId[contains(@Image,'_')]/../..[@Final='false']
+                    ]]>
+                </value>
+            </property>
+        </properties>
+        <example>
+            <![CDATA[
+                public void foo() {
+                    int a_value; // Don't do this
+                }
+            ]]>
+        </example>
+    </rule>
+
+</ruleset>

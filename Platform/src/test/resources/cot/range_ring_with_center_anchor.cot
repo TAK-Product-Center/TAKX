@@ -1,0 +1,31 @@
+<!-- Not used in tests currently but this is an actual CoT message from WinTAK we can use for QA testing. -->
+<event version="2.0" uid="97202eed-83e4-4039-a489-df426aa28008" type="u-r-b-c-c" time="2021-10-14T18:12:06.10Z"
+       start="2021-10-14T18:12:06.10Z" stale="2021-10-15T18:12:06.10Z" how="h-e">
+    <point lat="40.6115274" lon="-95.585498" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <contact callsign="R&amp;B Circle 4"/>
+        <rangeUnits value="1"/>
+        <shape>
+            <ellipse minor="6338.45" angle="360" major="6338.45"/>
+            <link relation="p-c" uid="97202eed-83e4-4039-a489-df426aa28008.Style" type="b-x-KmlStyle">
+                <Style>
+                    <LineStyle>
+                        <color>ffff0000</color>
+                        <width>3</width>
+                        <alpha>0</alpha>
+                    </LineStyle>
+                    <PolyStyle>
+                        <color>00ff0000</color>
+                    </PolyStyle>
+                </Style>
+            </link>
+            <link uid="085b3c99-c1b3-4206-9d65-a33cd971fc7e" type="a-h-G" relation="p-p-CenterAnchor" key="marker"/>
+        </shape>
+        <color argb="-65536"/>
+        <strokeColor value="-65536"/>
+        <strokeWeight value="3.0"/>
+        <fillColor value="16776960"/>
+        <archive/>
+        <remarks/>
+    </detail>
+</event>

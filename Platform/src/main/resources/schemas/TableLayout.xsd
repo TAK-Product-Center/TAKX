@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:jxb="https://jakarta.ee/xml/ns/jaxb" jxb:version="3.0"
+            targetNamespace="http://www.doe.gov/2010/RaptorLayoutSchema" version="1.0"
+            xmlns="http://www.doe.gov/2010/RaptorLayoutSchema">
+
+    <xsd:annotation>
+        <xsd:documentation xml:lang="en">Table Layouts provide a means to remember complex JXTable layouts.
+            The schema defines a mechanism for capturing which columns default to visible, in what order, and with
+            what column width.
+        </xsd:documentation>
+        <xsd:appinfo>
+            <jxb:schemaBindings>
+                <jxb:package name="gov.takx.platform.schema.layout"/>
+            </jxb:schemaBindings>
+        </xsd:appinfo>
+    </xsd:annotation>
+
+    <xsd:complexType name="MetadataType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation xml:lang="en">Metadata always consists of a sequential key-value
+                pair. Both the key and the value are String based. Consult the TAKX SDK
+                documentation for complete documentation on the full set of standardized keys that
+                may be used.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="Key" type="xsd:string"/>
+            <xsd:element name="Value" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="ColumnType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>String fields must define a name attribute, and may define position,
+                shared, and nillable attributes. String fields may be constrained to an exact
+                length, a length within a given range (inclusive), Java regular expression, or an
+                enumeration of values for constraint. A default value may also be defined.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Name" type="xsd:string"/>
+            <xsd:element name="Visible" type="xsd:boolean"/>
+            <xsd:element name="Width" type="xsd:short"/>
+            <xsd:element name="Position" type="xsd:short">
+                <xsd:annotation>
+                    <xsd:documentation>Ordinal position in absolute terms of this layout with
+                        relation to other fields.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Metadata" type="MetadataType" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="LayoutType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>Collection of 0 or more columns.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence maxOccurs="unbounded">
+            <xsd:element name="Column" type="ColumnType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:simpleType name="ScopeType">
+        <xsd:restriction base="xsd:token">
+            <xsd:enumeration value="Project"/>
+            <xsd:enumeration value="User"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <xsd:complexType name="LayoutDefinitionType" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>Every layout must be linked to a specific IRaptorObject, effectively
+                a family/type/unitID or unique key. This approach allows even non-traditional tables
+                like the Event Log to (eventually) benefit from the layout schema.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="Family" type="xsd:string"/>
+            <xsd:element name="Type" type="xsd:string"/>
+            <xsd:element name="UniqueKey" type="xsd:string"/>
+            <xsd:element name="Context" type="xsd:string">
+                <xsd:annotation>
+                    <xsd:documentation>Context provides an additional field intended to distinguish
+                        between multiple column layouts for the same table. For example, a Map
+                        Object Device Log accessed via the Map Object Preferences panel may have one
+                        layout, while the Map Object Device Log accessed via a double-click on
+                        tracks for the same Map Object may have a different column layout.
+                    </xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="Scope" type="ScopeType" default="Project" minOccurs="0"/>
+            <xsd:element name="Metadata" type="MetadataType" minOccurs="0"/>
+            <xsd:element name="Layout" type="LayoutType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="LayoutsDefinitionsCollection" final="#all">
+        <xsd:annotation>
+            <xsd:documentation>Collection of 1 or more JXTable layout definitions.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="LayoutDefinition" type="LayoutDefinitionType"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:element name="LayoutDefinitions" type="LayoutsDefinitionsCollection"/>
+
+</xsd:schema>

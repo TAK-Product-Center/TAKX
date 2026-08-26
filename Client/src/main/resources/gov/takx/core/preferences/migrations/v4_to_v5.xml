@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="4" to="5">
+    <add refXpath="node[@name='program']/map/entry[@key='maxVisibleSystemMessages']" where="after">
+        <!-- Set true to provide a link to show exception stack traces in the system message view; false to not. -->
+        <entry key="systemMessageShowExceptionStack" value="true"/>
+    </add>
+</migration>

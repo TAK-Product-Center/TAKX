@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layerGroups>
+    <layerGroup name="SHAPE_FILES">
+        <layer name="World_Political_Borders" displayName="World Political Borders"
+               class="gov.nasa.worldwind.layers.RenderableLayer" visible="false"
+               pickable="false"
+               permanent="false"
+               iconPath="resources/globe.png"
+               minActiveAltitude="100"
+               restoreXMLString="resources/ShapeFiles/World_Political_Borders.shp"/>
+        <layer name="10m-admin-1-states-provinces-lines-shp" displayName="State Borders"
+               class="gov.nasa.worldwind.layers.RenderableLayer" visible="false"
+               pickable="false"
+               permanent="false"
+               iconPath="resources/globe.png"
+               minActiveAltitude="100"
+               restoreXMLString="resources/ShapeFiles/state_borders/10m-admin-1-states-provinces-lines-shp.shp"/>
+    </layerGroup>
+    <layerGroup name="IMAGERY">
+        <!-- Note: the name of these layers must match the map source names pulled from tak.gov to avoid
+                   deleting/recreating them when the layers are synced. -->
+        <layer name="USGS IMAGERY" displayName="USGS Imagery" systemManaged="true"
+               class="gov.takx.core.globe.layers.mobac.CustomMobacTiledImageLayer"
+               restorableStateLocation="ProjectData/layers/USGS_IMAGERY.xml"
+               visible="false" pickable="false" iconPath="resources/globe.png" permanent="true"/>
+        <layer name="USGS IMAGERY TOPO" displayName="USGS Imagery Topo" systemManaged="true"
+               class="gov.takx.core.globe.layers.mobac.CustomMobacTiledImageLayer"
+               restorableStateLocation="ProjectData/layers/USGS_IMAGERY_TOPO.xml"
+               visible="true" pickable="false" iconPath="resources/globe.png" permanent="true"/>
+        <layer name="NRL DRG" displayName="NRL DRG" systemManaged="true"
+               class="gov.takx.core.globe.layers.mobac.CustomMobacTiledImageLayer"
+               restorableStateLocation="ProjectData/layers/NRL_DRG.xml"
+               visible="false" pickable="false" iconPath="resources/globe.png" permanent="true"/>
+        <layer name="NRL DRG MOSAIC" displayName="NRL DRG Mosaic" systemManaged="true"
+               class="gov.takx.core.globe.layers.mobac.CustomMobacTiledImageLayer"
+               restorableStateLocation="ProjectData/layers/NRL_DRG_MOSAIC.xml"
+               visible="false" pickable="false" iconPath="resources/globe.png" permanent="true"/>
+        <layer name="NRL FAA SECTIONALS" displayName="NRL FAA Sectionals" systemManaged="true"
+               class="gov.takx.core.globe.layers.mobac.CustomMobacTiledImageLayer"
+               restorableStateLocation="ProjectData/layers/NRL_FAA_SECTIONALS.xml"
+               visible="false" pickable="false" iconPath="resources/globe.png" permanent="true"/>
+        <layer name="NRL FAA TACS" displayName="NRL FAA Terminal Area Chart" systemManaged="true"
+               class="gov.takx.core.globe.layers.mobac.CustomMobacTiledImageLayer"
+               restorableStateLocation="ProjectData/layers/NRL_FAA_TACS.xml"
+               visible="false" pickable="false" iconPath="resources/globe.png" permanent="true"/>
+        <layer name="NRL OPEN STREET MAP" displayName="NRL Open Street Map" systemManaged="true"
+               class="gov.takx.core.globe.layers.mobac.CustomMobacTiledImageLayer"
+               restorableStateLocation="ProjectData/layers/NRL_OPEN_STREET_MAP.xml"
+               visible="false" pickable="false" iconPath="resources/globe.png" permanent="true"/>
+    </layerGroup>
+    <layerGroup name="FEATURES">
+        <layer name="MGRS Grid" displayName="MGRS Grid" class="gov.takx.core.globe.tak.ww.layer.TakMGRSGraticuleLayer"
+               visible="false"
+               pickable="false" iconPath="resources/text.png" permanent="true"/>
+        <layer name="Lat Lon Grid" displayName="Lat/Lon Grid" class="gov.takx.core.globe.tak.ww.layer.TakLatLonGraticuleLayer"
+               visible="false"
+               pickable="false" iconPath="resources/text.png" permanent="true"/>
+        <layer name="GARS Grid" displayName="GARS Grid" class="gov.takx.core.globe.tak.ww.layer.TakGARSGraticuleLayer"
+               visible="false"
+               pickable="false" iconPath="resources/text.png" permanent="true"/>
+    </layerGroup>
+    <layerGroup name="MAP_DATA">
+        <layer name="Tracks" displayName="Tracks" class="gov.takx.core.globe.layers.TracksLayer"
+               visible="true" pickable="true" iconPath="resources/globe.png" permanent="true"/>
+    </layerGroup>
+    <layerGroup name="TOOLS">
+        <layer name="Stars" displayName="Stars" class="gov.takx.core.globe.tak.layer.StarsLayer" visible="true"
+               pickable="false" minActiveAltitude="1E5" iconPath="resources/globe.png" permanent="true"/>
+        <layer name="Atmosphere" displayName="Atmosphere" class="gov.takx.core.globe.tak.layer.AtmosphereLayer" visible="true"
+               pickable="false" iconPath="resources/globe.png" permanent="true"/>
+        <layer name="Alarms" displayName="Alarms" class="gov.nasa.worldwind.layers.RenderableLayer"
+               visible="true" pickable="true" iconPath="resources/alarm.png" permanent="true"/>
+    </layerGroup>
+    <layerGroup name="ELEVATION">
+        <layer name="TAKElevationServer" displayName="TAK Elevation Server"
+               class="gov.takx.core.globe.tak.elevation.ElevationDownloaderLayer"
+               visible="true" pickable="false" permanent="true"/>
+    </layerGroup>
+</layerGroups>

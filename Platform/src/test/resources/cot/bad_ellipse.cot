@@ -1,0 +1,10 @@
+<?xml version='1.0' standalone='yes'?>
+<!-- bad because major and/or minor are 0 -->
+<event version="2.0" uid="31c57f66-d135-4180-a771-f2ede16629dc" type="u-d-c-e" time="2021-04-15T18:42:26.83Z"
+       start="2021-04-15T18:42:26.83Z" stale="2021-04-22T18:42:26.83Z" how="h-g-i-g-o">
+    <point lat="50.0" lon="-112.0" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <ellipse minor="40000.0" angle="500" major="0.0"/>
+        <contact callsign="Ellipse 1"/>
+    </detail>
+</event>

@@ -1,0 +1,84 @@
+import groovy.xml.slurpersupport.GPathResult
+
+Project[] projectsToCheck = [
+        project(':bootstrap'),
+        project(':platform'),
+        project(':client'),
+        project(':processmanager')
+]
+
+// The vulnerability XML looks like such:
+//
+// <dependency isVirtual="false">
+//   <fileName>shiro-core-1.2.3.jar</fileName>
+//   <filePath>/Users/ebg/.gradle/caches/modules-2/files-2.1/org.apache.shiro/shiro-core/1.2.3/4ddf1b83360c7e39f02e3e20ca364d2c448ed01f/shiro-core-1.2.3.jar</filePath>
+//   <md5>9147beb1ddba5ed220608bdd90759108</md5>
+//   <sha1>4ddf1b83360c7e39f02e3e20ca364d2c448ed01f</sha1>
+//   <description>Apache Shiro is a powerful and flexible open-source security framework that cleanly handles
+//        authentication, authorization, enterprise session management, single sign-on and
+//        cryptography services.</description>
+//   ...
+//   <vulnerabilities>
+//     <vulnerability source="NVD">
+//       <name>CVE-2016-4437</name>
+//       <cvssScore>6.8</cvssScore>
+//       ...
+
+//
+// Some vulnerabilities to ignore cannot be specified in suppression.xml (yet).  We'll identify such
+// vulnerabilities if any one of the predicates below returns true.
+//
+// Said another way, if every predicate below returns `false`, then the vulnerability is real.
+//
+Closure<Boolean>[] vulnerabilitiesToIgnore = [
+]
+
+task checkProjectVulnerabilities(description: "Analyze vulnerabilities") {
+    doLast {
+
+        // A flag to determine if we have an unknown vulnerability
+        boolean unknownVulnerability = false
+
+        // Look at every project in projectsToCheck
+        projectsToCheck.each { p ->
+            // Look at .../build/reports/<something> and check for an unexpected vulnerability
+            logger.lifecycle("Checking: " + p)
+
+            // This file name must match that produced by dependencyCheckAnalyze as configured in
+            // the root build.gradle script; specifically, we are processing the .xml file.
+            File reportFile = new File(p.getBuildDir(), '/reports/dependency-check-report.xml')
+
+            GPathResult reportXML = new groovy.xml.XmlSlurper().parse(reportFile)
+
+            // XML Path:
+            // analysis::dependencies::dependency::vulnerabilities::{vulnerability||suppressedVulnerability}
+
+            // Every vulnerability
+            GPathResult vulnerabilities = reportXML.dependencies.dependency.vulnerabilities.vulnerability
+
+            // Every vulnerability that we do not want to ignore.
+            GPathResult vulnerabilitiesToHandle = vulnerabilities.findAll { v ->
+                logger.lifecycle("  Vulnerability")
+                logger.lifecycle("    file: " + v.parent().parent().'fileName')
+                logger.lifecycle("     src: " + v.@source)
+                logger.lifecycle("    name: " + v.name)
+
+                !vulnerabilitiesToIgnore.any { test -> test(v) }
+            }
+
+            // If we have any vulnerabilitiesToHandle then we have a unknown vulnerability
+            unknownVulnerability = unknownVulnerability || !vulnerabilitiesToHandle.isEmpty()
+        }
+
+        // If we have an unknown vulnerability then exit this script with an exitCode of '1'.  Do this
+        // by throwing an exception.
+        if (unknownVulnerability) {
+            throw new GradleException('An un-suppressed vulnerability has been detected')
+        }
+    }
+}
+
+checkProjectVulnerabilities.dependsOn {
+    // Must be in a closure so evaluation is delayed until the sub-projects have all been evaluated
+    projectsToCheck*.tasks.dependencyCheckAnalyze
+}

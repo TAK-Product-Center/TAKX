@@ -1,0 +1,27 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPopupMenu", new FormLayoutManager( class javax.swing.JPopupMenu ) ) {
+			name: "this"
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 200, 300 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "button"
+			"opaque": false
+			"borderPainted": false
+			"background": new com.jformdesigner.model.SwingColor( "TableHeader.background" )
+			"toolTipText": "Select sort column"
+			"horizontalTextPosition": 10
+			auxiliary() {
+				"JavaCodeGenerator.variableGetter": true
+			}
+			addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "popupButtonMouseClicked", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 35, 400 )
+		} )
+	}
+}

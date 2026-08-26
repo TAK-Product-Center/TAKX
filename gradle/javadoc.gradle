@@ -1,0 +1,74 @@
+javadoc {
+
+    source = [project(':platform'), project(':deployment'), project(':test')]*.sourceSets.main.allJava
+
+    exclude 'gov/takx/api/aspects/**' // Aspect implementations are internal
+    exclude 'gov/takx/api/plugin/synthetic/**' // Synthetic plugins are for internal use only
+    exclude 'gov/takx/core/**' // Implementation for data services
+    exclude 'gov/takx/dataservices/persist' // Data services implementation (API elsewhere)
+    exclude 'gov/takx/dataservices/protocol/**'
+    exclude 'gov/takx/dataservices/upgrade'
+    exclude 'gov/takx/dataservices/utils'
+    exclude '**/gov/takx/platform/schema/**' // Generated xjc files
+    exclude '**/org/w3/**' // Generated xjc files
+
+    classpath = project(':client').sourceSets.test.runtimeClasspath
+
+    options {
+        source = '17'
+        use = true
+        splitIndex = true
+        windowTitle = "TAKX ${project.version} Plugin API Specification"
+        docTitle = "TAKX ${project.version} Plugin API Specification"
+        header = "<b>TAKX Plugin API</b><br>${project.version}"
+
+        // Add support for new javadoc tags
+        tags('apiNote:a:API Note:', 'implNote:a:Implementation Note:')
+
+        groups = [
+                'Libraries Supplied'      : ['gov.takx.bom', 'gov.takx.test.bom'],
+                'Injectable Services'     : ['gov.takx.servicelist'],
+                'Deprecations'            : ['gov.takx.deprecations'],
+                'Plugin Framework'        : ['gov.takx.api.annotation*',
+                                             'gov.takx.api.plugin*',
+                                             'gov.takx.api.factory*',
+                                             'gov.takx.api.io*',
+                                             'gov.takx.platform.io*'],
+                'Device Gateway'          : ['gov.takx.api.commservices*',
+                                             'gov.takx.api.messages*',
+                                             'gov.takx.api.plugin.commservices*',
+                                             'gov.takx.api.plugin.datamonitor*',
+                                             'gov.takx.api.plugin.gateway*',
+                                             'gov.takx.platform.commservices*'],
+                'Platform Services'       : ['gov.takx.api*', 'gov.takx.platform*'],
+                'Point and Shape Services': ['gov.takx.api.shapes*', 'gov.takx.api.pointdropper*', 'gov.takx.dataservices.shapes'],
+                'CoT Services'            : ['gov.tak.api.cot*', 'gov.tak.platform.cot*',
+                                             'gov.tak.api.util*'],
+                'Chat Services'           : ['gov.tak.api.chat*', 'gov.tak.platform.chat*',
+                                             'gov.tak.api.contact*', 'gov.tak.platform.contact*'],
+                'TAK Comms Services'      : ['gov.tak.api.comms*', 'gov.tak.platform.comms*',
+                                             'gov.tak.platform.datapackage*'],
+                'Location Services'       : ['gov.tak.api.location*', 'gov.tak.platform.location*'],
+                'Icons and Symbology'     : ['gov.tak.api.icons*', 'gov.tak.api.milsym*'],
+                'UI Services'             : ['gov.takx.api.toolbar*',
+                                             'gov.takx.api.ui*',
+                                             'gov.takx.commons.swing*',
+                                             'gov.takx.commons.wizard*',
+                                             'gov.takx.platform.swing*',
+                                             'gov.takx.platform.ui*'],
+                'Globe Services'          : ['gov.takx.api.coordinatesystem*',
+                                             'gov.takx.api.globe*',
+                                             'gov.takx.api.kml*',
+                                             'gov.takx.api.layer*',
+                                             'gov.takx.api.mapobject*',
+                                             'gov.takx.api.terrain*',
+                                             'gov.takx.platform.globe*',
+                                             'gov.tak.api.maps*'],
+                'CDI Events'              : ['gov.takx.api.event*'],
+                'Common Utilities'        : ['gov.takx.api.plugin.util*',
+                                             'gov.takx.commons*',
+                                             'gov.takx.platform.utils*'],
+                'Test Support'            : ['gov.tak.test*', 'gov.takx.test*']
+        ]
+    }
+}

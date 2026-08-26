@@ -1,0 +1,11 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="io.github.missioncommand.mil-sym-renderer">
+        <match>
+            <includes>
+                <include>
+                    <groupId>io.github.missioncommand.*</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE preferences SYSTEM "http://java.sun.com/dtd/preferences.dtd">
+<preferences EXTERNAL_XML_VERSION="1.0">
+    <root type="user">
+        <map/>
+        <node name="rx">
+            <map/>
+            <node name="user">
+                <map>
+                    <entry key="lastOpenProject" value=""/>
+                    <entry key="CoordinateSystem" value="MGRS"/>
+                    <entry key="DateFormat" value="yyyy-MM-dd HH:mm:ss z"/>
+                    <entry key="TimeZone" value="UTC"/>
+                    <entry key="GlobalIconScale" value="1.0"/>
+                    <entry key="RestoreLastView" value="true"/>
+                    <entry key="AudioAlerts" value="Alerts On"/>
+
+                    <!-- One of TRUE, MAGNETIC, or GRID -->
+                    <entry key="NorthReference" value="TRUE"/>
+
+                    <!-- Specify the default skin for the user. Requires knowledge of the skin's class name. This value
+                         will be updated if the user changes skins via TAKX's preference options.-->
+                    <!-- <entry key="skin" value="gov.takx.core.view.gui.skins.DefaultRaptorSkin"/> -->
+                    <entry key="skin" value="gov.takx.core.view.gui.skins.DefaultRaptorSkin"/>
+
+                    <!-- Specify whether user drawn shapes should be labeled by default -->
+                    <entry key="showShapeLabels" value="false"/>
+
+                    <!-- Specifies whether range and bearing labels should be displayed by default -->
+                    <entry key="showRangeBearingLabels" value="true"/>
+
+                    <!-- Specifies the level of track detail (number of tracks to show) before grouping logic is
+                              applied. The definition of the allowable levels (low/medium/high) are defined in the TrackDetailLevels
+                              node of the ProgramProperties file. -->
+                    <entry key="TrackDetailLevel" value="low"/>
+
+                    <!-- Prompt the user when they invoke a quitting action to confirm that they do in fact want to
+                         do this -->
+                    <entry key="ConfirmQuit" value="true"/>
+                </map>
+                <node name="CommPorts">
+                    <map/>
+                    <node name="Serial">
+                        <map/>
+                    </node>
+                </node>
+                <node name="Status">
+                    <map/>
+                    <node name="Inactive">
+                        <map>
+                            <entry key="Shape" value="circle"/>
+                            <entry key="Color" value="none"/>
+                            <entry key="Action" value="none"/>
+                        </map>
+                    </node>
+                    <node name="Active">
+                        <map>
+                            <entry key="Shape" value="circle"/>
+                            <entry key="Color" value="green"/>
+                            <entry key="Action" value="none"/>
+                        </map>
+                    </node>
+                    <node name="Critical">
+                        <map>
+                            <entry key="Shape" value="octagon"/>
+                            <entry key="Color" value="red"/>
+                            <entry key="Action" value="pulsing"/>
+                        </map>
+                    </node>
+                    <node name="Unknown">
+                        <map>
+                            <entry key="Shape" value="none"/>
+                            <entry key="Color" value="none"/>
+                            <entry key="Action" value="none"/>
+                        </map>
+                    </node>
+                    <node name="Warning">
+                        <map>
+                            <entry key="Shape" value="triangle"/>
+                            <entry key="Color" value="yellow"/>
+                            <entry key="Action" value="none"/>
+                        </map>
+                    </node>
+                    <node name="Serious">
+                        <map>
+                            <entry key="Shape" value="triangle"/>
+                            <entry key="Color" value="yellow"/>
+                            <entry key="Action" value="pulsing"/>
+                        </map>
+                    </node>
+                </node>
+                <node name="EventLog">
+                    <map/>
+                    <node name="Map Object Containment">
+                        <map>
+                            <entry key="Color" value="none"/>
+                        </map>
+                    </node>
+                    <node name="Map Object Suppressed">
+                        <map>
+                            <entry key="Color" value="gray"/>
+                        </map>
+                    </node>
+                    <node name="Map Object Added">
+                        <map>
+                            <entry key="Color" value="none"/>
+                        </map>
+                    </node>
+                    <node name="User Entry">
+                        <map>
+                            <entry key="Color" value="pink"/>
+                        </map>
+                    </node>
+                    <node name="Plugin Event">
+                        <map>
+                            <entry key="Color" value="cyan"/>
+                        </map>
+                    </node>
+                    <node name="App Event">
+                        <map>
+                            <entry key="Color" value="cyan"/>
+                        </map>
+                    </node>
+                </node>
+                <!-- Defines the display units of measure for different value types -->
+                <node name="units">
+                    <map>
+                        <!-- One of: FEET, METERS -->
+                        <entry key="altitudeUnits" value="METERS"/>
+                        <!-- One of: DEGREE, MIL, RADIAN -->
+                        <entry key="bearingUnits" value="DEGREE"/>
+                        <!-- One of: FEET, METERS, NAUTICAL_MILES -->
+                        <entry key="rangeUnits" value="METERS"/>
+                        <!-- One of: KMPH, KTS, MPH, MPS -->
+                        <entry key="speedUnits" value="KMPH"/>
+                    </map>
+                </node>
+                <node name="wcs">
+                    <map>
+                        <entry key="ImageryWMSServers" value=""/>
+                        <entry key="ElevationWMSServers"
+                               value="https://geoint.nrlssc.navy.mil/nrltileserver/wcs/blorigin/blorigin?"/>
+                    </map>
+                </node>
+                <node name="wms">
+                    <map>
+                        <entry key="ImageryWMSServers"
+                               value="https://data.worldwind.arc.nasa.gov/wms?, https://neowms.sci.gsfc.nasa.gov/wms/wms, https://raster.nationalmap.gov/arcgis/services/Orthoimagery/USGS_EROS_Ortho_1Foot/ImageServer/WMSServer?, https://worldwind27.arc.nasa.gov/wms/virtualearth?, https://geoint.nrlssc.navy.mil/nrltileserver/wms?, https://geoint.nrlssc.navy.mil/osm/wms/OSM/basemap/Mapnik/OSM_BASEMAP?, https://geoint.nrlssc.navy.mil/osm/wms/OSM/basemap/Mapnik/OSM_BASEMAP_OVERLAY?"/>
+                        <entry key="ElevationWMSServers" value="https://data.worldwind.arc.nasa.gov/elev?"/>
+                    </map>
+                </node>
+                <node name="fileStores">
+                    <map/>
+                </node>
+            </node>
+        </node>
+    </root>
+</preferences>

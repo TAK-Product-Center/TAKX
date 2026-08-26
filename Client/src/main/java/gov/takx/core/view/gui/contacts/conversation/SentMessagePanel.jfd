@@ -1,0 +1,60 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "pref:grow, labelcompgap, right:pref"
+			"$rowSpecs": "fill:6dlu, linegap, default, linegap, fill:max(pref;10dlu):grow, linegap, default"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "timeLabel"
+				"text": "Time"
+				"foreground": new java.awt.Color( 153, 198, 255, 255 )
+				"$client.FlatLaf.styleClass": "small"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "senderLabel"
+				"text": "Me:"
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 0, false )
+				"foreground": new java.awt.Color( 153, 198, 255, 255 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "gov.takx.core.view.gui.contacts.conversation.SentMessagePanel$CustomOrderTextArea" ) {
+				name: "messageTextArea"
+				"text": "Message"
+				"opaque": false
+				"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+				"editable": false
+				"$client.FlatLaf.styleClass": "large"
+				"lineWrap": true
+				"wrapStyleWord": true
+				"componentOrientation": sfield java.awt.ComponentOrientation RIGHT_TO_LEFT
+				"font": new java.awt.Font( "SansSerif", 0, 12 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+				"gridWidth": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "moreDetailsButton"
+				"text": "Details"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 7
+				"gridWidth": 3
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 155, 105 )
+		} )
+	}
+}

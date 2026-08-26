@@ -1,0 +1,16 @@
+ProjectData/
+modules/
+templates/
+web/
+programs/
+lib-external/
+resources/ShapeFiles/
+resources/tak-assets/
+_ajdump/
+native/
+
+nodeUUID.txt
+*.log.*
+*.vmoptions
+
+!template-64bit.vmoptions

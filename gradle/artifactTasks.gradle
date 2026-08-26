@@ -1,0 +1,38 @@
+/**
+ * Create the task to copy a project's jar artifact to deployment/bin/load, and create the clean
+ * configuration to delete the file from the destination directory.
+ */
+
+// We don't want to remove just the exact archive name, which includes a version number.  We want to
+// remove the 'base' name, so that any old jars (from before a version change) are also removed.
+//
+// The archive name is derived from the project name, so just use that as the base
+def installedFiles = fileTree(deploymentLoadDir)
+        .include { f -> f.name =~ $/${project.name}-[0-9]+.*\.jar/$ }
+
+logger.info "Create task 'copyJarToLoadDir' for project $project.name"
+
+tasks.register('copyJarToLoadDir', Copy) {
+    group = 'Build'
+    description = "Copy jar to $deploymentLoadDir"
+
+    from tasks.jar
+    into deploymentLoadDir
+
+    if (logger.isInfoEnabled()) eachFile { println it }
+
+    // Delete all installed files (catching older versions) prior to copying in our artifact
+    doFirst {
+        def filesToDelete = installedFiles.files
+        if (filesToDelete.size() > 1) logger.lifecycle "Deleting: ${filesToDelete*.name}"
+        delete installedFiles
+    }
+}
+
+tasks.jar.configure {
+    finalizedBy tasks.copyJarToLoadDir
+}
+
+clean {
+    delete installedFiles
+}

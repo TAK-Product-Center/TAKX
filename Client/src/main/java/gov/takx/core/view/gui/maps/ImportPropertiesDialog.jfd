@@ -1,0 +1,82 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "top:default:grow, relgap, default"
+		} ) {
+			name: "this"
+			"title": "Copy to project?"
+			"maximumSize": new java.awt.Dimension( 500, 400 )
+			"modalityType": enum java.awt.Dialog$ModalityType APPLICATION_MODAL
+			"preferredSize": new java.awt.Dimension( 465, 225 )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, relgap, labelcompgap, default"
+				"$rowSpecs": "default"
+			} ) {
+				name: "headerPanel"
+				"border": new javax.swing.border.EmptyBorder( 10, 10, 10, 10 )
+				"maximumSize": new java.awt.Dimension( 460, 400 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "imageLabel"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "messageLabel"
+					"text": "<html>\nDo you want to copy this imagery file to the project?\n<p><p>\nCopying the file to the project allows TAKX to centrally track it along with any other contents. However, on devices with limited storage space you may not want to copy a file. If you do not copy a file to the project it is <i>your responsibility</i> to ensure it stays exactly where it is to ensure TAKX can utilize it properly.</html>"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default:grow, labelcompgap, default"
+				"$rowSpecs": "default"
+			} ) {
+				name: "inputPanel"
+				"border": new javax.swing.border.EmptyBorder( 10, 10, 10, 10 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JCheckBox" ) {
+					name: "copyCheck"
+					"text": "Copy to project"
+					"selected": true
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "importButton"
+					"text": "Import"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "importPressed", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 250 )
+		} )
+	}
+}

@@ -1,0 +1,13 @@
+<?xml version='1.0' standalone='yes'?>
+<event version="2.0" uid="21c57f66-d135-4180-a771-f2ede16629dc" type="a-h-G-U-C" time="2021-04-15T19:42:26.83Z"
+       start="2021-04-15T19:42:26.83Z" stale="2021-04-22T19:44:26.83Z" how="h-g-i-g-o" opex="E" qos="better now"
+       access="approved">
+    <point lat="51.0" lon="-113.0" hae="100" ce="9999999" le="9999999"/>
+    <detail>
+        <contact callsign="New Unit 1"/>
+        <status readiness="false"/>
+        <initialBearing value="180.0"/>
+        <remarks>the new remarks</remarks>
+        <archive/>
+    </detail>
+</event>

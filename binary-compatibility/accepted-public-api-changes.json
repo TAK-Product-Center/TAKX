@@ -1,0 +1,28 @@
+{
+  "acceptedApiChanges": [
+    {
+      "type": "gov.takx.commons.swing.TriStateJCheckBox$State",
+      "member": "Field PARTIALLY_SELECTED",
+      "acceptation": "Renamed to INDETERMINATE",
+      "changes": [
+        "Field has been removed"
+      ]
+    },
+    {
+      "type": "gov.takx.api.event.PluginAdded",
+      "member": "Class gov.takx.api.event.PluginAdded",
+      "acceptation": "Was never possible for a plugin to receive this event",
+      "changes": [
+        "Class has been removed"
+      ]
+    },
+    {
+      "type": "gov.takx.api.plugin.app.IAppPluginDefinition",
+      "member": "Class gov.takx.api.plugin.app.IAppPluginDefinition",
+      "acceptation": "Should always have been tagged with @NoPluginImplementations",
+      "changes": [
+        "ANNOTATION_ADDED"
+      ]
+    }
+  ]
+}

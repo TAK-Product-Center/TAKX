@@ -1,0 +1,151 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"preferredSize": new java.awt.Dimension( 300, 400 )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "fill:min, linegap, default, linegap, default"
+			} ) {
+				name: "topPanel"
+				"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+				"maximumSize": new java.awt.Dimension( 2147483647, 75 )
+				"visible": false
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "center:default:grow"
+					"$rowSpecs": "default, linegap, default, linegap, default, linegap, default, linegap, default, linegap, default"
+				} ) {
+					name: "inProgressPanel"
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label1"
+						"text": "Route drawing in progress."
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label2"
+						"text": "Click the map to add a point."
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 3
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label3"
+						"text": "Double-click to add a check point."
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 5
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label4"
+						"text": "Ctrl+click a point to remove it."
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 7
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "label5"
+						"text": "Shift + click to promote an existing point."
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 9
+						"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default, labelcompgap, default"
+						"$rowSpecs": "default"
+					} ) {
+						name: "inProgressButtonPanel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "finishButton"
+							"text": "Finish"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "finishButtonActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "cancelButton"
+							"text": "Cancel"
+							"toolTipText": "Cancel route drawing."
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "cancelButtonActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 11
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 3
+				} )
+				add( new FormComponent( "gov.takx.core.view.gui.routes.RoutePropertiesPanel" ) {
+					name: "routePropertiesPanel"
+					"okButtonText": "Start"
+					addEvent( new FormEvent( "gov.takx.core.view.gui.routes.RoutePropertiesPanel$FinishListener", "finished", "routePropertiesPanelFinished", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 5
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "North"
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "gov.takx.commons.swing.entity.common.CommonEntityTable" ) {
+					name: "table"
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "IRouteMapObject"
+					}
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 700 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "importButton"
+			"text": "Import"
+			"visible": false
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "importButtonActionPressed", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 465, 200 )
+			"size": new java.awt.Dimension( 79, 34 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "addButton"
+			"text": "Add"
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addRouteButtonPressed", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 550, 200 )
+		} )
+	}
+}

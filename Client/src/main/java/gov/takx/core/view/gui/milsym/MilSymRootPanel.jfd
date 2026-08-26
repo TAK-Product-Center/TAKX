@@ -1,0 +1,82 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, fill:default:grow"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow, unrelgap, center:default, unrelgap, center:default"
+				"$rowSpecs": "default, default:grow"
+			} ) {
+				name: "searchWrapperPanel"
+				"border": new javax.swing.border.EmptyBorder( 6, 6, 6, 6 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "searchLabel"
+					"text": "Search"
+					"border": new javax.swing.border.EmptyBorder( 0, 5, 0, 0 )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "shapeLabel"
+					"text": "Shape Filter"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "amplifiersLabel"
+					"text": "Amplifiers"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+				} )
+				add( new FormComponent( "gov.takx.commons.swing.PlaceholderTextField" ) {
+					name: "searchTextField"
+					"toolTipText": "Filter symbols by name"
+					addEvent( new FormEvent( "java.awt.event.KeyListener", "keyReleased", "searchTextFieldKeyReleased", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 2
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "shapeComboBox"
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "ShapeType"
+					}
+					addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "shapeComboBoxItemStateChanged", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 2
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "amplifiersButton"
+					"text": "Configure"
+					auxiliary() {
+						"JavaCodeGenerator.postCreateCode": "${field}.setIcon(ICON_SETTINGS);"
+					}
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "onRequestAmplifiersPopup", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridY": 2
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "fill:default:grow"
+			} ) {
+				name: "contentPanel"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 2
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

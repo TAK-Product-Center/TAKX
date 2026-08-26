@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="1" to="2">
+    <add refXpath="node[@name='DefaultOutputs']" where="after">
+        <!-- Configures the set of network interfaces that should be used by commo as input and output channels. By default, all interfaces will be used. -->
+        <node name="NetworkInterfaceOptions">
+            <map>
+                <entry key="UseAllNetworkInterfaces" value="true"/>
+            </map>
+            <node name="NetworkInterfaces">
+                <map/>
+            </node>
+        </node>
+    </add>
+</migration>

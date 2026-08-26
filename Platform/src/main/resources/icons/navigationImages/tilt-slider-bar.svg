@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="80"
+        height="320"
+        viewBox="0 0 80 320"
+        version="1.1"
+        id="tilt-slider-bar">
+    <title
+            id="title4">Tilt-Slider-Bar
+    </title>
+    <path
+            style="fill:#2d2d2d;fill-opacity:1;fill-rule:evenodd;stroke:#2d2d2d;stroke-width:3.4000001;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+            id="background1"
+            d="M 67,317 H 12 L 37,3 h 6 z"/>
+    <path
+            style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#fffcfc;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+            id="triangle-outline"
+            d="m 63,314 h -47 L 38,7 h 4 z"/>
+    <path
+            style="fill:#2d2d2d;fill-opacity:1;fill-rule:evenodd;stroke:#2d2d2d;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+            id="background2"
+            d="M 61,313 H 18 L 39,9 h 2 z"/>
+</svg>

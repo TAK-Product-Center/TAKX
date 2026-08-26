@@ -1,0 +1,23 @@
+<?xml version='1.0' standalone='yes'?>
+<event version="2.0" uid="21c57f66-d135-4180-a771-f2ede16629dc" type="u-d-c-c" time="2021-04-15T18:42:26.83Z"
+       start="2021-04-15T18:42:26.83Z" stale="2021-04-22T18:42:26.83Z" how="h-g-i-g-o">
+    <point lat="50.0" lon="-112.0" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <shape>
+            <ellipse minor="70000.0" major="70000.0" angle="0"/>
+            <link uid="21c57f66-d135-4180-a771-f2ede16629dc.Style" type="b-x-KmlStyle" relation="p-c">
+                <Style>
+                    <LineStyle>
+                        <color>ffffff00</color>
+                        <width>4.0</width>
+                    </LineStyle>
+                    <PolyStyle>
+                        <color>96ffffff</color>
+                    </PolyStyle>
+                </Style>
+            </link>
+        </shape>
+        <labels_on value="true"/>
+        <contact callsign="Circle 1"/>
+    </detail>
+</event>

@@ -1,0 +1,47 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "gov.takx.core.view.gui.ATitledPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"minimumSize": new java.awt.Dimension( 0, 54 )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "gov.takx.commons.swing.entity.common.CommonEntityTable" ) {
+					name: "table"
+					"rowSelectionAllowed": false
+					"focusable": false
+					auxiliary() {
+						"JavaCodeGenerator.typeParameters": "Navigation"
+					}
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "addButton"
+			"text": "Add"
+			"toolTipText": "Add New Configuration"
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addActionPerformed", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 75, 420 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "navButton"
+			"text": "Navigate"
+			"toolTipText": "Navigate From Self"
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "navActionPerformed", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 190, 420 )
+			"size": new java.awt.Dimension( 86, 34 )
+		} )
+	}
+}

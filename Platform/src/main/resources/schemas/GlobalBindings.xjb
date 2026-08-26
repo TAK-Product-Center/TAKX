@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<bindings xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="https://jakarta.ee/xml/ns/jaxb" version="3.0">
+
+    <globalBindings>
+        <javaType xmlType="xs:integer" name="java.lang.Integer"/>
+    </globalBindings>
+
+</bindings>

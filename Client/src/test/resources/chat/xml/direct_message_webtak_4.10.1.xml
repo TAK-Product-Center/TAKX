@@ -1,0 +1,16 @@
+<event version="2.0"
+       uid="GeoChat.432230f8-47ae-2e45-8234-5c2a6a2e4625.OPTIMUS TAKX.60356107-eec2-e768-a515-f66343b7b477" type="b-t-f"
+       time="2024-04-03T18:37:23.466Z" start="2024-04-03T18:37:23.438Z" stale="2024-07-28T12:24:03.466Z" how="h-g-i-g-o"
+       access="Undefined">
+    <point lat="47.26152998" lon="-126.44693350" hae="999999.00000000" ce="999999.00000000" le="999999.00000000"/>
+    <detail>
+        <__chat senderCallsign="OPTIMUS WebTAK M1" chatroom="OPTIMUS TAKX" id="432230f8-47ae-2e45-8234-5c2a6a2e4625">
+            <chatgrp id="c2d26132-f5b3-5f32-985d-2f2d96230c97" uid1="c2d26132-f5b3-5f32-985d-2f2d96230c97"
+                     uid0="432230f8-47ae-2e45-8234-5c2a6a2e4625"/>
+        </__chat>
+        <remarks time="2024-04-03T18:37:23Z" source="432230f8-47ae-2e45-8234-5c2a6a2e4625"
+                 to="c2d26132-f5b3-5f32-985d-2f2d96230c97">hello
+        </remarks>
+        <link relation="p-p" type="a-f-G-U-C-I" uid="432230f8-47ae-2e45-8234-5c2a6a2e4625"/>
+    </detail>
+</event>

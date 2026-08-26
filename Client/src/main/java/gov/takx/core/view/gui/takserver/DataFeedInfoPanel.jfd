@@ -1,0 +1,231 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, linegap, default, linegap, fill:default:grow"
+		} ) {
+			name: "this"
+			"minimumSize": new java.awt.Dimension( 450, 400 )
+			"border": static com.jgoodies.forms.factories.Borders createEmptyBorder( "4dlu, 4dlu, 4dlu, 4dlu" )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default:grow, labelcompgap, default, labelcompgap, default"
+				"$rowSpecs": "default, linegap, default, linegap, default"
+			} ) {
+				name: "headerPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "feedStatusIconLabel"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridHeight": 3
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "feedNameLabel"
+					"text": "Feed Name"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 2, false )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "invitesButton"
+					"borderPainted": false
+					"toolTipText": "Invite TAK contacts"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showInvites", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridHeight": 3
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "timelineButton"
+					"borderPainted": false
+					"toolTipText": "Show feed timeline"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showTimeline", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridHeight": 3
+					"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "feedDescriptionLabel"
+					"text": "Feed Description"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 3
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "feedKeywordsLabel"
+					"text": "(No keywords)"
+					"foreground": new java.awt.Color( 102, 102, 102, 255 )
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 2, 0, false )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 5
+					"gridWidth": 3
+					"insets": new java.awt.Insets( 0, 7, 0, 7 )
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormContainer( "javax.swing.JMenuBar", new FormLayoutManager( class javax.swing.JMenuBar ) ) {
+				name: "menuBar"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "addItemsMenu"
+					"text": "Add Items"
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "addFileSelectItem"
+						"text": "File Select"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addItemFromFileSelect", false ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "addImagesItem"
+						"text": "Images"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addItemFromImageSelection", false ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "addLassoItem"
+						"text": "Lasso"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addItemFromLassoSelection", false ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "addMapSelectItem"
+						"text": "Map Select"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addItemFromSingleMapSelection", false ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "addNewUserLog"
+						"text": "User Log"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addItemFromNewUserLog", false ) )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "exportMenu"
+					"text": "Export"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "exportFeedInviteCotItem"
+						"text": "Feed Invite CoT"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "exportAsFeedInviteCot", false ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "exportFeedLogItem"
+						"text": "Feed Log"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "exportAsFeedLog", false ) )
+					} )
+					add( new FormComponent( "javax.swing.JMenuItem" ) {
+						name: "exportFeedAsDataPackageItem"
+						"text": "Data Package"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "exportAsDataPackage", false ) )
+					} )
+				} )
+				add( new FormContainer( "javax.swing.JMenu", new FormLayoutManager( class javax.swing.JMenu ) ) {
+					name: "sortMenu"
+					"text": "Item Sort"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JRadioButtonMenuItem" ) {
+						name: "sortModifiedTimeRadioItem"
+						"text": "Modified Time"
+						"selected": true
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "sortModifiedTimeRadioItem", false ) )
+					} )
+					add( new FormComponent( "javax.swing.JRadioButtonMenuItem" ) {
+						name: "sortNameRadioItem"
+						"text": "Name"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "sortNameRadioItem", false ) )
+					} )
+				} )
+				add( new FormComponent( "javax.swing.JMenuItem" ) {
+					name: "editMenuItem"
+					"text": "Edit Properties"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "openFeedEditor", false ) )
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "groupsScrollWrapper"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": "fill:default, linegap, fill:default, linegap, fill:default, linegap, fill:default, linegap, fill:default, linegap, fill:default:grow"
+				} ) {
+					name: "groupsWrapper"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "org.jdesktop.swingx.JXTaskPane" ) {
+						name: "mapItemsGroup"
+						"title": "Map Items"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormComponent( "org.jdesktop.swingx.JXTaskPane" ) {
+						name: "photosGroup"
+						"title": "Photos"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 3
+					} )
+					add( new FormComponent( "org.jdesktop.swingx.JXTaskPane" ) {
+						name: "filesGroup"
+						"title": "Files"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 5
+					} )
+					add( new FormComponent( "org.jdesktop.swingx.JXTaskPane" ) {
+						name: "videosGroup"
+						"title": "Videos"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 7
+					} )
+					add( new FormComponent( "org.jdesktop.swingx.JXTaskPane" ) {
+						name: "logsGroup"
+						"title": "Logs"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 9
+					} )
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 5
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 360, 405 )
+		} )
+	}
+}

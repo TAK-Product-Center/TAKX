@@ -1,0 +1,71 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "pref:grow, labelcompgap, 0dlu"
+			"$rowSpecs": "0dlu, linegap, default, linegap, fill:160dlu:grow"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "0dlu, labelcompgap, 24dlu, labelcompgap, default:grow, labelcompgap, default, labelcompgap, default"
+				"$rowSpecs": "2dlu, fill:20dlu"
+			} ) {
+				name: "buttonPanel"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "attachmentIcon"
+					"maximumSize": new java.awt.Dimension( 25, 25 )
+					"minimumSize": new java.awt.Dimension( 25, 25 )
+					"preferredSize": new java.awt.Dimension( 25, 25 )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 2
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "mapObjectNameLabel"
+					"text": "moName"
+					"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 8, false )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+					"gridWidth": 2
+					"gridY": 2
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "openAttachmentsFolder"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "openAttachmentsFolder", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 7
+					"gridY": 2
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "addAttachmentButton"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addAttachmentClicked", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 9
+					"gridY": 2
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+			} )
+			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+				name: "scrollPane"
+				"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				"background": new java.awt.Color( 255, 255, 255, 255 )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) ) {
+					name: "attachmentsPanel"
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"foreground": new java.awt.Color( 255, 255, 255, 255 )
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 390, 315 )
+		} )
+	}
+}

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<event version="2.0" uid="afe1d15d-e31e-45d9-8564-b09263ba4d88" type="b-t-f-r" time="2022-09-08T12:35:39.550Z"
+       start="2022-09-08T12:35:39.550Z" stale="2022-09-09T12:35:39.550Z" how="h-g-i-g-o">
+    <point lat="0.00000000" lon="0.00000000" hae="0.00000000" ce="9999999" le="9999999"/>
+    <detail>
+        <__chat id="ebc53795-403f-540f-99c6-983696f0bc16" chatroom="OPTIMUS TAKX" senderCallsign="OPTIMUS WT"
+                groupOwner="false" messageId="afe1d15d-e31e-45d9-8564-b09263ba4d88">
+            <chatgrp id="ebc53795-403f-540f-99c6-983696f0bc16" uid0="S-1-5-21-2739727742-677502536-3530350016-1000"
+                     uid1="ebc53795-403f-540f-99c6-983696f0bc16"/>
+        </__chat>
+        <link uid="S-1-5-21-2739727742-677502536-3530350016-1000" type="a-f-G-U-C-I" relation="p-p"/>
+    </detail>
+</event>

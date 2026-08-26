@@ -1,0 +1,164 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		auxiliary() {
+			"JavaCodeGenerator.defaultVariableLocal": true
+		}
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			"border": new javax.swing.border.CompoundBorder( new javax.swing.border.EmptyBorder( 3, 10, 3, 10 ), new gov.takx.commons.swing.LineBorderExt )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default:grow"
+				"$rowSpecs": "default, linegap, fill:default"
+			} ) {
+				name: "wrapper"
+				"border": new javax.swing.border.EmptyBorder( 2, 2, 2, 2 )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default, labelcompgap, default, labelcompgap, default, labelcompgap, right:default:grow"
+					"$rowSpecs": "default"
+				} ) {
+					name: "headerPanel"
+					add( new FormComponent( "gov.takx.core.mapobject.gui.MapObjectField" ) {
+						name: "targetField"
+						"editable": false
+						"iconVisible": false
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+							"JavaCodeGenerator.typeParameters": "IMapObject"
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "arrowIcon"
+						"text": "←"
+						"visible": false
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+					add( new FormComponent( "gov.takx.core.mapobject.gui.MapObjectField" ) {
+						name: "sourceField"
+						"editable": false
+						"nameVisible": false
+						"visible": false
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+							"JavaCodeGenerator.typeParameters": "IMapObject"
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "navigateToButton"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": false
+						}
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "navigateToButtonPressed", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 7
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				add( new FormComponent( "javax.swing.JSeparator" ) {
+					name: "separator"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 2
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": "fill:default"
+				} ) {
+					name: "infoPanelWrapper"
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "right:default, labelcompgap, left:65px, unrelgap, default, labelcompgap, 65px:grow"
+						"$rowSpecs": "default, linegap, default"
+					} ) {
+						name: "navInfoPanel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "rangeTitleLabel"
+							"text": "Range:"
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 1
+							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "rangeLabel"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 1
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "relativeBearingTitleLabel"
+							"text": "Relative Bearing:"
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 5
+							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "relativeBearingLabel"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 7
+							"gridY": 1
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "bearingTitleLabel"
+							"text": "Bearing:"
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridY": 3
+							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "bearingLabel"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 3
+							"gridY": 3
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "etaTitleLabel"
+							"text": "ETA:"
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 5
+							"gridY": 3
+							"hAlign": sfield com.jgoodies.forms.layout.CellConstraints RIGHT
+						} )
+						add( new FormComponent( "javax.swing.JLabel" ) {
+							name: "etaLabel"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": false
+							}
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 7
+							"gridY": 3
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridY": 3
+					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 90 )
+		} )
+	}
+}

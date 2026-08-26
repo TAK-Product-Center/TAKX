@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="7" to="8">
+    <modify refXpath="node[@name='program']/map/entry[@key='DatabaseType']" oldValue="postgres" newValue="hsqldb"/>
+</migration>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Defines our release log filters -->
+<!-- When updating these filtes, please also update filters in SystemMessageAppender -->
+<Filters>
+    <RegexFilter regex=".*TAKEngineJNI.*" onMatch="DENY" onMismatch="NEUTRAL"/>
+    <!-- TODO: Remove after merging TAKX-4361 -->
+    <RegexFilter regex=".*\[KmzLayerInfoSpi\]\: Failed to find document KML file.*" onMatch="DENY" onMismatch="NEUTRAL"/>
+</Filters>

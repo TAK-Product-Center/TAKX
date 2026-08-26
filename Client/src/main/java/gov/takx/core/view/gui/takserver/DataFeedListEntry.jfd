@@ -1,0 +1,81 @@
+JFDML JFormDesigner: "7.0.7.1.1184" Java: "17.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "pref:grow, labelcompgap, right:pref"
+			"$rowSpecs": "pref"
+		} ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, pref:grow"
+				"$rowSpecs": "pref, pref"
+			} ) {
+				name: "infoPanel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "iconLabel"
+					"maximumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridHeight": 2
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "titleLabel"
+					"text": "text"
+					"font": new java.awt.Font( "Segoe UI", 1, 12 )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 2
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "infoLabel"
+					"text": "text"
+					"foreground": sfield java.awt.Color gray
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 2
+					"gridY": 2
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "pref:grow, default:grow, pref:grow"
+				"$rowSpecs": "fill:pref"
+			} ) {
+				name: "actionsPanel"
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "buttonDownload"
+					"toolTipText": "Download"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showDownloadPopup", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "buttonSync"
+					"toolTipText": "Sync"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "openMissionDetailsPanel", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 2
+					"gridY": 1
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "buttonDelete"
+					"toolTipText": "Delete"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "showDeletePopup", false ) )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+					"gridY": 1
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 1
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 50 )
+		} )
+	}
+}

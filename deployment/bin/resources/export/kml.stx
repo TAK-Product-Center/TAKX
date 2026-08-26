@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<stx:transform xmlns:stx="http://stx.sourceforge.net/2002/ns"
+               xmlns:long="java:java.lang.Long"
+               xmlns:date="java:java.util.Date"
+               xmlns:df="java:java.text.SimpleDateFormat"
+               xmlns:kml="http://www.opengis.net/kml/2.2"
+               version="1.0"
+               exclude-result-prefixes="long date df"
+               output-method="xml">
+
+    <stx:param name="projectName" required="no">RaptorX Project</stx:param>
+
+    <stx:variable name="formatString">yyyy-MM-dd'T'HH:mm:ssZZZ</stx:variable>
+
+    <!-- SimpleDateFormat format = new SimpleDateFormat(formatString) -->
+    <stx:variable name="format" select="df:new($formatString)"/>
+
+    <stx:buffer name="extendedDataBuffer"/>
+
+    <stx:variable name="messageType"/>
+    <stx:variable name="mapObjectType"/>
+    <stx:variable name="version"/>
+    <stx:variable name="unitID"/>
+    <stx:variable name="latitude"/>
+    <stx:variable name="longitude"/>
+    <stx:variable name="elevation"/>
+    <stx:variable name="roll"/>
+    <stx:variable name="pitch"/>
+    <stx:variable name="heading"/>
+    <stx:variable name="motion"/>
+    <stx:variable name="time"/>
+
+    <stx:procedure name="clearVariables">
+        <stx:assign name="latitude"/>
+        <stx:assign name="longitude"/>
+        <stx:assign name="elevation"/>
+        <stx:assign name="messageType"/>
+        <stx:assign name="mapObjectType"/>
+        <stx:assign name="version"/>
+        <stx:assign name="unitID"/>
+        <stx:assign name="latitude"/>
+        <stx:assign name="longitude"/>
+        <stx:assign name="roll"/>
+        <stx:assign name="pitch"/>
+        <stx:assign name="heading"/>
+        <stx:assign name="motion"/>
+        <stx:assign name="time"/>
+        <stx:result-buffer name="extendedDataBuffer" clear="yes"/>
+    </stx:procedure>
+
+    <stx:template match="/">
+        <kml>
+            <Document>
+                <name>Export from RaptorX:
+                    <stx:value-of select="$projectName"/>
+                </name>
+                <stx:process-children/>
+            </Document>
+        </kml>
+    </stx:template>
+
+    <stx:template match="dataMessage">
+        <stx:call-procedure name="clearVariables"/>
+
+        <Placemark>
+            <stx:process-children/>
+
+            <name>
+                <stx:value-of select="$mapObjectType"/>
+                <stx:value-of select="$unitID"/>
+            </name>
+
+            <TimeStamp>
+                <when>
+                    <stx:value-of select="$time"/>
+                </when>
+            </TimeStamp>
+
+            <Point>
+                <coordinates>
+                    <!-- Only include elevation if it is not empty -->
+                    <stx:if test="string-length(normalize-space($elevation)) > 0">
+                        <stx:value-of select="$longitude"/>,<stx:value-of select="$latitude"/>,<stx:value-of select="$elevation"/>
+                    </stx:if>
+                    <stx:else>
+                        <stx:value-of select="$longitude"/>,<stx:value-of select="$latitude"/>
+                    </stx:else>
+                </coordinates>
+            </Point>
+
+            <ExtendedData>
+                <Data name="MessageType">
+                    <value>
+                        <stx:value-of select="$messageType"/>
+                    </value>
+                </Data>
+
+                <Data name="MapObjectType">
+                    <value>
+                        <stx:value-of select="$mapObjectType"/>
+                    </value>
+                </Data>
+
+                <Data name="MapObjectVersion">
+                    <value>
+                        <stx:value-of select="$version"/>
+                    </value>
+                </Data>
+
+                <Data name="UnitId">
+                    <value>
+                        <stx:value-of select="$unitID"/>
+                    </value>
+                </Data>
+
+                <Data name="Heading">
+                    <value>
+                        <stx:value-of select="$heading"/>
+                    </value>
+                </Data>
+
+                <Data name="Pitch">
+                    <value>
+                        <stx:value-of select="$pitch"/>
+                    </value>
+                </Data>
+
+                <Data name="Roll">
+                    <value>
+                        <stx:value-of select="$roll"/>
+                    </value>
+                </Data>
+
+                <Data name="Motion">
+                    <value>
+                        <stx:value-of select="$motion"/>
+                    </value>
+                </Data>
+
+                <stx:process-buffer name="extendedDataBuffer"/>
+            </ExtendedData>
+        </Placemark>
+    </stx:template>
+
+    <stx:template match="lat/text()">
+        <stx:assign name="latitude" select="."/>
+    </stx:template>
+
+    <stx:template match="lng/text()">
+        <stx:assign name="longitude" select="."/>
+    </stx:template>
+
+    <stx:template match="elevation/text()">
+        <stx:assign name="elevation" select="."/>
+    </stx:template>
+
+    <stx:template match="heading/text()">
+        <stx:assign name="heading" select="."/>
+    </stx:template>
+
+    <stx:template match="pitch/text()">
+        <stx:assign name="pitch" select="."/>
+    </stx:template>
+
+    <stx:template match="roll/text()">
+        <stx:assign name="roll" select="."/>
+    </stx:template>
+
+    <stx:template match="motion/text()">
+        <stx:assign name="motion" select="."/>
+    </stx:template>
+
+    <stx:template match="messageType/text()">
+        <stx:assign name="messageType" select="."/>
+    </stx:template>
+
+    <stx:template match="mapObjectId/text()">
+        <stx:assign name="unitID" select="."/>
+    </stx:template>
+
+    <stx:template match="mapObjectType/text()">
+        <stx:assign name="mapObjectType" select="."/>
+    </stx:template>
+
+    <stx:template match="version/text()">
+        <stx:assign name="version" select="."/>
+    </stx:template>
+
+    <stx:template match="time/text()">
+        <!-- Call into Java to do date formatting -->
+        <!-- Date d = new Date(time) -->
+        <stx:variable name="d" select="date:new(long:new(.))"/>
+
+        <stx:assign name="time">
+            <stx:value-of select="df:format($format, $d)"/>
+        </stx:assign>
+    </stx:template>
+
+    <stx:template match="field">
+        <stx:result-buffer name="extendedDataBuffer">
+            <stx:element name="Data">
+                <stx:attribute name="name" select="@name"/>
+                <value>
+                    <stx:value-of select="."/>
+                </value>
+            </stx:element>
+        </stx:result-buffer>
+    </stx:template>
+
+    <stx:template match="Data">
+        <stx:copy attributes="@*">
+            <stx:process-children/>
+        </stx:copy>
+    </stx:template>
+
+    <stx:template match="Data/value/text()">
+        <value>
+            <stx:copy/>
+        </value>
+    </stx:template>
+
+</stx:transform>

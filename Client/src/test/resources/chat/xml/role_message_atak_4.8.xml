@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<event version="2.0" uid="GeoChat.ANDROID-R32M700HZ2X.Team Lead.05762203-81b1-4ea1-b63a-9a7ecb74b73d" type="b-t-f"
+       time="2023-07-18T23:53:33.324Z" start="2023-07-18T23:53:33.324Z" stale="2023-07-19T23:53:33.324Z"
+       how="h-g-i-g-o">
+    <point lat="0.00000000" lon="0.00000000" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <__chat parent="RootContactGroup" groupOwner="false" messageId="05762203-81b1-4ea1-b63a-9a7ecb74b73d"
+                chatroom="Team Lead" id="Team Lead" senderCallsign="OPTIMUS ATAK">
+            <chatgrp uid2="5057659b-e1ca-5cad-9558-f6fabc02d68c" uid0="ANDROID-R32M700HZ2X"
+                     uid1="S-1-5-21-2739727742-677502536-3530350016-1000" id="Team Lead"/>
+        </__chat>
+        <link uid="ANDROID-R32M700HZ2X" type="a-f-G-E-V-C" relation="p-p"/>
+        <__serverdestination destinations="192.168.1.251:4242:tcp:ANDROID-R32M700HZ2X"/>
+        <remarks source="BAO.F.ATAK.ANDROID-R32M700HZ2X" time="2023-07-18T23:53:33.324Z">Roger</remarks>
+    </detail>
+</event>

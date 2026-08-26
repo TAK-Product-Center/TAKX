@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="2" to="3">
+    <add refXpath="node[@name='GoToLocationIcons']" where="after">
+        <!-- Configure the notification options. Notifications consist of optional notification popups and a
+        "Notifications" panel that displays the notification history -->
+        <node name="Notifications">
+            <map>
+                <entry key="PopupsEnabled" value="true"/>
+                <!-- The default amount of time popups will be displayed, in milliseconds. Individual requests to display
+                notifications may override this value -->
+                <entry key="DurationMs" value="4000"/>
+            </map>
+        </node>
+    </add>
+</migration>

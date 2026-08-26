@@ -1,0 +1,533 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<toolbarConfiguration>
+    <version>1.1</version> <!-- Nonsense old version to validate that old version fails import -->
+    <name>Test</name>
+    <editable>true</editable>
+    <minimized>false</minimized>
+    <tabs>
+        <tab>
+            <displayText>Home</displayText>
+            <type>HOME</type>
+            <id>7731962f-b19e-59ff-b22c-1be46abc4b02</id>
+            <visible>false</visible> <!-- Home tab hidden for testing purposes -->
+            <hiddenByUser>false</hiddenByUser>
+            <components>
+                <button>
+                    <id>1fbe8b89-6f50-5af5-ab9e-2ebd4f1d7b8c</id>
+                    <type>NAVIGATION_LOCK</type>
+                    <displayText>Navigation Lock</displayText>
+                </button>
+                <button>
+                    <id>921d24ab-7463-5998-a182-e5f102f08116</id>
+                    <type>NEW_GLOBE</type>
+                    <displayText>New Globe</displayText>
+                </button>
+                <separator>
+                    <id>ff9689b3-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>f9b82efc-8872-5f78-ab3b-49a3e1bf13db</id>
+                    <type>OVERLAYS</type>
+                    <displayText>Overlays</displayText>
+                </button>
+                <button>
+                    <id>4e129439-9a0b-50f4-b832-dd36b3b74539</id>
+                    <type>MAPS</type>
+                    <displayText>Maps &amp; Favorites</displayText>
+                </button>
+                <separator>
+                    <id>ffa15f24-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>c130fcaa-abd1-54cd-b0de-70030e055634</id>
+                    <type>POINT_DROPPER</type>
+                    <displayText>Point Dropper</displayText>
+                </button>
+                <button>
+                    <id>7aab1bd8-26ef-598b-a8ba-11366cc73f53</id>
+                    <type>DRAW</type>
+                    <displayText>Drawing Tools</displayText>
+                </button>
+                <button>
+                    <id>cc0ad686-900c-5387-999a-b3c4438af03d</id>
+                    <type>ROUTES</type>
+                    <displayText>Routes</displayText>
+                </button>
+                <button>
+                    <id>07fbb4b1-de4c-5893-8adb-a581ffd801cc</id>
+                    <type>GO_TO_LOCATION</type>
+                    <displayText>Go to Location</displayText>
+                </button>
+                <button>
+                    <id>da412950-8356-52c3-8fe3-ba62a3d6473a</id>
+                    <type>CITY_SEARCH</type>
+                    <displayText>City Search</displayText>
+                </button>
+                <separator>
+                    <id>ffa1d455-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>8e1119cb-ac47-5632-ae62-c26ef82d6240</id>
+                    <type>CONTACTS</type>
+                    <displayText>Contacts</displayText>
+                </button>
+                <button>
+                    <id>bf41ce56-59e3-5416-a7d7-5f979c9d7d1d</id>
+                    <type>PLAYBACK</type>
+                    <displayText>Playback</displayText>
+                </button>
+                <button>
+                    <id>51f4a94a-e00d-5d79-a25e-96c40fe02e2d</id>
+                    <type>DEVICES</type>
+                    <displayText>Devices</displayText>
+                </button>
+                <button>
+                    <id>9fb4f1d1-7ef8-58fb-bbe9-6076658397ad</id>
+                    <type>FILES</type>
+                    <displayText>Files</displayText>
+                </button>
+                <button>
+                    <id>72b459f8-cc3e-550f-b848-b14deba5e3a5</id>
+                    <type>PROPERTIES</type>
+                    <displayText>Properties</displayText>
+                </button>
+                <separator>
+                    <id>ffa22276-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>278144a2-ad41-5ee9-be04-490a92d9a521</id>
+                    <type>CONNECTIONS</type>
+                    <displayText>Sensor Feeds</displayText>
+                </button>
+                <button>
+                    <id>b85fa29e-835f-5027-93ec-2a2b84505f95</id>
+                    <type>MEDIA</type>
+                    <displayText>Media</displayText>
+                </button>
+                <button>
+                    <id>02696ab5-7e40-5654-942e-3e1308076c86</id>
+                    <type>TAK_SERVER</type>
+                    <displayText>TAK Server</displayText>
+                </button>
+                <button>
+                    <id>635015cb-47bd-5913-a998-60f2f9e1c413</id>
+                    <type>DATA_PACKAGES</type>
+                    <displayText>Data Packages</displayText>
+                </button>
+                <separator>
+                    <id>ffa297a7-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>9bdff606-0ca6-54ad-aee1-566631301bd8</id>
+                    <type>EVENT_LOG</type>
+                    <displayText>Event Log</displayText>
+                </button>
+                <button>
+                    <id>af0fdadf-824f-5ca2-b1dc-da5d1c492ddc</id>
+                    <type>SYSTEM_MESSAGES</type>
+                    <displayText>System Messages</displayText>
+                </button>
+            </components>
+            <excludedIds/>
+        </tab>
+        <tab>
+            <displayText>Connect</displayText>
+            <type>CONNECT</type>
+            <id>6e288959-d344-5bce-8623-86f7d9014542</id>
+            <visible>false</visible>
+            <hiddenByUser>false</hiddenByUser>
+            <components/>
+            <excludedIds> <!-- Excluding connection button for testing purposes -->
+                <excludedId>ad67becc-c6dd-5870-aff3-19e414f2c65c</excludedId>
+            </excludedIds>
+        </tab>
+        <tab>
+            <displayText>Devices</displayText>
+            <type>DEVICES</type>
+            <id>51f4a94a-e00d-5d79-a25e-96c40fe02e2d</id>
+            <visible>false</visible>
+            <hiddenByUser>false</hiddenByUser>
+            <components/>
+            <excludedIds/>
+        </tab>
+        <tab>
+            <displayText>Maps</displayText>
+            <type>MAPS</type>
+            <id>4e129439-9a0b-50f4-b832-dd36b3b74539</id>
+            <visible>true</visible>
+            <hiddenByUser>false</hiddenByUser>
+            <components>
+                <button>
+                    <id>4e129439-9a0b-50f4-b832-dd36b3b74539</id>
+                    <type>MAPS</type>
+                    <displayText>Maps &amp; Favorites</displayText>
+                </button>
+                <separator>
+                    <id>ffa75298-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>34f4774f-5cd4-5225-8dbd-26dfad7c416d</id>
+                    <type>CONNECT_TO_IMAGERY_SERVER</type>
+                    <displayText>Connect to Imagery Server</displayText>
+                </button>
+                <button>
+                    <id>ceaa26c7-e872-5085-9948-cf6c47ee3749</id>
+                    <type>CONNECT_TO_IMAGERY_MAP_SET</type>
+                    <displayText>Connect to Imagery Map Set</displayText>
+                </button>
+                <button>
+                    <id>7d175ec1-2dce-59c9-9496-005abe5d958e</id>
+                    <type>CONVERT_IMAGERY</type>
+                    <displayText>Convert Imagery</displayText>
+                </button>
+                <separator>
+                    <id>ffa779a9-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>69616d45-e72f-51b6-bf74-effbf89b01f3</id>
+                    <type>CONNECT_TO_ELEVATION_SERVER</type>
+                    <displayText>Connect to Elevation Server</displayText>
+                </button>
+                <button>
+                    <id>6cf8c3b8-12fe-5fab-98c7-a8dc02954948</id>
+                    <type>CONNECT_TO_ELEVATION_MAP_SET</type>
+                    <displayText>Connect to Elevation Map Set</displayText>
+                </button>
+                <button>
+                    <id>e4229fb3-135b-5256-b846-54c6064e3897</id>
+                    <type>CONVERT_ELEVATION</type>
+                    <displayText>Convert Elevation</displayText>
+                </button>
+                <separator>
+                    <id>ffa7c7ca-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>c5ffbe74-43ce-5173-84e3-3d1dd6339c3f</id>
+                    <type>IMAGE_OVERLAY</type>
+                    <displayText>Image</displayText>
+                </button>
+                <button>
+                    <id>01acadda-3c54-572e-8237-c1a9c7c6fbc0</id>
+                    <type>KML_KMZ_IMPORT</type>
+                    <displayText>KML/KMZ Import</displayText>
+                </button>
+                <button>
+                    <id>dba7c489-f586-5bcd-844e-08b5c47d3558</id>
+                    <type>KML_KMZ_EXPORT</type>
+                    <displayText>KML/KMZ Export</displayText>
+                </button>
+                <button>
+                    <id>456c0ad1-2566-57dd-8adf-1e3429339d2d</id>
+                    <type>SHP</type>
+                    <displayText>SHP</displayText>
+                </button>
+                <button>
+                    <id>a2c46cc6-39be-5448-a692-115fd2fca6b3</id>
+                    <type>MAP_SET_BUILDER</type>
+                    <displayText>Map Set Builder</displayText>
+                </button>
+                <button>
+                    <id>f587028d-2a09-5597-a2e9-255de1d0a601</id>
+                    <type>CACHE_CLEANER</type>
+                    <displayText>Cache Cleaner</displayText>
+                </button>
+                <button>
+                    <id>ffd3079a-73a2-550b-8a6d-92b2689fb96c</id>
+                    <type>TERRAIN_DISCOVERY</type>
+                    <displayText>Terrain Discovery</displayText>
+                </button>
+                <button>
+                    <id>58ee6500-a99a-5909-ba68-bab78f12ce0b</id>
+                    <type>SERVER_PASSWORDS</type>
+                    <displayText>Server Passwords</displayText>
+                </button>
+                <separator>
+                    <id>ffa9004b-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>e65108ec-ba7c-5efe-b4b3-1c1f3bffcc73</id>
+                    <type>ADD_FAVORITE</type>
+                    <displayText>Add Favorite</displayText>
+                </button>
+                <button>
+                    <id>2b2530dd-e1b7-5a87-86e8-cdb119e164cd</id>
+                    <type>MANAGE_FAVORITES</type>
+                    <displayText>Manage Favorites</displayText>
+                </button>
+                <button>
+                    <id>4a1c3306-00d1-5e5d-bdda-5db639b0c8f4</id>
+                    <type>USER_FAVORITE</type>
+                    <displayText>My favorite 1</displayText>
+                </button>
+                <button>
+                    <id>81640e3c-86aa-553a-9b03-8c5d49189aaa</id>
+                    <type>USER_FAVORITE</type>
+                    <displayText>My favorite 2</displayText>
+                </button>
+            </components>
+            <excludedIds/>
+        </tab>
+        <tab>
+            <displayText>Attachments</displayText>
+            <type>ATTACHMENTS</type>
+            <id>b8aca65c-a404-528a-9d7b-39bf57ef09a6</id>
+            <visible>false</visible>
+            <hiddenByUser>false</hiddenByUser>
+            <components>
+                <button>
+                    <id>1ab8ed4b-67a5-5bd6-9ba9-f8d9a0636162</id>
+                    <type>AUDIO</type>
+                    <displayText>Audio</displayText>
+                </button>
+                <button>
+                    <id>7f835345-7ea9-52c3-88fa-a55a4f9b3b1f</id>
+                    <type>PHOTO</type>
+                    <displayText>Photo</displayText>
+                </button>
+                <button>
+                    <id>dab2f4fa-8539-522d-9dc9-203d661d5139</id>
+                    <type>VIDEO</type>
+                    <displayText>Video</displayText>
+                </button>
+                <separator>
+                    <id>ffaa11bc-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>b4915d3a-7ef8-5abd-b96f-2b5042452a69</id>
+                    <type>FILE</type>
+                    <displayText>File</displayText>
+                </button>
+                <button>
+                    <id>a8ad860c-1581-5cce-8e7b-eac1c91da3ab</id>
+                    <type>NOTE</type>
+                    <displayText>Note</displayText>
+                </button>
+                <button>
+                    <id>0e2d9b07-77a4-55c1-a76d-e0803c12a7d7</id>
+                    <type>URL</type>
+                    <displayText>URL</displayText>
+                </button>
+                <separator>
+                    <id>ffaa5fdd-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+            </components>
+            <excludedIds/>
+        </tab>
+        <!-- Data tab removed for testing purposes -->
+        <!--        <tab>-->
+        <!--            <displayText>Data</displayText>-->
+        <!--            <type>DATA</type>-->
+        <!--            <id>580393f5-a94f-5469-985f-5dd2a6859a4a</id>-->
+        <!--            <visible>true</visible>-->
+        <!--            <hiddenByUser>false</hiddenByUser>-->
+        <!--            <components/>-->
+        <!--            <excludedIds/>-->
+        <!--        </tab>-->
+        <tab>
+            <displayText>Draw</displayText>
+            <type>DRAW</type>
+            <id>7aab1bd8-26ef-598b-a8ba-11366cc73f53</id>
+            <visible>true</visible>
+            <hiddenByUser>false</hiddenByUser>
+            <components>
+                <button>
+                    <id>e9475dee-e70c-543a-9fb9-e2799b322aaf</id>
+                    <type>SELECTOR</type>
+                    <displayText>Selector</displayText>
+                </button>
+                <separator>
+                    <id>ffb0ef8e-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>d43f013e-8782-5c3f-9f01-eed362bfd873</id>
+                    <type>POLYLINE</type>
+                    <displayText>Polyline</displayText>
+                </button>
+                <button>
+                    <id>dd293c7f-52b7-5ad6-a994-463ce31a918a</id>
+                    <type>SQUARE</type>
+                    <displayText>Square</displayText>
+                </button>
+                <button>
+                    <id>b3f3d5e7-a91e-51a2-aeb1-bee65665e893</id>
+                    <type>RECTANGLE</type>
+                    <displayText>Rectangle</displayText>
+                </button>
+                <button>
+                    <id>4216eac1-50f8-55ea-8079-a776d9159198</id>
+                    <type>POLYGON</type>
+                    <displayText>Polygon</displayText>
+                </button>
+                <button>
+                    <id>d9fcd750-64d3-5498-af3a-9a04a36fc975</id>
+                    <type>CIRCLE</type>
+                    <displayText>Circle</displayText>
+                </button>
+                <button>
+                    <id>3e2da804-021a-5b4d-96f0-11f832c21921</id>
+                    <type>ELLIPSE</type>
+                    <displayText>Ellipse</displayText>
+                </button>
+                <separator>
+                    <id>ffb18bcf-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>719f1aaf-9008-5506-8be9-b74198595fd6</id>
+                    <type>ELLIPSOID</type>
+                    <displayText>Ellipsoid</displayText>
+                </button>
+                <button>
+                    <id>5d27af0e-b9a7-5b86-a569-28d142921a46</id>
+                    <type>BOX</type>
+                    <displayText>Box</displayText>
+                </button>
+                <button>
+                    <id>2a603241-705d-5656-a683-65cad867c654</id>
+                    <type>POLYLINE_3D</type>
+                    <displayText>Polyline3D</displayText>
+                </button>
+                <button>
+                    <id>2dd569be-3e1a-5479-9c12-3f1472e300b7</id>
+                    <type>CONE</type>
+                    <displayText>Cone</displayText>
+                </button>
+                <button>
+                    <id>aed0972c-c437-52f9-8e1d-534df3d33619</id>
+                    <type>PYRAMID</type>
+                    <displayText>Pyramid</displayText>
+                </button>
+                <button>
+                    <id>75b90832-c86f-5c1f-ad07-575f8f85f18e</id>
+                    <type>CYLINDER</type>
+                    <displayText>Cylinder</displayText>
+                </button>
+                <button>
+                    <id>10666547-898a-50f0-a445-726d762f3c4c</id>
+                    <type>WEDGE</type>
+                    <displayText>Wedge</displayText>
+                </button>
+                <button>
+                    <id>de9aff7d-72df-5d9f-8651-220b48a26244</id>
+                    <type>SPHERE</type>
+                    <displayText>Sphere</displayText>
+                </button>
+                <separator>
+                    <id>ffb22810-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+                <button>
+                    <id>3f2ade91-40fe-55c6-91b5-04f32390ddc3</id>
+                    <type>TEXT_BOX</type>
+                    <displayText>Text Callout</displayText>
+                </button>
+                <button>
+                    <id>be41ae8c-331d-5fdf-a73e-a15e5efeea2e</id>
+                    <type>TEXT_LABEL</type>
+                    <displayText>Text Label</displayText>
+                </button>
+                <button>
+                    <id>5887d603-1a36-5d16-aa75-89eeb0276148</id>
+                    <type>RANGE_RINGS</type>
+                    <displayText>RangeFan</displayText>
+                </button>
+                <separator>
+                    <id>ffb97b11-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+            </components>
+            <excludedIds/>
+        </tab>
+        <tab>
+            <displayText>View</displayText>
+            <type>VIEW</type>
+            <id>0fa2ff57-8595-5199-b408-6a34e015d691</id>
+            <visible>false</visible>
+            <hiddenByUser>false</hiddenByUser>
+            <components>
+                <button>
+                    <id>32d95a6f-9cd0-5811-b032-de8916221be5</id>
+                    <type>GO_TO_AREA</type>
+                    <displayText>Go to Area</displayText>
+                </button>
+                <button>
+                    <id>7b06c450-decc-5a2f-ab04-9443e774f036</id>
+                    <type>GLOBE_VIEW</type>
+                    <displayText>Globe View</displayText>
+                </button>
+                <button>
+                    <id>ca3be8d2-cd1c-5fcb-b94d-7d91cac35ed0</id>
+                    <type>DEFAULT_HEADING</type>
+                    <displayText>Default Heading</displayText>
+                </button>
+                <button>
+                    <id>c5029c73-2c36-55eb-ac88-3a328fa2fe9d</id>
+                    <type>DEFAULT_TILT</type>
+                    <displayText>Default Tilt</displayText>
+                </button>
+                <button>
+                    <id>94e8630c-17eb-560b-81d7-ca8088f75b25</id>
+                    <type>DEFAULT_HEADING_AND_TILT</type>
+                    <displayText>Default Heading and Tilt</displayText>
+                </button>
+                <button>
+                    <id>6ef7c0f6-2d83-5dc4-98a8-0a7c20b7b401</id>
+                    <type>KEEP_IN_VIEW</type>
+                    <displayText>Keep in View</displayText>
+                </button>
+                <separator>
+                    <id>ffba8c82-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+            </components>
+            <excludedIds/>
+        </tab>
+        <tab>
+            <displayText>Plugins</displayText>
+            <type>PLUGINS</type>
+            <id>0fcaf629-ebcd-5ef3-b077-048317114d46</id>
+            <visible>true</visible>
+            <hiddenByUser>false</hiddenByUser>
+            <components>
+                <button>
+                    <id>2b1031cb-468c-513f-a315-f2589f632019</id>
+                    <type>APPS</type>
+                    <displayText>Plugins</displayText>
+                </button>
+                <separator>
+                    <id>ffbab393-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+            </components>
+            <excludedIds/>
+        </tab>
+        <tab>
+            <displayText>Help</displayText>
+            <type>HELP</type>
+            <id>ee7929ce-f18b-5100-bcbd-a8ca0208846f</id>
+            <visible>true</visible>
+            <hiddenByUser>false</hiddenByUser>
+            <components>
+                <button>
+                    <id>4012d26e-8ebc-5da0-890b-bc3d4d3cf707</id>
+                    <type>ABOUT</type>
+                    <displayText>About</displayText>
+                </button>
+                <button>
+                    <id>eb4bcde6-ce4a-5eef-8821-885ad9d55729</id>
+                    <type>OPENGL_INFO</type>
+                    <displayText>OpenGL Info</displayText>
+                </button>
+                <button>
+                    <id>ee7929ce-f18b-5100-bcbd-a8ca0208846f</id>
+                    <type>HELP</type>
+                    <displayText>TAKX Help</displayText>
+                </button>
+                <button>
+                    <id>4e6ca12e-0db5-59d7-b738-51b042f32a39</id>
+                    <type>REPORT_ERROR</type>
+                    <displayText>Report Issue</displayText>
+                </button>
+                <separator>
+                    <id>ffbb9df4-7025-11ed-8bd9-00155ddfc458</id>
+                </separator>
+            </components>
+            <excludedIds/>
+        </tab>
+    </tabs>
+</toolbarConfiguration>

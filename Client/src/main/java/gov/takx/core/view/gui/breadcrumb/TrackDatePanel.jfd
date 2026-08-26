@@ -1,0 +1,50 @@
+JFDML JFormDesigner: "8.2.0.0.331" Java: "17.0.8" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "20dlu"
+			"$rowSpecs": "default, default, default"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "monthLabel"
+				"text": "Jan"
+				"horizontalAlignment": 0
+				"background": sfield java.awt.Color red
+				"opaque": true
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, -1, false )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 1
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "dayLabel"
+				"text": "00"
+				"horizontalAlignment": 0
+				"background": sfield java.awt.Color white
+				"opaque": true
+				"foreground": sfield java.awt.Color black
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 3, false )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 2
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "yearLabel"
+				"text": "2000"
+				"horizontalAlignment": 0
+				"background": sfield java.awt.Color red
+				"opaque": true
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, -1, false )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 45, 60 )
+		} )
+	}
+}

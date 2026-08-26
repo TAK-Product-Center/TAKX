@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+        version="1.1"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        id="svg4"
+        sodipodi:docname="inspect-cot.svg"
+        inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+        inkscape:export-filename="C:\Users\kbowman\Downloads\svgs\inspect-cot.png"
+        inkscape:export-xdpi="192"
+        inkscape:export-ydpi="192"
+        xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+        xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+        xmlns="http://www.w3.org/2000/svg"
+>
+  <defs
+          id="defs8"/>
+  <sodipodi:namedview
+          id="namedview6"
+          pagecolor="#ffffff"
+          bordercolor="#111111"
+          borderopacity="1"
+          inkscape:pageshadow="0"
+          inkscape:pageopacity="0"
+          inkscape:pagecheckerboard="1"
+          showgrid="false"
+          inkscape:zoom="29.958333"
+          inkscape:cx="12"
+          inkscape:cy="12"
+          inkscape:window-width="1720"
+          inkscape:window-height="1377"
+          inkscape:window-x="3632"
+          inkscape:window-y="-8"
+          inkscape:window-maximized="0"
+          inkscape:current-layer="svg4"/>
+  <path
+          d="M12.89,3L14.85,3.4L11.11,21L9.15,20.6L12.89,3M19.59,12L16,8.41V5.58L22.42,12L16,18.41V15.58L19.59,12M1.58,12L8,5.58V8.41L4.41,12L8,15.58V18.41L1.58,12Z"
+          id="path2"
+          style="fill:#ffffff"/>
+</svg>

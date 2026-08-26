@@ -1,0 +1,314 @@
+include:
+  - project: 'devsecops/gitlab-ci-common'
+    ref: master
+    file: '/template/gitlab_ci_utilities.yml'
+  - project: 'devsecops/gitlab-ci-common'
+    ref: master
+    file: '/template/fortify_utilities.yml'
+  - project: 'devsecops/gitlab-ci-common'
+    ref: master
+    file: '/template/gradle_proxy.yml'
+
+
+variables:
+  STANDARD_GRADLE_FLAGS: '-s --no-daemon -PnoMavenLocal --refresh-dependencies --console=plain'
+  GRADLE_FLAGS: "$STANDARD_GRADLE_FLAGS $EXTRA_GRADLE_FLAGS"
+  INSTALLER_GRADLE_FLAGS: "$GRADLE_FLAGS -Pi4jLicenseKey=${I4J_LICENSE_KEY} -PnoMavenLocal"
+  DEV_REGEX: '^develop$'
+  RELEASE_REGEX: '^release\/.+$'
+  DEV_OR_RELEASE_REGEX: "$DEV_REGEX|$RELEASE_REGEX"
+  DEFAULT_IMAGE: "/eclipse-temurin:17.0.2_8-jdk"
+  ENABLE_COVERAGE: '-Pcoverage'
+  AGGREGATE_XML_LOCATION: ./build/aggregate/jacocoTestReport.xml
+  RELEASE:
+    value: ""
+    description: Determines what type of jar should be produced. Leave blank to produce a SNAPSHOT, use "FINAL" to create a final release, or use any other value to produce a release candidate.
+
+default:
+  image: $DEFAULT_IMAGE
+  interruptible: true
+  retry:
+    max: 2
+    when:
+      - runner_system_failure
+
+
+stages:
+  - build
+  - test
+  - scan
+  - publish
+  - generate
+  - downstream
+
+before_script:
+  - !reference [ .proxy_gradle_dependencies, before_script ]
+  - export GRADLE_USER_HOME=/cache/.gradle # Cache within the "shared" cache mount so it can be used across stages
+  - if [[ $CI_COMMIT_BRANCH =~ $DEV_REGEX ]]; then IS_DEV_BRANCH="true"; else IS_DEV_BRANCH=""; fi
+  - if [[ $CI_COMMIT_BRANCH =~ $RELEASE_REGEX ]]; then IS_RELEASE_BRANCH="true"; else IS_RELEASE_BRANCH=""; fi
+  - if [[ ! $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX ]]; then IS_FEATURE_BRANCH="true"; else IS_FEATURE_BRANCH=""; fi
+  - chmod +x gradlew
+  # debug
+  - echo "SOURCE $CI_PIPELINE_SOURCE BRANCH $CI_COMMIT_BRANCH"
+  - echo "IS_DEV_BRANCH = '$IS_DEV_BRANCH'"
+  - echo "IS_RELEASE_BRANCH = '$IS_RELEASE_BRANCH'"
+  - echo "IS_FEATURE_BRANCH = '$IS_FEATURE_BRANCH'"
+  - uname -a
+  - pwd
+  - env | grep -v DI2E | grep -v "\"auth\""
+  - ls /cache || true
+  - ls .gradle || true
+  - ./gradlew --version
+  - apt-get update
+  - apt-get -y install git
+  - apt-get -y install fontconfig
+  - apt-get -y install libfreetype6
+
+# Prevent jobs from being duplicated when both branch and merge request pipelines would be triggered simultaneously
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - if: '$CI_COMMIT_BRANCH'
+
+build:
+  stage: build
+  rules:
+    # Don't do a normal build when doing a release build
+    - if: $RELEASE
+      when: never
+    # Only build pushes (not merge requests), but not for tag pushes
+    - if: $CI_PIPELINE_SOURCE == "web" || $CI_PIPELINE_SOURCE == "merge_request_event" || ($CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH && $CI_COMMIT_TAG == null)
+      when: always
+    - when: never
+  coverage: '/Aggregate coverage: (\d+(?:\.\d+)?)%/'
+  script:
+    # Do not publish snapshots from feature branches
+    - if [[ -n "$IS_FEATURE_BRANCH" ]]; then NO_PUBLISH="-x publish"; else NO_PUBLISH=""; fi
+    - echo "NO_PUBLISH = '$NO_PUBLISH'"
+    - ./gradlew $GRADLE_FLAGS ${ENABLE_COVERAGE} -PforcePublish build buildJacocoAggregate deployment:makeDistro $NO_PUBLISH
+  artifacts:
+    when: always
+    paths:
+      - "deployment/build/docs/javadoc"
+      - "build/aggregate/"
+      - "binary-compatibility/build/reports/binary-compatibility.html"
+    reports:
+      junit: '*/build/test-results/test/*.xml'
+      coverage_report:
+        coverage_format: jacoco
+        path: $AGGREGATE_XML_LOCATION
+
+quality_check:
+  stage: build
+  script:
+    - ./gradlew pmdMain violations -x build -x test
+  artifacts:
+    paths:
+      - "**/code-climate-file.json"
+  rules:
+    - if: $QUALITY_CHECK_DISABLED == "true"
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+quality_reporting:
+  image: /python:3.11-rc-alpine
+  stage: build
+  needs: [quality_check]
+  before_script: []
+  script:
+    - wget https://raw.githubusercontent.com/chesapeaketechnology/gitlab-templates/release/1.2/lib/gitlab/ci/templates/references/quality/generate_merged_quality_report.py
+    - python3 generate_merged_quality_report.py
+  artifacts:
+    reports:
+      codequality:
+        - "**/merged-code-climate-file.json"
+  rules:
+    - if: $QUALITY_CHECK_DISABLED == "true"
+      when: never
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_COMMIT_BRANCH =~ $DEV_OR_RELEASE_REGEX
+    - if: $CI_PIPELINE_SOURCE == "web"
+
+fortifyScan:
+  stage: scan
+  extends: .fortify_scan
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
+
+fortifyGenerateMergedPdfFromScan:
+  stage: scan
+  extends: .fortify_generate_pdf
+  needs:
+    - job: fortifyScan
+      artifacts: true
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"
+
+release_build:
+  stage: build
+  rules:
+    # Only when manually invoked from the web UI and RELEASE has a non-empty value
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
+      when: always
+    - when: never
+  interruptible: false
+  coverage: '/Aggregate coverage: (\d+(?:\.\d+)?)%/'
+  script:
+    # For now, allow release builds from develop
+    #
+    # - if [[ -z "$IS_RELEASE_BRANCH" ]]; then
+    #   echo "You can not run release builds off of branch $CI_COMMIT_BRANCH";
+    #   exit 1;
+    #   fi
+    - if [[ $(echo $RELEASE | tr '[:upper:]' '[:lower:]') == "final" ]] ; then
+          echo "FINAL BUILD";
+          RC_FLAG=-Pfinal;
+      else
+        echo "RC build $RELEASE";
+        RC_FLAG=-Prc=${RELEASE};
+      fi
+    # checkout a named branch instead of a SHA (to keep the BSP happy)
+    - echo "Check out $CI_COMMIT_BRANCH"
+    - git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH
+    - ./gradlew $GRADLE_FLAGS -Pforce -Prelease ${ENABLE_COVERAGE} $RC_FLAG build buildJacocoAggregate
+    - echo "Checking out takx-installer, branch $CI_COMMIT_BRANCH"
+    - cd ..
+    - rm -rf takx-installer
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/raptor/takx-installer
+    - cd takx-installer
+    # Avoid check out if we're already on the desired branch
+    - if [[ $(git branch --show-current) != $CI_COMMIT_BRANCH ]] ; then
+    -     git checkout -q -b $CI_COMMIT_BRANCH origin/$CI_COMMIT_BRANCH;
+    - fi
+    - chmod +x gradlew
+    - echo "Updating release version"
+    # Update project path so URL generation within the updateReleaseVersion task works properly
+    - export CI_PROJECT_PATH=raptor/takx-installer
+    - ./gradlew $GRADLE_FLAGS updateReleaseVersion -Psnapshot $RC_FLAG
+  artifacts:
+    when: always
+    paths:
+      - "deployment/build/docs/javadoc"
+      - "build/aggregate/"
+      - "binary-compatibility/build/reports/binary-compatibility.html"
+    reports:
+      junit: '*/build/test-results/test/*.xml'
+
+trigger-release-installer-build:
+  stage: downstream
+  inherit:
+    variables: false
+  rules:
+    # Only when manually invoked from the web UI and RELEASE has a non-empty value
+    - if: $CI_PIPELINE_SOURCE == "web" && $RELEASE
+      variables:
+        RELEASE: $RELEASE
+  trigger:
+    project: raptor/takx-installer
+    branch: $CI_COMMIT_BRANCH
+
+pages:
+  stage: publish
+  rules:
+    - if: $CI_COMMIT_BRANCH == "develop"
+  script:
+    - rm -rf public
+    - mkdir public
+    - mkdir public/javadoc
+    - mkdir public/coverage
+    - cp -R deployment/build/docs/javadoc public
+    - cp -R build/aggregate/html/* public/coverage
+    - cp binary-compatibility/build/reports/binary-compatibility.html public/binary-compatibility.html
+    - |
+      cat > public/index.html <<EOF
+      <html>
+      <head>
+        <title>TAKX</title>
+      </head>
+      <body>
+        <h1>TAKX</h1>
+        <ul>
+          <li><a href="./javadoc/index.html">JavaDoc</a></li>
+          <li><a href="./coverage/index.html">Code Coverage</a></li>
+          <li><a href="./binary-compatibility.html">Binary Compatibility Report</a></li>
+        </ul>
+      </body>
+      </html>
+      EOF
+  needs:
+    - job: build
+      optional: true
+    - job: release_build
+      optional: true
+  artifacts:
+    paths:
+      - public
+
+branch-and-roll:
+  stage: build
+  rules:
+    # Only when manually invoked from the web UI and BRANCH_AND_ROLL is defined
+    - if: $CI_PIPELINE_SOURCE == "web" && $BRANCH_AND_ROLL != null
+      when: always
+    - when: never
+  script:
+    - if [[ -z "$IS_DEV_BRANCH" ]]; then
+      echo "You can not run BRANCH AND ROLL off of branch $CI_COMMIT_BRANCH";
+      exit 1;
+      fi
+    - echo "Branching TAKX from $CI_COMMIT_BRANCH"
+    - ./gradlew $GRADLE_FLAGS branchRepo rollMinorVersion cleanAndPushAcceptedApiChanges -PsafeTest
+    - echo "Checking out takx-installer"
+    - cd ..
+    - rm -rf takx-installer
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@${CI_SERVER_HOST}/raptor/takx-installer
+    - cd takx-installer
+    # Update project path so URL generation within the rollMinorVersion task works properly
+    - export CI_PROJECT_PATH=raptor/takx-installer
+    - echo "Branching takx-installer from 'develop'"
+    - chmod +x gradlew
+    - ./gradlew $GRADLE_FLAGS branchRepo rollMinorVersion -PsafeTest
+
+pipeline_generator:
+  stage: generate
+  image: ${TAK_REGISTRY_HOST}/python:3.8.2
+  before_script: []
+  script:
+    - pip3 install requests
+    - python3 pipeline/generate_downstream_pipelines.py
+  artifacts:
+    paths:
+      - generated_downstream_pipelines.yml
+  rules:
+    # Don't run the downstream jobs when doing a release build
+    - if: $RELEASE
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+child-pipeline:
+  stage: downstream
+  trigger:
+    include:
+      - artifact: generated_downstream_pipelines.yml
+        job: pipeline_generator
+    strategy: depend
+  rules:
+    - if: $RELEASE
+      when: never
+    - if: $SKIP_DOWNSTREAM_PIPELINES
+      when: never
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

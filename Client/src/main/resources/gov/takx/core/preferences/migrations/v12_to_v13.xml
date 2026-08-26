@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="12" to="13">
+    <add refXpath="node[@name='Playback']" where="after">
+        <!-- This node can be used to customize the application menu. -->
+        <node name="ApplicationMenu">
+            <!-- The example below shows how to add the "hiddenMenuItems" entry to hide menu items using a comma-delimited
+                 list of menu item keys. The available keys include:
+
+                 CLEAR_CONTENT, NEW_PROJECT, OPEN_PROJECT, PACKAGE_PROJECT, PLUGIN_PREFERENCES, PROJECT_CLEANER,
+                 PROJECT_SETTINGS, QUIT, SAVE_PROJECT, SAVE_PROJECT_AS, SCREEN_SHOT_APPLICATION, SCREEN_SHOT_GEOTIFF,
+                 SCREEN_SHOT_GLOBE, SCREEN_SHOT_MENU, SETTINGS
+
+                <map>
+                    <entry key="hiddenMenuItems" value="CLEAR_CONTENT,PROJECT_CLEANER"/>
+                </map>
+            -->
+            <map/>
+        </node>
+    </add>
+</migration>

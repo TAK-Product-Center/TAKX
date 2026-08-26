@@ -1,0 +1,195 @@
+plugins {
+    id 'org.owasp.dependencycheck' version '7.0.0' apply false
+    id 'gov.raptor.gradle.plugins.jboss-modules' version '3.5.0' apply false
+    id 'gov.raptor.gradle.plugins.build-support' version '10.1.0'
+    id 'me.champeau.gradle.jmh' version '0.4.5' apply false
+    id 'net.ltgt.errorprone' version '1.1.1' apply false
+    id 'gov.tak.gradle.plugins.checker-processor' version '2.0.4' apply false
+    id 'gov.tak.gradle.plugins.coverage-report-aggregator' version '2.0.0' apply false
+
+    id 'com.dorongold.task-tree' version '4.0.0' // Use the 'taskTree' task to see dependencies
+}
+
+// Configure the wrapper with ALL distro so IJ has additional context
+wrapper {
+    gradleVersion = '9.2'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+import com.github.jk1.license.render.InventoryHtmlReportRenderer
+import com.github.jk1.license.render.InventoryReportRenderer
+import com.github.jk1.license.render.TextReportRenderer
+
+ext {
+    // Common layout locations
+    deploymentBinDir = file('deployment/bin')
+    deploymentLoadDir = new File(deploymentBinDir, 'load')
+    deploymentBootDir = new File(deploymentBinDir, 'boot')
+    deploymentLibDir = new File(deploymentBinDir, 'lib')
+    pluginsDir = new File(deploymentBinDir, 'plugins')
+    deploymentConfDir = new File(deploymentBinDir, 'conf')
+    resolutionStrategyScript = file('gradle/resolutionStrategy.gradle')
+
+    // Default to CIV unless specified otherwise
+    if (!project.hasProperty('buildFlavor')) buildFlavor = 'civ'
+}
+
+apply from: 'gradle/versions.gradle' // All our library dependency versions
+
+// Only source this script if we have sub-projects configured
+if (!rootProject.getSubprojects().isEmpty()) {
+    apply from: 'gradle/vulnerabilities.gradle'
+    apply from: 'gradle/coverageReporting.gradle'
+}
+
+allprojects {
+    group = 'gov.takx'
+    version = buildVersion
+}
+
+// Create an "assemble" task at the top, so IT and E2E tests have a simple way of ensuring that
+// everything is assembled and installed in the appropriate directories.
+
+tasks.register('assemble') {
+    group = 'Build'
+    description = 'Assemble all components of TAKX'
+}
+
+// Validate that we're not doing this on any branch other than a "release" branch, which will have a name like 2.5
+if (isRelease && !isRebuildRelease && !(branchName =~ /\d+\.\d+/)) {
+    if (force) {
+        logger.warn("Warning: Releasing from non-release branch [$branchName]! Continuing due to -Pforce.")
+    } else {
+        throw new GradleException("You can only perform a release build from a release branch: current branch is '$branchName'")
+    }
+}
+
+// Configure the repositories in use for dependency resolution and publishing
+buildSupport.repoManagement {
+    // Publish when running on GitLab CI, for release builds, or when forced
+    boolean shouldPublish = isRelease || runningUnderGitlab || isForcePublish
+
+    takx publish: shouldPublish
+}
+
+subprojects { Project project ->
+
+    // The binary-compatibility, platform-bom, and test-bom sub-projects are special, and only need to have the repos configured
+    if (project.name == 'binary-compatibility' || project.name == 'platform-bom' || project.name == 'test-bom') {
+        buildSupport.setupRepositories(project)
+        return
+    }
+
+    buildSupport.setupJavaProject(project, 17) // Apply standard java project setup, forcing JDK 17
+
+    licenseReport {
+        renderers = [new InventoryHtmlReportRenderer(), new TextReportRenderer(), new InventoryReportRenderer()]
+    }
+
+    // Ensure we're using UTF-8 as our code page, and add support for new javadoc tags
+    project.compileJava.options.encoding = 'UTF-8'
+    project.compileTestJava.options.encoding = 'UTF-8'
+    project.javadoc.options.encoding = 'UTF-8'
+    project.javadoc.options.tags('apiNote:a:API Note:', 'implNote:a:Implementation Note:')
+
+    // Configure automatic code styling, with some custom style overrides
+    buildSupport.configureStyle(project, [
+            'org.eclipse.jdt.core.formatter.comment.format_javadoc_comments'                       : 'false',
+            'org.eclipse.jdt.core.formatter.brace_position_for_lambda_body'                        : 'end_of_line',
+            'org.eclipse.jdt.core.formatter.brace_position_for_block_in_case_after_arrow'          : 'next_line',
+            'org.eclipse.jdt.core.formatter.alignment_for_resources_in_try'                        : '82',
+            'org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_array_initializer': 'do not insert'
+    ])
+
+    // We can optimize the spotless task by limiting which file paths it scans.
+    spotless {
+        java {
+            target 'src/*/java/**/*.java'
+        }
+    }
+
+    // Configure google error prone if enabled
+    if (project.hasProperty('errorprone')) {
+        apply plugin: 'net.ltgt.errorprone'
+
+        project.dependencies {
+            errorprone("com.google.errorprone:error_prone_core:2.30.0")
+        }
+    }
+
+    apply plugin: 'org.owasp.dependencycheck'
+
+    dependencyCheck {
+        format = 'HTML'
+        suppressionFile = rootProject.file('suppression.xml')
+        failOnError = false
+        analyzers {
+            assemblyEnabled = false // Don't analyze .NET files
+        }
+    }
+
+    apply from: resolutionStrategyScript // Pull in our dependency resolution strategy
+
+    // Don't include test and bom sub-projects in our top-level assemble (they are not needed to run)
+    def excludeFromAssemble = ['test', 'func-test', 'platform-bom', 'test-bom']
+    if (!excludeFromAssemble.contains(project.name)) rootProject.tasks.assemble.dependsOn project.tasks.assemble
+
+    project.with {
+        plugins.apply('gov.tak.gradle.plugins.checker-processor')
+        checkerProcessing.nonNullAnnotations = [
+                'javax.annotation.Nonnull',
+                'jakarta.annotation.Nonnull',
+                'gov.tak.api.annotation.NonNull'
+        ]
+        checkerProcessing.skippedAccessModifiers = ['private']
+
+        buildSupport.configureManifest(project) // Get the JAR manifest configured
+
+        if (name != 'func-test') {
+            boolean producesLoadJar = ['bootstrap', 'client', 'platform', 'processmanager'].contains name
+
+            if (producesLoadJar) apply from: rootProject.file('gradle/artifactTasks.gradle')
+
+            buildSupport.configurePublishing(project, true)
+            buildSupport.configureSourcePublishing(project)
+        }
+
+        // Enable javadoc publishing on the 'deployment' project or if the 'forceJavadoc' property is set
+        if (name == 'deployment' || hasProperty('forceJavadoc')) {
+            buildSupport.configureJavadocPublishing(project)
+        } else {
+            javadoc.enabled = false
+        }
+
+        defaultTasks 'build' // If no task is given, default to 'build'
+    }
+
+    afterEvaluate { Project p ->
+        // Disable PMD checks unless building on a CI server, or forced to
+        if (!runningUnderCi && !project.hasProperty('forcePmd')) {
+            tasks.withType(Pmd).each { it.enabled = false }
+        }
+    }
+}
+
+// This fix is needed in order to make parallel builds work properly.  The basic problem is that a 'clean'
+// task can execute after a task that generates output (like compileJava), leading to build failures.  The code
+// below adds a 'mustRunAfter' relationship on all non-delete tasks so that clean (which is a delete task)
+// will be sure to run first.
+//
+// Hopefully this bug will get fixed, but there is still an ongoing discussion as of 11/10/2017.
+// See https://github.com/gradle/gradle/issues/2488
+
+allprojects {
+    plugins.withType(BasePlugin) {
+        project.afterEvaluate {
+            def deleteTasks = tasks.withType(Delete)*.name
+
+            tasks.configureEach {
+                if (!deleteTasks.contains(it.name)) {
+                    mustRunAfter deleteTasks
+                }
+            }
+        }
+    }
+}

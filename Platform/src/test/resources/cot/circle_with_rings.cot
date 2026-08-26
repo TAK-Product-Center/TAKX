@@ -1,0 +1,32 @@
+<event version="2.0" uid="21c57f66-d135-4180-a771-f2ede16629dc" type="u-d-c-c" time="2021-10-19T00:19:43.01Z"
+       start="2021-10-19T00:19:43.01Z" stale="2021-10-26T00:19:43.01Z" how="h-g-i-g-o">
+    <point lat="50" lon="-112" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <contact callsign="Circle 1"/>
+        <remarks/>
+        <color argb="-1"/>
+        <height>0.00</height>
+        <height_unit>4</height_unit>
+        <archive/>
+        <archive/>
+        <archive/>
+        <shape>
+            <ellipse minor="74" angle="360" major="74"/>
+            <ellipse minor="37" angle="360" major="37"/> <!-- moved out of order to facilitate testing -->
+            <ellipse minor="111" angle="360" major="111"/>
+            <link relation="p-c" uid="23e4644a-b125-426e-8fb1-917bf3dae81c.style" type="b-x-KmlStyle">
+                <Style>
+                    <LineStyle>
+                        <color>FFFFFFFF</color>
+                        <width>3</width>
+                        <alpha>128</alpha>
+                    </LineStyle>
+                    <PolyStyle>
+                        <color>80FFFFFF</color>
+                    </PolyStyle>
+                </Style>
+            </link>
+        </shape>
+        <archive/>
+    </detail>
+</event>

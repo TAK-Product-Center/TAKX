@@ -1,0 +1,11 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="jcommoncommo">
+        <match>
+            <includes>
+                <include>
+                    <groupId>jcommoncommo</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>

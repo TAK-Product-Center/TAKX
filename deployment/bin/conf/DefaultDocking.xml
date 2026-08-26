@@ -1,0 +1,490 @@
+<?xml version='1.0'?>
+<config>
+    <resources>
+        <resource name="dock.ui.ThemeMap">
+            <key>eclipse</key> <!-- TODO KMB: Switch this to flat for TAKX-1008 -->
+        </resource>
+        <resource name="ccontrol.frontend">
+            <frontend>
+                <current>
+                    <base>
+                        <roots>
+                            <root name="external">
+                                <layout factory="predefined">
+                                    <replacement id="rootexternal"/>
+                                    <delegate id="delegate_CommonDockStationFactory">
+                                        <root>true</root>
+                                        <content delegate="screen dock">
+                                            <placeholders>
+                                                <version>0</version>
+                                                <format>dock.PlaceholderList</format>
+                                            </placeholders>
+                                        </content>
+                                    </delegate>
+                                </layout>
+                                <adjacent>
+                                    <layout factory="dock.RootStationAdjacentFactory">
+                                        <type>dock.CExternalizeArea</type>
+                                    </layout>
+                                </adjacent>
+                                <children ignore="false"/>
+                            </root>
+                            <root name="east">
+                                <layout factory="predefined">
+                                    <replacement id="rooteast"/>
+                                    <delegate id="delegate_CommonDockStationFactory">
+                                        <root>true</root>
+                                        <content delegate="flap dock">
+                                            <window auto="false" direction="WEST"/>
+                                            <placeholders>
+                                                <version>0</version>
+                                                <format>dock.PlaceholderList</format>
+                                                <entry>
+                                                    <key shared="false">
+                                                        <placeholder>dock.multi.\15\ dockables</placeholder>
+                                                    </key>
+                                                    <item key="convert" type="b">true</item>
+                                                    <item key="convert-keys" type="a">
+                                                        <item type="s">size</item>
+                                                        <item type="s">index</item>
+                                                        <item type="s">id</item>
+                                                        <item type="s">placeholder</item>
+                                                        <item type="s">hold</item>
+                                                    </item>
+                                                    <item key="dock.size" type="i">302</item>
+                                                    <item key="dock.index" type="i">0</item>
+                                                    <item key="dock.id" type="i">0</item>
+                                                    <item key="dock.placeholder" type="s">dock.multi.\15\ dockables
+                                                    </item>
+                                                    <item key="dock.hold" type="b">false</item>
+                                                </entry>
+                                                <entry>
+                                                    <key shared="false">
+                                                        <placeholder>dock.multi.\14\ dockables</placeholder>
+                                                    </key>
+                                                    <item key="convert" type="b">true</item>
+                                                    <item key="convert-keys" type="a">
+                                                        <item type="s">size</item>
+                                                        <item type="s">index</item>
+                                                        <item type="s">id</item>
+                                                        <item type="s">placeholder</item>
+                                                        <item type="s">hold</item>
+                                                    </item>
+                                                    <item key="dock.size" type="i">300</item>
+                                                    <item key="dock.index" type="i">1</item>
+                                                    <item key="dock.id" type="i">1</item>
+                                                    <item key="dock.placeholder" type="s">dock.multi.\14\ dockables
+                                                    </item>
+                                                    <item key="dock.hold" type="b">false</item>
+                                                </entry>
+                                                <entry>
+                                                    <key shared="false">
+                                                        <placeholder>dock.multi.\17\ dockables</placeholder>
+                                                    </key>
+                                                    <item key="convert" type="b">true</item>
+                                                    <item key="convert-keys" type="a">
+                                                        <item type="s">size</item>
+                                                        <item type="s">index</item>
+                                                        <item type="s">id</item>
+                                                        <item type="s">placeholder</item>
+                                                        <item type="s">hold</item>
+                                                    </item>
+                                                    <item key="dock.size" type="i">387</item>
+                                                    <item key="dock.index" type="i">2</item>
+                                                    <item key="dock.id" type="i">2</item>
+                                                    <item key="dock.placeholder" type="s">dock.multi.\17\ dockables
+                                                    </item>
+                                                    <item key="dock.hold" type="b">false</item>
+                                                </entry>
+                                            </placeholders>
+                                        </content>
+                                    </delegate>
+                                </layout>
+                                <adjacent>
+                                    <layout factory="dock.RootStationAdjacentFactory">
+                                        <type>dock.CMinimizeArea</type>
+                                    </layout>
+                                </adjacent>
+                                <children ignore="false">
+                                    <child>
+                                        <layout factory="delegate_dockables" placeholder="dock.multi.\15\ dockables">
+                                            <id>15 dockables</id>
+                                            <multiple>
+                                                <dockableId>gov.takx.core.view.gui.takserver.TakServerPanel:TAK Server
+                                                </dockableId>
+                                            </multiple>
+                                        </layout>
+                                        <children ignore="false"/>
+                                    </child>
+                                    <child>
+                                        <layout factory="delegate_dockables" placeholder="dock.multi.\14\ dockables">
+                                            <id>14 dockables</id>
+                                            <multiple>
+                                                <dockableId>gov.takx.core.view.gui.contacts.ContactsPanel:Contacts
+                                                </dockableId>
+                                            </multiple>
+                                        </layout>
+                                        <children ignore="false"/>
+                                    </child>
+                                    <child>
+                                        <layout factory="delegate_dockables" placeholder="dock.multi.\17\ dockables">
+                                            <id>17 dockables</id>
+                                            <multiple>
+                                                <dockableId>gov.takx.core.view.gui.pointdropper.PointDropperPanel:Point
+                                                    Dropper
+                                                </dockableId>
+                                            </multiple>
+                                        </layout>
+                                        <children ignore="false"/>
+                                    </child>
+                                </children>
+                            </root>
+                            <root name="south">
+                                <layout factory="predefined">
+                                    <replacement id="rootsouth"/>
+                                    <delegate id="delegate_CommonDockStationFactory">
+                                        <root>true</root>
+                                        <content delegate="flap dock">
+                                            <window auto="false" direction="NORTH"/>
+                                            <placeholders>
+                                                <version>0</version>
+                                                <format>dock.PlaceholderList</format>
+                                            </placeholders>
+                                        </content>
+                                    </delegate>
+                                </layout>
+                                <adjacent>
+                                    <layout factory="dock.RootStationAdjacentFactory">
+                                        <type>dock.CMinimizeArea</type>
+                                    </layout>
+                                </adjacent>
+                                <children ignore="false"/>
+                            </root>
+                            <root name="center">
+                                <layout factory="predefined" placeholder="dock.single.center">
+                                    <replacement id="rootcenter"/>
+                                    <delegate id="delegate_CommonDockStationFactory">
+                                        <id>center</id>
+                                        <root>true</root>
+                                        <content delegate="SplitDockStationFactory">
+                                            <fullscreen-action>false</fullscreen-action>
+                                            <node nodeId="1673478025465" orientation="HORIZONTAL"
+                                                  divider="0.8203592814371258">
+                                                <node nodeId="1673478035885" orientation="HORIZONTAL"
+                                                      divider="0.20958083832335328">
+                                                    <leaf id="-1" nodeId="1673478035883">
+                                                        <placeholders>
+                                                            <placeholder>dock.multi.\21\ dockables</placeholder>
+                                                        </placeholders>
+                                                    </leaf>
+                                                    <leaf id="0" nodeId="1673477826484">
+                                                        <placeholders>
+                                                            <placeholder>dock.multi.\0\ globes</placeholder>
+                                                        </placeholders>
+                                                    </leaf>
+                                                </node>
+                                                <leaf id="-1" nodeId="1673478025463">
+                                                    <placeholders>
+                                                        <placeholder>dock.multi.\18\ dockables</placeholder>
+                                                    </placeholders>
+                                                </leaf>
+                                            </node>
+                                        </content>
+                                    </delegate>
+                                </layout>
+                                <adjacent>
+                                    <layout factory="dock.RootStationAdjacentFactory">
+                                        <type>dock.CGridArea</type>
+                                    </layout>
+                                </adjacent>
+                                <children ignore="false">
+                                    <child>
+                                        <layout factory="delegate_globes" placeholder="dock.multi.\0\ globes">
+                                            <id>0 globes</id>
+                                            <multiple>
+                                                <globeId>1</globeId>
+                                                <description>Camera Eye</description>
+                                                <owner>User</owner>
+                                                <latitude>38.00000000000002</latitude>
+                                                <longitude>-119.99999999999999</longitude>
+                                                <elevation>0.0</elevation>
+                                                <heading>0.0</heading>
+                                                <pitch>0.0</pitch>
+                                                <zoom>1.6000000132147133E7</zoom>
+                                            </multiple>
+                                        </layout>
+                                        <children ignore="false"/>
+                                    </child>
+                                </children>
+                            </root>
+                            <root name="west">
+                                <layout factory="predefined">
+                                    <replacement id="rootwest"/>
+                                    <delegate id="delegate_CommonDockStationFactory">
+                                        <root>true</root>
+                                        <content delegate="flap dock">
+                                            <window auto="false" direction="EAST"/>
+                                            <placeholders>
+                                                <version>0</version>
+                                                <format>dock.PlaceholderList</format>
+                                                <entry>
+                                                    <key shared="false">
+                                                        <placeholder>dock.multi.\4\ dockables</placeholder>
+                                                    </key>
+                                                    <item key="convert" type="b">true</item>
+                                                    <item key="convert-keys" type="a">
+                                                        <item type="s">size</item>
+                                                        <item type="s">index</item>
+                                                        <item type="s">id</item>
+                                                        <item type="s">placeholder</item>
+                                                        <item type="s">hold</item>
+                                                    </item>
+                                                    <item key="dock.size" type="i">300</item>
+                                                    <item key="dock.index" type="i">0</item>
+                                                    <item key="dock.id" type="i">0</item>
+                                                    <item key="dock.placeholder" type="s">dock.multi.\4\ dockables
+                                                    </item>
+                                                    <item key="dock.hold" type="b">false</item>
+                                                </entry>
+                                                <entry>
+                                                    <key shared="false">
+                                                        <placeholder>dock.multi.\8\ dockables</placeholder>
+                                                    </key>
+                                                    <item key="convert" type="b">true</item>
+                                                    <item key="convert-keys" type="a">
+                                                        <item type="s">size</item>
+                                                        <item type="s">index</item>
+                                                        <item type="s">id</item>
+                                                        <item type="s">placeholder</item>
+                                                        <item type="s">hold</item>
+                                                    </item>
+                                                    <item key="dock.size" type="i">314</item>
+                                                    <item key="dock.index" type="i">1</item>
+                                                    <item key="dock.id" type="i">1</item>
+                                                    <item key="dock.placeholder" type="s">dock.multi.\8\ dockables
+                                                    </item>
+                                                    <item key="dock.hold" type="b">false</item>
+                                                </entry>
+                                                <entry>
+                                                    <key shared="false">
+                                                        <placeholder>dock.multi.\11\ dockables</placeholder>
+                                                    </key>
+                                                    <item key="convert" type="b">true</item>
+                                                    <item key="convert-keys" type="a">
+                                                        <item type="s">size</item>
+                                                        <item type="s">index</item>
+                                                        <item type="s">id</item>
+                                                        <item type="s">placeholder</item>
+                                                        <item type="s">hold</item>
+                                                    </item>
+                                                    <item key="dock.size" type="i">300</item>
+                                                    <item key="dock.index" type="i">2</item>
+                                                    <item key="dock.id" type="i">2</item>
+                                                    <item key="dock.placeholder" type="s">dock.multi.\11\ dockables
+                                                    </item>
+                                                    <item key="dock.hold" type="b">false</item>
+                                                </entry>
+                                            </placeholders>
+                                        </content>
+                                    </delegate>
+                                </layout>
+                                <adjacent>
+                                    <layout factory="dock.RootStationAdjacentFactory">
+                                        <type>dock.CMinimizeArea</type>
+                                    </layout>
+                                </adjacent>
+                                <children ignore="false">
+                                    <child>
+                                        <layout factory="delegate_dockables" placeholder="dock.multi.\4\ dockables">
+                                            <id>4 dockables</id>
+                                            <multiple>
+                                                <dockableId>
+                                                    gov.takx.core.view.gui.explorer.view.MainExplorerPanel:Overlays
+                                                </dockableId>
+                                            </multiple>
+                                        </layout>
+                                        <children ignore="false"/>
+                                    </child>
+                                    <child>
+                                        <layout factory="delegate_dockables" placeholder="dock.multi.\8\ dockables">
+                                            <id>8 dockables</id>
+                                            <multiple>
+                                                <dockableId>
+                                                    gov.takx.core.view.gui.layers.viewmanager.LayerViewPanel:Maps
+                                                </dockableId>
+                                            </multiple>
+                                        </layout>
+                                        <children ignore="false"/>
+                                    </child>
+                                    <child>
+                                        <layout factory="delegate_dockables" placeholder="dock.multi.\11\ dockables">
+                                            <id>11 dockables</id>
+                                            <multiple>
+                                                <dockableId>gov.takx.core.view.gui.IconPanel:Icons</dockableId>
+                                            </multiple>
+                                        </layout>
+                                        <children ignore="false"/>
+                                    </child>
+                                </children>
+                            </root>
+                        </roots>
+                        <children/>
+                    </base>
+                    <modes>
+                        <dockables>
+                            <entry id="multi 14 dockables" current="dock.mode.minimized">
+                                <history>
+                                    <mode>dock.mode.minimized</mode>
+                                </history>
+                                <properties>
+                                    <property id="dock.mode.minimized">
+                                        <mode>dock.mode.minimized</mode>
+                                        <root>east</root>
+                                        <applicationDefined>false</applicationDefined>
+                                        <location>
+                                            <property factory="flap dock">
+                                                <index>3</index>
+                                                <holding>false</holding>
+                                                <size>300</size>
+                                                <placeholder>dock.multi.\14\ dockables</placeholder>
+                                            </property>
+                                        </location>
+                                    </property>
+                                </properties>
+                            </entry>
+                            <entry id="multi 0 globes" current="dock.mode.normal">
+                                <history/>
+                                <properties/>
+                            </entry>
+                            <entry id="multi 11 dockables" current="dock.mode.minimized">
+                                <history>
+                                    <mode>dock.mode.minimized</mode>
+                                </history>
+                                <properties>
+                                    <property id="dock.mode.minimized">
+                                        <mode>dock.mode.minimized</mode>
+                                        <root>west</root>
+                                        <applicationDefined>false</applicationDefined>
+                                        <location>
+                                            <property factory="flap dock">
+                                                <index>9</index>
+                                                <holding>false</holding>
+                                                <size>300</size>
+                                                <placeholder>dock.multi.\11\ dockables</placeholder>
+                                            </property>
+                                        </location>
+                                    </property>
+                                </properties>
+                            </entry>
+                            <entry id="multi 15 dockables" current="dock.mode.minimized">
+                                <history>
+                                    <mode>dock.mode.minimized</mode>
+                                </history>
+                                <properties>
+                                    <property id="dock.mode.minimized">
+                                        <mode>dock.mode.minimized</mode>
+                                        <root>east</root>
+                                        <applicationDefined>false</applicationDefined>
+                                        <location>
+                                            <property factory="flap dock">
+                                                <index>3</index>
+                                                <holding>false</holding>
+                                                <size>302</size>
+                                                <placeholder>dock.multi.\15\ dockables</placeholder>
+                                            </property>
+                                        </location>
+                                    </property>
+                                </properties>
+                            </entry>
+                            <entry id="multi 8 dockables" current="dock.mode.minimized">
+                                <history>
+                                    <mode>dock.mode.minimized</mode>
+                                </history>
+                                <properties>
+                                    <property id="dock.mode.minimized">
+                                        <mode>dock.mode.minimized</mode>
+                                        <root>west</root>
+                                        <applicationDefined>false</applicationDefined>
+                                        <location>
+                                            <property factory="flap dock">
+                                                <index>6</index>
+                                                <holding>false</holding>
+                                                <size>314</size>
+                                                <placeholder>dock.multi.\8\ dockables</placeholder>
+                                            </property>
+                                        </location>
+                                    </property>
+                                </properties>
+                            </entry>
+                            <entry id="multi 17 dockables" current="dock.mode.minimized">
+                                <history>
+                                    <mode>dock.mode.minimized</mode>
+                                </history>
+                                <properties>
+                                    <property id="dock.mode.minimized">
+                                        <mode>dock.mode.minimized</mode>
+                                        <root>east</root>
+                                        <applicationDefined>false</applicationDefined>
+                                        <location>
+                                            <property factory="flap dock">
+                                                <index>5</index>
+                                                <holding>false</holding>
+                                                <size>387</size>
+                                                <placeholder>dock.multi.\17\ dockables</placeholder>
+                                            </property>
+                                        </location>
+                                    </property>
+                                </properties>
+                            </entry>
+                            <entry id="multi 4 dockables" current="dock.mode.minimized">
+                                <history>
+                                    <mode>dock.mode.minimized</mode>
+                                </history>
+                                <properties>
+                                    <property id="dock.mode.minimized">
+                                        <mode>dock.mode.minimized</mode>
+                                        <root>west</root>
+                                        <applicationDefined>false</applicationDefined>
+                                        <location>
+                                            <property factory="flap dock">
+                                                <index>2</index>
+                                                <holding>false</holding>
+                                                <size>300</size>
+                                                <placeholder>dock.multi.\4\ dockables</placeholder>
+                                            </property>
+                                        </location>
+                                    </property>
+                                </properties>
+                            </entry>
+                        </dockables>
+                        <modes>
+                            <entry id="dock.mode.maximized"/>
+                        </modes>
+                    </modes>
+                </current>
+            </frontend>
+        </resource>
+        <resource name="ccontrol.preferences"/>
+    </resources>
+    <closed>
+        <panel dockableId="gov.takx.core.view.gui.routes.RoutesPanel:Routes"/>
+        <panel dockableId="gov.takx.core.view.gui.media.library.MediaLibraryPanel:Media"/>
+        <panel dockableId="gov.takx.core.view.gui.files.FilesPanel:Files"/>
+        <panel dockableId="gov.takx.core.view.gui.eventlog.EventLogPanel:Event Log"/>
+        <panel dockableId="gov.takx.core.view.gui.apps.AppsPanel:Plugins"/>
+        <panel dockableId="gov.takx.core.view.gui.takserver.DataPackagePanel:Data Packages"/>
+        <panel dockableId="gov.takx.core.view.gui.connections.ConnectionsPanel:Sensor Feeds"/>
+        <panel dockableId="gov.takx.core.view.gui.DevicesPanel:Devices"/>
+        <panel dockableId="gov.takx.core.view.gui.propertiespanel.PropertiesPanel:Properties"/>
+        <panel dockableId="gov.takx.core.playback.ui.PlaybackView:Playback"/>
+        <panel dockableId="gov.takx.core.view.gui.gazetteer.ContextSearchPanel:City Search"/>
+        <panel dockableId="gov.takx.core.systemmessage.SystemMessagesView:System Messages"/>
+    </closed>
+    <unpinned/>
+    <pinned>
+        <panel dockableId="gov.takx.core.view.gui.pointdropper.PointDropperPanel:Point Dropper"/>
+    </pinned>
+    <screenconfig>
+        <layout value="java.awt.Rectangle[x=0,y=0,width=3440,height=1440]java.awt.Rectangle[x=0,y=0,width=3440,height=1440]java.awt.Rectangle[x=0,y=0,width=3440,height=1440]java.awt.Rectangle[x=0,y=0,width=3440,height=1440]java.awt.Rectangle[x=0,y=0,width=3440,height=1440]java.awt.Rectangle[x=0,y=0,width=3440,height=1440]gov.takx.core.view.gui.docking.DockingLayoutHandler.ScreenTaskbar[BOTTOM,width=0,height=40]"/>
+    </screenconfig>
+</config>

@@ -1,0 +1,35 @@
+plugins {
+    id 'java-platform'
+}
+
+// This project publishes a BOM for consuming projects so they don't have to declare the version on any
+// test library that TAKX provides at runtime.
+
+buildSupport.configurePublishing(project)
+
+rootProject.assemble.dependsOn project.tasks.assemble // Tie in to the top-level lifecycle
+tasks.build.finalizedBy 'publish' // Always publish artifacts after a build
+tasks.publish.dependsOn 'build' // Make sure that artifacts are built before we try to publish if the publish task is run directly
+
+// During script evaluation (even in an afterEvaluate), the configuration dependencies are not available (well,
+// they are empty), so we have to do it during task execution, after 'platform' has finished assembling.
+
+def testImplementationDeps = project(':test').configurations.implementation.dependencies
+def testRuntimeOnlyDeps = project(':test').configurations.runtimeOnly.dependencies
+
+tasks.register('configureConstraints') {
+    doLast {
+        dependencies {
+            constraints {
+                // Declare all of the dependencies from the 'implementation' configuration as our constraints.
+                testImplementationDeps.each {api "${it.group}:${it.name}:${it.version}" }
+
+                // Declare all of the constraints from the 'runtimeOnly' configuration
+                testRuntimeOnlyDeps.each {runtime "${it.group}:${it.name}:${it.version}" }
+            }
+
+        }
+    }
+}
+
+tasks.assemble.dependsOn project(':test').assemble, configureConstraints

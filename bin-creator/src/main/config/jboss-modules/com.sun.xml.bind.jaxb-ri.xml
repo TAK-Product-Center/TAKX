@@ -1,0 +1,11 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="com.sun.xml.bind.jaxb-ri">
+        <match>
+            <includes>
+                <include>
+                    <groupId>com.sun.xml.bind</groupId>
+                </include>
+            </includes>
+        </match>
+    </module>
+</modules>

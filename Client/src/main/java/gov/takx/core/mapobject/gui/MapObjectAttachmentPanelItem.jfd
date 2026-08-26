@@ -1,0 +1,51 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "0dlu, labelcompgap, left:45dlu, labelcompgap, right:22dlu, labelcompgap, right:22dlu"
+			"$rowSpecs": "top:79dlu, linegap, bottom:11dlu, linegap, bottom:10dlu"
+		} ) {
+			name: "this"
+			"maximumSize": new java.awt.Dimension( 172, 172 )
+			"minimumSize": new java.awt.Dimension( 172, 172 )
+			"preferredSize": new java.awt.Dimension( 172, 172 )
+			"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+			"foreground": new java.awt.Color( 255, 255, 255, 255 )
+			"background": new java.awt.Color( 34, 34, 34, 255 )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "fileTypeLabel"
+				"text": "type"
+				"font": new com.jformdesigner.model.SwingDerivedFont( null, 1, 2, false )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+				"gridX": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "fileNameLabel"
+				"text": "label"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+				"gridX": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "sendItemButton"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 3
+				"gridHeight": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "deleteButton"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 7
+				"gridY": 3
+				"gridHeight": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 195, 175 )
+		} )
+	}
+}

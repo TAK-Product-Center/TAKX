@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<toolbarConfiguration>
+    <version>2.0</version>
+    <name>Test</name>
+    <editable>true</editable>
+    <minimized>false</minimized>
+    <deletable>false</deletable>
+    <tabs>
+        <tab>
+            <displayText>Home</displayText>
+            <type>HOME</type>
+            <id>7731962f-b19e-59ff-b22c-1be46abc4b02</id>
+            <visible>false</visible> <!-- Home tab hidden for testing purposes -->
+            <hiddenByUser>false</hiddenByUser>
+            <components>
+                <button>
+                    <id>af0fdadf-824f-5ca2-b1dc-da5d1c492ddc</id>
+                    <type>SYSTEM_MESSAGES</type>
+                    <displayText>System Messages</displayText>
+                </button>
+            </components>
+            <excludedIds/>
+        </tab>
+    </tabs>
+</toolbarConfiguration>

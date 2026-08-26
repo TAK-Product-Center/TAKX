@@ -1,0 +1,80 @@
+// Gradle script to apply a standard configuration to running tests
+
+dependencies {
+    testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "gov.tak:cdi-blacksmith:$blacksmithVersion"
+
+    // Add our custom preferences factory
+    testImplementation project(':bootstrap').sourceSets.preferences.output.classesDirs
+
+    testRuntimeOnly files("$deploymentConfDir")
+    testRuntimeOnly "org.apache.logging.log4j:log4j-slf4j2-impl:$log4jVersion"
+}
+
+test {
+    useJUnitPlatform()
+
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat = 'full'
+    }
+
+    // Configure the JVM that will run the tests
+
+    String bootstrapJar = project(':bootstrap').jar.archiveFile.get() // The path to the bootstrap jar file
+
+    // If a log4j2.xml is available in the project dir, then use it, otherwise rely on test resources
+    def localLog4jConfig = file('log4j2.xml')
+
+    if (localLog4jConfig.exists()) {
+        String relativePath = deploymentBinDir.toPath().relativize(localLog4jConfig.toPath()).toString()
+        systemProperty('log4j2.configurationFile', relativePath)
+    }
+
+    workingDir = deploymentBinDir
+    maxHeapSize = '1g'
+    enableAssertions = true
+    jvmArgs += ['-XX:TieredStopAtLevel=1', '-XX:-OmitStackTraceInFastThrow', "-javaagent:$bootstrapJar",
+                "--add-opens=java.base/java.lang=ALL-UNNAMED"]
+
+    systemProperty('java.library.path', nativeLibPath)
+    systemProperty('java.awt.headless', 'true')
+    systemProperty('jdk.attach.allowAttachSelf', 'true')
+
+    // Resolves issues with JIT 'CodeCache is full' messages.
+    // Effectively disables class generation for reflection optimization.
+    systemProperty("sun.reflect.inflationThreshold", "1500000")
+
+    if (os.isLinux()) systemProperty('java.security.egd', 'file:/dev/./urandom')
+
+    logger.info "jvmArgs      : $jvmArgs"
+    logger.info("nativeLibPath: $nativeLibPath")
+    logger.info "sysProps     : $systemProperties"
+
+    dependsOn ':assemble'
+    dependsOn 'cleanupAtStart' // Ensure that no prior ProjectData messes with the current test run
+    finalizedBy 'cleanupAtEnd' // And, erase it when we're through
+}
+
+task cleanupAtStart {
+    doLast { deleteProjectData() }
+}
+
+task cleanupAtEnd {
+    doLast { deleteProjectData() }
+}
+
+void deleteProjectData() {
+    // Tests put their ProjectData dir in the temp directory
+    project.delete new File(System.getProperty("java.io.tmpdir"), 'ProjectData')
+}
+
+// For now, we always want to run the tests.  There are portions of the build (like the modules generation)
+// that can affect our test, but are not detected by the normal gradle incremental build settings.
+
+tasks.withType(Test).configureEach { it.outputs.upToDateWhen { false } }
+
+// Use -Pcoverage to enable code coverage
+if (project.hasProperty('coverage')) apply from: rootProject.file('gradle/configureJacoco.gradle')

@@ -1,0 +1,24 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="com.squareup.okio">
+        <match>
+            <includes>
+                <include>
+                    <groupId>com.squareup.okio</groupId>
+                </include>
+            </includes>
+        </match>
+
+        <!-- Due to the way the Kotlin support libraries are published, as several layers of dependencies, we need
+             to specify a direct dependency here in order for things to work properly.
+
+             There might be a more "surgical" approach, but it would require modifications to several modules
+             in order to specify that their dependencies are to be exported.  This fix is more expedient, and reduces
+             the number of module descriptor files we would need to create.
+         -->
+        <apply-to-module>
+            <dependencies>
+                <module name="org.jetbrains.kotlin.kotlin-stdlib"/>
+            </dependencies>
+        </apply-to-module>
+    </module>
+</modules>

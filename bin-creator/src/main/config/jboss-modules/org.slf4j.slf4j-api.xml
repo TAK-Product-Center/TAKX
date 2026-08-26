@@ -1,0 +1,17 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="org.slf4j.slf4j-api">
+        <match>
+            <includes>
+                <include>
+                    <groupId>org.slf4j</groupId>
+                </include>
+            </includes>
+        </match>
+
+        <apply-to-module>
+            <dependencies>
+                <module name="log4j" services="export"/>
+            </dependencies>
+        </apply-to-module>
+    </module>
+</modules>

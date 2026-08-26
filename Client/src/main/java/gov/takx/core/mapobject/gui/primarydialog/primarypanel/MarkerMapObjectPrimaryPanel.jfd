@@ -1,0 +1,77 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridBagLayout ) {
+			"$columnSpecs": "0, 0, 0"
+			"$rowSpecs": "0, 0, 0, 0, 0, 0"
+			"$hGap": 5
+			"$vGap": 5
+			"$alignLeft": true
+			"$alignTop": true
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "styleOptionsLabel"
+				"text": "Style Options:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"insets": new java.awt.Insets( 5, 5, 0, 0 )
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "showHeadingIndicatorCheckBox"
+				"text": "Show heading indicator"
+				"toolTipText": "Shows heading indicator aligned to track heading"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "styleCheckBoxActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 1
+				"insets": new java.awt.Insets( 5, 5, 0, 0 )
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "shortenTitlesCheckBox"
+				"text": "Shorten titles"
+				"toolTipText": "Shorten long titles with marquee"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "styleCheckBoxActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 1
+				"gridx": 1
+				"insets": new java.awt.Insets( 0, 5, 0, 0 )
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "smoothRotationsCheckBox"
+				"text": "Smooth rotations"
+				"toolTipText": "The marker will smoothly interpolate between rotation changes"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "styleCheckBoxActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 1
+				"insets": new java.awt.Insets( 0, 5, 0, 0 )
+				"gridx": 2
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "smoothMovementsCheckBox"
+				"text": "Smooth movements"
+				"toolTipText": "The marker will smoothly interpolate between point changes"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "styleCheckBoxActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 2
+				"insets": new java.awt.Insets( 0, 5, 5, 0 )
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "alertCheckBox"
+				"text": "Alert"
+				"toolTipText": "Adds an additional layer to the marker"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "styleCheckBoxActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jformdesigner.runtime.GridBagConstraintsEx ) {
+				"gridy": 2
+				"gridx": 1
+				"insets": new java.awt.Insets( 0, 5, 0, 0 )
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

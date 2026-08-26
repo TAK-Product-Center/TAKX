@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<event version='2.0'
+       uid='GeoChat.ANDROID-R32M700HZ2X.67109f0a-0b38-4301-bae7-9d1e39010497.e8b0ead5-fd2b-41f0-84d0-5c494525b6db'
+       type='b-t-f' time='2003-08-25T21:51:47.875Z' start='2003-08-25T21:51:47.875Z' stale='2003-08-26T21:51:47.875Z'
+       how='h-g-i-g-o'>
+    <point lat="33.10757216" lon="-116.30770988" hae="158.884" ce="4.0" le="9999999.0"/>
+    <detail>
+        <__chat parent='UserGroups' deleteChild='9df2d5f7-0f64-424e-b929-33abc1e914f9' groupOwner='true'
+                messageId='2c5f5cd7-f44d-4094-ae97-0a5ea063285c' chatroom='A1' id='67109f0a-0b38-4301-bae7-9d1e39010497'
+                senderCallsign='OPTIMUS ATAK'>
+            <chatgrp uid0='ANDROID-R32M700HZ2X' uid1='a6848264-d5e2-58e2-adec-fec4d0ee77b5'
+                     id='67109f0a-0b38-4301-bae7-9d1e39010497'/>
+            <hierarchy>
+                <group uid='UserGroups' name='Groups'>
+                    <group uid='67109f0a-0b38-4301-bae7-9d1e39010497' name='A1'>
+                        <contact uid='ANDROID-R32M700HZ2X' name='OPTIMUS ATAK'/>
+                        <contact uid='a6848264-d5e2-58e2-adec-fec4d0ee77b5' name='OPTIMUS TAKX'/>
+                    </group>
+                </group>
+            </hierarchy>
+        </__chat>
+        <link uid='ANDROID-R32M700HZ2X' type='a-f-G-U-C' relation='p-p'/>
+        <__serverdestination destinations='192.168.1.251:4242:tcp:ANDROID-R32M700HZ2X'/>
+        <remarks source='BAO.F.ATAK.ANDROID-R32M700HZ2X' time='2003-08-25T21:51:47.875Z'>Deleted group: Aw</remarks>
+    </detail>
+</event>

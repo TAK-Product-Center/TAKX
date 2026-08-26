@@ -1,0 +1,24 @@
+<?xml version='1.0' standalone='yes'?>
+<!-- test updating of existing ellipse shape -->
+<event version="2.0" uid="31c57f66-d135-4180-a771-f2ede16629dc" type="u-d-c-e" time="2021-04-15T18:42:26.83Z"
+       start="2021-04-15T18:42:26.83Z" stale="2021-04-22T18:42:26.83Z" how="h-g-i-g-o">
+    <point lat="25.0" lon="-90.0" hae="9999999" ce="9999999" le="9999999"/>
+    <detail>
+        <shape>
+            <ellipse major="35000.0" minor="25000.0" angle="115"/>
+            <link uid="21c57f66-d135-4180-a771-f2ede16629dc.Style" type="b-x-KmlStyle" relation="p-c">
+                <Style>
+                    <LineStyle>
+                        <color>feeeee00</color>
+                        <width>8.0</width>
+                    </LineStyle>
+                    <PolyStyle>
+                        <color>96feeeee</color>
+                    </PolyStyle>
+                </Style>
+            </link>
+        </shape>
+        <labels_on value="true"/>
+        <contact callsign="Ellipse 1"/>
+    </detail>
+</event>

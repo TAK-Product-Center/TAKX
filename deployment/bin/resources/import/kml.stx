@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<stx:transform xmlns:stx="http://stx.sourceforge.net/2002/ns"
+               xmlns:kml20="http://earth.google.com/kml/2.0"
+               xmlns:kml22="http://earth.google.com/kml/2.2"
+               xmlns:ogc22="http://www.opengis.net/kml/2.2"
+               exclude-result-prefixes="#all"
+               output-method="xml"
+               version="1.0">
+
+    <!-- These parameters can be passed in by the program running the transformation to override the
+  default settings -->
+    <stx:param name="family" required="no">KML</stx:param>
+    <stx:param name="type" required="no">KML</stx:param>
+    <stx:param name="version" required="no">1.0.0</stx:param>
+    <stx:param name="messageType" required="no">KML_PLACEMARK</stx:param>
+    <stx:param name="unitId" required="no"/>
+
+    <!-- KML comes in a few different versions, each with it's own namespace. We're dealing with all the
+         versions here by using a different prefix for each namespace -->
+
+    <stx:template match="kml22:kml |
+                       kml20:kml |
+                       ogc22:kml |
+                       kml">
+        <raptordata>
+
+            <mapObjectDefinition>
+                <family>
+                    <stx:value-of select="$family"/>
+                </family>
+                <type>
+                    <stx:value-of select="$type"/>
+                </type>
+                <version>
+                    <stx:value-of select="$version"/>
+                </version>
+                <dataStructure>
+                    <structType>
+                        <stx:value-of select="$messageType"/>
+                    </structType>
+                    <field name="name" type="string"/>
+                    <field name="description" type="string"/>
+                    <field name="visible" type="boolean"/>
+                </dataStructure>
+            </mapObjectDefinition>
+
+            <mapObject>
+                <family>
+                    <stx:value-of select="$family"/>
+                </family>
+                <type>
+                    <stx:value-of select="$type"/>
+                </type>
+                <version>
+                    <stx:value-of select="$version"/>
+                </version>
+                <id>
+                    <stx:value-of select="$unitId"/>
+                </id>
+            </mapObject>
+
+            <stx:process-children/>
+        </raptordata>
+    </stx:template>
+
+    <stx:template match="kml22:Placemark |
+                       kml20:Placemark |
+                       ogc22:Placemark |
+                       Placemark">
+        <dataMessage>
+            <mapObjectFamily>
+                <stx:value-of select="$family"/>
+            </mapObjectFamily>
+            <messageType>
+                <stx:value-of select="$messageType"/>
+            </messageType>
+            <messageVersion>
+                <stx:value-of select="$version"/>
+            </messageVersion>
+            <mapObjectType>
+                <stx:value-of select="$type"/>
+            </mapObjectType>
+            <mapObjectVersion>
+                <stx:value-of select="$version"/>
+            </mapObjectVersion>
+            <mapObjectId>
+                <stx:value-of select="$unitId"/>
+            </mapObjectId>
+
+            <stx:process-children/>
+        </dataMessage>
+    </stx:template>
+
+    <stx:template match="kml22:Point/kml22:coordinates/text() |
+                       kml20:Point/kml20:coordinates/text() |
+                       ogc22:Point/ogc22:coordinates/text() |
+                       Point/coordinates/text()">
+        <stx:variable name="point" select="tokenize(., ',')"/>
+
+        <lng>
+            <stx:value-of select="item-at($point, 1)"/>
+        </lng>
+        <lat>
+            <stx:value-of select="item-at($point, 2)"/>
+        </lat>
+
+        <stx:if test="count($point) > 2">
+            <stx:variable name="elevation" select="item-at($point, 3)"/>
+
+            <stx:if test="string-length(normalize-space($elevation)) > 0">
+                <elevation>
+                    <stx:value-of select="$elevation"/>
+                </elevation>
+            </stx:if>
+        </stx:if>
+    </stx:template>
+
+    <stx:template match="kml22:ExtendedData/kml22:SchemaData/kml22:SimpleData[@name='Motion']/text() |
+                       kml20:ExtendedData/kml20:SchemaData/kml20:SimpleData[@name='Motion']/text() |
+                       ogc22:ExtendedData/ogc22:SchemaData/ogc22:SimpleData[@name='Motion']/text() |
+                       kml22:ExtendedData/kml22:Data[@name='Motion']/kml22:value/text() |
+                       ExtendedData/SchemaData/SimpleData[@name='Motion']/text() |
+                       ExtendedData/Data[@name='Motion']/text()">
+        <motion>
+            <stx:value-of select="."/>
+        </motion>
+    </stx:template>
+
+    <stx:template match="kml22:ExtendedData/kml22:SchemaData/kml22:SimpleData[@name='Speed']/text() |
+                       kml20:ExtendedData/kml20:SchemaData/kml20:SimpleData[@name='Speed']/text() |
+                       ogc22:ExtendedData/ogc22:SchemaData/ogc22:SimpleData[@name='Speed']/text() |
+                       kml22:ExtendedData/kml22:Data[@name='Speed']/kml22:value/text() |
+                       ExtendedData/SchemaData/SimpleData[@name='Speed']/text() |
+                       ExtendedData/Data[@name='Speed']/text()">
+        <speed>
+            <stx:value-of select="."/>
+        </speed>
+    </stx:template>
+
+    <stx:template match="kml22:Placemark/kml22:name/text() |
+                       kml20:Placemark/kml20:name/text() |
+                       ogc22:Placemark/ogc22:name/text() |
+                       Placemark/name/text()">
+        <field name="name" type="string">
+            <stx:value-of select="."/>
+        </field>
+    </stx:template>
+
+    <stx:template match="kml22:Placemark/kml22:description/text() |
+                       kml20:Placemark/kml20:description/text() |
+                       ogc22:Placemark/ogc22:description/text() |
+                       Placemark/description/text()">
+        <field name="description" type="string">
+            <stx:value-of select="."/>
+        </field>
+    </stx:template>
+
+    <stx:template match="kml22:Placemark/kml22:visible/text() |
+                       kml20:Placemark/kml20:visible/text() |
+                       ogc22:Placemark/ogc22:visible/text() |
+                       Placemark/visible/text()">
+        <field name="visible" type="string">
+            <stx:value-of select="."/>
+        </field>
+    </stx:template>
+
+    <stx:template match="kml22:TimeStamp/kml22:when/text() |
+                       kml20:TimeStamp/kml20:when/text() |
+                       ogc22:TimeStamp/ogc22:when/text() |
+                       TimeStamp/when/text()">
+        <time>
+            <stx:value-of select="."/>
+        </time>
+    </stx:template>
+
+</stx:transform>

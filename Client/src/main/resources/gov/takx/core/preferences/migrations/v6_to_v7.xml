@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="6" to="7">
+    <add refXpath="node[@name='program']/map/entry[@key='EnableIndividualContactDeletion']" where="after">
+        <!-- Percent scaling for Explorer Tree text font.  Default is 130% -->
+        <entry key="explorerTextSizeScalingPercent" value="130"/>
+    </add>
+</migration>

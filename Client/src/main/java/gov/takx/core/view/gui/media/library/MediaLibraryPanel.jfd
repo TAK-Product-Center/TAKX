@@ -1,0 +1,173 @@
+JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "fill:default:grow"
+		} ) {
+			name: "this"
+			"preferredSize": new java.awt.Dimension( 300, 400 )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.CardLayout ) ) {
+				name: "contentPanel"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "progressPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JProgressBar" ) {
+						name: "progressBar"
+						"indeterminate": true
+						"stringPainted": true
+						"string": "Retrieving video list"
+						"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 2, false )
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "North"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "progressCard"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "selectionPanel"
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "selectionCard"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default:grow"
+					"$rowSpecs": "fill:default, linegap, fill:default:grow"
+				} ) {
+					name: "libraryPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+						"$columnSpecs": "default:grow, default, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, default, labelcompgap, left:default"
+						"$rowSpecs": "default"
+					} ) {
+						name: "libraryButtonPanel"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "libraryAddButton"
+							"toolTipText": "Add item to library"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "libraryAddButtonActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 2
+							"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "libraryEditButton"
+							"enabled": false
+							"toolTipText": "Edit selected item"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "libraryEditButtonActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 4
+							"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "libraryRemoveButton"
+							"toolTipText": "Remove selected item from library"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "libraryRemoveButtonActionPerformed", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 6
+							"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "libraryOpenButton"
+							"toolTipText": "Open selected item in media player"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "createMediaPlayerForSelectedObject", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 8
+							"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "sendAsCotButton"
+							"toolTipText": "Send this media as CoT"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "sendAsCotButtonClicked", false ) )
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+							"gridX": 10
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "downloadWrapper"
+						}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+							"gridX": 12
+							"gridY": 1
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"vAlign": sfield com.jgoodies.forms.layout.CellConstraints CENTER
+					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "tableScrollPane"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "gov.takx.core.view.gui.media.library.table.MediaLibraryJXTable" ) {
+							name: "libraryTable"
+							"columnControlVisible": true
+							"model": new com.jformdesigner.model.SwingTableModel( new java.util.Vector {
+								add( new java.util.Vector {
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+									add( null )
+								} )
+							}, new java.util.Vector {
+								add( "Name" )
+								add( "Path/URL" )
+								add( "Type" )
+								add( "Creation Time" )
+								add( "Duration/Size" )
+								add( "Timeline" )
+								add( "Color" )
+							}, new java.util.Vector {
+								add( class java.lang.String )
+								add( class java.lang.String )
+								add( class java.lang.String )
+								add( class java.util.Date )
+								add( class java.lang.Double )
+								add( null )
+								add( null )
+							}, new java.util.Vector {
+								add( false )
+								add( false )
+								add( false )
+								add( false )
+								add( false )
+								add( false )
+								add( false )
+							}, new java.util.Vector {
+								add( new com.jformdesigner.model.SwingTableColumn( null, 100, 100, 0, true ) )
+								add( new com.jformdesigner.model.SwingTableColumn( null, 200, 50, 0, true ) )
+								add( null )
+								add( null )
+								add( new com.jformdesigner.model.SwingTableColumn( null, 100, 100, 0, true ) )
+								add( null )
+								add( null )
+							} )
+							"preferredScrollableViewportSize": new java.awt.Dimension( 200, 360 )
+						} )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 3
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "libraryCard"
+				} )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 430, 305 )
+		} )
+	}
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<event version="2.0"
+       uid="GeoChat.S-1-5-21-2739727742-677502536-3530350016-1000.ebc53795-403f-540f-99c6-983696f0bc16.473ea506-f47c-4541-baa0-4c3e2c9a0913"
+       type="b-t-f" time="2022-08-23T20:32:17.770Z" start="2022-08-23T20:32:17.770Z" stale="2022-08-24T20:32:17.770Z"
+       how="h-g-i-g-o">
+    <point lat="0.00000000" lon="0.00000000" hae="0.00000000" ce="9999999" le="9999999"/>
+    <detail>
+        <__chat id="ebc53795-403f-540f-99c6-983696f0bc16" chatroom="PEPSI" senderCallsign="OPTIMUS WT"
+                groupOwner="false" messageId="473ea506-f47c-4541-baa0-4c3e2c9a0913">
+            <chatgrp id="ebc53795-403f-540f-99c6-983696f0bc16" uid0="S-1-5-21-2739727742-677502536-3530350016-1000"
+                     uid1="ebc53795-403f-540f-99c6-983696f0bc16"/>
+        </__chat>
+        <link uid="S-1-5-21-2739727742-677502536-3530350016-1000" type="a-f-G-U-C-I" relation="p-p"/>
+        <remarks source="BAO.F.WinTAK.S-1-5-21-2739727742-677502536-3530350016-1000"
+                 sourceID="S-1-5-21-2739727742-677502536-3530350016-1000" to="ebc53795-403f-540f-99c6-983696f0bc16"
+                 time="2022-08-23T20:32:17.77Z">Roger
+        </remarks>
+    </detail>
+</event>

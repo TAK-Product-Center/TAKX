@@ -1,0 +1,75 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "panel1"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane1"
+					"viewportBorder": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"horizontalScrollBarPolicy": 31
+					add( new FormComponent( "javax.swing.JEditorPane" ) {
+						name: "descriptionEditorPane"
+						"contentType": "text/html"
+						"editable": false
+						"background": sfield java.awt.Color white
+						"foreground": sfield java.awt.Color black
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default, labelcompgap, default:grow, 4dlu, right:default"
+					"$rowSpecs": "default"
+				} ) {
+					name: "panel2"
+					"border": static com.jgoodies.forms.factories.Borders createEmptyBorder( "2dlu, 2dlu, 4dlu, 0dlu" )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "locationLabel"
+						"text": "Location:"
+						"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 1, false )
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "locationTextField"
+						"editable": false
+						"font": new com.jformdesigner.model.SwingDerivedFont( null, 0, 1, false )
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 1
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "copyLocationButton"
+						"toolTipText": "Copy location"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "copyLocation", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 5
+						"gridY": 1
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "North"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<event version="2.0"
+       uid="GeoChat.ANDROID-R32M700HZ2X.ebc53795-403f-540f-99c6-983696f0bc16.7d073764-3871-4542-8210-da47e40ea166"
+       type="b-t-f" time="2022-08-17T20:00:41.048Z" start="2022-08-17T20:00:41.048Z" stale="2022-08-18T20:00:41.048Z"
+       how="h-g-i-g-o">
+    <point lat="33.10757216" lon="-116.30770988" hae="95.78400000" ce="4.00000000" le="9999999"/>
+    <detail>
+        <__chat parent="RootContactGroup" groupOwner="false" messageId="7d073764-3871-4542-8210-da47e40ea166"
+                chatroom="PEPSI" id="ebc53795-403f-540f-99c6-983696f0bc16" senderCallsign="OPTIMUS ATAK">
+            <chatgrp uid0="ANDROID-R32M700HZ2X" uid1="ebc53795-403f-540f-99c6-983696f0bc16"
+                     id="ebc53795-403f-540f-99c6-983696f0bc16"/>
+        </__chat>
+        <link uid="ANDROID-R32M700HZ2X" type="a-f-G-U-C" relation="p-p"/>
+        <__serverdestination destinations="192.168.1.252:4242:tcp:ANDROID-R32M700HZ2X"/>
+        <remarks source="BAO.F.ATAK.ANDROID-R32M700HZ2X" to="ebc53795-403f-540f-99c6-983696f0bc16"
+                 time="2022-08-17T20:00:41.048Z">at breach
+        </remarks>
+    </detail>
+</event>

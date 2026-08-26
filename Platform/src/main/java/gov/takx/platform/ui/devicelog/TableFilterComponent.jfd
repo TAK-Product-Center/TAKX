@@ -1,0 +1,61 @@
+JFDML JFormDesigner: "7.0.5.1.409" Java: "11.0.12" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default, labelcompgap, default, labelcompgap, default:grow, labelcompgap, default, labelcompgap, default"
+			"$rowSpecs": "default"
+		} ) {
+			name: "this"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "lblFilter"
+				"text": "Filter:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormComponent( "gov.takx.platform.ui.devicelog.FilterColumnSelector" ) {
+				name: "filterColumnSelector"
+				"toolTipText": "Select a column to search against"
+				"model": new javax.swing.DefaultComboBoxModel {
+					selectedItem: "None"
+					addElement( "None" )
+				}
+				"name": "filterColumnSelector"
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 1
+			} )
+			add( new FormComponent( "javax.swing.JTextField" ) {
+				name: "txtSearchString"
+				"toolTipText": "Enter search text"
+				"name": "searchTextField"
+				addEvent( new FormEvent( "javax.swing.event.CaretListener", "caretUpdate", "txtSearchStringCaretUpdate", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 5
+				"gridY": 1
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "regexCheckBox"
+				"text": "Regex"
+				"toolTipText": "Allows using Regular Expression (Regex) searches"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "regexCheckBoxActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 7
+				"gridY": 1
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "btnClearSearch"
+				"toolTipText": "Clear Search"
+				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "btnClearSearchActionPerformed", false ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 9
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 400, 300 )
+		} )
+	}
+}

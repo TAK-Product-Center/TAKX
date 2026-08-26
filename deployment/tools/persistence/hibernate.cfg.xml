@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='utf-8'?><!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+    <session-factory>
+        <property name="hibernate.archive.autodetection">class</property>
+
+        <property name="dialect">org.hibernate.dialect.HSQLDialect</property>
+
+        <property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>
+
+        <!--
+         Use Hibernate's "component path" naming for handling multiple instances of embeddable types in a single
+         entity, which happens in our ShapeMapObject hierarchy.
+         -->
+        <property name="hibernate.implicit_naming_strategy">component-path</property>
+
+        <!-- These mappings are needed so that the schema export in deployment/build.gradle will work -->
+        <mapping class="gov.takx.dataservices.persist.DataField"/>
+        <mapping class="gov.takx.dataservices.persist.IconMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.MapEntity"/>
+        <mapping class="gov.takx.dataservices.persist.MapObject"/>
+        <mapping class="gov.takx.dataservices.persist.DeletedMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.Structure"/>
+        <mapping class="gov.takx.dataservices.persist.IndexDefinition"/>
+        <mapping class="gov.takx.dataservices.persist.PluginState"/>
+        <mapping class="gov.takx.dataservices.persist.Connection"/>
+        <mapping class="gov.takx.dataservices.persist.CustomDataMonitor"/>
+        <mapping class="gov.takx.dataservices.persist.FileMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.AnnotationMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.FlatAnnotationMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.AShapeMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.MarkerMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.MultiPolylineMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.PointMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.RouteMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.ARegularShapeMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.ShapeRectangleMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.ShapeSquareMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.ShapeCircleMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.ShapeEllipseMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.ShapePathMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.ShapePolygonMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.ShapeRangeFanMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.ShapeBullseyeMapObject"/>
+        <mapping class="gov.takx.dataservices.persist.RaptorLayer"/>
+        <mapping class="gov.takx.dataservices.persist.RaptorEventLog"/>
+        <mapping class="gov.takx.dataservices.persist.PersistableSurfaceStructure"/>
+        <mapping class="gov.takx.dataservices.persist.PersistableLine"/>
+        <mapping class="gov.takx.dataservices.persist.PersistableExtrudedLine"/>
+        <mapping class="gov.takx.dataservices.persist.PersistablePolygon"/>
+        <mapping class="gov.takx.dataservices.persist.PersistableExtrudedPolygon"/>
+        <mapping class="gov.takx.dataservices.persist.PersistableShapefileShape"/>
+        <mapping class="gov.takx.dataservices.persist.TrackInfo"/>
+        <mapping class="gov.takx.dataservices.persist.TrackStyleDefinition"/>
+        <mapping class="gov.takx.dataservices.persist.ConnectingLineDefinition"/>
+        <mapping class="gov.takx.dataservices.persist.AMedia"/>
+        <mapping class="gov.takx.dataservices.persist.Image"/>
+        <mapping class="gov.takx.dataservices.persist.Video"/>
+        <mapping class="gov.takx.dataservices.persist.Audio"/>
+        <mapping class="gov.takx.core.chat.ChatMessage"/>
+        <mapping class="gov.tak.platform.contact.GroupContact"/>
+        <mapping class="gov.takx.core.chat.Conversation"/>
+
+        <mapping class="gov.takx.core.persist.breadcrumb.Breadcrumb"/>
+        <mapping class="gov.takx.core.persist.breadcrumb.Track"/>
+    </session-factory>
+
+</hibernate-configuration>

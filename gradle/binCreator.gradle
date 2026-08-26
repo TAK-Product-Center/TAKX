@@ -1,0 +1,248 @@
+/**
+ * This script is responsible for creating and copying all the artifacts into the "bin" directory so that TAKX can run.
+ *
+ * It has been pulled out into a separate script to allow it to be composed into an artifact that is published
+ * when we build.  This allows the installer scripts to access the exact set of dependencies and configurations
+ * needed so that it can construct the modules definitions when it builds an installer.
+ *
+ * Several properties need to be defined prior to applying this script:
+ * <ul>
+ *     <li><tt>deploymentBinDir</tt> - the location of the 'bin' dir being constructed</li>
+ *     <li><tt>modulesConfigDir</tt> - the location of the module configurations directory (resources in the main build, or an extracted artifact directory)</li>
+ *     <li><tt>customModulesSourceDir</tt> - the location of the custom modules 'source' directory (resources in the main build, or an extracted artifact directory)</li>
+ * </ul>
+ *
+ * The primary task created by this script is 'createBin' and it should be used to tie it in to task
+ * dependencies of the consuming build script.
+ */
+
+import groovy.xml.MarkupBuilder
+import groovy.xml.XmlSlurper
+import org.apache.tools.ant.filters.ReplaceTokens
+
+apply plugin: 'gov.raptor.gradle.plugins.jboss-modules'
+
+ext {
+    // Local build artifact locations
+    def buildDir = getLayout().getBuildDirectory().asFile.get()
+    generatedModulesDir = new File(buildDir, 'generated-modules')
+    customModulesDir = new File(buildDir, 'custom-modules')
+    allLibsModulesFile = new File(customModulesDir, 'all-libs/main/module.xml')
+
+    // Target copy/extraction locations in "bin"
+    resourcesDir = new File(deploymentBinDir, 'resources')
+    takAssetsDir = new File(resourcesDir, 'tak-assets')
+    nativeDir = new File(deploymentBinDir, 'native')
+    deploymentLibDir = new File(deploymentBinDir, 'lib') // Must re-declare locally so the takx-installer doesn't have to define this
+    deploymentModulesDir = new File(deploymentBinDir, 'modules')
+
+    logger.info "deploymentBinDir: $deploymentBinDir"
+    logger.info "modulesConfigDir: $modulesConfigDir"
+    logger.info "customModulesSourceDir: $customModulesSourceDir"
+    logger.info "resourcesDir: $resourcesDir"
+    logger.info "deploymentModulesDir: $deploymentModulesDir"
+}
+
+configurations {
+    globalLibDependencies { transitive = false }
+}
+
+// The client and platform dependencies have been broken out into files that are then published (along with this
+// script) for use in creating the TAKX base installer.  This slightly odd application logic is necessary because
+// these scripts are extracted out to an arbitrary temp directory during installer creation, so that build applies
+// clientDependencies.gradle and platformDependencies.gradle directly.
+
+def clientDeps = rootProject.file('gradle/clientDependencies.gradle')
+if (clientDeps.exists()) apply from: clientDeps
+
+def platformDeps = rootProject.file('gradle/platformDependencies.gradle')
+if (platformDeps.exists()) apply from: platformDeps
+
+dependencies {
+    globalLibDependencies "gov.nasa:worldwind:$worldwindVersion"
+
+    // Pull in the platform-specific natives needed for JOGL, gluegen, and JOCL
+
+    def jogampClassifiers = ['natives-linux-amd64', 'natives-macosx-universal', 'natives-windows-amd64']
+
+    jogampClassifiers.forEach { cls -> runtimeOnly "org.jogamp.jogl:jogl-all:$joglVersion:$cls" }
+    jogampClassifiers.forEach { cls -> runtimeOnly "org.jogamp.gluegen:gluegen-rt:$joglVersion:$cls" }
+    jogampClassifiers.forEach { cls -> runtimeOnly "org.jogamp.jocl:jocl:$joclVersion:$cls" }
+
+    // There exists a ffmpeg-platform dependency that brings in support for 12 different platforms, but at a
+    // cost of 15 MB each, we include only those platforms we support.
+    ['linux-x86_64', 'macosx-x86_64', 'windows-x86_64']
+            .forEach { cls -> runtimeOnly "org.bytedeco:ffmpeg:$ffmpegVersion:$cls" }
+
+    // For Bootstrap
+    implementation "org.aspectj:aspectjweaver:$aspectjVersion"
+}
+
+/**
+ * Configure the 'generateJbossModules' task.
+ */
+jbossmodules {
+    verbose = false
+    globalModuleDependency = 'jdk'
+    targetFolder = generatedModulesDir
+
+    modules = [modulesConfigDir] // Needs a list
+
+    dependencyExcludes {
+        exclude 'asm'
+        exclude 'gov.(nasa|takx)'
+        exclude 'org.jboss.logging:jboss-logging-annotations'
+        exclude 'org.jboss.modules'
+        exclude 'org.jboss.spec.javax.(annotation|el|interceptor)'
+        exclude 'javax.annotation'
+        exclude 'com.fasterxml.jackson:jackson-bom'
+        exclude 'junit'
+        exclude 'xml-apis'
+    }
+}
+
+/**
+ * Copy the hand-built (custom) modules.xml files from resources into build.  Filtering is applied so we can
+ * get the platform version number into the bootstrap module.
+ */
+tasks.register('copyCustomModules', Copy) {
+    // Use buildVersion so a snapshot build when the platformVersion.txt file contains things like '-API' correctly
+    // results in a -SNAPSHOT version reference in the bootstrap module definition.
+    String version = buildVersion.toString()
+
+    inputs.property('platformVersion', version) // Ensure we re-process when the version changes
+
+    from customModulesSourceDir
+    into customModulesDir
+    filter(ReplaceTokens, tokens: ['platformVersion': version])
+}
+
+/**
+ * Construct the 'all-libs' compatibility module which includes dependencies on all other modules.
+ */
+tasks.register('buildAllLibsModule') {
+    dependsOn 'generateJbossModules'
+    inputs.dir generatedModulesDir
+    outputs.file allLibsModulesFile
+
+    doLast {
+        def moduleList = []
+
+        // Collect the module names from the module.xml files
+
+        generatedModulesDir.eachFileRecurse { File file ->
+
+            if (file.getName() == "module.xml") {
+                //noinspection GroovyAccessibility
+                moduleList << new XmlSlurper().parseText(file.text).@name
+            }
+        }
+
+        def sw = new StringWriter()
+        def xml = new MarkupBuilder(sw)
+        xml.'module'(xmlns: 'urn:jboss:module:1.0', name: 'all-libs') {
+            resources {}
+
+            xml.dependencies {
+                moduleList.each {
+                    xml.module(name: it, export: 'true', services: 'export')
+                }
+            }
+        }
+
+        allLibsModulesFile.getParentFile().mkdirs()
+        allLibsModulesFile.text = sw
+    }
+}
+
+// Copy our custom and generated modules to bin
+tasks.register('copyModulesToBin', Copy) {
+    dependsOn buildAllLibsModule
+    into deploymentModulesDir
+
+    from generateJbossModules
+    from copyCustomModules
+
+    /*
+     * This action validates that the total size of the generated modules directory is under a reasonable size.
+     * The chosen size allows for a 10% growth from the size as of 2023/03/17, which was ~240MB.
+     *
+     * We have historically had problems where mistakes in the dependency specifications pull in an unexpected
+     * set of transitives.  This check is meant to catch that potential error and alert the developer to go check
+     * on the changes they've made.
+     *
+     * Note: when constructing an installer, additional files are downloaded, which blow the normal limit on this
+     * test.  So, we avoid making the test if we detect that we're being invoked from the installer project.
+     */
+    if (!deploymentBinDir.getAbsolutePath().contains('build')) {
+        doLast {
+            int limit = 272
+            int sizeInMb = deploymentModulesDir.directorySize() / 1024 / 1024
+            logger.info "Generated modules size: ${sizeInMb} MB"
+
+            if (sizeInMb > limit) {
+                logger.error "The size of the generated deployment/bin/modules is too large; $sizeInMb > $limit MB"
+                logger.error "If this was intentional, you'll need to update this task to set a new upper limit"
+
+                throw new GradleException("Generated modules is too large")
+            }
+        }
+    }
+}
+
+/**
+ * Copy our global libs to the lib directory.
+ */
+tasks.register('copyGlobalLibsToBin', Copy) {
+    from configurations.globalLibDependencies
+    into deploymentLibDir
+}
+
+// Create all the zip extraction tasks up front.
+
+def shapeFilesZipTask = createExtractZipTask('shapeFiles', "gov.raptor.resources:border-shapefiles:${borderShapefilesVersion}@zip", resourcesDir)
+
+// Now that we need some of the png assets, minimize it by excluding the sizes we don't use (we'll use the 32x32, 36x36, and 48x48 sizes for now)
+def takAssetsExcludes = ['dbs/iconsets.sqlite', 'mil-std-2525c/**', 'png/lpticons/**', 'png/**24.png', 'png/**72.png', 'png/**96.png',
+                         'svg/**', 'tools/**', 'vehicle_models/**', 'vehicles/**', 'wmm/**'] as List
+
+// For CIV releases, we need to exclude some data files that contain sensitive information
+if (buildFlavor == 'civ') takAssetsExcludes << 'xml/**'
+
+def takAssetsZipTask = createExtractZipTask('takAssets', "assets:tak-assets:${takAssetsVersion}@zip", takAssetsDir, takAssetsExcludes as String[])
+
+/**
+ * Copy all the needed build artifacts into the deployment bin directory.
+ */
+tasks.register('createBin') {
+    dependsOn tasks.named('copyModulesToBin')
+    dependsOn tasks.named('copyGlobalLibsToBin')
+    dependsOn shapeFilesZipTask, takAssetsZipTask
+}
+
+/**
+ * Create the configurations, dependencies, and task necessary to pull down a Zip artifact and extract it into
+ * a specified destination directory.
+ *
+ * @param name Name to use when generating the configuration and task names
+ * @param dependency Artifact dependency
+ * @param destDir Destination into which to extract the zip
+ * @param exclusions Var args list of exclusion patterns to apply in the copy task
+ * @return The task that will perform the extraction
+ */
+TaskProvider createExtractZipTask(String name, String dependency, File destDir, String... exclusions) {
+    String configName = "extract${name.capitalize()}"
+    String taskName = configName
+
+    configurations.create(configName) { transitive = false }
+    dependencies.add(configName, dependency)
+
+    return project.tasks.register(taskName, Copy) {
+        def config = configurations.named(configName)
+        dependsOn config
+        from zipTree(config.get().singleFile)
+        into destDir
+
+        if (exclusions) exclude(exclusions)
+    }
+}

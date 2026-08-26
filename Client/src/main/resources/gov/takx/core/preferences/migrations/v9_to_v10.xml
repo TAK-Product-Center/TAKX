@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<migration from="9" to="10">
+    <add refXpath="node[@name='CommonCommo']/map" where="append">
+        <!-- On certain gateway systems, directed messages need to contain information on how to relay the message. Only enable if this is required. -->
+        <entry key="AddDestUid" value="false"/>
+    </add>
+</migration>
