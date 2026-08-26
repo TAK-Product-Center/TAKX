@@ -419,6 +419,14 @@ public class DatabaseUtils
             return true;
         } catch (SQLException e)
         {
+            logger.debug("Table '{}' does not exist: {}", tableName, e.getMessage());
+            try
+            {
+                connection.rollback();
+            } catch (SQLException ex)
+            {
+                logger.error("Rollback failed: ", ex);
+            }
             return false;
         }
     }
