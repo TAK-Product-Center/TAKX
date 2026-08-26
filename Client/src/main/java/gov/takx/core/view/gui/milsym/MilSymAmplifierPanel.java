@@ -6,6 +6,7 @@ import gov.tak.api.symbology.Affiliation;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.milsym.Echelon;
 import gov.takx.api.milsym.IMilStd2525Service;
+import gov.takx.api.milsym.MilStd2525Variant;
 import gov.takx.api.milsym.Presence;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
@@ -38,8 +39,7 @@ public class MilSymAmplifierPanel extends JPanel
 {
     // Arbitrary graphic with no details, makes for a good preview.
     private static final String PREVIEW_CODE_C = "O*O*CB----*****";
-    private static final String PREVIEW_CODE_D = "10011000001300000000";
-    private static final String PREVIEW_CODE_E = "130110000013000000000000000000";
+    private static final String PREVIEW_CODE_SUFFIX = "0110000013000000000000000000";
     private static final int PREVIEW_SIZE = 128;
 
     /**
@@ -189,12 +189,16 @@ public class MilSymAmplifierPanel extends JPanel
      */
     private void refreshPreview()
     {
-        String symbolCode = switch (milStd2525Service.getVariant())
+
+        String symbolCode;
+        if (milStd2525Service.getVariant() == MilStd2525Variant.CHARLIE)
         {
-            case CHARLIE -> PREVIEW_CODE_C;
-            case DELTA -> PREVIEW_CODE_D;
-            case ECHO -> PREVIEW_CODE_E;
-        };
+            symbolCode = PREVIEW_CODE_C;
+        } else
+        {
+            symbolCode = milStd2525Service.getVariant().version() + PREVIEW_CODE_SUFFIX;
+        }
+
         BufferedImage render = milStd2525Service.newSymbolIconBuilder()
                 .setCode(symbolCode)
                 .setAffiliation(getAffiliation())

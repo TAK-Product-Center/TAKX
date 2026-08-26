@@ -30,6 +30,7 @@ import gov.takx.api.shapes.IRegularShape;
 import gov.takx.api.shapes.IRingedShape;
 import gov.takx.api.shapes.ShapeProperties;
 import gov.takx.commons.swing.ComponentUtils;
+import gov.takx.commons.swing.FormLayoutUtils;
 import gov.takx.commons.swing.IPanelStateListener;
 import gov.takx.core.structures.ICoreSurfaceStructureService;
 import gov.takx.core.view.gui.maptools.tacticalgraphics.TacticalGraphicsEditorPanel;
@@ -46,14 +47,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.border.EmptyBorder;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -223,7 +222,7 @@ public class ShapePropertiesEditorPanel extends AShapePropertiesEditorPanel<IMut
                 new TacticalGraphicsEditorPanel(this::tacticalGraphicsValueChanged, () -> ignoreEvent, directActionMode);
         tacticalGraphicsPanelHolder.add(tacticalGraphicsEditorPanel, CC_1_1);
 
-        if (!directActionMode) setComponentVisibility(false, txtName, nameLabel);
+        if (!directActionMode || !initialCreationOnly) FormLayoutUtils.hideRow(txtName);
 
         adjustControlsForShape();
         updateGeometryControls();
@@ -231,19 +230,23 @@ public class ShapePropertiesEditorPanel extends AShapePropertiesEditorPanel<IMut
         updatingPanel = false;
     }
 
+    private void verticalHeightEnabled(boolean enabled)
+    {
+        verticalHeightSpinner.setEnabled(enabled);
+        verticalHeightUnitsComboBox.setEnabled(enabled);
+    }
+
     private void adjustControlsForShape()
     {
         final boolean supportsVerticalHeight = ShapePropertyUtils.supportsVerticalHeight(toolType);
-        setComponentVisibility(supportsVerticalHeight, verticalHeightSpinner, enableHeightCheckBox, verticalHeightUnitsComboBox);
+        FormLayoutUtils.hideOrRestoreRow(verticalHeightSpinner, !supportsVerticalHeight);
 
         final boolean hasInterior = ShapePropertyUtils.shapeHasInterior(toolType);
-        setComponentVisibility(hasInterior, fillColorLabel, fillColorChooser);
+        FormLayoutUtils.hideOrRestoreRow(fillColorLabel, !hasInterior);
         borderColorLabel.setText(hasInterior ? "Border Color:" : "Line Color:");
         borderWidthLabel.setText(hasInterior ? "Border Width:" : "Line Width:");
 
         publishedCheckBox.setVisible(hasInterior);
-
-        setComponentVisibility(true, borderColorLabel, borderColorChooser, borderWidthLabel, borderWidthSpinner);
 
         // Routes can't have tactical graphics associated with them
         if (toolType == MapToolType.DRAWING_ROUTE) tacticalGraphicsPanelHolder.setVisible(false);
@@ -253,30 +256,27 @@ public class ShapePropertiesEditorPanel extends AShapePropertiesEditorPanel<IMut
 
         final boolean showOrientation = ShapePropertyUtils.supportsOrientation(toolType)
                 && (!initialCreationOnly || !ShapePropertyUtils.usesRubberBandDrawing(toolType));
-        setComponentVisibility(showOrientation, orientableCheckbox, orientationLabel, orientationSpinner);
+        FormLayoutUtils.hideOrRestoreRow(orientationLabel, !showOrientation);
+        orientableCheckbox.setVisible(showOrientation);
 
         final boolean isRectangle = toolType == MapToolType.DRAWING_QUAD;
         final boolean isRectangular = isRectangle || toolType == MapToolType.DRAWING_SQUARE;
 
         final boolean supportsRings = ShapePropertyUtils.supportsRings(toolType);
-        setComponentVisibility(supportsRings, ringCountLabel, ringCountSpinner);
+        FormLayoutUtils.hideOrRestoreRow(ringCountSpinner, !supportsRings);
 
         final boolean showHeight = !initialCreationOnly && isRectangle;
-        setComponentVisibility(showHeight, heightLabel, heightSpinner, heightUnitsComboBox);
+        FormLayoutUtils.hideOrRestoreRow(heightLabel, !showHeight);
 
         final boolean showWidth = !initialCreationOnly && isRectangular;
-        setComponentVisibility(showWidth, widthLabel, widthSpinner, widthUnitsComboBox);
+        FormLayoutUtils.hideOrRestoreRow(widthLabel, !showWidth);
 
         final boolean showRadius = !initialCreationOnly && supportsRadius();
-        setComponentVisibility(showRadius, radiusLabel, radiusSpinner, radiusUnitsComboBox);
+        FormLayoutUtils.hideOrRestoreRow(radiusLabel, !showRadius);
 
         final boolean showRangeAndBearing = !initialCreationOnly && toolType == MapToolType.DRAWING_ARROW;
-        setComponentVisibility(showRangeAndBearing, rangeLabel, rangeSpinner, rangeUnitsComboBox, bearingLabel, bearingSpinner, bearingUnitsLabel);
-    }
-
-    private void setComponentVisibility(boolean visible, JComponent... components)
-    {
-        for (JComponent component : components) component.setVisible(visible);
+        FormLayoutUtils.hideOrRestoreRow(rangeLabel, !showRangeAndBearing);
+        FormLayoutUtils.hideOrRestoreRow(bearingLabel, !showRangeAndBearing);
     }
 
     @Override
@@ -416,7 +416,8 @@ public class ShapePropertiesEditorPanel extends AShapePropertiesEditorPanel<IMut
         {
             verticalHeightSpinner.setValue(shape.getVerticalHeight() * altitudeUnits.getMultiplier());
             boolean verticalHeightEnabled = shape.isVerticalHeightEnabled();
-            setComponentVisibility(verticalHeightEnabled, verticalHeightSpinner, verticalHeightUnitsComboBox);
+            verticalHeightEnabled(verticalHeightEnabled);
+
             enableHeightCheckBox.setSelected(verticalHeightEnabled);
         }
 
@@ -703,8 +704,9 @@ public class ShapePropertiesEditorPanel extends AShapePropertiesEditorPanel<IMut
             case ShapeProperties.VERTICAL_HEIGHT -> verticalHeightUnitsComboBox.fromMeters((double) value);
             case ShapeProperties.VERTICAL_HEIGHT_ENABLED ->
             {
-                enableHeightCheckBox.setSelected((boolean) value);
-                setComponentVisibility(enableHeightCheckBox.isSelected(), verticalHeightSpinner, verticalHeightUnitsComboBox);
+                var selected = (boolean) value;
+                enableHeightCheckBox.setSelected(selected);
+                verticalHeightEnabled(selected);
             }
             case ShapeProperties.WIDTH -> widthUnitsComboBox.fromMeters((double) value);
             case IMapObject.ATTRIBUTE_SET -> metadataPanel.setMetadata((AttributeSet) value);
@@ -748,7 +750,7 @@ public class ShapePropertiesEditorPanel extends AShapePropertiesEditorPanel<IMut
 
         // Then adjust certain elements based on the features supported by the various shape types
         final boolean enableVerticalHeight = enable && enableHeightCheckBox.isSelected();
-        setComponentVisibility(enableVerticalHeight, verticalHeightSpinner, verticalHeightUnitsComboBox);
+        verticalHeightEnabled(enableVerticalHeight);
         orientationSpinner.setEnabled(enable && target instanceof IRegularShape && orientableCheckbox.isSelected());
         orientableCheckbox.setEnabled(enable);
     }
@@ -812,7 +814,7 @@ public class ShapePropertiesEditorPanel extends AShapePropertiesEditorPanel<IMut
     private void enableHeightCheckBoxActionPerformed()
     {
         final boolean verticalHeightEnabled = enableHeightCheckBox.isSelected();
-        setComponentVisibility(verticalHeightEnabled, verticalHeightSpinner, verticalHeightUnitsComboBox);
+        verticalHeightEnabled(verticalHeightEnabled);
         updateProperty(() -> target.setVerticalHeightEnabled(enableHeightCheckBox.isSelected()));
         attributesPanel.refresh();
     }
@@ -965,7 +967,6 @@ public class ShapePropertiesEditorPanel extends AShapePropertiesEditorPanel<IMut
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
-        setBorder(new EmptyBorder(0, 3, 0, 0));
         setName("this");
         setLayout(new FormLayout(
                 "[130dlu,default]:grow",
@@ -976,7 +977,7 @@ public class ShapePropertiesEditorPanel extends AShapePropertiesEditorPanel<IMut
             masterPanel.setName("masterPanel");
             masterPanel.setLayout(new FormLayout(
                     "default",
-                    "default, 9dlu, default, $ugap, fill:default"));
+                    "default, 9dlu, default"));
 
             //======== editorPanel ========
             {
@@ -1132,7 +1133,7 @@ public class ShapePropertiesEditorPanel extends AShapePropertiesEditorPanel<IMut
                 editorPanel.add(bearingUnitsLabel, cc.xy(5, 21));
 
                 //---- ringCountLabel ----
-                ringCountLabel.setText("Ring Count");
+                ringCountLabel.setText("Ring Count:");
                 ringCountLabel.setName("ringCountLabel");
                 editorPanel.add(ringCountLabel, cc.xy(1, 23));
 

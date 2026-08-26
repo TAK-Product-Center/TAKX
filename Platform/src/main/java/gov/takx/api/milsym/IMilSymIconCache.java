@@ -1,6 +1,5 @@
 package gov.takx.api.milsym;
 
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.annotation.NoPluginImplementations;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -18,23 +17,6 @@ public interface IMilSymIconCache
     /**
      * @param code Symbol code to look up a cached image of.
      * @param resolution Desired image resolution.
-     *
-     * @return The cached image instance at the requested resolution.
-     * {@code null} if the cache does not have the image.
-     *
-     * @deprecated as of 5.5.1
-     */
-    @DeprecatedApi(since = "5.5.1", forRemoval = true, removeAt = "5.8")
-    @Deprecated(since = "5.5.1", forRemoval = true)
-    @Nullable
-    default BufferedImage lookup(@Nonnull String code, int resolution)
-    {
-        return lookup(code, resolution, MilSymIconScaling.SCALE_TO_MAX_DIMENSION);
-    }
-
-    /**
-     * @param code Symbol code to look up a cached image of.
-     * @param resolution Desired image resolution.
      * @param scaling Desired image scaling.
      *
      * @return The cached image instance at the requested resolution.
@@ -43,20 +25,6 @@ public interface IMilSymIconCache
      */
     @Nullable
     BufferedImage lookup(@Nonnull String code, int resolution, @Nonnull MilSymIconScaling scaling);
-
-    /**
-     * @param code Symbol code to register with.
-     * @param resolution Resolution of image.
-     * @param image Rendered symbol.
-     *
-     * @deprecated as of 5.5.1
-     */
-    @DeprecatedApi(since = "5.5.1", forRemoval = true, removeAt = "5.8")
-    @Deprecated(since = "5.5.1", forRemoval = true)
-    default void put(@Nonnull String code, int resolution, @Nonnull BufferedImage image)
-    {
-        put(code, resolution, MilSymIconScaling.SCALE_TO_MAX_DIMENSION, image);
-    }
 
     /**
      * @param code Symbol code to register with.

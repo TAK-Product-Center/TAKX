@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class PointNavigationConfiguration extends NavigationConfiguration
 {
+    private final long arrivalRadius;
+
     /**
      * Construct a new navigation configuration from the first map object to the second.
      *
@@ -24,18 +26,25 @@ public class PointNavigationConfiguration extends NavigationConfiguration
         super(sourceMapObject, targetMapObject);
 
         var targetArrow = navigationManager.createTargetArrow(sourceMapObject, targetMapObject);
-        var intercept = navigationManager.createInterceptPoint(sourceMapObject, targetMapObject);
+        var intercept = navigationManager.createInterceptPoint(targetMapObject);
         var interceptArrow = navigationManager.createInterceptArrow(sourceMapObject, intercept);
 
         var navigationTarget = new NavigationTarget(this, targetMapObject, targetArrow, intercept, interceptArrow);
         listenerManager.addPropertyChangeListener(navigationTarget, List.of(ETA), propertyChangeSupport::firePropertyChangeCopy);
         listenerManager.addPropertyChangeListener(targetMapObject, List.of(IMapObject.LOCATION), ignored -> update());
 
+        arrivalRadius = 10;
         colorEnabled = true;
         flashEnabled = true;
         targets.add(navigationTarget);
         navigationTarget.setVisible(true);
         navigationTarget.update();
         update();
+    }
+
+    @Override
+    protected boolean arrivedAt(@Nonnull IMapObject target)
+    {
+        return sourceMapObject.getLocation().distanceTo(target.getLocation()) <= arrivalRadius;
     }
 }

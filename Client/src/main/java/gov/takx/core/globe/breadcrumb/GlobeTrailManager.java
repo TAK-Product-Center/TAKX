@@ -8,7 +8,6 @@ import com.atakmap.map.layer.feature.style.CompositeStyle;
 import com.atakmap.map.layer.feature.style.IconPointStyle;
 import com.google.common.annotations.VisibleForTesting;
 import gov.tak.api.maps.Marker;
-import gov.tak.core.map.layer.feature.datastore.SharedFeatureDataStore;
 import gov.tak.core.map.layer.feature.datastore.memory.InMemoryFeatureDataStore;
 import gov.takx.api.breadcrumb.IBreadcrumb;
 import gov.takx.api.breadcrumb.IBreadcrumbManager;
@@ -20,6 +19,7 @@ import gov.takx.api.breadcrumb.event.TrailColorUpdated;
 import gov.takx.api.breadcrumb.event.TrailDeleted;
 import gov.takx.api.breadcrumb.event.TrailVisibilityChanged;
 import gov.takx.api.event.project.ProjectClosed;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
 import gov.takx.core.globe.tak.FeatureUtility;
 import gov.takx.platform.preferences.PreferenceEntry;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -54,7 +54,7 @@ public class GlobeTrailManager extends AGlobeBreadcrumbManager
     private final Map<String, GlobeTrail> markerUidToGlobeTrailMap = new ConcurrentHashMap<>();
 
     @Inject
-    GlobeTrailManager(@SharedFeatureDataStore FeatureDataStore4 dataStore, IBreadcrumbManager breadcrumbManager)
+    GlobeTrailManager(ISharedFeatureDataStore dataStore, IBreadcrumbManager breadcrumbManager)
     {
         super(dataStore, breadcrumbManager);
 

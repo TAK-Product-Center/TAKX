@@ -231,15 +231,6 @@ public class SortFilterEntityTreeTableModel<E> extends EntityTreeTableModel<E>
         // No-op since this model is only for filtering data from a base model
     }
 
-    /**
-     * No-op.
-     */
-    @Override
-    protected void removeListeners(@Nonnull E entity)
-    {
-        // No-op since this model is only for filtered data from a base model
-    }
-
     private void addObjectAtIndex(@Nonnull E entity, @Nonnull E child)
     {
         var comparator = getComparator(entity);

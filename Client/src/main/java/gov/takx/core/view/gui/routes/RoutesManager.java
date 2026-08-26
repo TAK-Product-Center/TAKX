@@ -1,5 +1,14 @@
 package gov.takx.core.view.gui.routes;
 
+import com.atakmap.coremap.filesystem.FileSystemUtils;
+import com.ctc.wstx.stax.WstxInputFactory;
+import com.ctc.wstx.stax.WstxOutputFactory;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import de.micromata.opengis.kml.v_2_2_0.Kml;
+import gov.tak.api.comms.takserver.IExtendedDataPackageManager;
 import gov.tak.api.cot.event.CotEvent;
 import gov.tak.core.comms.cot.CotExporterManager;
 import gov.takx.api.annotation.UiEventBus;
@@ -19,6 +28,8 @@ import gov.takx.api.mapobject.IShapeMapObject;
 import gov.takx.api.mapobject.MapObjectSpec;
 import gov.takx.api.mapobject.MapToolType;
 import gov.takx.api.navigation.IRouteNavigationManager;
+import gov.takx.api.notification.INotificationService;
+import gov.takx.api.notification.Notification;
 import gov.takx.api.persist.IMapObjectFinder;
 import gov.takx.api.routes.IRouteEditListener;
 import gov.takx.api.routes.IRouteListener;
@@ -26,12 +37,15 @@ import gov.takx.api.routes.IRoutesManager;
 import gov.takx.api.shapes.IRoute;
 import gov.takx.api.ui.ComponentPosition;
 import gov.takx.commons.lang.ExceptionUtils;
+import gov.takx.commons.swing.AlwaysOnTopFileChooserFactory;
 import gov.takx.commons.swing.AlwaysOnTopJOptionPane;
 import gov.takx.commons.swing.EscapeKeyListener;
 import gov.takx.core.globe.GlobeRouteMapObjectEditor;
 import gov.takx.core.mapobject.gui.SendAsCotDialog;
+import gov.takx.core.mapobject.gui.SendAsDataPackage;
 import gov.takx.core.mapobject.gui.widgets.ContextMenuIcon;
 import gov.takx.core.navigation.NavigationConstants;
+import gov.takx.core.routes.RouteExportService;
 import gov.takx.core.view.gui.CoreComponentType;
 import gov.takx.core.view.gui.IExtendedUISpaceManager;
 import gov.takx.platform.KeyUtils;
@@ -53,16 +67,27 @@ import org.slf4j.LoggerFactory;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static gov.takx.platform.ui.ResourceDirectory.PLATFORM_ICONS;
 
@@ -83,6 +108,8 @@ public class RoutesManager implements IRoutesManager
     private static final String EDIT_ROUTE_STRING = "Edit Route";
     private static final String NAVIGATE_ROUTE_STRING = "Navigate Route";
 
+    private static final XmlMapper XML_MAPPER = new XmlMapper(new WstxInputFactory(), new WstxOutputFactory());
+
     private final KeyListener escapeListener = new EscapeKeyListener(this::cancelRouteEditing);
     private final List<IRouteEditListener> routeEditListeners = new CopyOnWriteArrayList<>();
     private final List<IRouteListener> routeListeners = new CopyOnWriteArrayList<>();
@@ -95,6 +122,8 @@ public class RoutesManager implements IRoutesManager
     private final CotExporterManager exporterManager;
     private final UnitIdHelper unitIdHelper;
     private final IRouteNavigationManager navigationManager;
+    private final INotificationService notificationService;
+    private final IExtendedDataPackageManager dataPackageManager;
 
     private final ComponentDescriptor detailsPanelDescriptor;
 
@@ -104,10 +133,16 @@ public class RoutesManager implements IRoutesManager
     private IRoute newRouteProperties;
     private IRoute currentEditingRoute;
 
+    static
+    {
+        XML_MAPPER.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY).enable(SerializationFeature.INDENT_OUTPUT);
+    }
+
     @Inject
     RoutesManager(IExtendedGlobeManager globeManager, IMapObjectManager mapObjectManager, IMapObjectFinder mapObjectFinder,
-                  @UiEventBus EventBus uiEventBus, IExtendedUISpaceManager uiSpaceManager,
-                  CotExporterManager exporterManager, UnitIdHelper unitIdHelper, IRouteNavigationManager navigationManager)
+                  @UiEventBus EventBus uiEventBus, IExtendedUISpaceManager uiSpaceManager, CotExporterManager exporterManager,
+                  UnitIdHelper unitIdHelper, IRouteNavigationManager navigationManager, INotificationService notificationService,
+                  IExtendedDataPackageManager dataPackageManager)
     {
         this.globeManager = globeManager;
         this.mapObjectManager = mapObjectManager;
@@ -117,6 +152,8 @@ public class RoutesManager implements IRoutesManager
         this.exporterManager = exporterManager;
         this.unitIdHelper = unitIdHelper;
         this.navigationManager = navigationManager;
+        this.notificationService = notificationService;
+        this.dataPackageManager = dataPackageManager;
 
         detailsPanelDescriptor = new ComponentDescriptorBuilder(RouteDetailsPanel.class, RouteDetailsPanel.PANEL_TITLE)
                 .setComponentPosition(ComponentPosition.RIGHT)
@@ -474,12 +511,9 @@ public class RoutesManager implements IRoutesManager
      */
     protected void openRouteDetailsPanel(@Nonnull IRoute routeModel)
     {
-        if (detailsPanel == null)
-        {
-            detailsPanel = new RouteDetailsPanel();
-            uiSpaceManager.addComponent(detailsPanelDescriptor, detailsPanel);
-        }
+        if (detailsPanel == null) detailsPanel = new RouteDetailsPanel();
         detailsPanel.setRoute(routeModel);
+        uiSpaceManager.addComponent(detailsPanelDescriptor, detailsPanel);
         uiSpaceManager.showComponent(detailsPanel);
     }
 
@@ -575,5 +609,111 @@ public class RoutesManager implements IRoutesManager
     public void navigateRoute(@Nonnull IRoute route)
     {
         navigationManager.navigateToRoute(route, null);
+    }
+
+    /**
+     * Export a route in a given format. Prompts the user to select a save folder location.
+     * The file name is determined by the route name and export time.
+     * @param route the {@link IRoute}
+     * @param type the file export type. Accepted types are limited to {@link RouteExportService.FileType}.
+     *
+     * @since 5.8
+     */
+    public void exportRoute(@Nonnull IRoute route, @Nonnull RouteExportService.FileType type)
+    {
+        JFileChooser fc = AlwaysOnTopFileChooserFactory.getFileChooser(this);
+        fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fc.setMultiSelectionEnabled(false);
+        fc.setAcceptAllFileFilterUsed(false);
+        if (fc.showSaveDialog(JFrame.getFrames()[0]) != JFileChooser.APPROVE_OPTION) return;
+        exportRoute(route, type, fc.getSelectedFile());
+    }
+
+    /**
+     * Export a route in a given format to the provided save file. The file name is determined by the route name and export time.
+     * @param route the {@link IRoute}
+     * @param type the file export type. Accepted types are limited to {@link RouteExportService.FileType}
+     * @param saveFolder the folder to save the route to
+     *
+     * @since 5.8
+     */
+    public void exportRoute(@Nonnull IRoute route, @Nonnull RouteExportService.FileType type, @Nonnull File saveFolder)
+    {
+        LocalDateTime utc = LocalDateTime.ofInstant(Instant.now(), ZoneOffset.UTC);
+        String fileName = route.getName().replace(' ', '_') + "." + utc.getDayOfMonth() + "." + utc.format(RouteExportService.TIME_FORMAT);
+        final File saveFile = new File(saveFolder, fileName + "." + type.name().toLowerCase(Locale.ROOT));
+        Consumer<Exception> errorNotification = e -> {
+            String errorMessage = "Exception exporting the Route to %s".formatted(type);
+            notificationService.show(Notification.builder(errorMessage).setType(Notification.Type.Error).build());
+            logger.error(errorMessage, e);
+        };
+
+        switch (type)
+        {
+            case GPX ->
+            {
+                try
+                {
+                    XML_MAPPER.writeValue(saveFile, RouteExportService.buildRouteGpx(route, utc));
+                } catch (IOException e)
+                {
+                    errorNotification.accept(e);
+                    return;
+                }
+            }
+            case KML, KMZ ->
+            {
+                Kml kml = RouteExportService.buildRouteKml(route, fileName, utc);
+                if (type == RouteExportService.FileType.KML)
+                {
+                    try
+                    {
+                        kml.marshal(saveFile);
+                    } catch (IOException e)
+                    {
+                        errorNotification.accept(e);
+                        return;
+                    }
+                } else
+                {
+                    // Add KML file to KMZ zip
+                    try (ZipOutputStream zos = FileSystemUtils.getZipOutputStream(saveFile))
+                    {
+                        zos.putNextEntry(new ZipEntry("doc.kml")); // default fileName for inner file
+                        if (!kml.marshal(zos))
+                        {
+                            // The KML file couldn't be marshalled, so we need to delete the empty zip file we ended up creating.
+                            zos.close();
+                            saveFile.delete();
+                        }
+                        zos.closeEntry();
+                    } catch (IOException e)
+                    {
+                        errorNotification.accept(e);
+                        return;
+                    }
+                }
+            }
+        }
+
+        int response = AlwaysOnTopJOptionPane.showOptionDialog("Route exported as %s to %s".formatted(type, saveFile.getAbsolutePath()),
+                "Route Exported as " + type, JOptionPane.QUESTION_MESSAGE, JOptionPane.YES_NO_OPTION, null,
+                new String[]{"Send to Contacts", "Done"}, JOptionPane.YES_OPTION);
+        if (response != JOptionPane.YES_OPTION) return; // response will always be CLOSED_OPTION, so no need for headless check here
+
+        Runnable errorHandler = () -> notificationService.show(Notification.builder("Error in sending the attachment DataPackage for " + fileName, Notification.Type.Error).build());
+        new SendAsDataPackage(fileName,
+                () -> {
+                    try
+                    {
+                        File dataPackage = dataPackageManager.createNewTempDataPackage(fileName + "_" + UUID.randomUUID() + ".zip");
+                        dataPackageManager.addFileToDataPackage(dataPackage, saveFile);
+                        return dataPackage;
+                    } catch (IOException e)
+                    {
+                        return null;
+                    }
+                },
+                errorHandler, errorHandler).setVisible(true);
     }
 }

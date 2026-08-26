@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.2.3.0.386" Java: "17.0.10" encoding: "UTF-8"
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -8,7 +8,7 @@ new FormModel {
 			"$rowSpecs": "default, min, default, min, fill:default:grow, min, default"
 		} ) {
 			name: "this"
-			add( new FormContainer( "gov.takx.core.view.gui.layers.viewmanager.CollapsiblePanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			add( new FormContainer( "gov.takx.commons.swing.CollapsiblePanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
 				"$columnSpecs": "labelcompgap, default:grow, labelcompgap"
 				"$rowSpecs": "linegap, (40px<default<80px), linegap, default, linegap, default, linegap, default, linegap, top:max(default;125px), linegap"
 			} ) {
@@ -120,16 +120,31 @@ new FormModel {
 					"gridX": 2
 					"gridY": 8
 				} )
-				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-					name: "iconSelectionScrollPane"
-					"horizontalScrollBarPolicy": 31
-					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "iconSelectionPanel"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "iconSelectionScrollPane"
+						"horizontalScrollBarPolicy": 31
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+					add( new FormComponent( "javax.swing.JCheckBox" ) {
+						name: "outlineOnlyCheckBox"
+						"text": "Outline Only"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "outlineOnlyActionListener", false ) )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "South"
+					} )
 				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridY": 10
 					"gridX": 2
+					"gridY": 10
 				} )
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
-			add( new FormContainer( "gov.takx.core.view.gui.layers.viewmanager.CollapsiblePanel", new FormLayoutManager( class java.awt.BorderLayout ) {
+			add( new FormContainer( "gov.takx.commons.swing.CollapsiblePanel", new FormLayoutManager( class java.awt.BorderLayout ) {
 				"vgap": 1
 				"hgap": 1
 			} ) {
@@ -138,7 +153,7 @@ new FormModel {
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 				"gridY": 3
 			} )
-			add( new FormContainer( "gov.takx.core.view.gui.layers.viewmanager.CollapsiblePanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			add( new FormContainer( "gov.takx.commons.swing.CollapsiblePanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
 				"$columnSpecs": "default:grow"
 				"$rowSpecs": "linegap, default, linegap, fill:default:grow"
 			} ) {

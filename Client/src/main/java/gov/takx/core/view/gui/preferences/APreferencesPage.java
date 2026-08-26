@@ -37,7 +37,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.MouseEvent;
@@ -81,7 +80,7 @@ public abstract class APreferencesPage extends ATitledPanel implements IResource
     private static final Border SEPARATOR_BORDER = new EmptyBorder(4, 0, 0, 0);
     private static final Border TITLED_PANEL_BORDER = new EmptyBorder(4, 0, 4, 0);
     private static final Border NO_HIGHLIGHT_BORDER = new EmptyBorder(1, 1, 1, 1);
-    private static final Border HIGHLIGHT_BORDER = new LineBorder(Color.CYAN);
+    private static final Border HIGHLIGHT_BORDER = new LineBorder(UIResources.BORDER_HIGHLIGHT_COLOR);
 
     @Inject
     private PreferencePagesController controller;

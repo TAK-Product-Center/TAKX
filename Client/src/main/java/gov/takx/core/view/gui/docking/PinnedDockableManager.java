@@ -55,10 +55,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.lang.invoke.MethodHandles;
-import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.WeakHashMap;
 
 import static bibliothek.gui.dock.FlapDockStation.Direction.EAST;
@@ -105,6 +107,7 @@ public class PinnedDockableManager
     private final Map<CDockable, Component> dockablePinnedComponentsMap = new HashMap<>();
     private final Map<CDockable, Direction> dockableDirectionMap = new HashMap<>();
     private final Map<String, Boolean> dockableNameHidePinMap = new HashMap<>();
+    private final Set<CDockable> pendingPins = new HashSet<>();
     private final WeakHashMap<CDockable, DockableFocusListener> dockableFocusListenerMap = new WeakHashMap<>();
 
     // This should remain null until the dock layout settings have been initialized
@@ -259,15 +262,24 @@ public class PinnedDockableManager
                 }
             }
 
-            if (closestOpenDockable != null)
+            try
             {
-                // If we found an existing pinned dockable close to where our unpinned dockable is, we will place it in the same space as it gets pinned.
-                cDockable.setLocation(closestOpenDockable.getBaseLocation());
-            } else
+                // Track dockables that are having their locations updated as part of our pinning process.
+                // This is mainly to address a possible infinite loop with the dockable focus listener that also triggers pinning.
+                pendingPins.add(cDockable);
+                if (closestOpenDockable != null)
+                {
+                    // If we found an existing pinned dockable close to where our unpinned dockable is, we will place it in the same space as it gets pinned.
+                    cDockable.setLocation(closestOpenDockable.getBaseLocation());
+                } else
+                {
+                    // If nothing is nearby, then we will open it in a new space in the requested direction.
+                    TreeLocationRoot pinnedLocationRoot = getPinnedLocationRoot(component.getPreferredSize(), component.getSize(), direction);
+                    cDockable.setLocation(pinnedLocationRoot);
+                }
+            } finally
             {
-                // If nothing is nearby, then we will open it in a new space in the requested direction.
-                TreeLocationRoot pinnedLocationRoot = getPinnedLocationRoot(component.getPreferredSize(), component.getSize(), direction);
-                cDockable.setLocation(pinnedLocationRoot);
+                pendingPins.remove(cDockable);
             }
         });
     }
@@ -428,14 +440,15 @@ public class PinnedDockableManager
         {
             TreeLocationRoot treeLocationRoot = getPinnedLocationRoot(preferredSize, preferredSize, direction);
 
-            Collection<ComponentDockable> siblingDockables =
+            List<ComponentDockable> siblingDockables =
                     dockingManager.findDockableAndPropsWithDockable()
                             .map(DockableAndProps::requireDockable)
-                            .filter(candidate -> isPinned(candidate) && getDirection(candidate) == direction)
+                            .filter(candidate -> isShownPinned(candidate) && getDirection(candidate) == direction)
                             .toList();
 
             // We need to minimize all dockables that will be stacked together before pinning in order for the
-            // new sizes to be respected
+            // new sizes to be respected. However, we don't want to make currently minimized panels shift around
+            // so we filter those out first before applying our desired minimized state + location.
             dockable.setExtendedMode(MINIMIZED);
             siblingDockables.forEach(siblingDockable -> siblingDockable.setExtendedMode(MINIMIZED));
             siblingDockables.forEach(siblingDockable -> siblingDockable.setLocation(treeLocationRoot));
@@ -750,7 +763,7 @@ public class PinnedDockableManager
         @Override
         public void focusGained(@Nonnull CDockable dockable)
         {
-            if (dockablePinnedComponentsMap.containsKey(dockable))
+            if (dockablePinnedComponentsMap.containsKey(dockable) && !pendingPins.contains(dockable))
             {
                 Component pinnedComponent = dockablePinnedComponentsMap.get(dockable);
 

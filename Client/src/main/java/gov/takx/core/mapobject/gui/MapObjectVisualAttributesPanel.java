@@ -3,6 +3,7 @@ package gov.takx.core.mapobject.gui;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import gov.tak.api.util.StandardAttributeNames;
+import gov.tak.core.location.LocationTracker;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.mapobject.IFileMapObject;
 import gov.takx.api.mapobject.IMapObject;
@@ -66,6 +67,9 @@ public class MapObjectVisualAttributesPanel extends MapObjectMainPreferencesPane
 
     @Inject
     protected IMilStd2525ServiceProvider milStd2525ServiceProvider;
+
+    @Inject
+    protected LocationTracker locationTracker;
 
     private TacticalGraphicsEditorPanel tacticalGraphicsEditorPanel;
     private String newSidc;
@@ -187,14 +191,7 @@ public class MapObjectVisualAttributesPanel extends MapObjectMainPreferencesPane
                     }
                 } else if (newSidc != null)
                 {
-                    // Delegate 2525 updates to the 2525 editor panel
-                    // This will update the symbol and apply modifiers to the map object.
-                    if (tacticalGraphicsEditorPanel.isVisible()) tacticalGraphicsEditorPanel.commit();
-
-                    // Update the name to match the newly selected symbol
-                    final var service = milStd2525ServiceProvider.get2525ServiceForSymbol(newSidc);
-                    final var symbol = service.getSymbol(newSidc);
-                    mapObject.setName(symbol.getName());
+                    applyTacticalGraphics(true);
                 }
             }
 
@@ -210,6 +207,30 @@ public class MapObjectVisualAttributesPanel extends MapObjectMainPreferencesPane
             {
                 mapObject.setIconScale(scale);
             }
+        }
+    }
+
+    /**
+     * Delegates commit action to the tactical graphics panel.
+     *
+     * @param applyName {@code true} to also update the map object name to match the symbol.
+     *
+     * @since 5.8
+     */
+    private void applyTacticalGraphics(boolean applyName)
+    {
+        if (tacticalGraphicsEditorPanel == null) return;
+
+        // Delegate 2525 updates to the 2525 editor panel
+        // This will update the symbol and apply modifiers to the map object.
+        if (tacticalGraphicsEditorPanel.isVisible()) tacticalGraphicsEditorPanel.commit();
+
+        // Update the name to match the newly selected symbol
+        if (applyName)
+        {
+            final var service = milStd2525ServiceProvider.get2525ServiceForSymbol(newSidc);
+            final var symbol = service.getSymbol(newSidc);
+            if (symbol != null) mapObject.setName(symbol.getName());
         }
     }
 
@@ -278,7 +299,14 @@ public class MapObjectVisualAttributesPanel extends MapObjectMainPreferencesPane
         } else
         {
             // NULL uri means we need to reset the icon to its original value, so obtain what that would be and
-            // display it in the icon button
+            // display it in the icon button. For 2525 tactical graphics, this would be their plain non-modifier
+            // symbol.
+
+            if (newSidc != null)
+            {
+                applyTacticalGraphics(false);
+                return true;
+            }
 
             final BufferedImage image;
 
@@ -295,6 +323,9 @@ public class MapObjectVisualAttributesPanel extends MapObjectMainPreferencesPane
                 image = pluginDefinition == null || mapObjectImageUtils.isSyntheticDefaultIcon(pluginDefinition)
                         ? null
                         : pluginDefinition.getIcon();
+
+                // Check for other edge cases, like the self location marker
+                if (mapObject == locationTracker.getMarkerMapObject()) locationTracker.setDefaultTrackerAttributes();
             }
 
             if (image != null)
@@ -308,11 +339,23 @@ public class MapObjectVisualAttributesPanel extends MapObjectMainPreferencesPane
 
     private void restoreDefaultsActionPerformed()
     {
-        resetIcon = true;
         iconScaleSlider.setValue(100);
         newSidc = null;
         imageURI = null;
-        iconChanged = setIconImageButton();
+
+        // For 2525 markers (indicated by the panel being visible), icon resets are handled in the tactical graphics panel.
+        if (tacticalGraphicsEditorPanel != null)
+        {
+            tacticalGraphicsEditorPanel.restoreDefaults();
+            newSidc = tacticalGraphicsEditorPanel.getSymbolCode();
+
+            resetIcon = !tacticalGraphicsEditorPanel.isVisible() || newSidc == null;
+            if (newSidc != null) applyTacticalGraphics(false);
+        } else
+        {
+            resetIcon = true;
+        }
+        if (resetIcon) iconChanged = setIconImageButton();
 
         setPanelDirty();
     }

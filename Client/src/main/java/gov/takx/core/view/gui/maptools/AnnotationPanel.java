@@ -27,7 +27,6 @@ import javax.swing.JSpinner;
 import javax.swing.JTextPane;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
-import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
 
@@ -449,10 +448,9 @@ public class AnnotationPanel extends APropertiesEditorPanel<IAnnotationMapObject
     private void initComponents()
     {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
-        var editTextPanel = new JPanel();
+        var textLabel = new JLabel();
         var textScrollPane = new JScrollPane();
         textArea = new JTextPane();
-        var propertiesPanel = new JPanel();
         var fontLabel = new JLabel();
         fontTypeComboBox = new JComboBox<>();
         var fontStyleLabel = new JLabel();
@@ -490,247 +488,233 @@ public class AnnotationPanel extends APropertiesEditorPanel<IAnnotationMapObject
         //======== this ========
         setName("this");
         setLayout(new FormLayout(
-                "[150dlu,default]",
-                "fill:default, $lgap, fill:default"));
+                "right:default, $lcgap, default:grow",
+                "70dlu, 12*($lgap, default)"));
 
-        //======== editTextPanel ========
+        //---- textLabel ----
+        textLabel.setText("Text:");
+        textLabel.setName("textLabel");
+        add(textLabel, cc.xy(1, 1));
+
+        //======== textScrollPane ========
         {
-            editTextPanel.setBorder(new TitledBorder(null, "Edit Text", TitledBorder.LEADING, TitledBorder.TOP));
-            editTextPanel.setName("editTextPanel");
-            editTextPanel.setLayout(new FormLayout(
-                    "[170dlu,default]:grow",
-                    "fill:70dlu:grow"));
+            textScrollPane.setName("textScrollPane");
 
-            //======== textScrollPane ========
-            {
-                textScrollPane.setName("textScrollPane");
-
-                //---- textArea ----
-                textArea.setSelectedTextColor(new Color(102, 255, 255));
-                textArea.setBackground(Color.black);
-                textArea.setForeground(Color.white);
-                textArea.setName("textArea");
-                textArea.addCaretListener(e -> textAreaCaretUpdate());
-                textScrollPane.setViewportView(textArea);
-            }
-            editTextPanel.add(textScrollPane, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
+            //---- textArea ----
+            textArea.setSelectedTextColor(new Color(0x66ffff));
+            textArea.setBackground(Color.black);
+            textArea.setForeground(Color.white);
+            textArea.setName("textArea");
+            textArea.addCaretListener(e -> textAreaCaretUpdate());
+            textScrollPane.setViewportView(textArea);
         }
-        add(editTextPanel, cc.xy(1, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
+        add(textScrollPane, cc.xy(3, 1, CellConstraints.DEFAULT, CellConstraints.FILL));
 
-        //======== propertiesPanel ========
+        //---- fontLabel ----
+        fontLabel.setText("Font:");
+        fontLabel.setName("fontLabel");
+        add(fontLabel, cc.xy(1, 3));
+
+        //---- fontTypeComboBox ----
+        fontTypeComboBox.setName("fontTypeComboBox");
+        fontTypeComboBox.addActionListener(e -> fontTypeComboBoxActionPerformed());
+        add(fontTypeComboBox, cc.xy(3, 3));
+
+        //---- fontStyleLabel ----
+        fontStyleLabel.setText("Font Style:");
+        fontStyleLabel.setName("fontStyleLabel");
+        add(fontStyleLabel, cc.xy(1, 5));
+
+        //======== panel5 ========
         {
-            propertiesPanel.setName("propertiesPanel");
-            propertiesPanel.setLayout(new FormLayout(
-                    "right:default, $lcgap, default:grow",
-                    "11*(default, $lgap), default"));
+            panel5.setName("panel5");
+            panel5.setLayout(new FormLayout(
+                    "default, $rgap, default",
+                    "default"));
 
-            //---- fontLabel ----
-            fontLabel.setText("Font:");
-            fontLabel.setName("fontLabel");
-            propertiesPanel.add(fontLabel, cc.xy(1, 1));
+            //---- boldCheckBox ----
+            boldCheckBox.setText("Bold");
+            boldCheckBox.setName("boldCheckBox");
+            boldCheckBox.addActionListener(e -> boldCheckBoxActionPerformed());
+            panel5.add(boldCheckBox, cc.xy(1, 1));
 
-            //---- fontTypeComboBox ----
-            fontTypeComboBox.setName("fontTypeComboBox");
-            fontTypeComboBox.addActionListener(e -> fontTypeComboBoxActionPerformed());
-            propertiesPanel.add(fontTypeComboBox, cc.xy(3, 1));
-
-            //---- fontStyleLabel ----
-            fontStyleLabel.setText("Font Style:");
-            fontStyleLabel.setName("fontStyleLabel");
-            propertiesPanel.add(fontStyleLabel, cc.xy(1, 3));
-
-            //======== panel5 ========
-            {
-                panel5.setName("panel5");
-                panel5.setLayout(new FormLayout(
-                        "default, $rgap, default",
-                        "default"));
-
-                //---- boldCheckBox ----
-                boldCheckBox.setText("Bold");
-                boldCheckBox.setName("boldCheckBox");
-                boldCheckBox.addActionListener(e -> boldCheckBoxActionPerformed());
-                panel5.add(boldCheckBox, cc.xy(1, 1));
-
-                //---- italicCheckBox ----
-                italicCheckBox.setText("Italic");
-                italicCheckBox.setName("italicCheckBox");
-                italicCheckBox.addActionListener(e -> italicCheckBoxActionPerformed());
-                panel5.add(italicCheckBox, cc.xy(3, 1));
-            }
-            propertiesPanel.add(panel5, cc.xy(3, 3));
-
-            //---- fontSizeLabel ----
-            fontSizeLabel.setText("Font Size:");
-            fontSizeLabel.setName("fontSizeLabel");
-            propertiesPanel.add(fontSizeLabel, cc.xy(1, 5));
-
-            //---- fontSizeComboBox ----
-            fontSizeComboBox.setModel(new DefaultComboBoxModel<>(new String[]{
-                    "8",
-                    "10",
-                    "11",
-                    "12",
-                    "14",
-                    "16",
-                    "18",
-                    "20",
-                    "24",
-                    "30",
-                    "36",
-                    "40",
-                    "48",
-                    "60",
-                    "72"
-            }));
-            fontSizeComboBox.setSelectedIndex(0);
-            fontSizeComboBox.setName("fontSizeComboBox");
-            fontSizeComboBox.addActionListener(e -> fontSizeComboBoxActionPerformed());
-            propertiesPanel.add(fontSizeComboBox, cc.xy(3, 5));
-
-            //---- textColorLabel ----
-            textColorLabel.setText("Text Color:");
-            textColorLabel.setName("textColorLabel");
-            propertiesPanel.add(textColorLabel, cc.xy(1, 7));
-
-            //---- textColorChooser ----
-            textColorChooser.setColor(Color.black);
-            textColorChooser.setName("textColorChooser");
-            propertiesPanel.add(textColorChooser, cc.xy(3, 7));
-
-            //---- backgroundColorLabel ----
-            backgroundColorLabel.setText("Background Color:");
-            backgroundColorLabel.setName("backgroundColorLabel");
-            propertiesPanel.add(backgroundColorLabel, cc.xy(1, 9));
-
-            //---- backgroundColorChooser ----
-            backgroundColorChooser.setColor(Color.white);
-            backgroundColorChooser.setName("backgroundColorChooser");
-            propertiesPanel.add(backgroundColorChooser, cc.xy(3, 9));
-
-            //---- opacityLabel ----
-            opacityLabel.setText("Opacity:");
-            opacityLabel.setName("opacityLabel");
-            propertiesPanel.add(opacityLabel, cc.xy(1, 11));
-
-            //---- opacitySpinner ----
-            opacitySpinner.setModel(new SpinnerNumberModel(80, 0, 100, 1));
-            opacitySpinner.setName("opacitySpinner");
-            opacitySpinner.addChangeListener(e -> opacitySpinnerStateChanged());
-            propertiesPanel.add(opacitySpinner, cc.xy(3, 11));
-
-            //---- visibleAltitudeLabel ----
-            visibleAltitudeLabel.setText("Visible alt. (km):");
-            visibleAltitudeLabel.setName("visibleAltitudeLabel");
-            propertiesPanel.add(visibleAltitudeLabel, cc.xy(1, 13));
-
-            //======== panel6 ========
-            {
-                panel6.setName("panel6");
-                panel6.setLayout(new FormLayout(
-                        "default:grow, $rgap, default:grow",
-                        "2*(default)"));
-
-                //---- minVisibleAltitudeLabel ----
-                minVisibleAltitudeLabel.setText("  min ");
-                minVisibleAltitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                minVisibleAltitudeLabel.setName("minVisibleAltitudeLabel");
-                panel6.add(minVisibleAltitudeLabel, cc.xy(1, 1));
-
-                //---- label1 ----
-                label1.setText("  max");
-                label1.setName("label1");
-                panel6.add(label1, cc.xy(3, 1));
-
-                //---- minVisibleAltitudeTextField ----
-                minVisibleAltitudeTextField.setName("minVisibleAltitudeTextField");
-                minVisibleAltitudeTextField.addActionListener(e -> minVisibleAltitudeTextFieldActionPerformed());
-                minVisibleAltitudeTextField.addCaretListener(e -> minVisibleAltitudeTextFieldCaretUpdate());
-                panel6.add(minVisibleAltitudeTextField, cc.xy(1, 2));
-
-                //---- maxVisibleAltitudeTextField ----
-                maxVisibleAltitudeTextField.setName("maxVisibleAltitudeTextField");
-                maxVisibleAltitudeTextField.addActionListener(e -> maxVisibleAltitudeTextFieldActionPerformed());
-                maxVisibleAltitudeTextField.addCaretListener(e -> maxVisibleAltitudeTextFieldCaretUpdate());
-                panel6.add(maxVisibleAltitudeTextField, cc.xy(3, 2));
-            }
-            propertiesPanel.add(panel6, cc.xy(3, 13));
-
-            //---- label3 ----
-            label3.setText("Fixed Height (km):");
-            label3.setName("label3");
-            propertiesPanel.add(label3, cc.xy(1, 15));
-
-            //======== panel2 ========
-            {
-                panel2.setName("panel2");
-                panel2.setLayout(new FormLayout(
-                        "default, $lcgap, default:grow",
-                        "default"));
-
-                //---- fixedHeightCheckbox ----
-                fixedHeightCheckbox.setText("On");
-                fixedHeightCheckbox.setToolTipText("Turns off annotation scaling and sets the annotation to be visible only at a fixed height.");
-                fixedHeightCheckbox.setName("fixedHeightCheckbox");
-                fixedHeightCheckbox.addActionListener(e -> fixedHeightCheckboxActionPerformed());
-                panel2.add(fixedHeightCheckbox, cc.xy(1, 1));
-
-                //---- fixedHeightSpinner ----
-                fixedHeightSpinner.setModel(new SpinnerNumberModel(0.0, 0.0, null, 10.0));
-                fixedHeightSpinner.setName("fixedHeightSpinner");
-                fixedHeightSpinner.addChangeListener(e -> fixedHeightSpinnerStateChanged());
-                panel2.add(fixedHeightSpinner, cc.xy(3, 1));
-            }
-            propertiesPanel.add(panel2, cc.xy(3, 15));
-
-            //---- label2 ----
-            label2.setText("Leader:");
-            label2.setName("label2");
-            propertiesPanel.add(label2, cc.xy(1, 17));
-
-            //---- leaderCheckBox ----
-            leaderCheckBox.setText("On");
-            leaderCheckBox.setName("leaderCheckBox");
-            leaderCheckBox.addActionListener(e -> leaderCheckBoxActionPerformed());
-            propertiesPanel.add(leaderCheckBox, cc.xy(3, 17));
-
-            //---- label4 ----
-            label4.setText("Border Shape:");
-            label4.setName("label4");
-            propertiesPanel.add(label4, cc.xy(1, 19));
-
-            //---- borderShapeComboBox ----
-            borderShapeComboBox.setModel(new DefaultComboBoxModel<>(new String[]{
-                    "Rectangle",
-                    "Ellipse",
-                    "None"
-            }));
-            borderShapeComboBox.setName("borderShapeComboBox");
-            borderShapeComboBox.addActionListener(e -> borderShapeComboBoxActionPerformed());
-            propertiesPanel.add(borderShapeComboBox, cc.xy(3, 19));
-
-            //---- borderColorLabel ----
-            borderColorLabel.setText("Border Color:");
-            borderColorLabel.setName("borderColorLabel");
-            propertiesPanel.add(borderColorLabel, cc.xy(1, 21));
-
-            //---- borderColorChooser ----
-            borderColorChooser.setColor(Color.white);
-            borderColorChooser.setName("borderColorChooser");
-            propertiesPanel.add(borderColorChooser, cc.xy(3, 21));
-
-            //---- label5 ----
-            label5.setText("Border Thickness:");
-            label5.setName("label5");
-            propertiesPanel.add(label5, cc.xy(1, 23));
-
-            //---- borderThicknessSpinner ----
-            borderThicknessSpinner.setModel(new SpinnerNumberModel(0, 0, null, 5));
-            borderThicknessSpinner.setName("borderThicknessSpinner");
-            borderThicknessSpinner.addChangeListener(e -> borderThicknessSpinnerStateChanged());
-            propertiesPanel.add(borderThicknessSpinner, cc.xy(3, 23));
+            //---- italicCheckBox ----
+            italicCheckBox.setText("Italic");
+            italicCheckBox.setName("italicCheckBox");
+            italicCheckBox.addActionListener(e -> italicCheckBoxActionPerformed());
+            panel5.add(italicCheckBox, cc.xy(3, 1));
         }
-        add(propertiesPanel, cc.xy(1, 3));
+        add(panel5, cc.xy(3, 5));
+
+        //---- fontSizeLabel ----
+        fontSizeLabel.setText("Font Size:");
+        fontSizeLabel.setName("fontSizeLabel");
+        add(fontSizeLabel, cc.xy(1, 7));
+
+        //---- fontSizeComboBox ----
+        fontSizeComboBox.setModel(new DefaultComboBoxModel<>(new String[]{
+                "8",
+                "10",
+                "11",
+                "12",
+                "14",
+                "16",
+                "18",
+                "20",
+                "24",
+                "30",
+                "36",
+                "40",
+                "48",
+                "60",
+                "72"
+        }));
+        fontSizeComboBox.setSelectedIndex(0);
+        fontSizeComboBox.setName("fontSizeComboBox");
+        fontSizeComboBox.addActionListener(e -> fontSizeComboBoxActionPerformed());
+        add(fontSizeComboBox, cc.xy(3, 7));
+
+        //---- textColorLabel ----
+        textColorLabel.setText("Text Color:");
+        textColorLabel.setName("textColorLabel");
+        add(textColorLabel, cc.xy(1, 9));
+
+        //---- textColorChooser ----
+        textColorChooser.setColor(Color.black);
+        textColorChooser.setName("textColorChooser");
+        add(textColorChooser, cc.xy(3, 9));
+
+        //---- backgroundColorLabel ----
+        backgroundColorLabel.setText("Background Color:");
+        backgroundColorLabel.setName("backgroundColorLabel");
+        add(backgroundColorLabel, cc.xy(1, 11));
+
+        //---- backgroundColorChooser ----
+        backgroundColorChooser.setColor(Color.white);
+        backgroundColorChooser.setName("backgroundColorChooser");
+        add(backgroundColorChooser, cc.xy(3, 11));
+
+        //---- opacityLabel ----
+        opacityLabel.setText("Opacity:");
+        opacityLabel.setName("opacityLabel");
+        add(opacityLabel, cc.xy(1, 13));
+
+        //---- opacitySpinner ----
+        opacitySpinner.setModel(new SpinnerNumberModel(80, 0, 100, 1));
+        opacitySpinner.setName("opacitySpinner");
+        opacitySpinner.addChangeListener(e -> opacitySpinnerStateChanged());
+        add(opacitySpinner, cc.xy(3, 13));
+
+        //---- visibleAltitudeLabel ----
+        visibleAltitudeLabel.setText("Visible alt. (km):");
+        visibleAltitudeLabel.setName("visibleAltitudeLabel");
+        add(visibleAltitudeLabel, cc.xy(1, 15));
+
+        //======== panel6 ========
+        {
+            panel6.setName("panel6");
+            panel6.setLayout(new FormLayout(
+                    "default:grow, $rgap, default:grow",
+                    "2*(default)"));
+
+            //---- minVisibleAltitudeLabel ----
+            minVisibleAltitudeLabel.setText("  min ");
+            minVisibleAltitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            minVisibleAltitudeLabel.setName("minVisibleAltitudeLabel");
+            panel6.add(minVisibleAltitudeLabel, cc.xy(1, 1));
+
+            //---- label1 ----
+            label1.setText("  max");
+            label1.setName("label1");
+            panel6.add(label1, cc.xy(3, 1));
+
+            //---- minVisibleAltitudeTextField ----
+            minVisibleAltitudeTextField.setName("minVisibleAltitudeTextField");
+            minVisibleAltitudeTextField.addActionListener(e -> minVisibleAltitudeTextFieldActionPerformed());
+            minVisibleAltitudeTextField.addCaretListener(e -> minVisibleAltitudeTextFieldCaretUpdate());
+            panel6.add(minVisibleAltitudeTextField, cc.xy(1, 2));
+
+            //---- maxVisibleAltitudeTextField ----
+            maxVisibleAltitudeTextField.setName("maxVisibleAltitudeTextField");
+            maxVisibleAltitudeTextField.addActionListener(e -> maxVisibleAltitudeTextFieldActionPerformed());
+            maxVisibleAltitudeTextField.addCaretListener(e -> maxVisibleAltitudeTextFieldCaretUpdate());
+            panel6.add(maxVisibleAltitudeTextField, cc.xy(3, 2));
+        }
+        add(panel6, cc.xy(3, 15));
+
+        //---- label3 ----
+        label3.setText("Fixed Height (km):");
+        label3.setName("label3");
+        add(label3, cc.xy(1, 17));
+
+        //======== panel2 ========
+        {
+            panel2.setName("panel2");
+            panel2.setLayout(new FormLayout(
+                    "default, $lcgap, default:grow",
+                    "default"));
+
+            //---- fixedHeightCheckbox ----
+            fixedHeightCheckbox.setText("On");
+            fixedHeightCheckbox.setToolTipText("Turns off annotation scaling and sets the annotation to be visible only at a fixed height.");
+            fixedHeightCheckbox.setName("fixedHeightCheckbox");
+            fixedHeightCheckbox.addActionListener(e -> fixedHeightCheckboxActionPerformed());
+            panel2.add(fixedHeightCheckbox, cc.xy(1, 1));
+
+            //---- fixedHeightSpinner ----
+            fixedHeightSpinner.setModel(new SpinnerNumberModel(0.0, 0.0, null, 10.0));
+            fixedHeightSpinner.setName("fixedHeightSpinner");
+            fixedHeightSpinner.addChangeListener(e -> fixedHeightSpinnerStateChanged());
+            panel2.add(fixedHeightSpinner, cc.xy(3, 1));
+        }
+        add(panel2, cc.xy(3, 17));
+
+        //---- label2 ----
+        label2.setText("Leader:");
+        label2.setName("label2");
+        add(label2, cc.xy(1, 19));
+
+        //---- leaderCheckBox ----
+        leaderCheckBox.setText("On");
+        leaderCheckBox.setName("leaderCheckBox");
+        leaderCheckBox.addActionListener(e -> leaderCheckBoxActionPerformed());
+        add(leaderCheckBox, cc.xy(3, 19));
+
+        //---- label4 ----
+        label4.setText("Border Shape:");
+        label4.setName("label4");
+        add(label4, cc.xy(1, 21));
+
+        //---- borderShapeComboBox ----
+        borderShapeComboBox.setModel(new DefaultComboBoxModel<>(new String[]{
+                "Rectangle",
+                "Ellipse",
+                "None"
+        }));
+        borderShapeComboBox.setName("borderShapeComboBox");
+        borderShapeComboBox.addActionListener(e -> borderShapeComboBoxActionPerformed());
+        add(borderShapeComboBox, cc.xy(3, 21));
+
+        //---- borderColorLabel ----
+        borderColorLabel.setText("Border Color:");
+        borderColorLabel.setName("borderColorLabel");
+        add(borderColorLabel, cc.xy(1, 23));
+
+        //---- borderColorChooser ----
+        borderColorChooser.setColor(Color.white);
+        borderColorChooser.setName("borderColorChooser");
+        add(borderColorChooser, cc.xy(3, 23));
+
+        //---- label5 ----
+        label5.setText("Border Thickness:");
+        label5.setName("label5");
+        add(label5, cc.xy(1, 25));
+
+        //---- borderThicknessSpinner ----
+        borderThicknessSpinner.setModel(new SpinnerNumberModel(0, 0, null, 5));
+        borderThicknessSpinner.setName("borderThicknessSpinner");
+        borderThicknessSpinner.addChangeListener(e -> borderThicknessSpinnerStateChanged());
+        add(borderThicknessSpinner, cc.xy(3, 25));
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 

@@ -5,6 +5,7 @@ import gov.takx.api.explorer.IExplorerEventSupport;
 import gov.takx.api.state.IRestorableMap;
 import jakarta.annotation.Nonnull;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -19,24 +20,19 @@ public interface IRuleGroupModel extends IExplorerEventSupport
     String RESTORED_RULE_STATE_REMOVED = "Restored Rule State Removed";
 
     /**
+     * @return a collection of properties that this rule group model is sensitive to
+     * @since 5.8
+     */
+    @Nonnull
+    Collection<String> getSensitiveProperties();
+
+    /**
      * Get this rule group's list of rules.
      *
      * @return the list of rules.
      */
     @Nonnull
     List<IExplorableRule> getRules();
-
-    /**
-     * @return True if the group contains any rules that rely on location information (i.e. proximity and geofence rules)
-     * @since 2.31
-     */
-    boolean hasLocationSensitiveRules();
-
-    /**
-     * @return True if the group contains any rules that rely on the name of the explorable
-     * @since 2.36
-     */
-    boolean hasNameSensitiveRules();
 
     /**
      * Determine whether match-all mode is enabled.  If match-all is enabled, then a logical AND is applied across all

@@ -76,12 +76,9 @@ public class AlertOverlaysController
 
     private static final DateTimeParser TIME_FORMATTER = new DateTimeParser(StandardTimeFormatting.DEFAULT_TIME_ONLY_FORMAT, DateTimeParser.Style.DateTimeWithZone, ZoneOffset.UTC);
 
-    private final Action dismissAlertAction = new ActionListAction<AlertExplorable>("Click for dismissal options", DELETE_ICON)
-            .withEventConsumer(this::dismissAlert);
-    private final Action dismissGeoFenceAction = new ActionListAction<GeoFenceExplorableGroup>("Click for dismissal options", DELETE_ICON)
-            .withEventConsumer(this::dismissGeofence);
-    private final Action editGeoFenceAction = new ActionListAction<GeoFenceExplorableGroup>("Edit this GeoFence", EDIT_ICON)
-            .withValueConsumer(this::editGeofence);
+    private final Action dismissAlertAction = new ActionListAction<>("Click for dismissal options", DELETE_ICON, this::dismissAlert);
+    private final Action dismissGeoFenceAction = new ActionListAction<>("Click for dismissal options", DELETE_ICON, this::dismissGeofence);
+    private final Action editGeoFenceAction = new ActionListAction<>("Edit this GeoFence", EDIT_ICON, this::editGeofence, null);
     private final List<Action> alertActions = List.of(dismissAlertAction);
     private final List<Action> fenceActions = List.of(dismissGeoFenceAction, editGeoFenceAction);
 

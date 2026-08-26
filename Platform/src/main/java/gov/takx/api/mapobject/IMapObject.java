@@ -1,5 +1,6 @@
 package gov.takx.api.mapobject;
 
+import gov.tak.api.annotation.IncubatingApi;
 import gov.tak.api.cot.CotTypes;
 import gov.tak.api.maps.MapItem;
 import gov.tak.api.maps.coords.GeoPoint;
@@ -21,6 +22,7 @@ import gov.takx.api.tracks.ISmartTrack;
 import gov.takx.api.tracks.ITrackStyleDefinition;
 import gov.takx.commons.constants.State;
 import gov.takx.commons.lang.IPropertyChangeListenerSupport;
+import gov.takx.dataservices.shapes.FieldOfView;
 import gov.takx.platform.preferences.PreferenceEntry;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -63,6 +65,16 @@ public interface IMapObject extends MapItem, IForceUpdatable, IPropertyChangeLis
     String DEFAULT_TRACK_COLOR = "Default Track Color";
     String DESCRIPTION = "Description";
     String ELEVATION_MODE = "Elevation Mode";
+    /**
+     * Fired when the field of view is added or removed.
+     * @since 5.8
+     */
+    String FIELD_OF_VIEW = "Field of View";
+    /**
+     * Fired when the field of view properties are updated.
+     * @since 5.8
+     */
+    String FIELD_OF_VIEW_PROPERTIES = "Field of View Updated";
     /**
      * Fired when the location changes, payload is the {@link GeoPointMetaData} from the Map Object.
      * @since 5.5
@@ -142,12 +154,13 @@ public interface IMapObject extends MapItem, IForceUpdatable, IPropertyChangeLis
      * @param geoPointMetaData Source to copy in
      * @since 5.5
      */
-    void setGeoPointMetaData(GeoPointMetaData geoPointMetaData);
+    void setGeoPointMetaData(@Nonnull GeoPointMetaData geoPointMetaData);
 
     /**
      * @return Metadata enhanced wrapper on the GeoPoint for this map item
      * @since 5.5
      */
+    @Nonnull
     GeoPointMetaData getGeoPointMetaData();
 
     /**
@@ -493,4 +506,19 @@ public interface IMapObject extends MapItem, IForceUpdatable, IPropertyChangeLis
      * @since 5.6
      */
     void setTooltipVisibility(@Nonnull TooltipVisibility tooltipVisibility);
+
+    /**
+     * @param fieldOfView The field of view associated with this map object
+     * @since 5.8
+     */
+    @IncubatingApi(since = "5.8")
+    void setFieldOfView(@Nullable FieldOfView fieldOfView);
+
+    /**
+     * @return The map object's field of view or {@code null} if unset
+     * @since 5.8
+     */
+    @IncubatingApi(since = "5.8")
+    @Nullable
+    FieldOfView getFieldOfView();
 }

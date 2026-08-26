@@ -25,6 +25,8 @@ public class HypersonicDatabaseConnectionManager extends ADatabaseConnectionMana
     @Inject
     private CustomSqlFunctions customSqlFunctions;
 
+    private final boolean serverMode;
+
     /**
      * Construct a connection manager with the given settings.
      *
@@ -33,6 +35,7 @@ public class HypersonicDatabaseConnectionManager extends ADatabaseConnectionMana
     public HypersonicDatabaseConnectionManager(Map<String, Object> settings)
     {
         super(settings);
+        serverMode = (boolean) settings.getOrDefault(HypersonicDatabaseServer.HSQL_SERVER_MODE, false);
     }
 
     @Override
@@ -51,6 +54,10 @@ public class HypersonicDatabaseConnectionManager extends ADatabaseConnectionMana
     @Override
     protected void doCreateFunctions(Session session)
     {
-        customSqlFunctions.defineCustomFunctions(session);
+        // In server mode, trying to connect to the DB with an external tool results in exceptions because the methods
+        // registered in defineCustomFunctions cannot be found, making it impossible to inspect the DB contents.
+        // So, even though this means we can't debug issues with shape constraints, it allows general DB debugging.
+
+        if (!serverMode) customSqlFunctions.defineCustomFunctions(session);
     }
 }

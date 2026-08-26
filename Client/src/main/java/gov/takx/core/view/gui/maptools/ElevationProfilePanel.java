@@ -19,6 +19,7 @@ import gov.takx.core.globe.ViewshedManager;
 import gov.takx.core.globe.tak.layer.ViewshedLayer;
 import gov.takx.core.view.gui.ATitledPanel;
 import gov.takx.platform.preferences.UserPreferenceEntry;
+import gov.takx.platform.ui.UIResources;
 import gov.takx.platform.utils.StandardTimeFormatting;
 import gov.takx.platform.utils.units.AltitudeUnits;
 import gov.takx.platform.utils.units.RangeUnits;
@@ -609,8 +610,9 @@ public class ElevationProfilePanel extends ATitledPanel
      */
     private static class CustomCrosshairOverlay extends CrosshairOverlay
     {
+        private static final Color COLOR = UIResources.BORDER_HIGHLIGHT_COLOR;
         private static final Color CYAN_WITH_ALPHA =
-                new Color(Color.CYAN.getRed(), Color.CYAN.getGreen(), Color.CYAN.getBlue(), 50);
+                new Color(COLOR.getRed(), COLOR.getGreen(), COLOR.getBlue(), 50);
         private final Crosshair domainCrosshair;
 
         public CustomCrosshairOverlay(@Nonnull Crosshair domainCrosshair)
@@ -639,7 +641,7 @@ public class ElevationProfilePanel extends ATitledPanel
                 g2.fillOval((int) x - 15, (int) y, 30, 30);
 
                 // Draw a handle's foreground
-                g2.setPaint(Color.CYAN);
+                g2.setPaint(COLOR);
                 g2.fillOval((int) x - 8, (int) y + 8, 16, 16);
             }
         }

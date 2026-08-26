@@ -7,7 +7,6 @@ import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.explorer.IExplorable;
 import gov.takx.api.explorer.IExplorableGroup;
 import gov.takx.api.explorer.IExplorerDelegateListener;
-import gov.takx.api.explorer.IUserExplorableGroup;
 import gov.takx.commons.swing.IconTableCellRenderer;
 import gov.takx.commons.swing.MouseClickedListener;
 import gov.takx.commons.swing.PopupTriggerListener;
@@ -19,15 +18,16 @@ import gov.takx.commons.swing.entity.EntityTreeTable;
 import gov.takx.commons.swing.entity.SortFilterEntityTreeTableModel;
 import gov.takx.commons.swing.entity.common.CommonEntityTable;
 import gov.takx.core.explorer.common.CoreExplorerUtils;
+import gov.takx.core.explorer.common.DeleteExplorableAction;
 import gov.takx.core.explorer.common.IControllerExplorable;
 import gov.takx.core.explorer.common.IPathExplorableGroup;
 import gov.takx.core.explorer.controller.IExplorerController;
 import gov.takx.core.explorer.model.IExplorerModel;
 import gov.takx.core.view.gui.GUIUtils;
 import gov.takx.platform.preferences.PreferenceEntry;
+import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
-import org.jdesktop.swingx.JXTreeTable;
 import org.jdesktop.swingx.treetable.TreeTableModel;
 
 import javax.swing.Action;
@@ -60,6 +60,7 @@ import static gov.takx.core.explorer.controller.path.ExplorerPathConstants.ANNOT
 import static gov.takx.core.explorer.controller.path.ExplorerPathConstants.APPS_PATH;
 import static gov.takx.core.explorer.controller.path.ExplorerPathConstants.FILE_OVERLAYS_PATH;
 import static gov.takx.core.explorer.controller.path.ExplorerPathConstants.GROUPS_PATH;
+import static gov.takx.core.explorer.controller.path.ExplorerPathConstants.HASHTAGS_PATH;
 import static gov.takx.core.explorer.controller.path.ExplorerPathConstants.MARKERS_PATH;
 import static gov.takx.core.explorer.controller.path.ExplorerPathConstants.MEDIA_PATH;
 import static gov.takx.core.explorer.controller.path.ExplorerPathConstants.NAVIGATION_PATH;
@@ -141,6 +142,8 @@ public class ExplorerPanel extends JPanel
         // Configure the table
         tableModel = new EntityTableModel<>(entityDefinition);
         explorerTable.setModel(tableModel);
+        // Allow the default sort option to accommodate explorables that need insertion order sort e.g. geofence alerts
+        explorerTable.getTableHeader().getSortMenu().setDefaultSortVisible(true);
         explorerTable.setAutoHideColumns(true,
                 tableModel.getColumnIndex(entityDefinition.getActionsColumn()),
                 tableModel.getColumnIndex(entityDefinition.getAlarmColumn()),
@@ -165,6 +168,7 @@ public class ExplorerPanel extends JPanel
         filteredExplorerModel.addComparator(baseExplorerModel.getRoot(), new RootComparator<>(List.of(
                 model.getRoot().getOrCreatePath(ALERTS_PATH),
                 model.getRoot().getOrCreatePath(GROUPS_PATH),
+                model.getRoot().getOrCreatePath(HASHTAGS_PATH),
                 model.getRoot().getOrCreatePath(TEAM_PATH))));
 
         filteredExplorerModel.addTreeModelListener((TreeModelCombinedListener) this::explorerTreeModelEvent);
@@ -190,9 +194,6 @@ public class ExplorerPanel extends JPanel
         explorerTree.setTableHeader(null);
         explorerTree.expandPath(new TreePath(filteredExplorerModel.getRoot()));
 
-        treeScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        tableScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
         // TODO DCW TAKX-3257 handle multi-select
         explorerTable.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         explorerTree.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -205,11 +206,14 @@ public class ExplorerPanel extends JPanel
      */
     public void setTextScalingPercent(int textScalingPercent)
     {
-        this.textScalingPercent = textScalingPercent;
-        var fontSize = explorerTree.getFontMetrics(explorerTree.getFont()).getHeight();
-        var padding = singlePane ? 4 : 16;
-        explorerTree.setRowHeight((fontSize * textScalingPercent / 100) + padding);
-        summaryProvider.setTextScalingPercent(textScalingPercent);
+        if (this.textScalingPercent != textScalingPercent)
+        {
+            this.textScalingPercent = textScalingPercent;
+            var fontSize = explorerTree.getFontMetrics(explorerTree.getFont()).getHeight();
+            var padding = singlePane ? 4 : 16;
+            explorerTree.setRowHeight((fontSize * textScalingPercent / 100) + padding);
+            summaryProvider.setTextScalingPercent(textScalingPercent);
+        }
     }
 
     /**
@@ -231,7 +235,6 @@ public class ExplorerPanel extends JPanel
         if (this.singlePane != singlePane)
         {
             this.singlePane = singlePane;
-            setTextScalingPercent(textScalingPercent);
             if (singlePane)
             {
                 explorerTree.getSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -447,17 +450,13 @@ public class ExplorerPanel extends JPanel
         if (explorable == controller.getGroupsRoot())
         {
             // Special popup for the groups node
-            actions.add(new SimpleAction("Add Group", e -> showAddGroupsDialog()));
-        }
-        if (explorable instanceof IPathExplorableGroup path)
+            actions.add(new SimpleAction("Add Group", UIResources.ADD_ICON, e -> showAddGroupsDialog()));
+        } else if (explorable instanceof IPathExplorableGroup path)
         {
+            // Have to handle this here because we need a reference to this panel
             var explorables = findDeletableExplorables(path);
             if (!explorables.isEmpty()) actions.add(new DeleteExplorableAction(explorables));
-        } else if (explorable.supportsDeletion())
-        {
-            actions.add(new DeleteExplorableAction(explorable));
         }
-        if (explorable instanceof IUserExplorableGroup group) actions.add(new SimpleAction("Edit Group", actionEvent -> showGroupDialog(group)));
         showPopupMenu(explorable, actions, event);
     }
 
@@ -605,7 +604,7 @@ public class ExplorerPanel extends JPanel
      * @since 5.3
      */
     @Nonnull
-    public JXTreeTable getExplorerTree()
+    public EntityTreeTable<IExplorable> getExplorerTree()
     {
         return explorerTree;
     }
@@ -638,6 +637,7 @@ public class ExplorerPanel extends JPanel
             {
                 showHideExplorables.put(explorable, show);
             }
+            if (baseExplorerModel != null) baseExplorerModel.fireEntityChanged(explorable);
         }
     }
 
@@ -675,18 +675,6 @@ public class ExplorerPanel extends JPanel
         }
 
         if (menu != null) menu.show(event.getComponent(), event.getX(), event.getY());
-    }
-
-    /**
-     * Show a dialog for the specified group.
-     *
-     * @param group the group to open the dialog for
-     * @since 5.3
-     */
-    @InvokeOnEDT
-    public void showGroupDialog(@Nonnull IUserExplorableGroup group)
-    {
-        new EditGroupDialog(controller, group).setVisible(true);
     }
 
     /**
@@ -827,6 +815,7 @@ public class ExplorerPanel extends JPanel
                         //---- explorerTable ----
                         explorerTable.setDropMode(DropMode.ON_OR_INSERT);
                         explorerTable.setRowSelectionAllowed(false);
+                        explorerTable.setActionButtonPanelVisible(false);
                         explorerTable.setName("explorerTable");
                         tableScrollPane.setViewportView(explorerTable);
                     }

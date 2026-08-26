@@ -19,9 +19,16 @@ new FormModel {
 			auxiliary() {
 				"JavaCodeGenerator.variableGetter": true
 			}
-			addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "popupButtonMouseClicked", false ) )
+			addEvent( new FormEvent( "java.awt.event.MouseListener", "mouseClicked", "popupButtonMouseClicked", true ) )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 35, 400 )
+		} )
+		add( new FormComponent( "javax.swing.JMenuItem" ) {
+			name: "defaultSortItem"
+			"text": "Default"
+			"visible": false
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 50, 485 )
 		} )
 	}
 }

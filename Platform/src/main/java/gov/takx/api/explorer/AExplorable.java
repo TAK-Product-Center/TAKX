@@ -531,7 +531,7 @@ public abstract class AExplorable extends AExplorerEventSupport implements IExpl
     @Override
     public void setLinkedMapObjectUniqueKey(String linkedMapObjectUniqueKey)
     {
-        if (linkedMapObjectUniqueKey != null && linkedMapObjectUniqueKey.trim().isEmpty())
+        if (linkedMapObjectUniqueKey != null && linkedMapObjectUniqueKey.isBlank())
         {
             throw new IllegalArgumentException("Map object unique key cannot be empty or contain all whitespace characters.");
         }

@@ -2,25 +2,23 @@ package gov.takx.core.view.gui.gazetteer;
 
 import com.atakmap.map.layer.feature.DataStoreException;
 import com.atakmap.map.layer.feature.Feature;
-import com.atakmap.map.layer.feature.FeatureDataStore4;
 import com.atakmap.map.layer.feature.FeatureSet;
 import com.atakmap.map.layer.feature.geometry.Point;
 import com.atakmap.map.layer.feature.style.IconPointStyle;
 import com.atakmap.map.layer.feature.style.Style;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import gov.tak.core.map.layer.feature.datastore.SharedFeatureDataStore;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.gazetteer.GazetteerEntry;
 import gov.takx.api.gazetteer.IGazetteerService;
 import gov.takx.api.globe.IExtendedGlobeManager;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
 import gov.takx.api.toolbar.ButtonType;
 import gov.takx.commons.swing.AlwaysOnTopJOptionPane;
 import gov.takx.commons.swing.MouseClickedListener;
 import gov.takx.commons.swing.SelectAllTableSupport;
 import gov.takx.commons.utils.StringUtils;
 import gov.takx.core.globe.tak.FeatureUtility;
-import gov.takx.core.globe.tak.features.IFeatureProvider;
 import gov.takx.core.view.gui.ATitledPanel;
 import gov.takx.core.view.gui.gazetteer.SearchResultsTableModel.Columns;
 import gov.takx.platform.ui.ResourceDirectory;
@@ -78,8 +76,7 @@ public class ContextSearchPanel extends ATitledPanel
     private IExtendedGlobeManager globeManager;
 
     @Inject
-    @SharedFeatureDataStore
-    private FeatureDataStore4 dataStore;
+    private ISharedFeatureDataStore dataStore;
 
     private final SearchResultsTableModel resultsModel = new SearchResultsTableModel();
     private final Map<GazetteerEntry, Long> featureIdMap = new HashMap<>();
@@ -125,7 +122,7 @@ public class ContextSearchPanel extends ATitledPanel
         try
         {
             featureSetId = dataStore.insertFeatureSet(
-                    new FeatureSet(getClass().getName(), IFeatureProvider.ALL_GLOBES_GROUP_NAME, "Placemarks", Double.MAX_VALUE, 0));
+                    new FeatureSet(getClass().getName(), ISharedFeatureDataStore.ALL_GLOBES_FEATURE_SET_TYPE, "Placemarks", Double.MAX_VALUE, 0));
         } catch (DataStoreException e)
         {
             logger.error("Failed to create FeatureSet for Gazetteer placemarks", e);

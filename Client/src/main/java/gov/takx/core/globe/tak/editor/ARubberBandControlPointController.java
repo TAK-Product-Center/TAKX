@@ -1,11 +1,11 @@
 package gov.takx.core.globe.tak.editor;
 
 import gov.tak.api.engine.map.coords.GeoCalculations;
-import gov.tak.core.map.layer.IPickedObjectManager;
-import gov.tak.core.map.layer.PickedObjectList;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.coordinatesystem.ILocation;
 import gov.takx.api.globe.IApplicationGlobe;
+import gov.takx.api.layer.pick.IPickedObjectManager;
+import gov.takx.api.layer.pick.PickedObjectList;
 import gov.takx.core.globe.ApplicationGlobeManager;
 import jakarta.inject.Inject;
 

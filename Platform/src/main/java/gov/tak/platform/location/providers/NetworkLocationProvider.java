@@ -123,6 +123,22 @@ public class NetworkLocationProvider extends ALocationProvider<NetworkLocationPr
     }
 
     @Override
+    public void configure(@Nonnull ILocationProviderConfiguration configuration)
+    {
+        if (configuration instanceof Configuration otherConfig && currentConfiguration.port == otherConfig.port) return;
+        commonCommoManager.removeInput(URI.create(UDP_URI_BASE + currentConfiguration.port));
+        super.configure(configuration);
+        commonCommoManager.addInput(URI.create(UDP_URI_BASE + currentConfiguration.port), true);
+    }
+
+    @Override
+    public void setRestoredState(@Nonnull String restoredState)
+    {
+        super.setRestoredState(restoredState);
+        currentConfiguration = makeConfigurationFromRestoredState(restoredState);
+    }
+
+    @Override
     protected void onStart()
     {
         commonCommoManager.addInput(URI.create(UDP_URI_BASE + currentConfiguration.port), true);

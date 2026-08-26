@@ -1,6 +1,7 @@
 package gov.takx.core.view.gui.maptools;
 
 import com.google.errorprone.annotations.OverridingMethodsMustInvokeSuper;
+import com.jgoodies.forms.factories.Borders;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.annotation.UiEventBus;
 import gov.takx.api.event.InitializeDrawToolEvent;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.border.Border;
 
 import java.awt.Color;
 import java.beans.PropertyChangeListener;
@@ -42,6 +44,7 @@ import java.util.function.Consumer;
 public abstract class APropertiesEditorPanel<T> extends JPanel implements IMutableRaptorPanel, IToolEditorPanel, PropertyChangeListener
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    private static final Border BORDER = Borders.createEmptyBorder("4dlu, 6dlu, 4dlu, 6dlu");
 
     @Inject
     protected IExtendedGlobeManager globeManager;
@@ -81,6 +84,7 @@ public abstract class APropertiesEditorPanel<T> extends JPanel implements IMutab
         this.panelListener = panelListener;
         this.directActionMode = directActionMode;
         initialCreationOnly = target == null;
+        setBorder(BORDER);
     }
 
     @Override

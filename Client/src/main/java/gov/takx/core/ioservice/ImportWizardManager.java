@@ -15,6 +15,7 @@ import gov.takx.core.view.gui.maps.importers.wizards.CustomMobacLayerWizard;
 import gov.takx.core.view.gui.maps.importers.wizards.DataPackageImportWizard;
 import gov.takx.core.view.gui.maps.importers.wizards.ElevationMapImportWizard;
 import gov.takx.core.view.gui.maps.importers.wizards.FileDropImportWizard;
+import gov.takx.core.view.gui.maps.importers.wizards.GPXRouteImportWizard;
 import gov.takx.core.view.gui.maps.importers.wizards.ImageryMapImportWizard;
 import gov.takx.core.view.gui.maps.importers.wizards.KMLMapObjectWizard;
 import gov.takx.core.view.gui.maps.importers.wizards.KMLOverlayWizard;
@@ -25,6 +26,7 @@ import gov.takx.core.view.gui.maps.importers.wizards.PlacemarkOverlayWizard;
 import gov.takx.core.view.gui.maps.importers.wizards.ShapeOverlayWizard;
 import gov.takx.core.view.gui.maps.importers.wizards.TakPreferencesImportWizard;
 import gov.takx.core.view.gui.maps.importers.wizards.TakServerImportWizard;
+import gov.takx.core.view.gui.maps.importers.wizards.WmsImportWizard;
 import gov.takx.core.view.gui.media.MediaImportWizard;
 import gov.takx.platform.KeyUtils;
 import jakarta.annotation.Priority;
@@ -86,6 +88,8 @@ public class ImportWizardManager
         registerFileImportWizard(new TakPreferencesImportWizard());
         registerFileImportWizard(new MediaImportWizard());
         registerFileImportWizard(new FileDropImportWizard());
+        registerFileImportWizard(new WmsImportWizard());
+        registerFileImportWizard(new GPXRouteImportWizard());
 
         // Plugin wizards.
         for (IImportExportPlugin plugin : importExportPluginRegistry.getPlugins())

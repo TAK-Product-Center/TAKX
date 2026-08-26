@@ -42,6 +42,7 @@ import gov.takx.api.persist.IExtendedLifecycle;
 import gov.takx.api.persist.IMapObjectPersist;
 import gov.takx.api.plugin.IPluginDefinition;
 import gov.takx.api.plugin.IRaptorPlugin;
+import gov.takx.api.shapes.IMutableShape;
 import gov.takx.commons.constants.State;
 import gov.takx.commons.file.FilePath;
 import gov.takx.commons.file.FileUtils;
@@ -51,6 +52,7 @@ import gov.takx.commons.lang.IPropertyChangeListenerSupport;
 import gov.takx.commons.swing.CanonicalImageCache;
 import gov.takx.commons.swing.ImageUtils;
 import gov.takx.commons.utils.StringUtils;
+import gov.takx.dataservices.shapes.FieldOfView;
 import gov.takx.dataservices.utils.AttributeSetConverter;
 import gov.takx.platform.KeyParts;
 import gov.takx.platform.KeyUtils;
@@ -154,6 +156,9 @@ public abstract class MapObject implements IMapObject, IExtendedLifecycle, IProp
     protected final PrioritizedPropertyChangeSupport propertyChangeSupport = new PrioritizedPropertyChangeSupport(this);
 
     @Transient
+    private final PropertyChangeListener fovPropertyRefireListener = this::fieldOfViewPropertyChange;
+
+    @Transient
     protected BufferedImage iconImage;
 
     private static final int DEFAULT_ICON_SELECTOR = 0;
@@ -214,6 +219,9 @@ public abstract class MapObject implements IMapObject, IExtendedLifecycle, IProp
 
     @Transient
     private boolean restoring;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    private FieldOfView fieldOfView;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -414,7 +422,7 @@ public abstract class MapObject implements IMapObject, IExtendedLifecycle, IProp
                 final URI uri = new URI(imageURI);
                 if (iconSetManager.isIconSetUri(uri)) pluginDefinition = iconSetManager.getOrCreatePluginDefinition(uri);
                 logger.debug("recreated SPD: {}", pluginDefinition);
-            } catch (URISyntaxException e)
+            } catch (URISyntaxException | IllegalArgumentException e)
             {
                 logger.warn("Invalid URI '{}' for {}", imageURI, uniqueKey, e);
             }
@@ -434,6 +442,7 @@ public abstract class MapObject implements IMapObject, IExtendedLifecycle, IProp
 
         // Translate PCEs on the AttributeSet to PCEs on this object
         attributeSet.addPropertyChangeListener(pce -> propertyChangeSupport.firePropertyChange(ATTRIBUTE_SET, null, attributeSet));
+        if (fieldOfView != null) fieldOfView.addPropertyChangeListener(fovPropertyRefireListener);
     }
 
     @Override
@@ -612,6 +621,41 @@ public abstract class MapObject implements IMapObject, IExtendedLifecycle, IProp
     }
 
     @Override
+    public void setFieldOfView(@Nullable FieldOfView fieldOfView)
+    {
+        if (fieldOfView == this.fieldOfView) return;
+        propertyChangeSupport.firePropertyChange(FIELD_OF_VIEW, this.fieldOfView, fieldOfView);
+        // Has to be done separately or the globe rendered FOV won't be removed
+        // Clean up old fov
+        if (this.fieldOfView != null)
+        {
+            this.fieldOfView.removePropertyChangeListener(fovPropertyRefireListener);
+            this.fieldOfView.releaseResources();
+        }
+
+        // Update
+        this.fieldOfView = fieldOfView;
+        if (this.fieldOfView != null) this.fieldOfView.addPropertyChangeListener(fovPropertyRefireListener);
+    }
+
+    @Nullable
+    @Override
+    public FieldOfView getFieldOfView()
+    {
+        return fieldOfView;
+    }
+
+    /**
+     * Refire the event values as an event that is monitored.
+     * @param evt the PCE of what was updated in the FOV
+     * @since 5.8
+     */
+    private void fieldOfViewPropertyChange(PropertyChangeEvent evt)
+    {
+        propertyChangeSupport.firePropertyChange(FIELD_OF_VIEW_PROPERTIES, evt.getOldValue(), evt.getNewValue());
+    }
+
+    @Override
     public IMapObjectController getController()
     {
         return mapObjectManager.getMapObjectController(id);
@@ -677,6 +721,12 @@ public abstract class MapObject implements IMapObject, IExtendedLifecycle, IProp
         propertyChangeSupport.removeAllListeners();
         attributeSet.dispose();
         resetImageBuffers();
+
+        if (fieldOfView != null)
+        {
+            fieldOfView.removePropertyChangeListener(fovPropertyRefireListener);
+            fieldOfView.releaseResources();
+        }
     }
 
     @Override
@@ -783,6 +833,9 @@ public abstract class MapObject implements IMapObject, IExtendedLifecycle, IProp
 
             geoPointMetaData.set(geoPoint);
             propertyChangeSupport.firePropertyChange(LOCATION, oldValue, geoPoint);
+
+            if (fieldOfView != null) fieldOfView.setPoint(geoPoint);
+
             return true;
         }
         return false;
@@ -1067,6 +1120,9 @@ public abstract class MapObject implements IMapObject, IExtendedLifecycle, IProp
         {
             attributeSet.setAttribute(key, value);
         }
+
+        // do not modify shape Cot type
+        if (this instanceof AShapeMapObject<? extends IMutableShape>) return;
 
         // When we update the mil-sym attribute we need to also update the cot-type to match.
         // This must be done AFTER updating the attribute value so that icon adaption has up-to-date values it can

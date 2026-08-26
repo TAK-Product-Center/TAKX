@@ -1,5 +1,6 @@
 package gov.takx.core.media;
 
+import com.github.weisj.jsvg.parser.LoaderContext;
 import com.github.weisj.jsvg.parser.SVGLoader;
 
 import javax.imageio.ImageReader;
@@ -62,7 +63,7 @@ public class SvgImageReaderSpi extends ImageReaderSpi
                     }
                     len = is.read(buffer);
                 }
-                return new SVGLoader().load(new ByteArrayInputStream(out.toByteArray())) != null;
+                return new SVGLoader().load(new ByteArrayInputStream(out.toByteArray()), null, LoaderContext.createDefault()) != null;
             } finally
             {
                 is.reset();

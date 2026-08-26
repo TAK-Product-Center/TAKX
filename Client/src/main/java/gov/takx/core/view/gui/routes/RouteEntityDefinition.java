@@ -35,14 +35,10 @@ public class RouteEntityDefinition extends MapObjectEntityDefinition<IRouteMapOb
     @Inject
     private RoutesManager routesManager;
 
-    private final Action settingsAction = new ActionListAction<IRouteMapObject>("Settings", SETTINGS_ACTION_BUTTON_ICON)
-            .withValueConsumer(route -> routesManager.openRouteDetailsPanel(route));
-    private final Action editAction = new ActionListAction<IRouteMapObject>("Edit", EDIT_ACTION_BUTTON_ICON)
-            .withValueConsumer(route -> routesManager.startRouteEditing(route));
-    private final Action navigateAction = new ActionListAction<IRouteMapObject>("Navigate", NAVIGATE_TO_ACTION_BUTTON_ICON)
-            .withValueConsumer(mo -> routesManager.navigateRoute(mo));
-    private final Action deleteAction = new ActionListAction<IRouteMapObject>("Delete", DELETE_ACTION_BUTTON_ICON)
-            .withEventConsumer(this::delete);
+    private final Action settingsAction = new ActionListAction<IRouteMapObject>("Settings", SETTINGS_ACTION_BUTTON_ICON, mo -> routesManager.openRouteDetailsPanel(mo), null);
+    private final Action editAction = new ActionListAction<IRouteMapObject>("Edit", EDIT_ACTION_BUTTON_ICON, mo -> routesManager.startRouteEditing(mo), null);
+    private final Action navigateAction = new ActionListAction<IRouteMapObject>("Navigate", NAVIGATE_TO_ACTION_BUTTON_ICON, mo -> routesManager.navigateRoute(mo), null);
+    private final Action deleteAction = new ActionListAction<>("Delete", DELETE_ACTION_BUTTON_ICON, this::delete);
     private final List<Action> actions = List.of(settingsAction, navigateAction, editAction, deleteAction);
     private final Supplier<Boolean> isEditInProgress;
 
@@ -59,13 +55,12 @@ public class RouteEntityDefinition extends MapObjectEntityDefinition<IRouteMapOb
         addPropertyChangeMapping(ShapeProperties.EDITABLE, getActionsColumn());
     }
 
-    private void delete(ActionListActionEvent<IRouteMapObject> e)
+    private void delete(@Nonnull ActionListActionEvent<IRouteMapObject> e)
     {
-        //noinspection DataFlowIssue
         ActionPopupFactory.yesNo(
-                "<html>Delete Route: <b>" + e.getValue().getName() + "</b>?</html>",
+                "<html>Delete Route: <b>" + e.requireValue().getName() + "</b>?</html>",
                 (Component) e.getSource(),
-                () -> routesManager.deleteRoute(e.getValue()))
+                () -> routesManager.deleteRoute(e.requireValue()))
                 .show();
     }
 

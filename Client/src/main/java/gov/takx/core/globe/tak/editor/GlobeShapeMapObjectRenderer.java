@@ -2,12 +2,12 @@ package gov.takx.core.globe.tak.editor;
 
 import com.atakmap.map.layer.feature.Feature;
 import com.atakmap.map.layer.feature.FeatureDataStore4;
-import gov.tak.core.map.layer.IPickContext;
-import gov.tak.core.map.layer.feature.IFeatureRendererManager;
-import gov.tak.core.map.layer.feature.IPickedFeatureProvider;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.globe.IGlobeMapObject;
 import gov.takx.api.globe.IGlobeShapeMapObject;
+import gov.takx.api.layer.feature.IFeatureRendererManager;
+import gov.takx.api.layer.pick.IPickContext;
+import gov.takx.api.layer.pick.IPickedFeatureProvider;
 import gov.takx.core.globe.tak.editor.IShapeEditorSource.ShapeEditorSourceListener;
 import gov.takx.core.globe.tak.features.FeatureFactory;
 import gov.takx.core.globe.tak.features.FeatureFactory.FeatureFactoryState;

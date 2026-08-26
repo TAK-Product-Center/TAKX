@@ -9,7 +9,6 @@ import java.lang.invoke.MethodHandles;
 import java.net.JarURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
@@ -18,19 +17,20 @@ import java.util.jar.Manifest;
  *
  * @since 2.0.0
  */
-public class Version
+public final class Version
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final String IMPLEMENTATION_VERSION_KEY = "Implementation-Version";
     private static final String BUILD_NUMBER_KEY = "Build-Number";
     private static final String BUILD_DATE_KEY = "Build-Date";
+    private static final String UNKNOWN = "(unknown)";
 
-    private static String VERSION_STRING = "(unknown)";
-    private static String FULL_VERSION_STRING = "(unknown)";
+    private static String VERSION_STRING = UNKNOWN;
+    private static String FULL_VERSION_STRING = UNKNOWN;
     private static String PRE_RELEASE_TAG = "";
-    private static String BUILD_NUMBER = "(unknown)";
-    private static String BUILD_DATE = "(unknown)";
+    private static String BUILD_NUMBER = UNKNOWN;
+    private static String BUILD_DATE = UNKNOWN;
 
     static
     {
@@ -150,7 +150,7 @@ public class Version
 
     public static void main(String[] args)
     {
-        System.out.printf("Full version '%s'\nversion '%s'\nPre-release '%s'\nbuild '%s'\nbuild short '%s'\ndate '%s'",
+        System.out.printf("Full version '%s'\nversion '%s'\nPre-release '%s'\nbuild '%s'\nbuild short '%s'\ndate '%s'", // NOPMD
                 getFullVersionString(), getVersionString(), getPreReleaseTag(), getBuildNumber(), getShortBuildNumber(), getBuildDate());
     }
 
@@ -188,7 +188,7 @@ public class Version
      */
     private static boolean extractVersionFromManifest(Manifest manifest)
     {
-        final Attributes mainAttributes = manifest.getMainAttributes();
+        final var mainAttributes = manifest.getMainAttributes();
         if (mainAttributes != null)
         {
             FULL_VERSION_STRING = mainAttributes.getValue(IMPLEMENTATION_VERSION_KEY);

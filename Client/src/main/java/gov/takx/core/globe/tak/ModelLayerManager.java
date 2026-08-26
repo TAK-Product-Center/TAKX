@@ -1,6 +1,7 @@
 
 package gov.takx.core.globe.tak;
 
+import com.atakmap.map.EngineLibrary;
 import com.atakmap.map.formats.c3dt.Cesium3DTilesModelInfoSpi;
 import com.atakmap.map.layer.feature.geometry.Envelope;
 import com.atakmap.map.layer.model.ModelInfo;
@@ -29,6 +30,8 @@ import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
+import jassimp.Jassimp;
+import jassimp.JassimpLibraryLoader;
 
 import java.io.File;
 
@@ -44,6 +47,9 @@ public class ModelLayerManager implements IRaptorLayerManagerListener
 
     static
     {
+        // Install no-op Jassimp library loader to support loading vehicle models via AssimpModelSpi
+        Jassimp.setLibraryLoader(new MyJassimpLibraryLoader());
+
         // We use the Java based renderer (ModelInfoFactory) for Cesium 3D tiles
         // until the c++ implementation meets the feature set of the java implementation.
         ModelInfoFactory.registerGeoreferencer(Pix4dGeoreferencer.INSTANCE);
@@ -159,5 +165,19 @@ public class ModelLayerManager implements IRaptorLayerManagerListener
             return envelope.build();
         }
         return null;
+    }
+
+    /**
+     * No-op library loader for Jassimp. The default Jassimp library loader will fail to find the shared library and refuse to initialize.
+     * We use {@link EngineLibrary#initialize()} to load the jassimp library for us.
+     * @since 5.8
+     */
+    private static class MyJassimpLibraryLoader extends JassimpLibraryLoader
+    {
+        @Override
+        public void loadLibrary()
+        {
+            // No-op - EngineLibrary loads the Jassimp library for us.
+        }
     }
 }

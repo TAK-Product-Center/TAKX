@@ -1,6 +1,5 @@
 package gov.takx.api.preferences;
 
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.annotation.Experimental;
 import gov.takx.api.annotation.NoPluginImplementations;
 import gov.takx.api.preferences.tool.IToolPreference;
@@ -45,6 +44,8 @@ import java.util.List;
  *         ...
  *     }
  * }</pre>
+ * A plugin may request the display of its preferences page in the settings panel using the {@link #showToolSettings(String)}
+ * method.
  *
  * @since 5.0
  */
@@ -110,16 +111,11 @@ public interface IToolPreferenceManager extends IPreferenceManager
     IPreferenceEntry getToolPreferenceEntry(@Nonnull String toolUid, @Nonnull String preferenceId);
 
     /**
-     * Sets the preferences dialog as dirty to enable the "Okay" and "Apply" buttons. This should only be used to
-     * notify the manager that a {@link gov.takx.api.preferences.tool.CustomControlPreference}'s custom control value
-     * has changed.
+     * Open the Settings tab (if not already open), and show the preferences page for the given tool.
      *
-     * @deprecated as of 5.4, no replacement, preferences are no longer contained in a dialog that supports apply/cancel.
-     * each preference change is applied distinctly.
+     * @param toolUid The tool's UID
+     * @since 5.8
      */
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
-    default void setDirty()
-    {
-    }
+    @SuppressWarnings("unused") // Only called from plugins
+    void showToolSettings(@Nonnull String toolUid);
 }

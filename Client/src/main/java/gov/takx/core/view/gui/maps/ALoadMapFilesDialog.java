@@ -27,6 +27,8 @@ import javax.swing.filechooser.FileFilter;
 
 import java.awt.BorderLayout;
 import java.awt.Dialog;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,7 +73,7 @@ public abstract class ALoadMapFilesDialog extends AStandardDialog
         mapFilesSelection = new MapFilesSelection(fileSetFilter, this, mapsSelectionTable, extensionFilter);
         mapsSelectionTable.getModel().addTableModelListener(e -> {
             updateLayerNameForSelection();
-            connectButton.setEnabled(!mapFilesSelection.getSelectedFileSets().isEmpty());
+            refreshConnectButton();
         });
 
         if (files != null)
@@ -99,7 +101,7 @@ public abstract class ALoadMapFilesDialog extends AStandardDialog
             String path = mapFilesSelection.doFileCheck(filesToConnect.toArray(new File[0]));
             selectedFilesTextField.setText(path);
             updateLayerNameForSelection();
-            connectButton.setEnabled(true);
+            refreshConnectButton();
         }
 
         setModal(false);
@@ -227,9 +229,24 @@ public abstract class ALoadMapFilesDialog extends AStandardDialog
         if (path != null)
         {
             selectedFilesTextField.setText(path);
-            connectButton.setEnabled(true);
             updateLayerNameForSelection();
+            refreshConnectButton();
         }
+    }
+
+    /**
+     * Update the 'Connect' button enabled state.
+     * @since 5.8
+     */
+    private void refreshConnectButton()
+    {
+        // Connect button conditions:
+        // - At least one file set must be selected to connect to.
+        // - Either:
+        //   - Layer merging disabled
+        //   - Layer merging enabled + a non-empty layer name is given
+        connectButton.setEnabled(!mapFilesSelection.getSelectedFileSets().isEmpty()
+                && ((!mergeCheck.isSelected() || !layerNameTextField.getText().isBlank())));
     }
 
     /**
@@ -242,6 +259,16 @@ public abstract class ALoadMapFilesDialog extends AStandardDialog
         boolean doMerge = mergeCheck.isSelected();
         layerNameLabel.setEnabled(doMerge);
         layerNameTextField.setEnabled(doMerge);
+        refreshConnectButton();
+    }
+
+    /**
+     * Called when {@link #layerNameTextField} is updated.
+     * @since 5.8
+     */
+    private void onLayerNameTextChanged()
+    {
+        refreshConnectButton();
     }
 
     @SuppressWarnings("DuplicatedCode")
@@ -339,6 +366,14 @@ public abstract class ALoadMapFilesDialog extends AStandardDialog
 
                     //---- layerNameTextField ----
                     layerNameTextField.setName("layerNameTextField");
+                    layerNameTextField.addKeyListener(new KeyAdapter()
+                    {
+                        @Override
+                        public void keyReleased(KeyEvent e)
+                        {
+                            onLayerNameTextChanged();
+                        }
+                    });
                     mergePanel.add(layerNameTextField, cc.xy(3, 1));
 
                     //---- mergeCheck ----

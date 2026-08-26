@@ -28,6 +28,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @see ProgramPreference
  * @since 2.0.0
  */
+@SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public enum PreferenceEntry implements IPreferenceEntry
 {
     /**
@@ -245,6 +246,16 @@ public enum PreferenceEntry implements IPreferenceEntry
             "share the local address with other sockets on the system. Use with caution if you expect to be able to " +
             "receive unicast datagrams.")
     COMMON_COMMO_ENABLE_ADDRESS_REUSE("CommonCommo/EnableAddressReuse", "false"),
+
+    /**
+     * Updates {@link com.atakmap.commoncommo.Commo#setMulticastLoopbackEnabled(boolean)}
+     *
+     * @since 5.8
+     */
+    @PreferenceDescriptor(title = "Enable Multicast Loopback", description = "Determines whether sent multicast packets should " +
+            "be looped back to local sockets. This is the same as setting the socket option 'IP_MULTICAST_LOOP'. " +
+            "NOTE: this is only functional on Linux, it has no effect on Windows.")
+    COMMON_COMMO_ENABLE_MULTICAST_LOOPBACK("CommonCommo/EnableMulticastLoopback", "false"),
 
     /**
      * Updates {@link com.atakmap.commoncommo.Commo#setTTL(int)}
@@ -600,6 +611,28 @@ public enum PreferenceEntry implements IPreferenceEntry
 
     RDM_BATCHING("RDMBatching", "false"),
     RECENT_PROJECTS_NODE("RecentProjects", null),
+
+    /** @since 5.8 */
+    @PreferenceDescriptor(title = "Checkpoint Name Prefix", description = "Prefix for all automatically generated checkpoint names")
+    ROUTE_CHECKPOINT_PREFIX("route/checkpointPrefix", "CP"),
+    /** @since 5.8 */
+    @PreferenceDescriptor(title = "Driving Checkpoint Radius (meters)", description = "When within this distance, navigation will transition to the next waypoint")
+    ROUTE_DRIVING_CHECKPOINT_RADIUS("route/drivingCheckpointRadius", "100"),
+    /** @since 5.8 */
+    @PreferenceDescriptor(title = "Flying Checkpoint Radius (meters)", description = "When within this distance, navigation will transition to the next waypoint")
+    ROUTE_FLYING_CHECKPOINT_RADIUS("route/flyingCheckpointRadius", "1000"),
+    /** @since 5.8 */
+    @PreferenceDescriptor(title = "Swimming Checkpoint Radius (meters)", description = "When within this distance, navigation will transition to the next waypoint")
+    ROUTE_SWIMMING_CHECKPOINT_RADIUS("route/swimmingCheckpointRadius", "10"),
+    /** @since 5.8 */
+    @PreferenceDescriptor(title = "Walking Checkpoint Radius (meters)", description = "When within this distance, navigation will transition to the next waypoint")
+    ROUTE_WALKING_CHECKPOINT_RADIUS("route/walkingCheckpointRadius", "10"),
+    /** @since 5.8 */
+    @PreferenceDescriptor(title = "Watercraft Checkpoint Radius (meters)", description = "When within this distance, navigation will transition to the next waypoint")
+    ROUTE_WATERCRAFT_CHECKPOINT_RADIUS("route/watercraftCheckpointRadius", "100"),
+    /** @since 5.8 */
+    @PreferenceDescriptor(title = "Elevation Profile Center on Seeker", description = "Center the globe on the elevation profile seeker point")
+    ROUTE_ELEVATION_PROFILE_CENTER_ON_SEEKER("route/elevationProfileCenterOnSeeker", "true"),
 
     /** @since 5.5 */
     @PreferenceDescriptor(title = "MIL-STD 2525 Variant",

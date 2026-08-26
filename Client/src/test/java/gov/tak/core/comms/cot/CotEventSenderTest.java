@@ -18,6 +18,7 @@ import gov.takx.test.utils.CdiTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -79,6 +80,7 @@ public class CotEventSenderTest extends AContainerTest
     public void setupEach()
     {
         clearInvocations(commoManager, contactManager);
+        CdiTestUtils.setField(commoManager, "cotEventInterceptors", new ArrayList<>());
     }
 
     @Test

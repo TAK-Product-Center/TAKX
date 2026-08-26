@@ -17,7 +17,10 @@ import gov.takx.api.preferences.IPreferenceMonitor;
 import gov.takx.api.shapes.IRoute;
 import gov.takx.api.ui.IResourceCleaner;
 import gov.takx.commons.swing.ColorChooserUtils;
+import gov.takx.commons.swing.SimpleAction;
+import gov.takx.commons.swing.SplitButton;
 import gov.takx.core.globe.ElevationProfileService;
+import gov.takx.core.routes.RouteExportService;
 import gov.takx.core.view.gui.ATitledPanel;
 import gov.takx.core.view.gui.GUIUtils;
 import gov.takx.platform.preferences.UserPreferenceEntry;
@@ -34,6 +37,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JToggleButton;
@@ -72,7 +76,6 @@ import static gov.takx.platform.ui.ResourceDirectory.TAK_ASSETS_PNG;
  *
  * @since 3.3
  */
-@SuppressWarnings("CdiManagedBeanInconsistencyInspection")
 @PseudoBean
 public class RouteDetailsPanel extends ATitledPanel implements PropertyChangeListener, IResourceCleaner
 {
@@ -80,7 +83,6 @@ public class RouteDetailsPanel extends ATitledPanel implements PropertyChangeLis
 
     protected static final String PANEL_TITLE = "Route Details";
 
-    private static final ImageIcon NEW_WINDOW_ICON = UIResources.getStandardSizedIcon(PLATFORM_ICONS, "add.png");
     private static final ImageIcon ROUTE_ICON = UIResources.getStandardSizedIcon(PLATFORM_ICONS, "route.png");
     private static final ImageIcon ELEVATION_PROFILE_ICON = UIResources.getStandardSizedIcon(PLATFORM_ICONS, "terrain.png");
     private static final ImageIcon SEND_BUTTON_ICON = UIResources.getStandardSizedIcon(TAK_ASSETS_PNG, "Chat_32x32.png");
@@ -129,12 +131,13 @@ public class RouteDetailsPanel extends ATitledPanel implements PropertyChangeLis
         initComponents();
 
         exportButton.setIcon(UIResources.EXPORT_ICON);
+        exportButton.setPopupMenu(createExportPopupMenu());
+
         elevationProfileButton.setIcon(ELEVATION_PROFILE_ICON);
         adjustRouteSettingsButton.setIcon(UIResources.SETTINGS_ICON);
-        newWindowButton.setIcon(NEW_WINDOW_ICON);
         sendRouteButton.setIcon(SEND_BUTTON_ICON);
         editRouteButton.setIcon(UIResources.EDIT_ICON);
-        routesButton.setIcon(ROUTE_ICON);
+        routesButton.setIcon(UIResources.ROUTE_ICON);
 
         GUIUtils.addSingleActionDocumentListener(remarksTextField, e -> updateProperty(() -> routeModel.getShapeMapObject().setRemarks(remarksTextField.getText())));
         GUIUtils.addSingleActionDocumentListener(routeNameTextField, e -> updateProperty(() -> routeModel.setName(routeNameTextField.getText())));
@@ -150,6 +153,15 @@ public class RouteDetailsPanel extends ATitledPanel implements PropertyChangeLis
 
         lockButton.setIcon(UNLOCK_ICON);
         lockButton.setSelectedIcon(LOCK_ICON);
+    }
+
+    private JPopupMenu createExportPopupMenu()
+    {
+        JPopupMenu menu = new JPopupMenu();
+        menu.add(new SimpleAction("GPX", e -> routesManager.exportRoute(routeModel, RouteExportService.FileType.GPX)));
+        menu.add(new SimpleAction("KML", e -> routesManager.exportRoute(routeModel, RouteExportService.FileType.KML)));
+        menu.add(new SimpleAction("KMZ", e -> routesManager.exportRoute(routeModel, RouteExportService.FileType.KMZ)));
+        return menu;
     }
 
     /**
@@ -442,11 +454,6 @@ public class RouteDetailsPanel extends ATitledPanel implements PropertyChangeLis
         routesManager.openRoutesPanel();
     }
 
-    private void exportRouteButtonPressed()
-    {
-        // TODO TAKX-1259 Import/Export of routes to .kml, .kmz, .gpz
-    }
-
     private void elevationProfileButtonPressed()
     {
         elevationProfileService.showProfile(routeModel.getControlPoints().stream()
@@ -463,11 +470,6 @@ public class RouteDetailsPanel extends ATitledPanel implements PropertyChangeLis
         routesManager.navigateRoute(routeModel);
     }
 
-    private void newWindowButtonPressed()
-    {
-        // TODO add your code here
-    }
-
     private void lockButtonActionPressed()
     {
         // Toggle editable state
@@ -479,10 +481,9 @@ public class RouteDetailsPanel extends ATitledPanel implements PropertyChangeLis
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         var buttonPanel = new JPanel();
         routesButton = new JButton();
-        exportButton = new JButton();
+        exportButton = new SplitButton();
         elevationProfileButton = new JButton();
         adjustRouteSettingsButton = new JButton();
-        newWindowButton = new JButton();
         var routeNameLabel = new JLabel();
         routeNameTextField = new JTextField();
         startNavigationButton = new JButton();
@@ -527,10 +528,8 @@ public class RouteDetailsPanel extends ATitledPanel implements PropertyChangeLis
             buttonPanel.add(routesButton, cc.xy(3, 1));
 
             //---- exportButton ----
-            exportButton.setEnabled(false);
             exportButton.setToolTipText("Export");
             exportButton.setName("exportButton");
-            exportButton.addActionListener(e -> exportRouteButtonPressed());
             buttonPanel.add(exportButton, cc.xy(5, 1));
 
             //---- elevationProfileButton ----
@@ -545,13 +544,6 @@ public class RouteDetailsPanel extends ATitledPanel implements PropertyChangeLis
             adjustRouteSettingsButton.setName("adjustRouteSettingsButton");
             adjustRouteSettingsButton.addActionListener(e -> adjustRouteSettingsButtonPressed());
             buttonPanel.add(adjustRouteSettingsButton, cc.xy(9, 1));
-
-            //---- newWindowButton ----
-            newWindowButton.setEnabled(false);
-            newWindowButton.setToolTipText("New Window");
-            newWindowButton.setName("newWindowButton");
-            newWindowButton.addActionListener(e -> newWindowButtonPressed());
-            buttonPanel.add(newWindowButton, cc.xy(11, 1));
         }
         add(buttonPanel, cc.xywh(1, 1, 5, 1));
 
@@ -686,10 +678,9 @@ public class RouteDetailsPanel extends ATitledPanel implements PropertyChangeLis
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     private JButton routesButton;
-    private JButton exportButton;
+    private SplitButton exportButton;
     private JButton elevationProfileButton;
     private JButton adjustRouteSettingsButton;
-    private JButton newWindowButton;
     private JTextField routeNameTextField;
     private JButton startNavigationButton;
     private ColorChooser colorChooser;

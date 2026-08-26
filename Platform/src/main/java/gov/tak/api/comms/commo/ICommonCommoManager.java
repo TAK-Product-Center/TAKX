@@ -106,6 +106,19 @@ public interface ICommonCommoManager
     void removeContactPresenceListener(@Nonnull ContactPresenceListener listener);
 
     /**
+     * @param interceptor Interceptor to add
+     * @apiNote Interceptors are invoked in the order they are added.
+     * @since 5.8
+     */
+    void addCotEventInterceptor(@Nonnull ICotEventInterceptor interceptor);
+
+    /**
+     * @param interceptor Interceptor to remove
+     * @since 5.8
+     */
+    void removeCotEventInterceptor(@Nonnull ICotEventInterceptor interceptor);
+
+    /**
      * Add an input address for Common Commo to listen to in addition to those configured via preferences
      *
      * @param inputUri       input URI to listen to
@@ -187,6 +200,17 @@ public interface ICommonCommoManager
      * @since 5.6
      */
     void setEnableAddressReuse(boolean enable);
+
+    /**
+     * Enables or disables (the default) whether sent multicast packets should be looped back to local sockets.
+     * This is the same as setting the socket option {@code IP_MULTICAST_LOOP}.
+     *
+     * @apiNote This is only functional on Linux, it has no effect on Windows.
+     *
+     * @param enable Pass {@code true} to enable loopback, {@code false} to disable it
+     * @since 5.8
+     */
+    void setMulticastLoopbackEnabled(boolean enable);
 
     /**
      * Configures a "known streaming endpoint" for a contact. The {@code endpointId} must refer to a valid server endpoint

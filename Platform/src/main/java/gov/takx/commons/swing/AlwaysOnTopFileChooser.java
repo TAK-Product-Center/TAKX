@@ -94,6 +94,8 @@ public class AlwaysOnTopFileChooser extends JFileChooser
     {
         File file = getSelectedFile();
 
+        if (file == null) return;
+
         if ((!isDirectorySelectionEnabled() || !file.isDirectory()) && file.exists() && getDialogType() == SAVE_DIALOG)
         {
             int result = AlwaysOnTopJOptionPane.showConfirmDialog(getTopLevelAncestor(), "The selected file '" + file.getName() + "' already exists. Do you want to overwrite it?",

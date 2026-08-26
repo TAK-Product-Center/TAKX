@@ -36,14 +36,11 @@ public class ViewshedEntity extends CommonEntityDefinition<ViewshedLayer>
     @Inject
     private IGlobeManager globeManager;
 
-    @SuppressWarnings("DataFlowIssue") // the getActions method always passes a value to the ActionList
-    private final Action deleteAction = new ActionListAction<ViewshedLayer>("Delete", DELETE_ACTION_BUTTON_ICON)
-            .withEventConsumer(e -> ActionPopupFactory
-                    .yesNo(DELETE_POPUP_STRING_FORMAT.formatted(getName(e.getValue())), (Component) e.getSource(), () -> viewshedManager.deleteViewshed(e.getValue()))
+    private final Action deleteAction = new ActionListAction<ViewshedLayer>("Delete", DELETE_ACTION_BUTTON_ICON,
+            e -> ActionPopupFactory
+                    .yesNo(DELETE_POPUP_STRING_FORMAT.formatted(getName(e.requireValue())), (Component) e.getSource(), () -> viewshedManager.deleteViewshed(e.requireValue()))
                     .show());
-    @SuppressWarnings("DataFlowIssue") // the getActions method always passes a value to the ActionList
-    private final Action gotoAction = new ActionListAction<ViewshedLayer>("Goto", GOTO_ACTION_BUTTON_ICON)
-            .withEventConsumer(e -> globeManager.getLastFocusedGlobe().goTo((ILocation) e.getValue().getPointOfInterest()));
+    private final Action gotoAction = new ActionListAction<ViewshedLayer>("Goto", GOTO_ACTION_BUTTON_ICON, vs -> globeManager.getLastFocusedGlobe().goTo((ILocation) vs.getPointOfInterest()), null);
 
     private final List<Action> actions = List.of(gotoAction, deleteAction);
 

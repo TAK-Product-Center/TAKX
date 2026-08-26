@@ -2,24 +2,29 @@ package gov.takx.commons.swing.entity;
 
 import gov.tak.api.annotation.IncubatingApi;
 import gov.takx.commons.lang.ObjectUtils;
+import gov.takx.commons.swing.CheckBoxTreeTableTreeCellRendererEditor;
 import gov.takx.commons.swing.JXTreeTableExt;
 import gov.takx.commons.swing.MouseClickedListener;
 import gov.takx.commons.swing.RowBorderHighlighter;
 import gov.takx.commons.swing.TableUtils;
+import gov.takx.commons.swing.TriStateJCheckBox;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.jdesktop.swingx.decorator.ColorHighlighter;
 import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.table.TableColumnExt;
 import org.jdesktop.swingx.treetable.TreeTableModel;
+import org.jdesktop.swingx.util.PaintUtils;
 
 import javax.swing.Icon;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
+import javax.swing.event.TreeSelectionEvent;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,11 +34,13 @@ import static gov.takx.commons.swing.entity.EntityTable.HIGHLIGHT_COLOR_TRANSPAR
 import static gov.takx.commons.swing.entity.EntityTable.ICON_COLUMN_SIZE;
 
 /**
- * TreeTable to be used with {@link EntityTreeTableModel} and {@link EntityDefinition}. Handles setup for standard columns created by
- * that model.
+ * TreeTable to be used with {@link EntityTreeTableModel} and {@link EntityDefinition}. Handles setup for columns created by that model. This class
+ * includes a "selectColumn" feature which allows selecting tree nodes via checkboxes rather than the normal swing row click style selection.
  *
- * @implNote The goal is for this class to stay in sync with {@link EntityTable} so that both have the same or similar features and ui/ux.
  * @param <E> the entity type that this table works with
+ * @apiNote The "selectColumn" is not really a column, but it's close enough, so we are using that terminology to remain consistent with
+ * {@link EntityTable}.
+ * @implNote The goal is for this class to stay in sync with {@link EntityTable} so that both have the same or similar features and ui/ux.
  * @since 5.7
  */
 @IncubatingApi(since = "5.7")
@@ -41,9 +48,12 @@ public class EntityTreeTable<E> extends JXTreeTableExt
 {
     protected final Map<EntityColumn<E, ?>, TableColumnExt> columnMap = new HashMap<>();
 
-    protected EntityTreeTableModel<E> entityTreeTableModel;
-    protected TreeTableModel treeTableModel;
+    protected EntityTreeTableModel<E> entityTreeTableModel; // The entity model
+    protected TreeTableModel treeTableModel; // The model that actually drives the tree contents
     protected TableColumnExt treeColumn;
+    private boolean selectColumnVisible;
+    private SelectColumnTreeSelectionModel<E> selectColumnSelectionModel;
+    private boolean initModel;
 
     /**
      * Construct a new tree table component with no data.
@@ -59,6 +69,7 @@ public class EntityTreeTable<E> extends JXTreeTableExt
         setOpenIcon(null);
         setClosedIcon(null);
 
+        setBackground(null);
         setSelectionBackground(null);
         setFocusable(false); // If we leave this to true then expander cell is selectable for some reason
         setShowHorizontalLines(true);
@@ -129,6 +140,35 @@ public class EntityTreeTable<E> extends JXTreeTableExt
     }
 
     /**
+     * @param visible {@code true} if the select checkbox should be visible, otherwise {@code false}
+     * @since 5.8
+     */
+    public void setSelectColumnVisible(boolean visible)
+    {
+        selectColumnVisible = visible;
+        if (initModel && selectColumnVisible && getHierarchicalEditor() == null) CheckBoxTreeTableTreeCellRendererEditor.setRendererAndEditor(this, selectColumnSelectionModel::getSelectionState, this::selectColumnSelection);
+    }
+
+    /**
+     * @return {@code true} if the select checkbox is visible, otherwise {@code false}
+     * @since 5.8
+     */
+    public boolean isSelectColumnVisible()
+    {
+        return selectColumnVisible;
+    }
+
+    /**
+     * @return the entity selection model used to track selections made in the select column
+     * @since 5.8
+     */
+    @Nonnull
+    public SelectColumnTreeSelectionModel<E> getSelectColumnSelectionModel()
+    {
+        return selectColumnSelectionModel;
+    }
+
+    /**
      * Initialize the data model.
      */
     protected void initModel()
@@ -151,6 +191,9 @@ public class EntityTreeTable<E> extends JXTreeTableExt
         }
         treeColumn = getColumn(entityTreeTableModel.getHierarchicalEntityColumn());
         treeColumn.setVisible(true);
+        selectColumnSelectionModel = new SelectColumnTreeSelectionModel<>(treeTableModel);
+        selectColumnSelectionModel.addTreeSelectionListener(this::selectColumnSelectionChanged);
+        initModel = true;
     }
 
     /**
@@ -158,6 +201,7 @@ public class EntityTreeTable<E> extends JXTreeTableExt
      */
     protected void initRenderers()
     {
+        setSelectColumnVisible(selectColumnVisible);
     }
 
     /**
@@ -168,8 +212,7 @@ public class EntityTreeTable<E> extends JXTreeTableExt
         addHighlighter(new RowBorderHighlighter(HighlightPredicate.ALWAYS, new EmptyBorder(1, 1, 1, 1)));
         addHighlighter(new RowBorderHighlighter(HighlightPredicate.ROLLOVER_ROW, new MatteBorder(1, 1, 1, 1, HIGHLIGHT_COLOR)));
         addHighlighter(new RowBorderHighlighter(HighlightPredicate.IS_SELECTED, new MatteBorder(1, 1, 1, 1, HIGHLIGHT_COLOR)));
-        // TODO DCW TAKX-4224 There is some weirdness with the below highlighter but for the most part it works
-        addHighlighter(new ColorHighlighter(HighlightPredicate.IS_SELECTED, null, null, HIGHLIGHT_COLOR_TRANSPARENT, null));
+        addHighlighter(new ColorHighlighter(HighlightPredicate.IS_SELECTED, null, null, PaintUtils.blend(getBackground(), HIGHLIGHT_COLOR_TRANSPARENT), null));
     }
 
     private void mouseClicked(MouseEvent event)
@@ -182,6 +225,31 @@ public class EntityTreeTable<E> extends JXTreeTableExt
             {
                 toggleExpandRow(rowAtPoint(point));
                 event.consume(); // Make sure we take no other action
+            }
+        }
+    }
+
+    private void selectColumnSelectionChanged(@Nonnull TreeSelectionEvent treeSelectionEvent)
+    {
+        for (var path : treeSelectionEvent.getPaths())
+        {
+            //noinspection unchecked all nodes are same type
+            entityTreeTableModel.fireEntityChanged((E) path.getLastPathComponent());
+        }
+    }
+
+    private void selectColumnSelection(@Nonnull ActionEvent event)
+    {
+        var state = ((TriStateJCheckBox) event.getSource()).getState();
+        // Unlike the corresponding code in EntityTable, this event returns the view row, not the model row, since there are no model rows in a tree
+        var treePath = getPathForRow(Integer.parseInt(event.getActionCommand()));
+        switch (state)
+        {
+            case SELECTED -> selectColumnSelectionModel.addSelectionPath(treePath);
+            case NOT_SELECTED -> selectColumnSelectionModel.removeSelectionPath(treePath);
+            case INDETERMINATE ->
+            {
+                // No-op since renderer should not allow user to trigger a partial selection
             }
         }
     }

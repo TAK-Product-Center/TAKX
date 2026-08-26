@@ -50,10 +50,10 @@ import gov.takx.api.tasks.TaskGroup;
 import gov.takx.commons.file.FilePath;
 import gov.takx.commons.file.FileUtils;
 import gov.takx.commons.file.SizeFormatter;
+import gov.takx.commons.lang.ErrorThrowingFunction;
 import gov.takx.core.chat.ChatDataPackageService;
 import gov.takx.core.tasks.AExitAffectingTask;
 import gov.takx.platform.preferences.PreferenceEntry;
-import gov.takx.platform.utils.ErrorThrowingFunction;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -88,6 +88,8 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
@@ -439,33 +441,63 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
     {
         Map<IMapObject, Integer> mapObjectToResultIndex = new IdentityHashMap<>();
         List<MemoryContentToAdd> contentToAdd = new ArrayList<>();
-        for (IMapObject mapObject : mapObjects)
+        List<IMapObject> couldNotAdd = new ArrayList<>();
+        for (IMapObject mapObject : mapObjects.stream().sorted(Comparator.comparing(IMapObject::getName)).toList())
         {
             CotEvent exported = cotExporterManager.export(mapObject);
-            if (exported != null)
+            if (exported == null)
             {
-                // Add the map object CoT.
-                byte[] mapObjectXmlBytes = exported.toString().getBytes(StandardCharsets.UTF_8);
-                String mapObjectUid = mapObject.getUid();
-                mapObjectToResultIndex.put(mapObject, contentToAdd.size());
-                contentToAdd.add(new MemoryContentToAdd(mapObjectXmlBytes, mapObjectUid + ".cot", "map-items", entry -> entry.setUid(mapObjectUid)));
+                couldNotAdd.add(mapObject);
+                continue;
+            }
 
-                // Add associated attachments if they exist.
-                List<File> mapObjectAttachments = mapObject.getAttachments();
-                for (File attachment : mapObjectAttachments)
-                {
-                    if (!attachment.exists()) continue;
-                    contentToAdd.add(new MemoryContentToAdd(Files.readAllBytes(attachment.toPath()), attachment.getName(), "attachments", entry -> entry.setUid(mapObjectUid)));
-                }
-            } else
+            // Add the map object CoT.
+            byte[] mapObjectXmlBytes = exported.toString().getBytes(StandardCharsets.UTF_8);
+            String mapObjectUid = mapObject.getUid();
+            mapObjectToResultIndex.put(mapObject, contentToAdd.size());
+            contentToAdd.add(new MemoryContentToAdd(mapObjectXmlBytes, mapObjectUid + ".cot", "map-items", entry -> entry.setUid(mapObjectUid)));
+
+            // Add associated attachments if they exist.
+            List<File> mapObjectAttachments = mapObject.getAttachments();
+            for (File attachment : mapObjectAttachments)
             {
-                logger.error("Could not export map object to CoT xml: '{}' of type '{}'", mapObject.getName(), mapObject.getType());
-                return Collections.emptyMap();
+                if (!attachment.exists()) continue;
+                contentToAdd.add(new MemoryContentToAdd(Files.readAllBytes(attachment.toPath()), attachment.getName(), "attachments", entry -> entry.setUid(mapObjectUid)));
             }
         }
 
-        // Add the contents to the zip.
-        List<String> addedZipPaths = addFileToDataPackageInternalViaMemory(packageFile, contentToAdd);
+        // Collect paths to old CoT files for matching map objects.
+        Map<String, String> oldCotPaths = collectMatchingCot(packageFile, mapObjects);
+        Map<String, IMapObject> oldCotUidToMapObject = new HashMap<>();
+        for (IMapObject mo : mapObjects)
+        {
+            String currentUid = mo.getUid();
+            if (oldCotPaths.containsKey(currentUid)) oldCotUidToMapObject.put(currentUid, mo);
+        }
+
+        // Notify user about map objects that couldn't be exported.
+        if (!couldNotAdd.isEmpty())
+        {
+            StringBuilder errorMessage = new StringBuilder("Could not export ").append(couldNotAdd.size()).append(" map objects to CoT");
+            notificationService.show(Notification.builder(errorMessage.toString()).setType(Notification.Type.Warning).build());
+            errorMessage.append(": ");
+            for (IMapObject mo : couldNotAdd) errorMessage.append(mo.getName()).append("[type: ").append(mo.getType()).append("], ");
+            logger.warn(errorMessage.toString());
+        }
+
+        // Notify user about duplicates found.
+        if (!oldCotPaths.isEmpty())
+        {
+            StringBuilder message = new StringBuilder("The following Map Objects were replaced in the package:");
+            for (IMapObject mo : oldCotUidToMapObject.values())
+            {
+                message.append("\n- ").append(mo.getName()).append(" (UID: ").append(mo.getUid()).append(")");
+            }
+            notificationService.show(Notification.builder(message.toString()).setType(Notification.Type.Info).build());
+        }
+
+        // Add the contents to the zip, replacing old matched map object CoT files.
+        List<String> addedZipPaths = addFileToDataPackageInternalViaMemory(packageFile, contentToAdd, oldCotPaths.values());
 
         // Map our map object to content addition index to the resulting zip paths.
         Map<IMapObject, String> mapObjectToAddedZipPaths = mapObjectToResultIndex.keySet().stream()
@@ -505,8 +537,11 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
                 contentToAdd.add(new MemoryContentToAdd(Files.readAllBytes(attachment.toPath()), attachment.getName(), "attachments", entry -> entry.setUid(mapObjectUid)));
             }
 
+            // Collect paths to old CoT files for matching map objects.
+            Map<String, String> oldCotPaths = collectMatchingCot(packageFile, Collections.singleton(mapObject));
+
             // Update the data package and notify listeners that the package was updated.
-            String mapObjectPath = addFileToDataPackageInternalViaMemory(packageFile, contentToAdd).get(0);
+            String mapObjectPath = addFileToDataPackageInternalViaMemory(packageFile, contentToAdd, oldCotPaths.values()).get(0);
             onPackageUpdated(packageFile, mapToContentsWithOwner(packageFile, null));
             return mapObjectPath;
         } else
@@ -894,6 +929,7 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
     /**
      * @param packageFile Data package file to update.
      * @param models List of file contents to add.
+     * @param removedEntries Collection of removed entry file paths.
      *
      * @return List of added file paths inside the zip. The order will match the list of model inputs.
      *
@@ -901,7 +937,9 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
      * @since 5.3
      */
     @Nonnull
-    private List<String> addFileToDataPackageInternalViaMemory(@Nonnull File packageFile, @Nonnull List<MemoryContentToAdd> models) throws IOException
+    private List<String> addFileToDataPackageInternalViaMemory(@Nonnull File packageFile, @Nonnull List<MemoryContentToAdd> models,
+                                                               @Nonnull Collection<String> removedEntries)
+            throws IOException
     {
         assertPackageWithinVFS(packageFile);
 
@@ -924,7 +962,7 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
         File newPackageFile = File.createTempFile("datapackage", ".zip");
         try
         {
-            copyExistingPackageContentsToDestination(out, packageFile, addedZipPaths);
+            copyExistingPackageContentsToDestination(out, packageFile, addedZipPaths, removedEntries);
             byte[] content = baos.toByteArray();
             Files.write(newPackageFile.toPath(), content);
             Files.move(newPackageFile.toPath(), packageFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -998,7 +1036,7 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
         // Then write the rest of the original ZIP contents to the target zip and overwrite the original.
         try
         {
-            copyExistingPackageContentsToDestination(out, packageFile, zipPathToAdapterMap);
+            copyExistingPackageContentsToDestination(out, packageFile, zipPathToAdapterMap, Collections.emptyList());
             Files.move(newPackageFile.toPath(), packageFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException ex)
         {
@@ -1015,12 +1053,14 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
      * @param packageFile Original data package file to copy contents from.
      * @param newEntries  Map of new zip paths added that are already present in the destination ZIP stream,
      *                    to the optional adapters to manipulate the new manifest entry with.
+     * @param removedEntries Collection of removed entry file paths.
      *
      * @throws IOException When writing to the data package file fails for any reason.
      * @since 5.3
      */
     private void copyExistingPackageContentsToDestination(@Nonnull ZipOutputStream out, @Nonnull File packageFile,
-                                                          @Nonnull Map<String, ManifestEntryAdapter> newEntries)
+                                                          @Nonnull Map<String, ManifestEntryAdapter> newEntries,
+                                                          @Nonnull Collection<String> removedEntries)
             throws IOException
     {
         // Then write the contents of the original data package, modifying the manifest to add the entry
@@ -1035,6 +1075,9 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
                     // If we are adding a file path to the package that already is in there, we will skip copying the old one over.
                     // The file already got added to the new package in the logic above.
                     logger.debug("Skipping old entry of '{}'", entryName);
+                } else if (removedEntries.contains(entryName))
+                {
+                    logger.debug("Skipping removed entry of '{}'", entryName);
                 } else if (entryName.equals(MANIFEST_PATH))
                 {
                     // Instead of reusing the existing entry, a new one is made since we're modifying it, and the existing one
@@ -1043,7 +1086,7 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
                     byte[] bytes = zipFile.getInputStream(ze).readAllBytes();
                     String manifestXml = new String(bytes);
 
-                    // Read the existing XML into the manifest model, add our new entries, then write back the modified XML.
+                    // Read the existing XML into the manifest model and add our new entries.
                     PackageManifest manifest = (PackageManifest) getManifestJaxbContext().createUnmarshaller().unmarshal(new StringReader(manifestXml));
                     PackageManifestContents contents = manifest.getContents();
                     for (var entry : newEntries.entrySet())
@@ -1055,6 +1098,14 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
                         if (entryAdapter != null) entryAdapter.handleAddedContent(newContent);
                         contents.addContent(newContent);
                     }
+
+                    // Also remove any old entries.
+                    final List<PackageManifestContent> removedContents = contents.getContents().stream()
+                            .filter(content -> removedEntries.contains(content.getManifestUid()))
+                            .toList();
+                    for (var content : removedContents) contents.removeContent(content);
+
+                    // Lastly, write back the modified XML.
                     String modifiedManifestXml = manifest.toXml();
                     out.write(modifiedManifestXml.getBytes());
                     out.closeEntry();
@@ -1069,6 +1120,53 @@ public class DataPackageManager implements IExtendedDataPackageManager, IDataPac
         {
             throw new IOException(ex);
         }
+    }
+
+    /**
+     * @param packageFile Data package to scan within.
+     * @param mapObjects Map objects to scan for.
+     * @return Map of {@link IMapObject#getUid()} to zip paths in the given data package that relate to the given map objects.
+     * @throws IOException When the data package does not exist or cannot be read from.
+     * @since 5.8
+     */
+    private @Nonnull Map<String, String> collectMatchingCot(@Nonnull File packageFile, @Nonnull Collection<IMapObject> mapObjects) throws IOException
+    {
+        // Iterate zip entries, collecting CoT files that match our map object uids.
+        List<String> uids = mapObjects.stream().map(IMapObject::getUid).toList();
+        Map<String, String> results = new HashMap<>(mapObjects.size());
+        try (ZipFile zipFile = new ZipFile(packageFile))
+        {
+            List<? extends ZipEntry> zipEntries = Collections.list(zipFile.entries());
+            for (ZipEntry ze : zipEntries)
+            {
+                String entryName = ze.getName();
+
+                // Skip non-CoT entries.
+                if (!"cot".equalsIgnoreCase(FileUtils.getExtension(entryName))) continue;
+
+                // Extract UID from file name pattern: map-items/{hash}/{uid}.cot
+                var localName = FileUtils.getNameWithoutExtension(entryName);
+                if (localName.lastIndexOf('/') >= 0) localName = localName.substring(localName.lastIndexOf('/') + 1);
+
+                // Check if the CoT points to one of the passed map objects, adding to the result list if so.
+                //  - Quick check: File name matches UID
+                //  - Slow check:  CoT points to UID
+                if (uids.contains(localName))
+                {
+                    results.put(localName, entryName);
+                } else
+                {
+                    // While we are consistent in our naming conventions to allow a quick check like above
+                    // not everyone else follows such conventions.
+                    byte[] bytes = zipFile.getInputStream(ze).readAllBytes();
+                    String cotXml = new String(bytes);
+                    CotEvent event = CotEvent.parse(cotXml);
+                    String uid = event.getUID();
+                    if (uids.contains(uid)) results.put(uid, entryName);
+                }
+            }
+        }
+        return results;
     }
 
     /**

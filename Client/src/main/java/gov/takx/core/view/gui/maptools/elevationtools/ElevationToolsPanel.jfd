@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -14,12 +14,22 @@ new FormModel {
 				name: "tabPane"
 				"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				add( new FormComponent( "gov.takx.core.view.gui.maptools.elevationtools.heatmap.HeatMapPanel" ) {
+					name: "heatMapPanel"
+				}, new FormLayoutConstraints( null ) {
+					"title": "HeatMap"
+				} )
 				add( new FormComponent( "gov.takx.core.view.gui.maptools.elevationtools.viewshed.ViewshedPanel" ) {
 					name: "viewshedPanel"
 					"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 					"minimumSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				}, new FormLayoutConstraints( null ) {
 					"title": "Viewshed"
+				} )
+				add( new FormComponent( "gov.takx.core.view.gui.contour.ContourListPanel" ) {
+					name: "contoursPanel"
+				}, new FormLayoutConstraints( null ) {
+					"title": "Contours"
 				} )
 			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
 				"gridX": 1

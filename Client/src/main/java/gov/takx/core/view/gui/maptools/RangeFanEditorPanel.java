@@ -14,6 +14,7 @@ import gov.takx.api.shapes.ShapeProperties;
 import gov.takx.api.shapes.ShapeType;
 import gov.takx.api.ui.IResourceCleaner;
 import gov.takx.commons.swing.BoundedDoubleTextField;
+import gov.takx.commons.swing.FormLayoutUtils;
 import gov.takx.commons.swing.IPanelStateListener;
 import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
@@ -135,7 +136,7 @@ public class RangeFanEditorPanel extends AShapePropertiesEditorPanel<IMutableRan
     private RangeFanEditorPanel(@Nullable IMutableRangeFan rangeFan, boolean directActionMode,
                                 @Nullable IPanelStateListener panelListener)
     {
-        super("Range Rings", rangeFan, directActionMode, panelListener);
+        super("Range Fan", rangeFan, directActionMode, panelListener);
 
         setupControls();
 
@@ -208,6 +209,8 @@ public class RangeFanEditorPanel extends AShapePropertiesEditorPanel<IMutableRan
         initializeTextField(minTextField, minUnitsComboBox, d -> minValueChanged());
         initializeTextField(maxTextField, maxUnitsComboBox, d -> maxValueChanged());
         initializeTextField(intervalTextField, intervalUnitsComboBox, d -> intervalValueChanged());
+
+        if (!directActionMode || !initialCreationOnly) FormLayoutUtils.hideRow(txtName);
 
         samplingUnitsComboBox.setSpinner(sampleDistanceSpinner);
         samplingUnitsComboBox.setSelectedItem(rangeUnits);
@@ -737,7 +740,6 @@ public class RangeFanEditorPanel extends AShapePropertiesEditorPanel<IMutableRan
         CellConstraints cc = new CellConstraints();
 
         //======== this ========
-        setBorder(new EmptyBorder(5, 5, 5, 5));
         setName("this");
         setLayout(new FormLayout(
                 "default:grow",

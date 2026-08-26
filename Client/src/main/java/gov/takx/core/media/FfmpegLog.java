@@ -62,7 +62,7 @@ public class FfmpegLog extends LogCallback
             default -> logger.debug(message);
         }
 
-        if (count == SUPPRESS_LIMIT) logger.info("Suppressing further reports of this error");
+        if (count == SUPPRESS_LIMIT) logger.info("Suppressing further reports of this error: {}", message);
     }
 
     /**

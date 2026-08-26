@@ -46,7 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Set;
 
-import static gov.takx.platform.preferences.UserPreferenceEntry.DISPLAY_RANGE_UNITS;
+import static gov.takx.platform.preferences.UserPreferenceEntry.DISPLAY_ALTITUDE_UNITS;
 
 /**
  * Panel allowing the user to view and edit the properties of a layer.
@@ -67,7 +67,7 @@ public class LayerPropertiesPanel extends AProgramPreferencesPanel implements Ge
     private IExtendedGlobeManager globeManager;
 
     private final IPreferenceMonitor<AltitudeUnits> altitudeUnitsMonitor =
-            DISPLAY_RANGE_UNITS.newMonitor(AltitudeUnits.class, uf -> updateTextFieldUnits());
+            DISPLAY_ALTITUDE_UNITS.newMonitor(AltitudeUnits.class, uf -> updateTextFieldUnits());
 
     protected KMFormattedTextField minVisibleAltitudeComponent;
     protected KMFormattedTextField maxVisibleAltitudeComponent;

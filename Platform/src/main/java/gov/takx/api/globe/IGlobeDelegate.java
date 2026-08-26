@@ -2,6 +2,7 @@ package gov.takx.api.globe;
 
 import com.atakmap.map.MapRenderer3;
 import com.atakmap.map.elevation.ElevationManager;
+import com.atakmap.map.layer.feature.geometry.Envelope;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
@@ -583,7 +584,20 @@ public interface IGlobeDelegate
     }
 
     /**
+     * Navigate the globe view to show the given envelope.
+     * The heading and tilt are reset to 0.  This change is animated.
+     *
+     * @param envelope Envelope whose extent should be shown in the view
+     * @since 5.8
+     */
+    default void goTo(@Nonnull Envelope envelope)
+    {
+        getGlobeViewController().goTo(envelope);
+    }
+
+    /**
      * Navigate the globe view to show the given sector.
+     * The heading and tilt are reset to 0.  This change is animated.
      *
      * @param sector Sector whose extent should be shown in the view
      * @since 2.30

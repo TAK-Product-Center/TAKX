@@ -10,6 +10,7 @@ import javax.swing.event.TableModelEvent;
 
 import java.util.ArrayList;
 
+import static gov.takx.commons.swing.entity.TestEntityDefinition.CUSTOM_NAME_COLUMN_NAME;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -28,6 +29,8 @@ public class EntityTableTest
 
         table.setModel(model);
         assertThatThrownBy(() -> table.setModel(model)).isInstanceOf(UnsupportedOperationException.class);
+
+        assertThat(table.requireColumn(definition.getNameColumn()).getTitle()).isEqualTo(CUSTOM_NAME_COLUMN_NAME);
 
         // CommonEntityTable adds an extra column
         assertThat(table.getColumns(true).size()).isEqualTo(definition.getColumns().size() + 1);
@@ -70,6 +73,15 @@ public class EntityTableTest
         var columnData = new EntityColumnData<TestEntity>();
         definition.getColumns().forEach(columnData::addColumn);
         assertThat(columnData.getColumnCount()).isEqualTo(definition.getColumns().size());
+
+        // Tooltips
+        table.requireColumn(definition.getNameColumn()).setVisible(true);
+        table.requireColumn(definition.getSummaryColumn()).setVisible(true);
+        var checkRow = 0;
+        var nameViewCol = table.convertColumnIndexToView(model.getColumnIndex(definition.getNameColumn()));
+        var summaryViewCol = table.convertColumnIndexToView(model.getColumnIndex(definition.getSummaryColumn()));
+        assertThat(table.getToolTipText(checkRow, nameViewCol)).isEqualTo(model.getRow(checkRow).getName());
+        assertThat(table.getToolTipText(checkRow, summaryViewCol)).isEqualTo("Summary");
     }
 
     @SuppressWarnings("DataFlowIssue")
@@ -104,7 +116,7 @@ public class EntityTableTest
         model.addTableModelListener(eventHolder::setValue);
         e.setName("New Name");
         SwingTestUtils.waitForEdtEvents();
-        assertThat(eventHolder.getValue()).isNotNull();
+        assertThat(eventHolder.get()).isNotNull();
     }
 
     @Test
@@ -119,10 +131,30 @@ public class EntityTableTest
         entityTableHeader.addActionButton(button);
         var sortMenu = entityTableHeader.sortMenu;
         sortMenu.update();
-        assertThat(sortMenu.menuItemMap.size()).isEqualTo(definition.getColumns().size() + 1); // All columns + Default
+        var definitionColumns = definition.getColumns().size();
+        var sortableDefinitionColumns = definition.getColumns().stream().filter(column -> !column.name().isEmpty() && column.sortable()).count();
+        assertThat(sortMenu.menuItemMap.size()).isEqualTo(definitionColumns + 1); // columns + Default
+        assertThat(sortMenu.getSortableMenuItems().size()).isEqualTo(sortableDefinitionColumns); // columns
         assertThat(sortMenu.menuItemMap.get(definition.emptyColumn).isVisible()).isFalse(); // Empty column was flagged as not sortable
         assertThat(sortMenu.menuItemMap.get(definition.getSummaryColumn()).isVisible()).isFalse(); // Summary column was flagged as not sortable
-        sortMenu.clickedSort(definition.getNameColumn());
+        sortMenu.setDefaultSortVisible(true);
+        assertThat(sortMenu.getSortableMenuItems().size()).isEqualTo(sortableDefinitionColumns + 1); // columns + Default
+        sortMenu.sort(definition.getNameColumn());
         assertThat(table.getSortedColumn()).isEqualTo(table.getColumn(definition.getNameColumn()));
+        assertThat(table.requireColumn(definition.emptyColumn).getHeaderValue()).isEqualTo(definition.emptyColumn.header());
+
+        // Test props dont throw anything
+        table.setCompactHeaderVisible(false);
+        table.setStandardHeaderVisible(false);
+        table.setActionButtonPanelVisible(false);
+        assertThat(table.isCompactHeaderVisible()).isFalse();
+        assertThat(table.isStandardHeaderVisible()).isFalse();
+        assertThat(table.isActionButtonPanelVisible()).isFalse();
+        table.setCompactHeaderVisible(true);
+        table.setStandardHeaderVisible(true);
+        table.setActionButtonPanelVisible(true);
+        assertThat(table.isCompactHeaderVisible()).isTrue();
+        assertThat(table.isStandardHeaderVisible()).isTrue();
+        assertThat(table.isActionButtonPanelVisible()).isTrue();
     }
 }

@@ -14,12 +14,11 @@ import jakarta.xml.bind.annotation.XmlTransient;
 
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -66,16 +65,16 @@ public class UserIconSet implements IUserIconSet
     private int version = 1;
 
     @XmlElement(name = "icon")
-    private Set<UserIcon> icons = new HashSet<>();
+    private Set<UserIcon> icons = ConcurrentHashMap.newKeySet();
 
     @XmlTransient
     private Path iconSetPath; // Path to source zip
 
     @XmlTransient
-    private final Map<String, UserIcon> iconsByName = new HashMap<>();
+    private final Map<String, UserIcon> iconsByName = new ConcurrentHashMap<>();
 
     @XmlTransient
-    private final Map<String, UserIcon> groupIcons = new HashMap<>();
+    private final Map<String, UserIcon> groupIcons = new ConcurrentHashMap<>();
 
     @SuppressWarnings("unused") // For JAXB
     UserIconSet()
@@ -196,15 +195,17 @@ public class UserIconSet implements IUserIconSet
 
     /**
      * Add (create) a new icon or update an existing icon with the given properties.  The existence check is based
-     * on the given {@code filename}.
+     * on the given {@code filename}. Returns the newly created or updated {@link UserIcon}.
      *
      * @param filename The filename of the icon the add or update
      * @param group The group in which the icon belongs
      * @param zipEntryPath Entry path within the containing zip file
      * @param imageBytes Raw image bytes for the icon
-     * @since 5.2
+     * @return the {@link UserIcon} created or updated
+     * @since 5.2 (signature change in 5.8)
      */
-    public void addOrUpdateIcon(@Nonnull String filename, @Nonnull String group, @Nonnull String zipEntryPath, @Nonnull byte[] imageBytes)
+    @Nonnull
+    public UserIcon addOrUpdateIcon(@Nonnull String filename, @Nonnull String group, @Nonnull String zipEntryPath, @Nonnull byte[] imageBytes)
     {
         UserIcon icon = removeIcon(filename); // Remove it since the changes below will alter its equality metrics
         if (icon == null) icon = new UserIcon(filename);
@@ -215,6 +216,7 @@ public class UserIconSet implements IUserIconSet
         icon.setImageBytes(imageBytes);
 
         addIcon(icon);
+        return icon;
     }
 
     /**

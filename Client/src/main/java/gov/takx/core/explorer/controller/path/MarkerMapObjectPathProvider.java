@@ -31,15 +31,19 @@ public class MarkerMapObjectPathProvider implements IExplorablePathProvider
         {
             final String groupName = mapObject.getGroupName();
 
-            if (mapObject instanceof IconMapObject)
+            if (mapObject.hasMetaValue(StandardAttributeNames.MODEL_NAME))
+            {
+                final String group = mapObject.getMetaString(StandardAttributeNames.MODEL_GROUP, "Other");
+                return ExplorerUtils.extendPath(ExplorerPathConstants.VEHICLE_MODELS_PATH, group);
+            } else if (mapObject instanceof IconMapObject)
             {
                 if (groupName.contains("2525") || mapObject.getDisplayableType().contains("2525"))
                 {
-                    if (AffiliationUtils.AffiliationFilter.FRIENDLY.test(mapObject)) return ExplorerPathConstants.COT2525C_FRIENDLY_PATH;
-                    if (AffiliationUtils.AffiliationFilter.HOSTILE.test(mapObject)) return ExplorerPathConstants.COT2525C_HOSTILE_PATH;
-                    if (AffiliationUtils.AffiliationFilter.NEUTRAL.test(mapObject)) return ExplorerPathConstants.COT2525C_NEUTRAL_PATH;
-                    if (AffiliationUtils.AffiliationFilter.UNKNOWN.test(mapObject)) return ExplorerPathConstants.COT2525C_UNKNOWN_PATH;
-                    return ExplorerPathConstants.COT2525C_OTHER_PATH;
+                    if (AffiliationUtils.AffiliationFilter.FRIENDLY.test(mapObject)) return ExplorerPathConstants.COT2525_FRIENDLY_PATH;
+                    if (AffiliationUtils.AffiliationFilter.HOSTILE.test(mapObject)) return ExplorerPathConstants.COT2525_HOSTILE_PATH;
+                    if (AffiliationUtils.AffiliationFilter.NEUTRAL.test(mapObject)) return ExplorerPathConstants.COT2525_NEUTRAL_PATH;
+                    if (AffiliationUtils.AffiliationFilter.UNKNOWN.test(mapObject)) return ExplorerPathConstants.COT2525_UNKNOWN_PATH;
+                    return ExplorerPathConstants.COT2525_OTHER_PATH;
                 } else
                 {
                     return MapObjectGroupNames.DEVICES_GROUP.equalsIgnoreCase(groupName)

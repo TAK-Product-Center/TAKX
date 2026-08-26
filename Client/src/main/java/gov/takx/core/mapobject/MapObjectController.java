@@ -64,6 +64,8 @@ import gov.takx.api.tracks.ITrackStylingContext;
 import gov.takx.api.ui.IUISpaceManager;
 import gov.takx.commons.constants.CommServiceType;
 import gov.takx.commons.constants.State;
+import gov.takx.commons.lang.IPropertyChangeDelegateSupport;
+import gov.takx.commons.lang.IPropertyChangeListenerSupport;
 import gov.takx.commons.security.IParserEncryptionKey;
 import gov.takx.commons.swing.AlwaysOnTopJOptionPane;
 import gov.takx.commons.utils.StringUtils;
@@ -132,6 +134,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -142,7 +145,7 @@ import java.util.stream.Collectors;
  */
 @SuppressWarnings("CdiManagedBeanInconsistencyInspection")
 @PseudoBean
-public class MapObjectController extends APluginDelegate implements IMapObjectController, PropertyChangeListener
+public class MapObjectController extends APluginDelegate implements IMapObjectController, PropertyChangeListener, IPropertyChangeDelegateSupport
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -1061,16 +1064,11 @@ public class MapObjectController extends APluginDelegate implements IMapObjectCo
         if (mapObject.canHaveAlarms()) dataMonitorServices.removeDataMonitor(dm);
     }
 
+    @Nonnull
     @Override
-    public void addPropertyChangeListener(@Nonnull PropertyChangeListener listener)
+    public IPropertyChangeListenerSupport getPropertyChangeListenerSupport()
     {
-        dataMonitorServices.addPropertyChangeListener(listener);
-    }
-
-    @Override
-    public void removePropertyChangeListener(@Nonnull PropertyChangeListener listener)
-    {
-        dataMonitorServices.removePropertyChangeListener(listener);
+        return dataMonitorServices;
     }
 
     /**
@@ -1631,13 +1629,10 @@ public class MapObjectController extends APluginDelegate implements IMapObjectCo
     @Override
     public void updateDefaultCommPath(CommServiceType commType, String commName)
     {
+        if (defaultCommType == commType && Objects.equals(defaultCommName, commName)) return;
+
         defaultCommType = commType;
         defaultCommName = commName;
-
-        if (null == pluginController)
-        {
-            return;
-        }
 
         if (pluginController instanceof IDefaultCommsPathManager commsPathManager)
         {

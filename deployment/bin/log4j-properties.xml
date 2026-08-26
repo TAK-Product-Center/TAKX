@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Properties>
+    <Property name="takx.logFileDir">.</Property> <!-- Default to execution directory -->
     <Property name="takx.instance.suffix"/> <!-- default to empty -->
     <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss,SSS zzz}{UTC} %5p [%t] (%c{1}:%L) - %m%n</Property>
     <Property name="LOG_BUILD">RELEASE</Property>

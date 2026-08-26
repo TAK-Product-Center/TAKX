@@ -10,7 +10,6 @@ import gov.tak.api.maps.coords.GeoPoint;
 import gov.tak.api.maps.coords.GeoPointMetaData;
 import gov.tak.api.util.StandardAttributeNames;
 import gov.takx.api.annotation.Headless;
-import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.event.StartProjectServices;
 import gov.takx.api.event.StopProjectServices;
 import gov.takx.api.event.location.LocationChanged;
@@ -25,6 +24,7 @@ import gov.takx.api.preferences.IPreferenceMonitor;
 import gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum;
 import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.platform.ui.UIResources;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -150,7 +150,6 @@ public class LocationTracker implements ILocationTracker
      *
      * @param newLocation new location, {@code null} (meaning no location) will hide the marker
      */
-    @InvokeOnEDT
     private void updateMarkerLocation(@Nullable GeoPointMetaData newLocation)
     {
         if (locationMarker != null)
@@ -170,6 +169,9 @@ public class LocationTracker implements ILocationTracker
             } else
             {
                 locationMarker.setVisible(false);
+                movingMarker = true;
+                locationMarker.setGeoPointMetaData(new GeoPointMetaData());
+                movingMarker = false;
                 if (newLocation != null) lastLocation = newLocation.get();
             }
 
@@ -188,16 +190,7 @@ public class LocationTracker implements ILocationTracker
                 .name(MARKER_NAME)
                 .mapObjectOptions(MARKER_OPTIONS)
                 .cotType(CotTypes.SELF)
-                .initializer(mo -> {
-                    mo.setIconImage(MARKER_ICON_URI);
-                    mo.setAllowDrag(false);
-                    mo.setAllowDeviceToBeContainer(false);
-                    if (mo instanceof Marker marker)
-                    {
-                        marker.setStyle(marker.getStyle() | Marker.STYLE_ROTATE_HEADING_MASK);
-                        marker.setStyle(marker.getStyle() | Marker.STYLE_ROTATE_HEADING_NOARROW_MASK);
-                    }
-                })
+                .initializer(LocationTracker::setDefaultTrackerAttributes)
                 .build();
 
         locationMarker = (PointMapItem) mapObjectManager.getOrCreateMapObject(spec);
@@ -213,6 +206,33 @@ public class LocationTracker implements ILocationTracker
         final var menuSpaceManager = locationMarker.getController().getMenuSpaceManager();
 
         MENU_ITEMS_TO_REMOVE.forEach(menuItem -> menuSpaceManager.setPopupMenuVisible(menuItem, false));
+    }
+
+    /**
+     * Assigns default location tracker attributes to the {@link #locationMarker}.
+     * @since 5.8
+     */
+    public void setDefaultTrackerAttributes()
+    {
+        if (locationMarker != null) setDefaultTrackerAttributes(locationMarker);
+    }
+
+    /**
+     * Assigns default location tracker attributes to the given marker.
+     * @param mo Map object to treat as our location marker.
+     * @since 5.8
+     */
+    private static void setDefaultTrackerAttributes(@Nonnull IMapObject mo)
+    {
+        mo.setCotType(CotTypes.SELF);
+        mo.setIconImage(MARKER_ICON_URI);
+        mo.setAllowDrag(false);
+        mo.setAllowDeviceToBeContainer(false);
+        if (mo instanceof Marker marker)
+        {
+            marker.setStyle(marker.getStyle() | Marker.STYLE_ROTATE_HEADING_MASK);
+            marker.setStyle(marker.getStyle() | Marker.STYLE_ROTATE_HEADING_NOARROW_MASK);
+        }
     }
 
     /**

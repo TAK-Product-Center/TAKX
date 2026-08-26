@@ -1,11 +1,9 @@
 package gov.takx.api.milsym;
 
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.tak.api.symbology.Affiliation;
 import gov.tak.api.symbology.ShapeType;
 import gov.takx.api.annotation.NoPluginImplementations;
 import gov.takx.api.mapobject.IMapObject;
-import gov.takx.api.mapobject.IShapeMapObject;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
@@ -21,24 +19,6 @@ import java.util.function.Consumer;
 @NoPluginImplementations
 public interface ISymbolChooser
 {
-    /**
-     * Prepares the symbol chooser with symbol data attached to the given map object.
-     * Automatically {@link #setShapeType(ShapeType) assigns the target shape type} and {@link #setInitialSelection(String) the initial selection}.
-     *
-     * @param mapObject Map object to pull information from.
-     *
-     * @return Self.
-     * @deprecated since = "5.5", forRemoval = true, removeAt = "5.8"
-     * @see #initFromMapObject(IMapObject)
-     */
-    @Nonnull
-    @Deprecated
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    default ISymbolChooser initFromMapObject(@Nonnull IShapeMapObject<?> mapObject)
-    {
-        return initFromMapObject((IMapObject) mapObject);
-    }
-
     /**
      * Prepares the symbol chooser to initialize with symbol data attached to the given map object.
      * Automatically {@link #setInitialSelection(String) assigns the initial selection}.

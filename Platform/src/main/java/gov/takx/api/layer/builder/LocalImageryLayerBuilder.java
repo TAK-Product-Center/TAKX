@@ -11,6 +11,7 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -91,5 +92,20 @@ public abstract class LocalImageryLayerBuilder extends LayerBuilder<LocalImagery
     private static String getRestorableString(List<File> files)
     {
         return files.stream().map(File::getAbsolutePath).collect(Collectors.joining(PATH_SEPARATOR));
+    }
+
+    /**
+     * Retrieves the set of file paths from an imagery layer's restorable string.
+     *
+     * @param restorableState The state string
+     * @return The list of file path strings stored in the restorable state string
+     * @see IRaptorLayer#getRestorableState()
+     * @since 5.8
+     */
+    @Nonnull
+    @Internal
+    public static List<String> parseRestorableString(@Nonnull String restorableState)
+    {
+        return Arrays.stream(restorableState.split(ESCAPED_PATH_SEPARATOR)).toList();
     }
 }

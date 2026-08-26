@@ -291,6 +291,18 @@ public class CotTypes
     public static final String TASK_DESTROY = "t-k-d";
 
     /**
+     * Type indicating a Vehicle Model.
+     * @since 5.8
+     */
+    public static final String VEHICLE_MODEL = "u-d-v-m";
+
+    /**
+     * Viewshed Marker type.
+     * @since 5.8
+     */
+    public static final String VIEWSHED_MARKER_TYPE = "vsd-marker";
+
+    /**
      * Type indicating a waypoint (e.g. a named vertex on a route).
      */
     public static final String WAYPOINT = "b-m-p-w";

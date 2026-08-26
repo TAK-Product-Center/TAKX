@@ -15,6 +15,7 @@ import gov.takx.dataservices.persist.upgraders.UpgradeToV30;
 import gov.takx.dataservices.persist.upgraders.UpgradeToV31;
 import gov.takx.dataservices.persist.upgraders.UpgradeToV32;
 import gov.takx.dataservices.persist.upgraders.UpgradeToV33;
+import gov.takx.dataservices.persist.upgraders.UpgradeToV34;
 import gov.takx.dataservices.persist.upgraders.UpgraderException;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -57,7 +58,8 @@ public class DatabaseUpgradeManager
             UpgradeToV30.class,
             UpgradeToV31.class,
             UpgradeToV32.class,
-            UpgradeToV33.class);
+            UpgradeToV33.class,
+            UpgradeToV34.class);
 
     // The version at which DB upgrade support started.  This removes the need for a bunch of empty entries in UPGRADERS.
     static final int UPGRADE_VERSION_BASE = 24;

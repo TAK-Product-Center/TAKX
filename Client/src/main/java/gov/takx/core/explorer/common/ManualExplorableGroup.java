@@ -13,13 +13,14 @@ import java.util.Collections;
  *
  * @since 5.3
  */
-public class ManualExplorableGroup extends ControllerExplorableGroup implements IManualExplorableGroup
+public class ManualExplorableGroup extends AUserExplorableGroup implements IManualExplorableGroup
 {
     /**
      * Construct a new instance.
      *
      * @param controller the Controller that owns this group
      * @param displayName the display name of the group
+     * @param uniqueKey the unique key
      * @param iconImage the icon for the group
      */
     public ManualExplorableGroup(@Nonnull IExplorerController controller, @Nonnull String displayName, @Nonnull String uniqueKey, @Nullable BufferedImage iconImage)

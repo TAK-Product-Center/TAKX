@@ -21,7 +21,7 @@ import java.util.jar.Manifest;
  *
  * @since 5.2 (renamed from MilVerifier in 5.5)
  */
-public class JarVerifier
+public final class JarVerifier
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -238,7 +238,7 @@ public class JarVerifier
             }
         } else
         {
-            logger.debug("Not an X.509 certificate on [{}] in [{}]: got {}", name, jarFileName, certificate.getType());
+            if (logger.isDebugEnabled()) logger.debug("Not an X.509 certificate on [{}] in [{}]: got {}", name, jarFileName, certificate.getType());
             return Verification.None;
         }
 

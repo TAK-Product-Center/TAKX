@@ -3,7 +3,6 @@ package gov.takx.core.view.gui.drifter;
 import com.atakmap.coremap.maps.coords.NorthReference;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.PseudoBean;
-import gov.takx.api.event.project.ProjectClosing;
 import gov.takx.api.globe.IExtendedGlobeManager;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.preferences.IPreferenceMonitor;
@@ -18,9 +17,9 @@ import gov.takx.platform.utils.units.BearingUnits;
 import gov.takx.platform.utils.units.SpeedUnits;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -76,7 +75,6 @@ public class DrifterPanel extends ATitledPanel implements DrifterController.Drif
         restartButton.setIcon(REFRESH_ACTION_BUTTON_ICON);
 
         table.setModel(tableModel);
-        table.setRowHeight(55);
 
         table.getSummaryColumn().setVisible(true);
         table.getIconColumn().setVisible(true);
@@ -117,19 +115,13 @@ public class DrifterPanel extends ATitledPanel implements DrifterController.Drif
         speedMonitor.dispose();
         bearingMonitor.dispose();
         northMonitor.dispose();
+        controller.removeDrifterConfigurationListener(this);
     }
 
     @InvokeOnEDT
     private void updateSummary(Object ignored)
     {
         tableModel.fireTableColumnUpdated(entityDefinition.getSummaryColumn());
-    }
-
-    @SuppressWarnings("unused")
-    @InvokeOnEDT
-    private void onProjectClosing(@Observes ProjectClosing ignored)
-    {
-        tableModel.clear();
     }
 
     private void addActionPerformed()
@@ -162,19 +154,21 @@ public class DrifterPanel extends ATitledPanel implements DrifterController.Drif
 
     private void tableMouseClicked(MouseEvent e)
     {
-        var point = e.getPoint();
-        var row = table.rowAtPoint(point);
-        if (row != -1)
+        if (!e.isPopupTrigger() && e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 1)
         {
-            var col = table.columnAtPoint(point);
-            if (col != -1)
+            var point = e.getPoint();
+            var row = table.rowAtPoint(point);
+            if (row != -1)
             {
-                var modelColumn = table.convertColumnIndexToModel(col);
-                if (modelColumn == tableModel.getColumnIndex(entityDefinition.getSummaryColumn()))
+                var col = table.columnAtPoint(point);
+                if (col != -1)
                 {
-                    var mapObject = tableModel.getRow(table.convertRowIndexToModel(row));
-                    var lastFocusedGlobe = globeManager.getLastFocusedGlobe();
-                    if (lastFocusedGlobe != null) lastFocusedGlobe.goTo(mapObject.getLocation());
+                    var modelColumn = table.convertColumnIndexToModel(col);
+                    if (modelColumn == tableModel.getColumnIndex(entityDefinition.getSummaryColumn()))
+                    {
+                        var mapObject = tableModel.getRow(table.convertRowIndexToModel(row));
+                        globeManager.getLastFocusedGlobe().goTo(mapObject.getLocation());
+                    }
                 }
             }
         }
@@ -197,11 +191,13 @@ public class DrifterPanel extends ATitledPanel implements DrifterController.Drif
 
         //======== scrollPane ========
         {
+            scrollPane.setBorder(BorderFactory.createEmptyBorder());
             scrollPane.setName("scrollPane");
 
             //---- table ----
             table.setFocusable(false);
             table.setRowSelectionAllowed(false);
+            table.setTextLinesForRowHeight(3);
             table.setName("table");
             table.addMouseListener(new MouseAdapter()
             {

@@ -1,12 +1,9 @@
 package gov.takx.platform.io.csv;
 
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.messages.IRaptorDataMessage;
 import gov.takx.api.messages.IRaptorDataStructure;
-import gov.takx.platform.utils.UnitsFormat;
 import gov.takx.platform.utils.units.AltitudeUnits;
 import gov.takx.platform.utils.units.SpeedUnits;
-import gov.takx.platform.utils.units.UnitsFormatUtils;
 import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,20 +93,6 @@ public class CsvExportStream implements AutoCloseable
     public boolean getUseHeader()
     {
         return useHeader;
-    }
-
-    /**
-     * Set the units format used by the underlying emitter.
-     *
-     * @param unitsFormat Format to use
-     * @deprecated Use {@link #setAltitudeUnits(AltitudeUnits)} and {@link #setSpeedUnits(SpeedUnits)} instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    public void setUnitsFormat(UnitsFormat unitsFormat)
-    {
-        setAltitudeUnits(UnitsFormatUtils.toAltitudeUnits(unitsFormat));
-        setSpeedUnits(UnitsFormatUtils.toSpeedUnits(unitsFormat));
     }
 
     /**

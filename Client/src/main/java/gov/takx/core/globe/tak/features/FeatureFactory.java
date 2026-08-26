@@ -14,6 +14,7 @@ import com.atakmap.spi.PriorityServiceProviderRegistry2;
 import gov.takx.api.mapobject.IIconMapObject;
 import gov.takx.api.url.Schemes;
 import gov.takx.commons.file.FileUtils;
+import gov.takx.commons.swing.ImageUtils;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -29,6 +30,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
+import java.util.Locale;
 
 /**
  * A factory for creating the composite parts of a {@link Feature} from legacy rendering objects.
@@ -52,6 +54,7 @@ public class FeatureFactory
         registerSpi(GlobeShapeMapObjectSpi.SPI);
         registerSpi(MapPointFeatureProvider.SPI);
         registerSpi(MarkerFeatureProvider.SPI);
+        registerSpi(GlobeMarkerModelFeatureProvider.SPI);
         registerSpi(GlobeMarkerFeatureProvider.SPI);
         registerSpi(MilStdGlobeShapeFeatureProvider.SPI);
     }
@@ -220,7 +223,13 @@ public class FeatureFactory
         @Override
         protected InputStream openStream(String uriString) throws Exception
         {
-            return new URL(uriString).openStream();
+            URL url = new URL(uriString);
+            if (!uriString.toLowerCase(Locale.ROOT).endsWith(".svg")) return url.openStream();
+            BufferedImage image = ImageUtils.getImage(url, true);
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            // noinspection DataFlowIssue - image cannot be null as `getImage(url, true)` will not return `null`
+            ImageIO.write(image, "png", os);
+            return new ByteArrayInputStream(os.toByteArray());
         }
     }
 

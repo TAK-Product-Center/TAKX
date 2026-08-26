@@ -50,6 +50,8 @@ class HypersonicDatabaseServer extends ADatabaseServer
     private static final String FILE = "file";
     private static final String SERVER = "server";
 
+    static final String HSQL_SERVER_MODE = "takx.hsql.serverMode";
+
     private static final Map<String, String> DEFAULT_PROPERTIES = Map.of(
             // Our transaction handling config is not changeable
             "hsqldb.tx_conflict_rollback", "true",
@@ -198,6 +200,7 @@ class HypersonicDatabaseServer extends ADatabaseServer
         final Map<String, Object> connectionProperties = new HashMap<>();
         connectionProperties.put(URL, jdbcURL);
         connectionProperties.put(DIALECT, HSQLDialect.class.getName());
+        connectionProperties.put(HSQL_SERVER_MODE, serverMode);
 
         return connectionProperties;
     }

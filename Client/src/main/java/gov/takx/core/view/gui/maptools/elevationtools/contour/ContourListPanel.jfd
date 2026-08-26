@@ -1,0 +1,300 @@
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.7" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "addButton"
+			"toolTipText": "Add a new contour area"
+			auxiliary() {
+				"JavaCodeGenerator.customCreateCode": "new ${field_type}(ADD_ICON);"
+			}
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "onAdd", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 580, 10 )
+			"size": new java.awt.Dimension( 43, 41 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "deleteButton"
+			"enabled": false
+			"toolTipText": "Delete the selected contour area"
+			auxiliary() {
+				"JavaCodeGenerator.customCreateCode": "new ${field_type}(DELETE_ICON);"
+			}
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "onDelete", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 630, 10 )
+			"size": new java.awt.Dimension( 43, 41 )
+		} )
+		add( new FormComponent( "javax.swing.JButton" ) {
+			name: "generationButton"
+			"toolTipText": "Modify contour area creation options"
+			auxiliary() {
+				"JavaCodeGenerator.customCreateCode": "new ${field_type}(SETTINGS_ICON);"
+			}
+			addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "onShowGenerationOptions", false ) )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 675, 10 )
+			"size": new java.awt.Dimension( 43, 41 )
+		} )
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "this"
+			add( new FormComponent( "gov.takx.commons.swing.entity.ActionButtonPanel" ) {
+				name: "topToolsPanel"
+				"border": new javax.swing.border.CompoundBorder( new javax.swing.border.MatteBorder( 0, 0, 1, 0, sfield java.awt.Color gray ), new javax.swing.border.EmptyBorder( 4, 4, 4, 4 ) )
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+					"JavaCodeGenerator.customCreateCode": "new ${field_type}(addButton, deleteButton, generationButton);"
+				}
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "North"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "scrollWrapper"
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+				"$columnSpecs": "default, labelcompgap, default, labelcompgap, default:grow"
+				"$rowSpecs": "fill:default"
+			} ) {
+				name: "bottomEditorPanel"
+				"border": new javax.swing.border.MatteBorder( 1, 0, 0, 0, sfield java.awt.Color gray )
+				"enabled": false
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default, labelcompgap, default"
+					"$rowSpecs": "default, linegap, default, linegap, default, linegap, default"
+				} ) {
+					name: "featureTogglePanel"
+					"border": new javax.swing.border.CompoundBorder( new javax.swing.border.TitledBorder( "Contour display" ), &EmptyBorder0 new javax.swing.border.EmptyBorder( 4, 4, 4, 4 ) )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JCheckBox" ) {
+						name: "majorsCheck"
+						"text": "Major contours"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridWidth": 3
+					} )
+					add( new FormComponent( "javax.swing.JCheckBox" ) {
+						name: "minorsCheck"
+						"text": "Minor contours"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 3
+						"gridWidth": 3
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "majorThicknessPrefix"
+						"text": "Major thickness"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 5
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "majorThicknessText"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 5
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "minorThicknessPrefix"
+						"text": "Minor thickness"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 7
+					} )
+					add( new FormComponent( "javax.swing.JTextField" ) {
+						name: "minorThicknessText"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 7
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 1
+					"gridY": 1
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default, labelcompgap, default"
+					"$rowSpecs": "default, linegap, default"
+				} ) {
+					name: "labelControlsPanel"
+					"border": new javax.swing.border.CompoundBorder( new javax.swing.border.TitledBorder( "Label display" ), #EmptyBorder0 )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JCheckBox" ) {
+						name: "labelsCheck"
+						"text": "Show labels"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridWidth": 3
+					} )
+					add( new FormComponent( "javax.swing.JLabel" ) {
+						name: "labelUnitsPrefix"
+						"text": "Label units"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridY": 3
+					} )
+					add( new FormComponent( "javax.swing.JComboBox" ) {
+						name: "labelUnitsCombo"
+						"model": new javax.swing.DefaultComboBoxModel {
+							selectedItem: "Meters"
+							addElement( "Meters" )
+							addElement( "Feet" )
+							addElement( "Yards" )
+						}
+						addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "onLabelUnitsChanged", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 3
+						"gridY": 3
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 3
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+					"$columnSpecs": "default"
+					"$rowSpecs": "default, linegap, default"
+				} ) {
+					name: "colorSchemePanel"
+					"border": new javax.swing.border.CompoundBorder( new javax.swing.border.TitledBorder( "Color scheme" ), #EmptyBorder0 )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JComboBox" ) {
+						name: "colorSchemeCombo"
+						"model": new javax.swing.DefaultComboBoxModel {
+							selectedItem: "Flat major/minor"
+							addElement( "Flat major/minor" )
+							addElement( "Elevation gradient" )
+						}
+						addEvent( new FormEvent( "java.awt.event.ItemListener", "itemStateChanged", "onColorSchemeChanged", false ) )
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 1
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+						name: "colorSchemeWrapperPanel"
+					}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+						"gridX": 1
+						"gridY": 3
+					} )
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+					"gridX": 5
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "South"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 0, 0 )
+			"size": new java.awt.Dimension( 535, 375 )
+		} )
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default, labelcompgap, default"
+			"$rowSpecs": "default, linegap, default, linegap, default"
+		} ) {
+			name: "colorSchemeFlatPanel"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "flatMajorColorPrefix"
+				"text": "Major contour: "
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "flatMajorColorButton"
+				"border": &LineBorder0 new javax.swing.border.LineBorder( sfield java.awt.Color white, 1, false )
+				"preferredSize": &Dimension0 new java.awt.Dimension( 16, 16 )
+				"background": new java.awt.Color( 255, 255, 255, 255 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "flatMinorColorPrefix"
+				"text": "Minor contour:"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "flatMinorColorButton"
+				"border": &LineBorder1 new javax.swing.border.LineBorder( sfield java.awt.Color white, 1, false )
+				"preferredSize": &Dimension1 new java.awt.Dimension( 16, 16 )
+				"background": new java.awt.Color( 204, 204, 204, 255 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "outlinesCheck2"
+				"text": "Outlines"
+				"selected": true
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+				"gridWidth": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 585, 140 )
+			"size": new java.awt.Dimension( 170, 90 )
+		} )
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default, labelcompgap, default"
+			"$rowSpecs": "default, linegap, default, linegap, default"
+		} ) {
+			name: "colorSchemeGradientPanel"
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "gradientMaxPrefixLabel"
+				"text": "Max elevation"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "gradientMaxColorButton"
+				"border": #LineBorder0
+				"preferredSize": #Dimension0
+				"background": new java.awt.Color( 255, 0, 0, 255 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+			} )
+			add( new FormComponent( "javax.swing.JLabel" ) {
+				name: "gradientMinPrefixLabel"
+				"text": "Min elevation"
+				auxiliary() {
+					"JavaCodeGenerator.variableLocal": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JButton" ) {
+				name: "gradientMinColorButton"
+				"border": #LineBorder1
+				"preferredSize": #Dimension1
+				"background": new java.awt.Color( 51, 255, 51, 255 )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 3
+				"gridY": 3
+			} )
+			add( new FormComponent( "javax.swing.JCheckBox" ) {
+				name: "outlinesCheck1"
+				"text": "Outlines"
+				"selected": true
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 5
+				"gridWidth": 3
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 585, 240 )
+			"size": new java.awt.Dimension( 170, 95 )
+		} )
+	}
+}

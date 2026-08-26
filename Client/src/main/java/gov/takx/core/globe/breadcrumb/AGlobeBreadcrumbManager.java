@@ -15,8 +15,9 @@ import com.atakmap.map.layer.feature.style.Style;
 import gov.tak.api.maps.coords.GeoPoint;
 import gov.takx.api.breadcrumb.IBreadcrumb;
 import gov.takx.api.breadcrumb.IBreadcrumbManager;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
+import gov.takx.commons.lang.ErrorThrowingRunnable;
 import gov.takx.core.globe.tak.FeatureUtility;
-import gov.takx.core.globe.tak.features.IFeatureProvider;
 import gov.takx.platform.ui.ResourceDirectory;
 import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
@@ -135,7 +136,7 @@ abstract class AGlobeBreadcrumbManager
     @Nonnull
     FeatureSet createFeatureSet(@Nonnull String name)
     {
-        return new FeatureSet(FEATURE_SET_PROVIDER_NAME, IFeatureProvider.ALL_GLOBES_GROUP_NAME, name, Double.MAX_VALUE, 0);
+        return new FeatureSet(FEATURE_SET_PROVIDER_NAME, ISharedFeatureDataStore.ALL_GLOBES_FEATURE_SET_TYPE, name, Double.MAX_VALUE, 0);
     }
 
     /**
@@ -204,7 +205,7 @@ abstract class AGlobeBreadcrumbManager
      * @param runnable The runnable
      * @param actionName The name of the action to log if errors occur
      */
-    void lockAndExecute(@Nonnull ICheckedRunnable runnable, @Nonnull String actionName)
+    void lockAndExecute(@Nonnull ErrorThrowingRunnable<DataStoreException> runnable, @Nonnull String actionName)
     {
         try
         {
@@ -260,14 +261,5 @@ abstract class AGlobeBreadcrumbManager
                 logger.error("Error querying breadcrumbs to update sizes", e);
             }
         }, "Update breadcrumb sizes");
-    }
-
-    /**
-     * Runnable-like functional interface that re-throws {@link DataStoreException}.
-     */
-    @FunctionalInterface
-    interface ICheckedRunnable
-    {
-        void run() throws DataStoreException;
     }
 }

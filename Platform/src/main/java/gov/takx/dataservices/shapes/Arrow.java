@@ -1,10 +1,6 @@
 package gov.takx.dataservices.shapes;
 
-import com.atakmap.coremap.conversions.Angle;
-import com.atakmap.coremap.conversions.Span;
-import com.atakmap.coremap.maps.coords.NorthReference;
 import com.atakmap.map.elevation.ElevationManager;
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.tak.api.engine.map.coords.GeoCalculations;
 import gov.tak.api.engine.map.coords.IGeoPoint;
 import gov.tak.api.maps.coords.GeoPoint;
@@ -15,7 +11,6 @@ import gov.takx.api.shapes.ShapeProperties;
 import gov.takx.platform.preferences.UserPreferenceEntry;
 import gov.takx.platform.utils.units.BearingUnits;
 import gov.takx.platform.utils.units.RangeUnits;
-import gov.takx.platform.utils.units.SpanConversionUtils;
 import jakarta.annotation.Nonnull;
 
 import java.util.List;
@@ -230,41 +225,6 @@ public class Arrow extends AIrregularShape implements IMutableArrow
     public String getRangeLabelText()
     {
         return MONITORS.rangeUnitsMonitor.getCurrentValue().format(range, 1);
-    }
-
-    /**
-     * @param location Location (origin) of the arrow
-     * @param range Range to the endpoint, in meters
-     * @param bearing Bearing from location to endpoint, degrees true
-     * @param northReference Target North Reference
-     * @param bearingUnits Target Bearing Units
-     * @return a string describing the bearing of the arrow based on the given parameters, e.g.
-     * '{@code 1,234 milsT}' and '{@code 2.34 radM}'
-     * @since 5.0
-     * @deprecated Use {@link BearingUnits#format(IGeoPoint, double, double)} instead
-     */
-    @SuppressWarnings("unused")
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    public static String getBearingLabelText(ILocation location, double range, double bearing, NorthReference northReference, @Nonnull Angle bearingUnits)
-    {
-        return MONITORS.bearingUnitsMonitor.getCurrentValue().format(location, range, bearing);
-    }
-
-    /**
-     * Creates a string describing the length of the arrow and the units of measurement.
-     *
-     * @param range Range to format, in meters
-     * @param unitsSystem Target units system, one of {@link Span#ENGLISH}, {@link Span#METRIC}, or {@link Span#NM}
-     * @return A string representation of the range, e.g., '{@code 123.4 ft}' and '{@code 1,234 km}' and '{@code 12.3 NM}'
-     * @since 5.0
-     * @deprecated Use {@link gov.takx.platform.utils.units.RangeUnits#format(double, int)} instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    public static String getRangeLabelText(double range, int unitsSystem)
-    {
-        return SpanConversionUtils.rangeUnitsFromSpanSystem(unitsSystem).format(range, 1);
     }
 
     /**

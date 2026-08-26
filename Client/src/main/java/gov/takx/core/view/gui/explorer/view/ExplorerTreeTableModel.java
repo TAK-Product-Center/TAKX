@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.beans.PropertyChangeListener;
 import java.lang.invoke.MethodHandles;
+import java.util.List;
 
 /**
  * This TreeTableModel is necessary to apply some Explorer specific logic to the base model class. Specifically:
@@ -60,17 +61,14 @@ public class ExplorerTreeTableModel extends EntityTreeTableModel<IExplorable>
     {
         super.addListeners(entity);
         // Handling the vis listener has to happen here because the filtered entity models do not currently manage their own listeners
-        var listeners = getListenerMap(entity);
         var visListener = (PropertyChangeListener) event -> visibilityManager.updateAndRollUpVisibility((IExplorable) event.getSource());
-        ((ExplorableEntityDefinition) getEntityDefinition()).addPropertyChangeListener(entity, IExplorable.VISIBLE, visListener);
-        listeners.put(IExplorable.VISIBLE, visListener);
+        listenerManager.addPropertyChangeListener(entity, List.of(IExplorable.VISIBLE), visListener);
     }
 
     @Override
     @InvokeOnEDT
     protected void addEntityInternal(@Nonnull IExplorable parent, @Nonnull IExplorable entity, int index)
     {
-        // TODO DCW TAKX-4226 duplicate items are being added to the explorer somehow
         if (!getChildrenInternal(parent).contains(entity))
         {
             super.addEntityInternal(parent, entity, index);
@@ -80,7 +78,22 @@ public class ExplorerTreeTableModel extends EntityTreeTableModel<IExplorable>
             modelSupport.fireEntityHierarchyChanged(parent);
         } else
         {
-            logger.warn("Attempting to add duplicate child to parent: {} child: {}", parent, entity);
+            /*
+            Catching and ignoring duplicates:
+            
+            Normally you would force the code outside the model to add each child individually, but in the case of the explorer items can be added
+            with pre-existing children, so we automatically add those via the #addChildren method below.
+            
+            However, doing this introduces a chance of duplicate insertions. This can happen when
+            IExplorable#CHILD property change events are fired but not processed on the EDT until after the parent (and children) have been added to
+            this model. Once the PCE is finally processed by EntityTreeTableModel (on EDT) the children already exist in this model (having been added
+            by #addChildren), and thus we reach this block.
+            
+            The only true way to avoid it would be for the explorable PCEs to processed via @InvokeAndWaitOnEDT, however that would have serious
+            performance impacts as all explorable add/remove operations would then be bottlenecked by the EDT. Given that we can easily detect these
+            duplicates it is currently preferable to catch them here and ignore them.
+             */
+            logger.debug("Ignoring attempt to add duplicate tree node. Parent: {} Child: {}", parent, entity);
         }
     }
 

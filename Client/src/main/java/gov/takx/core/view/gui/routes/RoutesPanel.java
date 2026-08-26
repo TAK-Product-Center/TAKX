@@ -26,7 +26,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import static gov.takx.platform.ui.UIResources.ACTION_BUTTON_IMAGE_SIZE;
 import static gov.takx.platform.ui.UIResources.ADD_ACTION_BUTTON_ICON;
 
 /**
@@ -65,7 +64,6 @@ public class RoutesPanel extends ATitledPanel
         table.getActionsColumn().setVisible(true);
         table.getVisibilityColumn().setVisible(true);
         table.setRowSelectionAllowed(false);
-        table.setRowHeight(ACTION_BUTTON_IMAGE_SIZE.height + 15);
 
         table.getTableHeader().addActionButton(addButton);
         table.getTableHeader().addActionButton(importButton);

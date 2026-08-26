@@ -238,4 +238,12 @@ public class MarkerImporterTest extends AIntegrationTest
         final IMapObject mapObject = mapObjectPersist.findMapObjectByUid(MARKER_UID);
         assertThat(mapObject.isTransient()).isTrue();
     }
+
+    @Test
+    void cotCapabilitiesMessage_doesNotCreateMarker() throws IOException
+    {
+        final String cotMessage = getResourceAsString("/cot/marker.cot").replace(MARKER_TYPE, "c-x");
+        assertThat(cotImportHelper.parseAndImportCot(cotMessage).join()).isEqualTo(ImportResult.FAILURE);
+        assertThat(mapObjectPersist.findMapObjectByUid(MARKER_UID)).isNull();
+    }
 }

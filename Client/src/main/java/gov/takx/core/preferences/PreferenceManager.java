@@ -9,7 +9,6 @@ import gov.takx.api.ui.IUserProxy;
 import gov.takx.commons.file.FileUtils;
 import gov.takx.commons.preferences.PreferenceUtils;
 import gov.takx.core.preferences.migrations.ProgramPropertiesMigrationManager;
-import gov.takx.platform.ProductFlavor;
 import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.platform.preferences.PreferencesNode;
 import gov.takx.platform.utils.InjectionUtils;
@@ -100,27 +99,6 @@ public class PreferenceManager extends APreferenceManager implements IProgramPre
     public WindowSettings produceWindowSettings(InjectionPoint injectionPoint)
     {
         return getCachedPreferenceEntryFromInjection(injectionPoint).getNodeAs(WindowSettings.class);
-    }
-
-    /**
-     * @param injectionPoint Point of injection.
-     * @return The flavor of TAKX being used.
-     * @since 5.0
-     */
-    @Produces
-    @Dependent
-    @ProgramPreference
-    @Deprecated(since = "5.5", forRemoval = true)
-    public ProductFlavor produceProductFlavor(InjectionPoint injectionPoint)
-    {
-        String pref = getCachedPreferenceEntryFromInjection(injectionPoint).getStringValue();
-        try
-        {
-            return ProductFlavor.valueOf(pref);
-        } catch (IllegalArgumentException e)
-        {
-            return ProductFlavor.CIV;
-        }
     }
 
     @Produces

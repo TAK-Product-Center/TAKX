@@ -1,6 +1,5 @@
 package gov.takx.api.explorer;
 
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.annotation.Experimental;
 import gov.takx.api.annotation.NoPluginImplementations;
 
@@ -14,12 +13,9 @@ import java.util.List;
  * has no children. That may very well involve un-deprecating this, but that would also mean converting it to more of a
  * tagging interface.
  * @since 2.38 originally created as a core capability in client in  1.48
- * @deprecated Group functionality is being merged into the base {@link IExplorable} interface
  */
 @NoPluginImplementations
 @Experimental
-@Deprecated(since = "5.3", forRemoval = true)
-@DeprecatedApi(since = "5.3", forRemoval = true, removeAt = "5.6")
 public interface IExplorableGroup extends IExplorable
 {
     /**

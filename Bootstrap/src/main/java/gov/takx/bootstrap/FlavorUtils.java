@@ -15,7 +15,7 @@ import static gov.takx.bootstrap.FlavorConstants.MF_ATTR_TAKX_FLAVOR;
  *
  * @since 5.5
  */
-public class FlavorUtils
+public final class FlavorUtils
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -47,5 +47,9 @@ public class FlavorUtils
     public static boolean isCiv(String flavor)
     {
         return flavor == null || flavor.isEmpty() || FlavorConstants.CIV.equalsIgnoreCase(flavor);
+    }
+
+    private FlavorUtils()
+    {
     }
 }

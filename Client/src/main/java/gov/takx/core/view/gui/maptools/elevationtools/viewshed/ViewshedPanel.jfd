@@ -1,4 +1,4 @@
-JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.3" encoding: "UTF-8"
+JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
 
 new FormModel {
 	contentType: "form/swing"
@@ -18,6 +18,7 @@ new FormModel {
 					"selectionMode": 0
 					"preferredScrollableViewportSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
 					"preferredSize": sfield com.jformdesigner.model.FormObject NULL_VALUE
+					"focusable": false
 					auxiliary() {
 						"JavaCodeGenerator.typeParameters": "ViewshedLayer"
 					}

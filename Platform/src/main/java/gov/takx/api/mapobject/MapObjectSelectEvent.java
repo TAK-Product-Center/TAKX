@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @since 1.40
  */
-@SuppressWarnings({"StringEquality", "UnusedDeclaration"})
+@SuppressWarnings({"StringEquality", "UnusedDeclaration", "PMD.UseEqualsToCompareStrings"})
 public class MapObjectSelectEvent extends EventObject
 {
     /**

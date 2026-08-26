@@ -3,12 +3,9 @@ package gov.takx.api.coordinatesystem;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.coords.MGRSCoord;
-import gov.nasa.worldwind.util.UnitsFormat;
 import gov.nasa.worldwind.util.WWMath;
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.tak.api.maps.coords.GeoPoint;
 import gov.takx.platform.utils.units.AltitudeUnits;
-import gov.takx.platform.utils.units.UnitsFormatUtils;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.slf4j.Logger;
@@ -224,16 +221,6 @@ public enum CoordinateSystem
     }
 
     /**
-     * @deprecated Use {@link #getFormattedLocationString(ILocation, CoordinateSystem, AltitudeUnits)} instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    public static String getFormattedLocationString(ILocation location, CoordinateSystem coordinateSystem, UnitsFormat unitsFormat)
-    {
-        return getFormattedLocationString(location, coordinateSystem, UnitsFormatUtils.toAltitudeUnits(unitsFormat));
-    }
-
-    /**
      * @param location The location; if {@code null} or an {@link GeoPoint#UNKNOWN_POINT}, the {@link #NO_LOCATION} 
      *                 string will be returned
      * @param coordinateSystem The coordinate system to use when formatting the coordinates
@@ -272,16 +259,6 @@ public enum CoordinateSystem
         }
 
         return internalGetLocationString(location, coordinateSystem) + elevationString;
-    }
-
-    /**
-     * @deprecated Use {@link #getLocationString(ILocation, CoordinateSystem, boolean, AltitudeUnits)} instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    public static String getLocationString(ILocation location, CoordinateSystem coordinateSystem, boolean withElev, UnitsFormat unitsFormat)
-    {
-        return getLocationString(location, coordinateSystem, withElev, UnitsFormatUtils.toAltitudeUnits(unitsFormat));
     }
 
     /**
@@ -403,23 +380,6 @@ public enum CoordinateSystem
         // unsupported.
         //
         return getLocationString(location, getCoordinateSystem(coordinateSystemString, DECIMAL_DEGREES), withElev);
-    }
-
-    /**
-     * Format the given LatLon location according to the given coordinate system, elevation and unit of measure preference.
-     *
-     * @param location               LatLon location to format
-     * @param coordinateSystemString Coordinate system to use to format the location
-     * @param withElev               Boolean - Include Elevation?
-     * @param uomPrefsString         Unit of measure from preferences
-     * @return formatted location string
-     * @deprecated use {@link #getLocationString(ILocation, String, boolean, AltitudeUnits)} instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    public static String getLocationString(ILocation location, String coordinateSystemString, boolean withElev, String uomPrefsString)
-    {
-        return getLocationString(location, coordinateSystemString, withElev, UnitsFormatUtils.toAltitudeUnits(uomPrefsString));
     }
 
     /**
@@ -775,12 +735,12 @@ public enum CoordinateSystem
         int sign = 1;
         if (!signGroup.isEmpty())
         {
-            sign *= signGroup.equals("-") ? -1 : 1;
+            sign *= "-".equals(signGroup) ? -1 : 1;
             coordSb.deleteCharAt(0);
         }
         if (!cardinalGroup.isEmpty())
         {
-            sign *= (cardinalGroup.equalsIgnoreCase("N") || cardinalGroup.equalsIgnoreCase("E")) ? 1 : -1;
+            sign *= ("N".equalsIgnoreCase(cardinalGroup) || "E".equalsIgnoreCase(cardinalGroup)) ? 1 : -1;
             coordSb.deleteCharAt(coordSb.length() - 1);
         }
         return sign;
@@ -852,7 +812,7 @@ public enum CoordinateSystem
     public static String getHMSDegreesString(double angle)
     {
         var parts = getDMSDegreesParts(angle);
-        return String.format("%2d\u00B0%2d'%4.1f\"", (int) parts[0], (int) parts[1], parts[2]);
+        return String.format("%2d°%2d'%4.1f\"", (int) parts[0], (int) parts[1], parts[2]);
     }
 
     /**
@@ -878,7 +838,7 @@ public enum CoordinateSystem
     public static String getHMDegreesString(double angle)
     {
         double[] parts = getDMDegreesParts(angle);
-        return String.format("%2d\u00B0%6.3f'", (int) parts[0], parts[1]);
+        return String.format("%2d°%6.3f'", (int) parts[0], parts[1]);
     }
 
     /**
@@ -945,7 +905,7 @@ public enum CoordinateSystem
      */
     public static String getDecimalDegreesString(double angle)
     {
-        return String.format("%9.5f\u00B0", angle);
+        return String.format("%9.5f°", angle);
     }
 
     /**

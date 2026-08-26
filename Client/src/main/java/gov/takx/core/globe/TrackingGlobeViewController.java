@@ -142,7 +142,9 @@ public class TrackingGlobeViewController implements PropertyChangeListener, IRap
         }
 
         // Stop watching for changes if it is not also being kept in view
-        stopTracking(centerOn, TrackingType.CENTER_ON, !isKeepInView(centerOn));
+        var priorCenterOn = centerOn;
+        centerOn = null;
+        stopTracking(priorCenterOn, TrackingType.CENTER_ON, !isKeepInView(priorCenterOn));
 
         // Reset the view center position in case the center-on object's elevation was above the terrain, which will
         // prevent the user from zooming past that point
@@ -150,8 +152,6 @@ public class TrackingGlobeViewController implements PropertyChangeListener, IRap
         final var lat = viewCenter.getLatitude().degrees;
         final var lon = viewCenter.getLongitude().degrees;
         orbitView.setCenterPosition(Position.fromDegrees(lat, lon, ElevationManager.getElevation(lat, lon, null)));
-
-        centerOn = null;
     }
 
     /**

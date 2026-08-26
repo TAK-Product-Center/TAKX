@@ -33,7 +33,7 @@ public abstract class NavigationConfiguration implements IPropertyChangeDelegate
     public static final String ETA = "ETA";
     public static final String CURRENT_TARGET = "CURRENT_TARGET";
     public static final String REVERSED = "REVERSED";
-    private static final List<String> LISTENER_PROPERTIES = List.of(IMapObject.LOCATION);
+    private static final List<String> LISTENER_PROPERTIES = List.of(IMapObject.LOCATION, IMapObject.NAME);
 
     @Inject
     protected NavigationManager navigationManager;
@@ -45,7 +45,6 @@ public abstract class NavigationConfiguration implements IPropertyChangeDelegate
     protected final PrioritizedPropertyChangeSupport propertyChangeSupport = new PrioritizedPropertyChangeSupport(this);
     protected final ListenerManager listenerManager = new ListenerManager();
     protected final List<NavigationTarget> targets = new ArrayList<>();
-    protected long arrivalRadius = 10;
     protected final String id = UUID.randomUUID().toString();
     protected final IPointMapObject sourceMapObject;
     protected final IMapObject targetMapObject;
@@ -269,6 +268,13 @@ public abstract class NavigationConfiguration implements IPropertyChangeDelegate
     }
 
     /**
+     * @param target the target map object
+     * @return {@code true} if the source has arrived at the target
+     * @since 5.8
+     */
+    protected abstract boolean arrivedAt(@Nonnull IMapObject target);
+
+    /**
      * Recalculates ETAs for all navigation targets and checks to see if we've arrived at the current target.
      */
     void update()
@@ -279,14 +285,9 @@ public abstract class NavigationConfiguration implements IPropertyChangeDelegate
         //  at least 1.
         if (!targets.isEmpty())
         {
-            if (arrivedAt(sourceMapObject, getCurrentTarget().getTarget())) moveToNextTarget();
+            if (arrivedAt(getCurrentTarget().getTarget())) moveToNextTarget();
             getCurrentTarget().update();
             if (flasher != null) flasher.update();
         }
-    }
-
-    private boolean arrivedAt(@Nonnull IMapObject source, @Nonnull IMapObject target)
-    {
-        return source.getLocation().distanceTo(target.getLocation()) <= arrivalRadius;
     }
 }

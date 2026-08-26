@@ -354,6 +354,7 @@ public class ConnectionManager implements IConnectionManager
     }
 
     @Override
+    @Nonnull
     public IComposedConnectionController getControllerFromConnectionKey(String uniqueKey) throws NoSuchConnectionControllerException
     {
         IComposedConnectionController controller = conxToController.get(uniqueKey);
@@ -521,7 +522,7 @@ public class ConnectionManager implements IConnectionManager
      * @see ComposedConnectionController#getUniqueKey()
      */
     @Override
-    public void removeConnection(String key, boolean isActiveConnection)
+    public void removeConnection(@Nonnull String key, boolean isActiveConnection)
     {
         if (logger.isDebugEnabled()) logger.debug("Remove Connection {}, isActive = {}", key, isActiveConnection);
 

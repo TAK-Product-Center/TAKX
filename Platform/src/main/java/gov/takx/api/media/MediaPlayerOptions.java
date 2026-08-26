@@ -11,7 +11,7 @@ import jakarta.annotation.Nonnull;
 @Experimental
 public class MediaPlayerOptions
 {
-    private String uuid = null;
+    private String uuid;
     private String title;
     private boolean displayControls = true;
     private boolean autoplayMedia = true;
@@ -25,7 +25,7 @@ public class MediaPlayerOptions
      *     <li>displayControls=true</li>
      * </ul>
      *
-     * @param title The title for the player. this is required and non null.
+     * @param title The title for the player. this is required and non-null.
      * @since 2.37
      */
     public MediaPlayerOptions(@Nonnull String title)
@@ -34,9 +34,7 @@ public class MediaPlayerOptions
     }
 
     /**
-     * Get the media player's title.
-     *
-     * @return The title
+     * @return The media player's title
      */
     public String getTitle()
     {
@@ -52,9 +50,7 @@ public class MediaPlayerOptions
     }
 
     /**
-     * Set whether the player will include built-in playback controls (play/pause/seek).
-     *
-     * @param displayControls True to enable playback controls in the player
+     * @param displayControls Pass {@code true} to enable/show playback controls in the player, {@code false} to disable/hide
      */
     public void setPlaybackControlsEnabled(boolean displayControls)
     {
@@ -62,9 +58,7 @@ public class MediaPlayerOptions
     }
 
     /**
-     * Get whether the player includes built-in playback controls (play/pause/seek).
-     *
-     * @return True if built-in playback controls are enabled
+     * @return {@code true} if built-in playback controls are enabled
      */
     public boolean isPlaybackControlsEnabled()
     {
@@ -72,9 +66,7 @@ public class MediaPlayerOptions
     }
 
     /**
-     * Set whether media specified in constructor will automatically start playing.
-     *
-     * @param autoplayMedia True to automatically start playing media upon player creation
+     * @param autoplayMedia Pass {@code true} to automatically start playing media upon player creation
      */
     public void setAutoplayMedia(boolean autoplayMedia)
     {
@@ -82,9 +74,7 @@ public class MediaPlayerOptions
     }
 
     /**
-     * Get whether the media will be automatically played upon creation.
-     *
-     * @return True if the media will be automatically played
+     * @return {@code true} if the media will be automatically played
      */
     public boolean isAutoplayMedia()
     {

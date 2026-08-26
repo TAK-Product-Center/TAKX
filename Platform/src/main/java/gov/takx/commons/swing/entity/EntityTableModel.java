@@ -1,16 +1,15 @@
 package gov.takx.commons.swing.entity;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import gov.tak.api.annotation.IncubatingApi;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.commons.lang.FastIndexList;
+import gov.takx.commons.lang.ListenerManager;
 import gov.takx.commons.swing.AbstractTableModelExt;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
 import java.beans.PropertyChangeListener;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +27,10 @@ import java.util.Map;
 @IncubatingApi(since = "5.7")
 public class EntityTableModel<E> extends AbstractTableModelExt
 {
-    private final Map<E, Multimap<String, PropertyChangeListener>> listenerMap = new HashMap<>();
+    /**
+     * @since 5.8
+     */
+    protected final ListenerManager listenerManager = new ListenerManager();
     private final EntityColumnData<E> entityColumnData;
     private final EntityDefinition<E> entityDefinition;
     private final List<E> entities = new FastIndexList<>();
@@ -235,8 +237,7 @@ public class EntityTableModel<E> extends AbstractTableModelExt
         {
             // To ensure we remove listeners from the correct entity, we perform that operation only on the entity removed from our list
             var removed = entities.remove(index);
-            removeListeners(removed);
-            listenerMap.remove(removed);
+            listenerManager.unregister(removed);
             entityColumnData.clearValues(entity);
             fireTableRowsDeleted(index, index);
         }
@@ -275,8 +276,7 @@ public class EntityTableModel<E> extends AbstractTableModelExt
         var size = entities.size();
         if (size > 0)
         {
-            entities.forEach(this::removeListeners);
-            listenerMap.clear();
+            listenerManager.unregisterAll();
             entities.clear();
             entityColumnData.clearValues();
             if (fireEvent) fireTableRowsDeleted(0, size - 1);
@@ -291,27 +291,18 @@ public class EntityTableModel<E> extends AbstractTableModelExt
      */
     private void addListeners(E entity, Multimap<String, EntityColumn<E, ?>> map)
     {
-        var listeners = listenerMap.computeIfAbsent(entity, k -> ArrayListMultimap.create());
         map.keySet().forEach(prop -> {
             var columns = map.get(prop);
             var columnIndexes = columns.stream().mapToInt(this::getColumnIndex).toArray();
             var listener = (PropertyChangeListener) event -> entityPropertyChanged(entity, columnIndexes);
-            entityDefinition.addPropertyChangeListener(entity, prop, listener);
-            listeners.put(prop, listener);
+            entityDefinition.addPropertyChangeListener(listenerManager, entity, prop, listener);
         });
-    }
-
-    private void removeListeners(E entity)
-    {
-        listenerMap.get(entity).forEach((prop, listener) -> entityDefinition.removePropertyChangeListener(entity, prop, listener));
     }
 
     @InvokeOnEDT
     private void entityPropertyChanged(@Nonnull E entity, @Nonnull int[] columnIndices)
     {
         entityColumnData.clearValues(entity, columnIndices);
-        fireTableCellsUpdated(new int[]{indexOf(entity)}, columnIndices);
-        // TODO TAKX-4239 this is a hack because of table sort + rendering issues
         fireTableCellsUpdated(new int[]{indexOf(entity)}, columnIndices);
     }
 

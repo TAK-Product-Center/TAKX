@@ -11,10 +11,14 @@ import gov.tak.platform.datapackage.content.PackageManifest;
 import gov.tak.platform.datapackage.content.PackageManifestContent;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.kml.IKmlLayerService;
-import gov.takx.api.layer.IMobacLayerManager;
+import gov.takx.api.layer.ILayerService;
+import gov.takx.api.layer.LayerConfiguration;
+import gov.takx.api.layer.builder.OnlineImageryLayerBuilder;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.persist.IMapObjectFinder;
+import gov.takx.api.routes.IRouteImportService;
 import gov.takx.commons.swing.AlwaysOnTopJOptionPane;
+import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -50,9 +54,6 @@ public class PackageImporter
     private IMapObjectFinder mapObjectFinder;
 
     @Inject
-    private IMobacLayerManager mobacLayerManager;
-
-    @Inject
     private ISslCertificateManager certificateManager;
 
     @Inject
@@ -60,6 +61,12 @@ public class PackageImporter
 
     @Inject
     private CotImportHelper cotImportHelper;
+
+    @Inject
+    private IRouteImportService routeImportService;
+
+    @Inject
+    private ILayerService layerService;
 
     // Track certs imported via the Manifest contents.
     private final Set<String> certsImported = new HashSet<>();
@@ -263,6 +270,7 @@ public class PackageImporter
                 cotImportHelper.parseAndImportCot(cotMessage).join();
             }
             case "kmz", "kml" -> importKml(zipEntry);
+            case "gpx" -> importGpx(zipEntry);
             default -> deferredAttachments.add(content);
         }
     }
@@ -276,12 +284,16 @@ public class PackageImporter
     {
         try (InputStream inputStream = packageReader.getInputStream(zipEntry))
         {
-            if (mobacLayerManager.isMapSourceXml(inputStream))
+            if (isMapSourceXml(inputStream))
             {
                 final String configXml = packageReader.readEntryAsString(zipEntry);
                 if (!configXml.isEmpty())
                 {
-                    mobacLayerManager.makeLayerFromConfigXml(FilenameUtils.getName(zipEntry), configXml);
+                    LayerConfiguration layerConfiguration = OnlineImageryLayerBuilder.builder()
+                            .setName(FilenameUtils.getName(zipEntry))
+                            .setConfigurationXml(configXml)
+                            .build();
+                    layerService.addLayer(layerConfiguration);
                 }
             }
         } catch (IOException e)
@@ -362,5 +374,36 @@ public class PackageImporter
 
         certificateMap.put(name, certFile);
         certsImported.add(name);
+    }
+
+    private void importGpx(String zipEntry)
+    {
+        try (InputStream inputStream = packageReader.getInputStream(zipEntry))
+        {
+            routeImportService.gpxToRoute(inputStream);
+        } catch (IOException e)
+        {
+            logger.error("Failed to read {} from {}", zipEntry, packageFile, e);
+        }
+    }
+
+    /**
+     * Test if an input stream appears to contain a map source XML config file.
+     *
+     * @param inputStream input stream to test
+     * @return {@code true} if the input stream contains the custom map source XML element
+     */
+    private static boolean isMapSourceXml(@Nonnull InputStream inputStream)
+    {
+        // We only need the first block of the file to determine if it is one of our config files.
+        // If it's valid, the element will always be within the first 512 characters.
+        try
+        {
+            final byte[] bytes = inputStream.readNBytes(512);
+            return new String(bytes).contains("<customMapSource>");
+        } catch (IOException e)
+        {
+            return false;
+        }
     }
 }

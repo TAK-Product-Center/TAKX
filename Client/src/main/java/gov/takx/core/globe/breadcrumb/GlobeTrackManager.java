@@ -10,7 +10,6 @@ import com.atakmap.map.layer.feature.style.BasicStrokeStyle;
 import com.atakmap.map.layer.feature.style.PatternStrokeStyle;
 import com.atakmap.map.layer.feature.style.Style;
 import com.google.common.annotations.VisibleForTesting;
-import gov.tak.core.map.layer.feature.datastore.SharedFeatureDataStore;
 import gov.takx.api.breadcrumb.IBreadcrumb;
 import gov.takx.api.breadcrumb.IBreadcrumbManager;
 import gov.takx.api.breadcrumb.ITrack;
@@ -19,6 +18,7 @@ import gov.takx.api.breadcrumb.event.TrackDeleted;
 import gov.takx.api.breadcrumb.event.TrackUpdated;
 import gov.takx.api.breadcrumb.event.TrackVisibilityChanged;
 import gov.takx.api.event.project.ProjectClosed;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
 import gov.takx.core.globe.tak.FeatureUtility;
 import gov.takx.platform.ui.ResourceDirectory;
 import gov.takx.platform.ui.UIResources;
@@ -59,7 +59,7 @@ public class GlobeTrackManager extends AGlobeBreadcrumbManager
     private final Map<String, GlobeTrack> trackUidToGlobeTrackMap = new ConcurrentHashMap<>();
 
     @Inject
-    GlobeTrackManager(@SharedFeatureDataStore FeatureDataStore4 dataStore, IBreadcrumbManager breadcrumbManager)
+    GlobeTrackManager(ISharedFeatureDataStore dataStore, IBreadcrumbManager breadcrumbManager)
     {
         super(dataStore, breadcrumbManager);
     }

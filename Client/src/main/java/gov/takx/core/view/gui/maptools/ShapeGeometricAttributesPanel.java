@@ -350,7 +350,6 @@ public class ShapeGeometricAttributesPanel extends JPanel implements IResourceCl
 
         protected String formatAngle(double angleDegrees)
         {
-            // Extracted from UnitsFormat.angle()
             return String.format("%9.4f°", angleDegrees).trim();
         }
 

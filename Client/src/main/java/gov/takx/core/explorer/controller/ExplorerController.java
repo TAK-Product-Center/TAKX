@@ -22,12 +22,10 @@ import gov.takx.api.explorer.IUserExplorableGroup;
 import gov.takx.api.mapobject.IDataMonitor;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IMapObjectManager;
-import gov.takx.api.platform.ICoreExecutorService;
 import gov.takx.api.platform.IDataMonitorServices;
 import gov.takx.api.platform.IProgressMonitor;
 import gov.takx.api.plugin.app.IAppListener;
 import gov.takx.api.plugin.app.IImmutableAppInstance;
-import gov.takx.api.shapes.ShapeProperties;
 import gov.takx.api.state.IRestorableMap;
 import gov.takx.api.state.IRestorableMapSupport;
 import gov.takx.commons.swing.AlwaysOnTopJOptionPane;
@@ -107,8 +105,6 @@ public class ExplorerController implements IExplorerController, IAppListener, IR
     private static final String EXPLORABLES_RESTORE_KEY = "Explorables";
 
     @Inject
-    private ICoreExecutorService executorService;
-    @Inject
     private IMapObjectManager mapObjectManager;
     @Inject
     private ICoreAppManager appManager;
@@ -117,6 +113,7 @@ public class ExplorerController implements IExplorerController, IAppListener, IR
 
     private final IExplorer explorer;
     private final IExplorerModel model;
+    private final ExplorerHashtagController hashtagController;
     private final List<IExplorablePathProvider> explorablePathProviders = new ArrayList<>();
     private final Collection<IExplorablePersistor> persistors = new LinkedHashSet<>();
     private final Map<String, IExplorableRuleFactory<? extends IExplorableRule>> ruleFactoriesByType = new ConcurrentHashMap<>();
@@ -134,6 +131,7 @@ public class ExplorerController implements IExplorerController, IAppListener, IR
     private boolean loaded;
 
     /**
+     * @param explorer the explorer
      * @param model the model to use for this controller
      * @since 5.3
      */
@@ -147,6 +145,8 @@ public class ExplorerController implements IExplorerController, IAppListener, IR
 
         // Make sure we create external controllers before adding listeners that depend on them
         alarmsController = new ExplorerAlarmsController(this, explorer);
+
+        hashtagController = new ExplorerHashtagController(explorer);
 
         model.addPropertyChangeListener(this::modelPropertyChange);
 
@@ -174,12 +174,12 @@ public class ExplorerController implements IExplorerController, IAppListener, IR
 
     private void modelPropertyChange(PropertyChangeEvent event)
     {
+        // Ensure we create any new hashtag groups
+        hashtagController.createHashtagGroups(event);
+        // Rule groups will decide whether to refresh or not based on whether they are sensitive to the changed property
+        refreshGroupsForProperty(event.getPropertyName());
         switch (event.getPropertyName())
         {
-            case IMapObject.LOCATION, ShapeProperties.LOCATIONS, ShapeProperties.ORIENTATION -> refreshGroups(getRuleGroups(), RefreshReason.LOCATION);
-            case IMapObject.NAME -> refreshGroups(getRuleGroups(), RefreshReason.NAME);
-            // TODO DCW TAKX-3282 this can be made more efficient if we can get the reference to the actual rule / group
-            case IExplorableRule.RULE_CHANGED -> refreshGroups(getRuleGroups(), RefreshReason.OTHER);
             // The Explorable may have some pre-existing alarms. Request update so they aren't missed.
             case IDataMonitorServices.DATA_MONITOR_ADDED,
                     IDataMonitorServices.DATA_MONITOR_REMOVED,
@@ -415,7 +415,7 @@ public class ExplorerController implements IExplorerController, IAppListener, IR
     @Override
     public void ruleGroupUpdated(@Nonnull IRuleGroupController ruleGroup)
     {
-        if (areRulesEnabled()) refreshGroup(ruleGroup);
+        refreshGroup(ruleGroup);
     }
 
     @Override
@@ -535,40 +535,35 @@ public class ExplorerController implements IExplorerController, IAppListener, IR
     @Override
     public void requestGroupsRefresh()
     {
-        if (areRulesEnabled()) refreshGroups(getRuleGroups(), RefreshReason.OTHER);
+        refreshGroups(null, null);
     }
 
-    private void refreshGroup(IRuleGroupController ruleGroup)
+    private void refreshGroup(@Nonnull IRuleGroupController ruleGroup)
     {
-        refreshGroups(Collections.singletonList(ruleGroup), RefreshReason.OTHER);
+        refreshGroups(Collections.singletonList(ruleGroup), null);
+    }
+
+    // TODO DCW TAKX-3282 this can be made more efficient if we can get the reference to the actual rule / group
+    private void refreshGroupsForProperty(@Nonnull String refreshProperty)
+    {
+        // For the rule changed property we want to skip the sensitivity check
+        if (refreshProperty.equals(IExplorableRule.RULE_CHANGED)) refreshProperty = null;
+        refreshGroups(null, refreshProperty);
     }
 
     /**
-     * Determine if this rule group should be processed based on the refresh reason.
-     *
-     * @param ruleGroup     Rule group to process
-     * @param refreshReason Reason for performing the refresh
-     * @return {@code true} if the rule group should be refreshed based on the reason
-     * @since 2.36
+     * @param ruleGroups the rule groups to refresh, or {@code null} to refresh all
+     * @param refreshProperty the property to check for sensitivity, or {@code null} to skip the check
      */
-    private boolean shouldRefreshGroup(IRuleGroupController ruleGroup, RefreshReason refreshReason)
-    {
-        return switch (refreshReason)
-        {
-            case NAME -> ruleGroup.hasNameSensitiveRules();
-            case LOCATION -> ruleGroup.hasLocationSensitiveRules();
-            case OTHER -> true;
-        };
-    }
-
-    private void refreshGroups(List<IRuleGroupController> ruleGroups, RefreshReason refreshReason)
+    private void refreshGroups(@Nullable List<IRuleGroupController> ruleGroups, @Nullable String refreshProperty)
     {
         if (!areRulesEnabled()) return;
+        if (ruleGroups == null) ruleGroups = getRuleGroups();
         logger.debug("Refreshing Rule Groups={}", ruleGroups);
         List<IExplorable> explorables = null; // delay loading these until we need them
         for (IRuleGroupController ruleGroup : ruleGroups)
         {
-            if (!shouldRefreshGroup(ruleGroup, refreshReason)) continue;
+            if (refreshProperty != null && !ruleGroup.isSensitiveTo(refreshProperty)) continue;
             if (explorables == null) explorables = getGroupableExplorables();
             // Match all explorables against the group's rules.  This results in a set of all the
             // explorables that need to be in the group.  Note that these are ordinary explorables, not proxies.
@@ -843,17 +838,5 @@ public class ExplorerController implements IExplorerController, IAppListener, IR
     public String toString()
     {
         return "ExplorerController=" + hashCode();
-    }
-
-    /**
-     * Indicates the reason for performing a rule group refresh.
-     *
-     * @since 2.36
-     */
-    private enum RefreshReason
-    {
-        LOCATION, // Only affects rule groups containing rules based on location
-        NAME,     // Only affects rule groups containing rules based on explorable name
-        OTHER     // All other updates, will refresh ALL rule groups
     }
 }

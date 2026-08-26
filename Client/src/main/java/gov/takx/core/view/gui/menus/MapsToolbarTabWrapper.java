@@ -38,6 +38,8 @@ import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -45,6 +47,7 @@ import javax.swing.JPopupMenu;
 import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.ActionListener;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +56,8 @@ import java.util.List;
 @PseudoBean
 public class MapsToolbarTabWrapper extends AToolbarTabWrapper
 {
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+
     private static final String ADD_FAVORITE_TOOLTIP = "Save your current view and location as a favorite place. Favorites can be saved with the current project or associated with this computer for use across all projects.";
 //    private static final String CACHE_CLEANER_TOOLTIP = "Clean the directory of stored imagery on this computer to create more available space. Warning: Map data that is removed from the Map Set (store location) cannot be retrieved unless the original source is reconnected or the map data is reinstalled.";
     private static final String CONNECT_TO_IMAGERY_SERVER_TOOLTIP = "Connect to an imagery server to stream imagery and maps from that location. Note: Whatever imagery you view will be stored on this computer for future use. If you disconnect from the imagery server, only this previously viewed imagery will be available. Use the Map Set Builder to download all of the imagery of an area for offline use.";
@@ -224,7 +229,7 @@ public class MapsToolbarTabWrapper extends AToolbarTabWrapper
         }
 
         /**
-         * Remove all of the favorites and their buttons. Stop listening to events.
+         * Remove all the favorites and their buttons. Stop listening to events.
          */
         private void clearState()
         {
@@ -278,13 +283,20 @@ public class MapsToolbarTabWrapper extends AToolbarTabWrapper
             {
                 // Move the favorite and its button
                 favorites.add(favoriteIndex, favorites.remove(currentIndex));
+
                 final ToolbarButton buttonToMove = favoriteButtons.remove(currentIndex);
                 favoriteButtons.add(favoriteIndex, buttonToMove);
 
                 // TODO KMB: ideally, config manager would handle this, but as it stands right now, there is no good way
                 //  to manage component index order on a toolbar tab. This will be addressed in TAKX-1487.
+                final var mapsTab = configurationManager.getReferenceTab(TabType.MAPS.requireSingularId());
+
+                //noinspection DataFlowIssue mapsTab will never be null
+                final int sizeWithoutFavorites = mapsTab.getComponents().size() - favoriteButtons.size();
+
+                // Remove the button and add it back offsetting the insertion index by the overall tab components size
                 configurationManager.removeComponentFromTab(buttonToMove, TabType.MAPS);
-                configurationManager.addButtonToTab(TabType.MAPS, buttonToMove, favoriteIndex);
+                configurationManager.addButtonToTab(TabType.MAPS, buttonToMove, favoriteIndex + sizeWithoutFavorites);
             } else
             {
                 favoriteButtons.get(favoriteIndex).setDisplayText(favorite.getDescription());

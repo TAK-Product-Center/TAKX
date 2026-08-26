@@ -1,7 +1,7 @@
 package gov.takx.core.toolbar;
 
 import gov.takx.api.event.FinalizeToolbars;
-import gov.takx.api.event.project.ProjectClosing;
+import gov.takx.api.event.project.ProjectClosed;
 import gov.takx.api.toolbar.ButtonType;
 import gov.takx.api.toolbar.IToolbarButton;
 import gov.takx.api.toolbar.IToolbarButtonBuilder;
@@ -64,7 +64,7 @@ public class ToolbarManagerTest extends AContainerTest
         configurationManager.getReferenceButtons().forEach(b -> configurationManager.removeReferenceButton(b, false));
         configurationManager.getReferenceTabs().forEach(t -> configurationManager.removeReferenceTab(t));
 
-        CdiTestUtils.invoke(toolbarManager, "cleanup", new ProjectClosing("Test", null));
+        CdiTestUtils.invoke(toolbarManager, "cleanup", new ProjectClosed("Test", null));
     }
 
     @Test

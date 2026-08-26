@@ -1,13 +1,19 @@
 package gov.tak.platform.datapackage.content;
 
 import gov.tak.api.comms.takserver.IDataPackageManager;
+import gov.tak.api.cot.CotTypes;
+import gov.tak.api.cot.event.CotDetail;
 import gov.tak.api.cot.event.CotEvent;
 import gov.tak.api.icons.ICotIconResolver;
+import gov.tak.api.symbology.MilSymDetailHandler;
 import gov.tak.platform.datapackage.PackageReader;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.media.MediaType;
+import gov.takx.api.milsym.IMilStd2525Service;
+import gov.takx.api.milsym.IMilStd2525ServiceProvider;
 import gov.takx.api.persist.IMapObjectFinder;
+import gov.takx.api.shapes.ShapeType;
 import gov.takx.commons.file.SizeFormatter;
 import gov.takx.commons.utils.StringUtils;
 import jakarta.annotation.Nonnull;
@@ -27,7 +33,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static gov.takx.platform.ui.ResourceDirectory.PLATFORM_ICONS;
 import static gov.takx.platform.ui.UIResources.ACTION_BUTTON_IMAGE_SIZE;
+import static gov.takx.platform.ui.UIResources.getActionButtonIcon;
 
 /**
  * Model representing the contents of a data package.
@@ -63,6 +71,9 @@ public class DataPackageContents
 
     @Inject
     private IDataPackageManager dataPackageManager;
+
+    @Inject
+    private IMilStd2525ServiceProvider milStd2525ServiceProvider;
 
     private final File packageFile;
     private final String owner;
@@ -240,6 +251,7 @@ public class DataPackageContents
      * Create a from the CoT message contained in the indicated package entry.
      */
     @Nonnull
+    @SuppressWarnings("DataFlowIssue")
     private DataPackageEntry createEntryFromCot(@Nonnull String zipEntry)
     {
         final long size = packageReader.getZipEntrySize(zipEntry);
@@ -260,9 +272,37 @@ public class DataPackageContents
             return new DataPackageEntry(zipEntry, mapObject, mapObject.getSizedIcon(IMAGE_WIDTH), size);
         } else
         {
-            final String cotType = event.getType();
             final String callsign = Objects.requireNonNullElse(event.getCallsign(), "Unknown");
-            final ImageIcon icon = new ImageIcon(cotIconResolver.getIcon(IMAGE_WIDTH, cotType));
+            final String cotType = event.getType();
+            final ImageIcon icon = switch (cotType)
+            {
+                // Check for known shape types
+                case CotTypes.SHAPE_ARROW -> getActionButtonIcon(PLATFORM_ICONS, ShapeType.ARROW.getIconName());
+                case CotTypes.SHAPE_RECTANGLE -> getActionButtonIcon(PLATFORM_ICONS, ShapeType.RECTANGLE.getIconName());
+                case CotTypes.SHAPE_MULTI_POLYLINE -> getActionButtonIcon(PLATFORM_ICONS, ShapeType.POLYLINE.getIconName());
+                case CotTypes.SHAPE_POLYSHAPE -> getActionButtonIcon(PLATFORM_ICONS, ShapeType.POLYGON.getIconName());
+                case CotTypes.SHAPE_ELLIPSE -> getActionButtonIcon(PLATFORM_ICONS, ShapeType.ELLIPSE.getIconName());
+                case CotTypes.SHAPE_CIRCLE -> getActionButtonIcon(PLATFORM_ICONS, ShapeType.CIRCLE.getIconName());
+                case CotTypes.SHAPE_RANGE_CIRCLE -> getActionButtonIcon(PLATFORM_ICONS, ShapeType.BULLSEYE.getIconName());
+
+                // For anything else, determine preview by the 2525 symbol if present, and lastly the CoT type
+                default ->
+                {
+                    final CotDetail detail = event.getDetail();
+                    CotDetail milsym = detail.getFirstChildByName(MilSymDetailHandler.DETAIL_SINGLEPOINT);
+                    if (milsym == null) milsym = detail.getFirstChildByName(MilSymDetailHandler.DETAIL_MULTIPOINT);
+                    if (milsym != null && milsym.hasAttribute("id"))
+                    {
+                        final String sidc = milsym.getAttribute("id");
+                        final IMilStd2525Service milstdService = milStd2525ServiceProvider.get2525ServiceForSymbol(sidc);
+                        if (!milstdService.isUnrenderableSymbol(sidc)) yield new ImageIcon(milstdService.renderSinglePointIcon(sidc, IMAGE_WIDTH));
+                    }
+
+                    // Fall back to CoT type
+                    yield new ImageIcon(cotIconResolver.getIcon(IMAGE_WIDTH, cotType));
+                }
+            };
+
             return new DataPackageEntry(zipEntry, icon, callsign, size);
         }
     }

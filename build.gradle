@@ -1,7 +1,8 @@
 plugins {
-    id 'org.owasp.dependencycheck' version '7.0.0' apply false
+    id 'org.owasp.dependencycheck' version '12.2.1' apply false
+    id 'org.cyclonedx.bom' version '3.2.4'
     id 'gov.raptor.gradle.plugins.jboss-modules' version '3.5.0' apply false
-    id 'gov.raptor.gradle.plugins.build-support' version '10.1.0'
+    id 'gov.raptor.gradle.plugins.build-support' version '10.3.1'
     id 'me.champeau.gradle.jmh' version '0.4.5' apply false
     id 'net.ltgt.errorprone' version '1.1.1' apply false
     id 'gov.tak.gradle.plugins.checker-processor' version '2.0.4' apply false
@@ -117,12 +118,19 @@ subprojects { Project project ->
         }
     }
 
-    apply plugin: 'org.owasp.dependencycheck'
+    // PMD is enabled if building on a CI server, or forced to
+    boolean pmdEnabled = runningUnderCi || project.hasProperty('forcePmd')
 
+    // User our own custom PMD ruleset
+    if (pmdEnabled) buildSupport.setPmdRulesetFile(project, rootProject.file('BuildTools/src/main/resources/buildtools/pmd-ruleset.xml'))
+
+    apply plugin: 'org.owasp.dependencycheck'
     dependencyCheck {
         format = 'HTML'
-        suppressionFile = rootProject.file('suppression.xml')
+        suppressionFile = rootProject.file('suppression.xml').absolutePath
         failOnError = false
+        nvd.apiKey = '2636a3ae-a1ae-41b4-947e-2aa9f864f0d4'
+        scanProjects = [':platform', ':client']
         analyzers {
             assemblyEnabled = false // Don't analyze .NET files
         }
@@ -165,10 +173,7 @@ subprojects { Project project ->
     }
 
     afterEvaluate { Project p ->
-        // Disable PMD checks unless building on a CI server, or forced to
-        if (!runningUnderCi && !project.hasProperty('forcePmd')) {
-            tasks.withType(Pmd).each { it.enabled = false }
-        }
+        if (!pmdEnabled) tasks.withType(Pmd).each { it.enabled = false }
     }
 }
 

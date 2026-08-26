@@ -156,6 +156,8 @@ public class ExplorerManagerTest extends AIntegrationTest
         testExplorer.registerExplorableComparator(n -> n instanceof TestExplorable,
                 Comparator.comparing(IExplorable::getDisplayName, Comparator.reverseOrder()));
 
+        SwingTestUtils.waitForEdtEvents();
+
         int indexA = model.getIndexOfChild(explorable, explorableA);
         int indexB = model.getIndexOfChild(explorable, explorableB);
         int indexC = model.getIndexOfChild(explorable, explorableC);
@@ -166,6 +168,8 @@ public class ExplorerManagerTest extends AIntegrationTest
 
         testExplorer.registerExplorableComparator(n -> n instanceof TestExplorable,
                 Comparator.comparing(IExplorable::getDisplayName, String::compareToIgnoreCase));
+
+        SwingTestUtils.waitForEdtEvents();
 
         indexA = model.getIndexOfChild(explorable, explorableA);
         indexB = model.getIndexOfChild(explorable, explorableB);

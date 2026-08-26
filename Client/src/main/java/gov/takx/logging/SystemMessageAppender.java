@@ -83,13 +83,10 @@ public class SystemMessageAppender
         static final CompositeFilter compositeFilter;
         static
         {
-            // TODO: Bump back down to [1] after merging TAKX-4361
-            Filter[] filters = new Filter[2];
+            Filter[] filters = new Filter[1];
             try
             {
                 filters[0] = RegexFilter.createFilter(".*TAKEngineJNI.*", null, false, Filter.Result.DENY, Filter.Result.NEUTRAL);
-                // TODO: Remove after merging TAKX-4361
-                filters[1] = RegexFilter.createFilter(".*\\[KmzLayerInfoSpi\\]\\: Failed to find document KML file.*", null, false, Filter.Result.DENY, Filter.Result.NEUTRAL);
             } catch (IllegalAccessException e)
             {
                 throw new RuntimeException(e);

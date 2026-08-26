@@ -128,7 +128,7 @@ public abstract class APluginRegistry<T extends IRaptorPlugin, PD extends IPlugi
     }
 
     @Override
-    public boolean addPlugin(@Nonnull IPluginDefinition<?> pluginDefinition)
+    public synchronized boolean addPlugin(@Nonnull IPluginDefinition<?> pluginDefinition)
     {
         final String uniqueKey = pluginDefinition.getUniqueKey();
 

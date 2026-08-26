@@ -1,6 +1,5 @@
 package gov.takx.api.globe;
 
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.annotation.Experimental;
 import gov.takx.api.annotation.InjectableService;
 import gov.takx.api.annotation.NoPluginImplementations;
@@ -19,32 +18,6 @@ import java.util.List;
 @NoPluginImplementations
 public interface IWidgetLayerManager
 {
-    /**
-     * Event fired when a widget is added to a globe.
-     *
-     * @since 5.0
-     * @deprecated as of 5.4, observe {@link WidgetInstanceAdded} instead
-     */
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
-    record WidgetAdded(@Nonnull IWidget widget, @Nonnull IGlobeDelegate globeDelegate) implements PlatformEvent
-    {
-    }
-
-    /**
-     * Event fired when a widget is removed from a globe.
-     *
-     * @since 5.0
-     * @deprecated as of 5.4, observe {@link WidgetInstanceRemoved} instead
-     */
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    @Deprecated(since = "5.4", forRemoval = true)
-    @DeprecatedApi(since = "5.4", forRemoval = true, removeAt = "5.7")
-    record WidgetRemoved(@Nonnull IWidget widget, @Nonnull IGlobeDelegate globeDelegate) implements PlatformEvent
-    {
-    }
-
     /**
      * Event fired when a widget instance is added to a globe.
      *
@@ -151,6 +124,18 @@ public interface IWidgetLayerManager
      */
     @Experimental
     void removeRadialMenuListener(@Nonnull IRadialMenuListener listener);
+
+    /**
+     * Returns all widgets at a {@link WidgetLayoutPosition position} on the specified {@link IGlobeDelegate globe}.
+     *
+     * @param globe The globe to check
+     * @param layoutPosition The position on the globe to check
+     * @return The widgets at the specified position
+     * @since 5.8
+     */
+    @Experimental
+    @Nonnull
+    List<IWidgetInstance> getWidgetsAtPosition(@Nonnull IGlobeDelegate globe, @Nonnull WidgetLayoutPosition layoutPosition);
 
     /**
      * Contract for notifications of radial menu open/close/

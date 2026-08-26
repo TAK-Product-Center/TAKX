@@ -2,12 +2,16 @@ package gov.takx.core.view.gui.maps.importers.wizards;
 
 import gov.tak.platform.datapackage.ZipReader;
 import gov.takx.api.annotation.PseudoBean;
-import gov.takx.api.layer.IMobacLayerManager;
+import gov.takx.api.layer.ILayerService;
+import gov.takx.api.layer.LayerConfiguration;
+import gov.takx.api.layer.builder.OnlineImageryLayerBuilder;
 import gov.takx.commons.file.FileUtils;
+import gov.takx.core.layer.MobacLayerUtils;
 import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +48,7 @@ public class CustomMobacLayerWizard extends AFileImportWizard
     private static final Pattern NAME_XML_PATTERN = Pattern.compile("\\<name\\>([\\S\\s]+)\\<\\/name\\>");
 
     @Inject
-    private IMobacLayerManager mobacLayerManager;
+    private ILayerService layerService;
 
     @Override
     public String getType()
@@ -108,7 +112,12 @@ public class CustomMobacLayerWizard extends AFileImportWizard
                         importMapSourceZip(file);
                     } else
                     {
-                        mobacLayerManager.makeLayerFromFile(file);
+                        final String layerName = FilenameUtils.getBaseName(file.getName());
+                        LayerConfiguration layerConfiguration = OnlineImageryLayerBuilder.builder()
+                                .setName(layerName)
+                                .setConfigurationFile(file)
+                                .build();
+                        layerService.addLayer(layerConfiguration);
                     }
                 });
     }
@@ -127,7 +136,7 @@ public class CustomMobacLayerWizard extends AFileImportWizard
         {
             return paths.filter(Files::isRegularFile)
                     .map(Path::toFile)
-                    .filter(mobacLayerManager::isMapSourceXml)
+                    .filter(MobacLayerUtils::isMapSourceXml)
                     .limit(first ? 1 : Integer.MAX_VALUE)
                     .collect(Collectors.toList());
         } catch (IOException e)
@@ -150,7 +159,7 @@ public class CustomMobacLayerWizard extends AFileImportWizard
             if (name.endsWith(".xml"))
             {
                 String content = zip.readEntryAsString(name);
-                return mobacLayerManager.isMapSourceXml(content);
+                return MobacLayerUtils.isMapSourceXml(content);
             }
             return false;
         };
@@ -196,7 +205,11 @@ public class CustomMobacLayerWizard extends AFileImportWizard
                 Matcher nameMatcher = NAME_XML_PATTERN.matcher(layerXml);
                 String layerName = nameMatcher.find() ? nameMatcher.group(1) : FileUtils.getNameWithoutExtension(entryFileName);
 
-                mobacLayerManager.makeLayerFromConfigXml(layerName, layerXml);
+                LayerConfiguration layerConfiguration = OnlineImageryLayerBuilder.builder()
+                        .setName(layerName)
+                        .setConfigurationXml(layerXml)
+                        .build();
+                layerService.addLayer(layerConfiguration);
             });
         } catch (IOException e)
         {

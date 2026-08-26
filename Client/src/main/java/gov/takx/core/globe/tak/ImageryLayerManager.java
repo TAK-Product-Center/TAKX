@@ -5,11 +5,17 @@ import com.atakmap.map.layer.Layer;
 import com.atakmap.map.layer.Layer2;
 import com.atakmap.map.layer.MultiLayer;
 import com.atakmap.map.layer.feature.geometry.Envelope;
+import com.atakmap.map.layer.raster.DatasetDescriptorFactory2;
+import com.atakmap.map.layer.raster.DatasetDescriptorSpi;
+import com.atakmap.map.layer.raster.DatasetDescriptorSpiArgs;
 import com.atakmap.map.layer.raster.PersistentRasterDataStore;
 import com.atakmap.map.layer.raster.controls.ImageryRelativeScaleControl;
+import com.atakmap.map.layer.raster.mobileimagery.MobileImageryRasterLayer2;
 import com.atakmap.map.layer.raster.nativeimagery.NativeImageryRasterLayer2;
 import com.atakmap.map.layer.raster.service.OnlineImageryExtension;
+import com.atakmap.spi.InteractiveServiceProvider;
 import com.atakmap.util.ConfigOptions;
+import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.annotation.Headless;
 import gov.takx.api.event.StartProjectServices;
 import gov.takx.api.event.StopProjectServices;
@@ -26,6 +32,7 @@ import gov.takx.core.globe.ApplicationGlobeManager;
 import gov.takx.core.globe.layers.GlobeLayer;
 import gov.takx.core.project.ServiceOrdering;
 import gov.takx.platform.preferences.ProjectPreferenceEntry;
+import jakarta.annotation.Nonnull;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
@@ -37,7 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -51,7 +58,10 @@ import java.util.List;
 public class ImageryLayerManager implements IRaptorLayerManagerListener
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+    @DeprecatedApi(since = "5.8", forRemoval = true, removeAt = "5.11")
+    @Deprecated(since = "5.8", forRemoval = true)
     public static final String NATIVE_IMAGERY_RASTER_CLASS = NativeImageryRasterLayer2.class.getName();
+    public static final String IMAGERY_LAYER_MANAGER_CLASS = ImageryLayerManager.class.getName();
 
     private final ApplicationGlobeManager globeManager;
     private final IRaptorLayerManager raptorLayerManager;
@@ -122,10 +132,10 @@ public class ImageryLayerManager implements IRaptorLayerManagerListener
     @Override
     public void raptorLayerAdded(IRaptorLayer raptorLayer)
     {
-        if (NATIVE_IMAGERY_RASTER_CLASS.equals(raptorLayer.getClassName()))
+        if (NATIVE_IMAGERY_RASTER_CLASS.equals(raptorLayer.getClassName()) || IMAGERY_LAYER_MANAGER_CLASS.equals(raptorLayer.getClassName()))
         {
-            final var filePaths = raptorLayer.getRestorableState().split(LocalImageryLayerBuilder.ESCAPED_PATH_SEPARATOR);
-            final var fileList = Arrays.stream(filePaths).map(File::new).toList();
+            final var filePaths = LocalImageryLayerBuilder.parseRestorableString(raptorLayer.getRestorableState());
+            final var fileList = filePaths.stream().map(File::new).toList();
 
             final var envelopeBuilder = new Envelope.Builder();
 
@@ -184,7 +194,7 @@ public class ImageryLayerManager implements IRaptorLayerManagerListener
     @Override
     public void raptorLayerRemoved(IRaptorLayer raptorLayer)
     {
-        if (NATIVE_IMAGERY_RASTER_CLASS.equals(raptorLayer.getClassName()))
+        if (NATIVE_IMAGERY_RASTER_CLASS.equals(raptorLayer.getClassName()) || IMAGERY_LAYER_MANAGER_CLASS.equals(raptorLayer.getClassName()))
         {
             File file = new File(raptorLayer.getRestorableState());
             dataStore.remove(file);
@@ -235,5 +245,79 @@ public class ImageryLayerManager implements IRaptorLayerManagerListener
      */
     private record LayerAndEnvelope(IRaptorLayer layer, Envelope envelope)
     {
+    }
+
+    /**
+     * Determine if a {@link File} represents Mobile imagery or Native imagery.
+     * Mobile imagery is multi-resolution and serviced by {@link MobileImageryRasterLayer2} and Native imagery is single resolution and serviced by {@link NativeImageryRasterLayer2}.
+     * @param file the file being probed
+     * @return {@code true} if the file is mobile imagery, {@code false} if native
+     * @since 5.8
+     */
+    public static boolean isMobileImagery(@Nonnull File file)
+    {
+        var mobileTypes = new HashSet<String>();
+        MobileImageryRasterLayer2.getDefaultDatasetTypes(mobileTypes);
+        for (String datasetType : mobileTypes)
+        {
+            DatasetDescriptorSpi spi = DatasetDescriptorFactory2.getRegisteredSpi(datasetType);
+            if (spi != null)
+            {
+                ProbeOnlyCallback callback = new ProbeOnlyCallback(500);
+                spi.create(new DatasetDescriptorSpiArgs(file, null), callback);
+                if (callback.probeSuccess) return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * An implementation of {@link InteractiveServiceProvider.Callback} that only probes the SPI to determine if it supports the data.
+     * @since 5.8
+     */
+    private final static class ProbeOnlyCallback implements InteractiveServiceProvider.Callback
+    {
+        boolean probeSuccess;
+        private final int limit;
+
+        ProbeOnlyCallback(int limit)
+        {
+            this.limit = limit;
+            probeSuccess = false;
+        }
+
+        @Override
+        public boolean isCanceled()
+        {
+            return false;
+        }
+
+        @Override
+        public boolean isProbeOnly()
+        {
+            return true;
+        }
+
+        @Override
+        public int getProbeLimit()
+        {
+            return limit;
+        }
+
+        @Override
+        public void setProbeMatch(boolean match)
+        {
+            probeSuccess = match;
+        }
+
+        @Override
+        public void errorOccurred(String msg, Throwable t)
+        {
+        }
+
+        @Override
+        public void progress(int progress)
+        {
+        }
     }
 }

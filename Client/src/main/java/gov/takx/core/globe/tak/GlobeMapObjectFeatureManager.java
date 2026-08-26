@@ -11,13 +11,11 @@ import com.atakmap.map.layer.feature.FeatureDataStore4;
 import com.atakmap.map.layer.feature.FeatureLayer3;
 import com.atakmap.map.layer.raster.osm.OSMUtils;
 import com.atakmap.map.opengl.GLMapView;
+import com.google.common.util.concurrent.AtomicDouble;
 import gov.tak.api.engine.map.MapRenderer;
 import gov.tak.api.maps.Marker;
+import gov.tak.api.util.AttributeSet;
 import gov.tak.api.util.StandardAttributeNames;
-import gov.tak.core.map.layer.IPickContext;
-import gov.tak.core.map.layer.feature.IFeatureRendererManager;
-import gov.tak.core.map.layer.feature.IPickedFeatureProvider;
-import gov.tak.core.map.layer.feature.datastore.SharedFeatureDataStore;
 import gov.tak.platform.marshal.AbstractMarshal;
 import gov.tak.platform.marshal.MarshalManager;
 import gov.tak.platform.util.LimitingThread;
@@ -33,6 +31,10 @@ import gov.takx.api.globe.IGlobeMapObjectManager;
 import gov.takx.api.globe.IGlobeMarkerMapObject;
 import gov.takx.api.globe.IGlobeRangeFanMapObject;
 import gov.takx.api.globe.IGlobeShapeMapObject;
+import gov.takx.api.layer.feature.IFeatureRendererManager;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
+import gov.takx.api.layer.pick.IPickContext;
+import gov.takx.api.layer.pick.IPickedFeatureProvider;
 import gov.takx.api.mapobject.IAnnotationMapObject;
 import gov.takx.api.mapobject.IFlatAnnotationMapObject;
 import gov.takx.api.mapobject.IIconMapObject;
@@ -86,6 +88,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
 /**
@@ -200,8 +205,7 @@ public class GlobeMapObjectFeatureManager implements IGlobeMapObjectChangeListen
     private final HashMap<IGlobeMapObject, FeatureSetRegistration> registeredMapObjects = new HashMap<>();
     private IMapObject hoveringMapObject;
 
-    private volatile Map<Integer, Double> lastGsdMap = new HashMap<>();
-    private volatile Map<Integer, GeoBounds> lastSceneBoundsMap = new HashMap<>();
+    private final GlobeViewStates globeViewStates = new GlobeViewStates();
 
     private final Map<IGlobeMapObject, FeatureFactoryState<IGlobeMapObject, Object>> registrationQueue = new HashMap<>();
     private final Set<IGlobeMapObject> unregistrationQueue = new HashSet<>();
@@ -225,7 +229,7 @@ public class GlobeMapObjectFeatureManager implements IGlobeMapObjectChangeListen
     @Inject
     GlobeMapObjectFeatureManager(FeatureFactory featureFactory, ApplicationGlobeManager globeManager,
                                  @UiEventBus EventBus uiEventBus, IFeatureRendererManager featureManager,
-                                 @SharedFeatureDataStore FeatureDataStore4 featureDataStore,
+                                 ISharedFeatureDataStore featureDataStore,
                                  @Headless boolean headless)
     {
         this.featureFactory = featureFactory;
@@ -246,7 +250,7 @@ public class GlobeMapObjectFeatureManager implements IGlobeMapObjectChangeListen
         featureManager.addPickedFeatureProvider(this);
 
         registrationThread = new LimitingThread("GlobeMapObjectFeatureManager registration thread", this::processQueuedRegistrations);
-        onCameraChangedHandlerThread = new LimitingThread("GlobeMapObjectFeatureManager onCameraChanged thread", () -> forceRenderMilStdObjects(lastGsdMap, lastSceneBoundsMap));
+        onCameraChangedHandlerThread = new LimitingThread("GlobeMapObjectFeatureManager onCameraChanged thread", () -> forceRenderMilStdObjects(globeViewStates));
 
         final var primaryGlobeDelegate = globeManager.getPrimaryGlobeDelegate();
         globeMapObjectManager = primaryGlobeDelegate.getGlobeMapObjectManager();
@@ -516,19 +520,18 @@ public class GlobeMapObjectFeatureManager implements IGlobeMapObjectChangeListen
     @Override
     public void onCameraChanged(MapRenderer renderer)
     {
-        HashMap<Integer, Double> localGsdMap = new HashMap<>();
-        HashMap<Integer, GeoBounds> localSceneBoundsMap = new HashMap<>();
-        boolean[] viewChanged = {false};
-
+        GlobeViewStates localGlobeViewStates = new GlobeViewStates();
+        AtomicBoolean sceneChanged = new AtomicBoolean();
+        AtomicBoolean lodChanged = new AtomicBoolean();
         globeManager.getAllGlobeDelegates().forEach(appGlobe -> {
             GLMapView glMapView = LegacyAdapters.adapt(renderer);
             GLMapView.State state = glMapView.currentScene;
 
             int globeId = appGlobe.getGlobeId();
             int currentLod = OSMUtils.mapnikTileLevel(state.scene.gsd, Math.toRadians(state.drawLat));
-            double lastGsd = lastGsdMap.getOrDefault(globeId, 0.0);
+            double lastGsd = globeViewStates.getGsd(globeId);
             int lastLod = OSMUtils.mapnikTileLevel(lastGsd, Math.toRadians(state.drawLat));
-            GeoBounds lastSceneBounds = lastSceneBoundsMap.get(globeId);
+            GeoBounds lastSceneBounds = globeViewStates.getSceneBounds(globeId);
             GeoPoint upperLeft = state.scene.inverse(new PointF(0, 0), null, false);
             GeoPoint lowerRight = state.scene.inverse(new PointF(state.scene.width, state.scene.height), null, false);
             GeoBounds currentSceneBounds = null;
@@ -539,51 +542,66 @@ public class GlobeMapObjectFeatureManager implements IGlobeMapObjectChangeListen
                 // Initial unscaled GeoBounds should recognize IDL crossing
                 currentSceneBounds.setWrap180(true);
             }
-            localGsdMap.put(globeId, state.scene.gsd);
+            localGlobeViewStates.setGsd(globeId, state.scene.gsd);
             // Inflate the scene bounds to cover a larger area of interest and reduce the need to refresh
-            localSceneBoundsMap.put(globeId, scaleBounds(currentSceneBounds, 3));
-            boolean lodChanged = Math.abs(currentLod - lastLod) >= 1;
-            boolean sceneChanged = lastSceneBounds == null && currentSceneBounds != null || lastSceneBounds != null && currentSceneBounds == null
-                    || (lastSceneBounds != null && !lastSceneBounds.contains(currentSceneBounds));
-            viewChanged[0] |= lodChanged || sceneChanged;
+            localGlobeViewStates.setSceneBounds(globeId, scaleBounds(currentSceneBounds, 3));
+
+            if (Math.abs(currentLod - lastLod) >= 1) lodChanged.set(true);
+            if (lastSceneBounds == null && currentSceneBounds != null || lastSceneBounds != null && currentSceneBounds == null
+                    || (lastSceneBounds != null && !lastSceneBounds.contains(currentSceneBounds)))
+                sceneChanged.set(true);
         });
-        if (!viewChanged[0]) return;
-        lastGsdMap = localGsdMap;
-        lastSceneBoundsMap = localSceneBoundsMap;
+        if (!sceneChanged.get() && !lodChanged.get()) return;
+        localGlobeViewStates.panDirtyFlag.set(sceneChanged.get());
+        localGlobeViewStates.zoomDirtyFlag.set(lodChanged.get());
+        globeViewStates.set(localGlobeViewStates);
 
         onCameraChangedHandlerThread.exec();
     }
 
     /**
      * Force render any on-screen milstd map objects.
-     * @param gsdMap the current map of globes to on-screen gsd
-     * @param sceneBoundsMap the current map of globes to on-screen visible bounds
+     * @param globeViewStates the current globe view states
      * @since 5.2
      */
-    private synchronized void forceRenderMilStdObjects(@Nonnull Map<Integer, Double> gsdMap, @Nonnull Map<Integer, GeoBounds> sceneBoundsMap)
+    private synchronized void forceRenderMilStdObjects(@Nonnull GlobeViewStates globeViewStates)
     {
+        boolean isPanned = globeViewStates.panDirtyFlag.getAndSet(false);
+        boolean isZoomed = globeViewStates.zoomDirtyFlag.getAndSet(false);
         forceRender(gmo -> {
-            // Make sure the GMO is handled by the MilStd feature provider
-            if (MilStdGlobeShapeFeatureProvider.SPI.create(gmo) == null) return false;
-            // Make sure we have a proper milStdState object
+            // Make sure we have a 2525 MO by checking the state object class
             FeatureSetRegistration featureSetRegistration = registeredMapObjects.get(gmo);
             var stateKey = featureSetRegistration != null ? featureSetRegistration.stateKey() : null;
             if (!(stateKey instanceof MilStdGlobeShapeFeatureProvider.MilStdShapeState milStdState)) return false;
             // Must be visible
             if (!milStdState.isVisible()) return false;
+
             // Try to build a bounding box for the GMO
             GeoBounds.Builder builder = new GeoBounds.Builder();
             milStdState.geoPoints().forEach(g -> builder.add(g.getLatitude(), g.getLongitude()));
             GeoBounds gmoBounds = builder.build();
             if (gmoBounds == null) return false;
 
+            // Determine if GMO is on-screen
+            boolean isOnScreen = globeViewStates.sceneBoundsMap.values().stream().anyMatch(sceneBounds -> sceneBounds.get() == null || sceneBounds.get().intersects(gmoBounds));
+            AttributeSet attributeSet = gmo.getMapObject().getAttributeSet();
+            boolean wasOffscreen = attributeSet.getBooleanAttribute(StandardAttributeNames.MIL_SYM_HINT_LOD_OFFSCREEN, false);
+            if (milStdState.isLodAware() && isOnScreen == wasOffscreen) attributeSet.setAttribute(StandardAttributeNames.MIL_SYM_HINT_LOD_OFFSCREEN, !isOnScreen);
+
             // Make sure GMO is on-screen
-            boolean isOnScreen = sceneBoundsMap.values().stream().anyMatch(sceneBounds -> sceneBounds == null || sceneBounds.intersects(gmoBounds));
             if (!isOnScreen) return false;
+
+            // Check to see if the GMO needs a clip or lod refresh
+            boolean needClipRefresh = milStdState.wasClipped() && (isPanned || isZoomed);
+            boolean needLodRefresh = milStdState.isLodAware() && (isZoomed || wasOffscreen);
+
+            // Only refresh if this MO needs refreshing on scene change
+            if (!needClipRefresh && !needLodRefresh) return false;
+
             if (gmo.getMapObject() instanceof AShapeMapObject<?> mo)
             {
-                mo.setMilStdGsdHintMap(gsdMap);
-                mo.setMilStdSceneBoundsHintMap(sceneBoundsMap);
+                mo.setMilStdGsdHintMap(globeViewStates.getGsdMap());
+                mo.setMilStdSceneBoundsHintMap(globeViewStates.getSceneBoundsMap());
             }
             return true;
         });
@@ -642,8 +660,8 @@ public class GlobeMapObjectFeatureManager implements IGlobeMapObjectChangeListen
                 startMonitoring(globeMapObject);
                 if (globeMapObject.getMapObject() instanceof AShapeMapObject<?> mo)
                 {
-                    mo.setMilStdGsdHintMap(lastGsdMap);
-                    mo.setMilStdSceneBoundsHintMap(lastSceneBoundsMap);
+                    mo.setMilStdGsdHintMap(globeViewStates.getGsdMap());
+                    mo.setMilStdSceneBoundsHintMap(globeViewStates.getSceneBoundsMap());
                 }
                 queueRegistration(globeMapObject);
             }
@@ -709,6 +727,71 @@ public class GlobeMapObjectFeatureManager implements IGlobeMapObjectChangeListen
         } finally
         {
             dataStore.releaseModifyLock();
+        }
+    }
+
+    /**
+     * Track the per-globe state of the scene. Used to track when 2525 map objects need to be refreshed.
+     * @since 5.8
+     */
+    private static class GlobeViewStates
+    {
+        /** Tracks the per-globe GSD value */
+        public final Map<Integer, AtomicDouble> gsdMap = new ConcurrentHashMap<>();
+        /** Tracks the per-globe boundaries in south, west, north, east order */
+        public final Map<Integer, AtomicReference<GeoBounds>> sceneBoundsMap = new ConcurrentHashMap<>();
+        /** When set to {@code true}, indicates that the maps have panned since the last refresh */
+        public final AtomicBoolean panDirtyFlag = new AtomicBoolean();
+        /** When set to {@code true}, indicates that the maps have zoomed since the last refresh */
+        public final AtomicBoolean zoomDirtyFlag = new AtomicBoolean();
+
+        public double getGsd(int globeId)
+        {
+            return gsdMap.computeIfAbsent(globeId, gid -> new AtomicDouble(0.0)).get();
+        }
+
+        public void setGsd(int globeId, double gsd)
+        {
+            gsdMap.computeIfAbsent(globeId, gid -> new AtomicDouble(0.0)).set(gsd);
+        }
+
+        public GeoBounds getSceneBounds(int globeId)
+        {
+            return sceneBoundsMap.computeIfAbsent(globeId, gid -> new AtomicReference<>(null)).get();
+        }
+
+        public void setSceneBounds(int globeId, GeoBounds sceneBounds)
+        {
+            sceneBoundsMap.computeIfAbsent(globeId, gid -> new AtomicReference<>(null)).set(sceneBounds);
+        }
+
+        public Map<Integer, Double> getGsdMap()
+        {
+            var result = new HashMap<Integer, Double>();
+            gsdMap.forEach((gid, gsd) -> result.put(gid, gsd.get()));
+            return result;
+        }
+
+        public Map<Integer, GeoBounds> getSceneBoundsMap()
+        {
+            var result = new HashMap<Integer, GeoBounds>();
+            sceneBoundsMap.forEach((gid, gb) -> result.put(gid, gb.get()));
+            return result;
+        }
+
+        /**
+         * Sets this object's values to reflect the provided {@link GlobeViewStates}.
+         * @param globeViewStates
+         */
+        public void set(GlobeViewStates globeViewStates)
+        {
+            gsdMap.clear();
+            gsdMap.putAll(globeViewStates.gsdMap);
+            sceneBoundsMap.clear();
+            sceneBoundsMap.putAll(globeViewStates.sceneBoundsMap);
+            // We don't want to flip any existing dirty flags to false here
+            panDirtyFlag.compareAndExchange(false, globeViewStates.panDirtyFlag.get());
+            zoomDirtyFlag.compareAndExchange(false, globeViewStates.zoomDirtyFlag.get());
         }
     }
 

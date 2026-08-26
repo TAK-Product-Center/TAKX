@@ -4,6 +4,8 @@ import com.atakmap.coremap.conversions.Angle;
 import com.atakmap.coremap.maps.coords.NorthReference;
 import gov.nasa.worldwind.WorldWindow;
 import gov.tak.api.cot.exporter.ICotExporterManager;
+import gov.tak.api.engine.map.coords.GeoCalculations;
+import gov.tak.api.maps.Marker;
 import gov.tak.api.maps.coords.GeoPoint;
 import gov.tak.api.util.StandardAttributeNames;
 import gov.tak.api.video.ConnectionEntry;
@@ -13,6 +15,7 @@ import gov.takx.api.breadcrumb.IBreadcrumbManager;
 import gov.takx.api.coordinatesystem.ILocation;
 import gov.takx.api.event.mapobject.MapObjectRemoved;
 import gov.takx.api.globe.IExtendedGlobeManager;
+import gov.takx.api.globe.IGlobeClickService;
 import gov.takx.api.globe.IGlobeDelegate;
 import gov.takx.api.globe.IGlobeManager;
 import gov.takx.api.mapobject.IAnnotationMapObject;
@@ -45,8 +48,10 @@ import gov.takx.core.globe.radial.RadialMenuAction;
 import gov.takx.core.globe.radial.RadialMenuHelper;
 import gov.takx.core.globe.tak.WidgetLayerManager;
 import gov.takx.core.mapobject.DeviceMenuSpaceManager;
+import gov.takx.core.mapobject.gui.primarydialog.primarypanel.FieldOfViewPanel;
 import gov.takx.core.view.gui.drifter.EditDrifterConfigurationDialog;
 import gov.takx.core.view.gui.geofence.EditGeoFenceDialog;
+import gov.takx.dataservices.shapes.FieldOfView;
 import gov.takx.platform.preferences.PreferenceEntry;
 import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
@@ -113,6 +118,9 @@ import static gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum.ORIENTABLE;
 import static gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum.PIN;
 import static gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum.REMOVE_FROM;
 import static gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum.SEND_AS_COT;
+import static gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum.SENSOR;
+import static gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum.SENSOR_DIRECTION;
+import static gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum.SENSOR_VISIBILITY;
 import static gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum.SHOW;
 import static gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum.TOGGLE_RANGE_RINGS;
 import static gov.takx.api.ui.IMenuSpaceManager.ContextMenuEnum.UNDO;
@@ -203,6 +211,9 @@ public class MapObjectPopupMenu extends JPopupMenu
 
     @Inject
     private FineAdjustAction fineAdjustAction;
+
+    @Inject
+    private IGlobeClickService globeClickService;
 
     /**
      * Construct for a given event and map object, for use as a Swing context menu.
@@ -607,6 +618,9 @@ public class MapObjectPopupMenu extends JPopupMenu
 
         if (clickedMapObject instanceof IMutableBullseye bullseye) createBullseyeActions(bullseye);
 
+        FieldOfView fieldOfView = clickedMapObject.getFieldOfView();
+        if (clickedMapObject instanceof Marker && fieldOfView != null) createSensorActions(fieldOfView);
+
         // Video action
         if (clickedMapObject.hasMetaValue(VideoDetailHandler.CONNECTION_ENTRY_ATTR))
         {
@@ -700,6 +714,25 @@ public class MapObjectPopupMenu extends JPopupMenu
             case GRID -> bullseye.getBearingUnits() == Angle.DEGREE ? DEG_GRID_NORTH : MILS_GRID_NORTH;
         }).findFirst().orElse(DEG_TRUE_NORTH);
         createAction(CHANGE_DEGREES, String.join("\n", initialOption.toString().split(" ")), null, ENABLED, NO_STATE, degreesSubMenu);
+    }
+
+    private void createSensorActions(@Nonnull FieldOfView fov)
+    {
+        List<RadialMenuAction> submenu = new ArrayList<>();
+        submenu.add(new RadialMenuAction(SENSOR_DIRECTION.toString(), SENSOR_DIRECTION.getIconName(), e -> {
+            globeClickService.activate("Click where to point the FOV", location -> {
+                globeClickService.deactivate();
+                double bearing = GeoCalculations.bearing(fov.getPoint(), location);
+                fov.setAzimuth((float) bearing);
+            });
+        }, ENABLED, NO_STATE));
+
+        submenu.add(new RadialMenuAction(SENSOR_VISIBILITY.toString(), SENSOR_VISIBILITY.getIconName(), e -> fov.setVisible(!fov.isVisible()), ENABLED, NO_STATE));
+
+        ActionListener openPanel = FieldOfViewPanel.getInstance().createPanelActionListener(fov);
+
+        submenu.add(new RadialMenuAction(CONFIGURE + " Sensor", CONFIGURE.getIconName(), openPanel, ENABLED, NO_STATE));
+        createAction(SENSOR, SENSOR.toString(), openPanel, ENABLED, NO_STATE, submenu);
     }
 
     /**

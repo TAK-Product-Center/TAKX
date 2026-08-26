@@ -13,7 +13,6 @@ import jakarta.annotation.Nullable;
 
 import javax.swing.Icon;
 
-import java.beans.PropertyChangeListener;
 import java.util.List;
 
 /**
@@ -101,18 +100,6 @@ public class ExplorableEntityDefinition extends CommonEntityDefinition<IExplorab
     public ExplorerSummaryProvider getSummaryProvider()
     {
         return (ExplorerSummaryProvider) summaryProvider;
-    }
-
-    @Override
-    protected void addPropertyChangeListener(@Nonnull IExplorable explorable, @Nonnull String propertyName, @Nonnull PropertyChangeListener listener)
-    {
-        explorable.addPropertyChangeListener(propertyName, listener);
-    }
-
-    @Override
-    protected void removePropertyChangeListener(@Nonnull IExplorable explorable, @Nonnull String propertyName, @Nonnull PropertyChangeListener propertyChangeListener)
-    {
-        explorable.removePropertyChangeListener(propertyName, propertyChangeListener);
     }
 
     @Override

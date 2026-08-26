@@ -10,10 +10,6 @@ import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.avlist.AVListImpl;
 import gov.nasa.worldwind.render.Renderable;
 import gov.tak.api.util.Visitor;
-import gov.tak.core.map.layer.IPickContext;
-import gov.tak.core.map.layer.feature.IFeatureRendererManager;
-import gov.tak.core.map.layer.feature.IPickedFeatureProvider;
-import gov.tak.core.map.layer.feature.datastore.SharedFeatureDataStore;
 import gov.tak.platform.util.LimitingThread;
 import gov.takx.api.annotation.Headless;
 import gov.takx.api.event.StartProjectServices;
@@ -22,6 +18,10 @@ import gov.takx.api.globe.IApplicationGlobe;
 import gov.takx.api.globe.IExtendedGlobeManager;
 import gov.takx.api.globe.IGlobeDelegate;
 import gov.takx.api.globe.IGlobeLifeCycleListener;
+import gov.takx.api.layer.feature.IFeatureRendererManager;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
+import gov.takx.api.layer.pick.IPickContext;
+import gov.takx.api.layer.pick.IPickedFeatureProvider;
 import gov.takx.core.globe.tak.FeatureUtility.FeatureRegistration;
 import gov.takx.core.globe.tak.FeatureUtility.FeatureSetRegistration;
 import gov.takx.core.globe.tak.features.FeatureFactory;
@@ -94,7 +94,7 @@ public class RenderableFeatureManager implements IGlobeLifeCycleListener, IPicke
 
     @Inject
     RenderableFeatureManager(FeatureFactory featureFactory, IExtendedGlobeManager globeManager,
-                             IFeatureRendererManager featureManager, @SharedFeatureDataStore FeatureDataStore4 featureDataStore,
+                             IFeatureRendererManager featureManager, ISharedFeatureDataStore featureDataStore,
                              @Headless boolean headless)
     {
         this.featureFactory = featureFactory;

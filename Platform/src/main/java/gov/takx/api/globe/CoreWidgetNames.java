@@ -21,4 +21,9 @@ public class CoreWidgetNames
     public static final String WORLD_MAP = "World Map";
     /** @since 5.6 **/
     public static final String BLOODHOUND_NEXT_INTERCEPT = "Bloodhound Next Intercept";
+    // TODO: TAKX-4455, implement absolute and gradient features
+    /** @since 5.8 **/
+    public static final String GRADIENT_LEGEND = "Gradient Legend";
+    /** @since 5.8 **/
+    public static final String ELEVATION_HEATMAP = "Elevation Heatmap Legend";
 }

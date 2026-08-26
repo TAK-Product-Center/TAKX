@@ -32,7 +32,7 @@ import java.util.stream.Stream;
  *
  * @since 1.36 (renamed from RaptorModuleFinder in 3.4)
  */
-public class ApplicationModuleFinder implements ModuleFinder
+public final class ApplicationModuleFinder implements ModuleFinder
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -413,6 +413,7 @@ public class ApplicationModuleFinder implements ModuleFinder
                 .build();
     }
 
+    @Override
     public String toString()
     {
         return getClass().getSimpleName();

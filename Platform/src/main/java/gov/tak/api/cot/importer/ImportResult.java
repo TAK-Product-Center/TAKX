@@ -13,22 +13,22 @@ public enum ImportResult
     /**
      * no problems, but also not handled.
      */
-    IGNORE(),
+    IGNORE,
 
     /**
      * no problems, imported.
      */
-    SUCCESS(),
+    SUCCESS,
 
     /**
      * waiting on another item, so try again at the end.
      */
-    DEFERRED(),
+    DEFERRED,
 
     /**
      * problems, not importable.
      */
-    FAILURE();
+    FAILURE;
 
     /**
      * Compare this import result with another and return the result with

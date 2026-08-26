@@ -70,6 +70,7 @@ public class PostgresCopyUtils
      * @param data String builder to which to append
      * @param rdm  RDM to process
      */
+    @SuppressWarnings("PMD.ConsecutiveAppendsShouldReuse")
     public static void buildCopyData(StringBuilder data, IRaptorDataMessage rdm)
     {
         final CommServiceType sourceType = rdm.getSourceType();

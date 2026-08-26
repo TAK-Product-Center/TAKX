@@ -33,6 +33,7 @@ import gov.takx.core.explorer.controller.path.ShapeMapObjectPathProvider;
 import gov.takx.core.explorer.model.ExplorerModel;
 import gov.takx.core.explorer.model.IExplorerModel;
 import gov.takx.core.explorer.rules.GeofenceRule;
+import gov.takx.core.explorer.rules.HashtagRule;
 import gov.takx.core.explorer.rules.MapObjectRule;
 import gov.takx.core.explorer.rules.NameRule;
 import gov.takx.core.explorer.rules.ProximityRule;
@@ -109,7 +110,7 @@ public final class Explorer implements IExplorer
      * Construct an Explorer either as an API type, or as the default TAKX type.  The "API only" type can only
      * be created through the plugin API and will result in an Explorer configured such that only Alerts, Groups and
      * additional nodes added through the API will be present.
-     * 
+     *
      * @param apiOnly {@code true} to create an "API only" Explorer, {@code false} otherwise.  TAKX Core Explorer
      *                defaults to {@code false}.
      * @since 5.4 (previously no apiOnly option)
@@ -145,6 +146,7 @@ public final class Explorer implements IExplorer
         addExplorableRuleFactory(IGeofenceRule.class, GeofenceRule.getFactory());
         addExplorableRuleFactory(IProximityRule.class, ProximityRule.getFactory());
         addExplorableRuleFactory(MapObjectRule.class, MapObjectRule.getFactory());
+        addExplorableRuleFactory(HashtagRule.class, HashtagRule.getFactory());
     }
 
     @Override
@@ -281,15 +283,21 @@ public final class Explorer implements IExplorer
     }
 
     @Override
+    @InvokeOnEDT
     public void expandTreeToNode(IExplorable node)
     {
         if (explorerPanel != null) explorerPanel.expandTreeToNode(node);
     }
 
     @Override
+    @InvokeOnEDT
     public void setSinglePane(boolean singlePane)
     {
-        if (explorerPanel != null) explorerPanel.setSinglePane(singlePane);
+        if (explorerPanel != null)
+        {
+            explorerPanel.setSinglePane(singlePane);
+            explorerPanel.setTextScalingPercent(100);
+        }
     }
 
     @Override
@@ -299,6 +307,7 @@ public final class Explorer implements IExplorer
     }
 
     @Override
+    @InvokeOnEDT
     public void setTreeSelected(@Nullable IExplorable explorable)
     {
         if (explorerPanel != null) explorerPanel.setTreeSelected(explorable);
@@ -319,12 +328,14 @@ public final class Explorer implements IExplorer
     }
 
     @Override
+    @InvokeOnEDT
     public void registerExplorableComparator(IExplorable explorable, Comparator<Object> comparator)
     {
         explorerPanel.registerExplorableComparator(explorable, comparator::compare);
     }
 
     @Override
+    @InvokeOnEDT
     public void registerExplorableComparator(@Nonnull Predicate<IExplorable> checkFunction, @Nonnull Comparator<IExplorable> comparator)
     {
         explorerPanel.registerExplorableComparator(checkFunction, comparator);
@@ -480,7 +491,7 @@ public final class Explorer implements IExplorer
         if (explorerDelegateListeners.isEmpty()) return;
 
         ExceptionUtils.safeDoOperation(explorerDelegateListeners,
-                listener -> listener.onExplorerEvent(eventName, explorable, oldValue, newValue, false));
+                listener -> listener.onExplorerEvent(eventName, explorable, oldValue, newValue));
     }
 
     @Override
@@ -535,6 +546,7 @@ public final class Explorer implements IExplorer
     }
 
     @Override
+    @InvokeOnEDT
     public void addComponentToBorder(Component component, String borderLayoutLocation)
     {
         explorerPanel.addComponentToBorder(component, borderLayoutLocation);
@@ -550,18 +562,21 @@ public final class Explorer implements IExplorer
     }
 
     @Override
+    @InvokeOnEDT
     public void addViewFilter(@Nonnull Predicate<IExplorable> filter)
     {
         explorerPanel.addViewFilter(filter);
     }
 
     @Override
+    @InvokeOnEDT
     public void addViewFilter(@Nonnull Predicate<IExplorable> parentFilter, @Nonnull Predicate<IExplorable> filter)
     {
         explorerPanel.addViewFilter(parentFilter, filter);
     }
 
     @Override
+    @InvokeOnEDT
     public void removeViewFilter(@Nonnull Predicate<IExplorable> filter)
     {
         explorerPanel.removeViewFilter(filter);

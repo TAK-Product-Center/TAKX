@@ -21,7 +21,6 @@ import gov.takx.commons.utils.UUIDUtils;
 import gov.takx.core.configuration.ProgramEnvironment;
 import gov.takx.core.globe.widgets.ProjectLabelWidgetManager;
 import gov.takx.core.launcher.ApplicationLauncher;
-import gov.takx.core.propertymanager.SystemPropertyManager;
 import gov.takx.dataservices.persist.DatabaseVersionManager;
 import gov.takx.platform.logging.LoggerUtils;
 import gov.takx.platform.preferences.ProjectPreferenceEntry;
@@ -84,9 +83,6 @@ public class Project implements IProject
 
     @Inject
     protected IProjectPreferenceManager projectPreferenceManager;
-
-    @Inject
-    protected SystemPropertyManager systemPropertyManager;
 
     @Inject
     protected IPersistServiceProvider persistServiceProvider;

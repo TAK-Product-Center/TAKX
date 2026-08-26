@@ -17,6 +17,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -204,11 +205,21 @@ class GeoChatMessageSender
      * membership update.
      *
      * @param groupContact The group contact for which group-update notifications will be sent
+     * @param added The contacts that were added to the group; may be empty
+     * @param removed The contacts that were added to the group; may be empty
      * @throws CommoException               if an error occurs in the Commo library while attempting to send a message
      */
-    void sendGroupUpdateNotifications(@Nonnull IGroupContact groupContact) throws CommoException
+    void sendGroupUpdateNotifications(@Nonnull IGroupContact groupContact, @Nonnull Set<IContact> added, @Nonnull Set<IContact> removed)
+            throws CommoException
     {
         final String clientUid = chatServiceDelegate.getClientUid();
+        final String clientName = chatServiceDelegate.getClientName();
+
+        // Create a detailed update message that includes the name of the editor and the contacts that were added/removed
+        final var addedNames = added.stream().map(IContact::getName).collect(Collectors.joining(", "));
+        final var removedNames = removed.stream().map(IContact::getName).collect(Collectors.joining(", "));
+        final var detailedUpdateMessage = clientName + (!addedNames.isEmpty() ? " added " + addedNames : "")
+                + (!removedNames.isEmpty() ? " removed " + removedNames : "");
 
         // Notify existing and updated group members of the group membership change
         for (IContact groupMember : groupContact.getGroupMembers())
@@ -217,14 +228,27 @@ class GeoChatMessageSender
 
             if (groupMember instanceof IGroupContact || groupMemberUid.equals(clientUid)) continue;
 
+            final var commoContact = getCommoContact(groupMember);
+
             sendMessage(
                     groupMember,
-                    getCommoContact(groupMember),
+                    commoContact,
                     () -> geoChatMessageAssembler.assembleGroupCreationMessage(
                             groupMemberUid,
                             groupContact,
                             UUID.randomUUID().toString()),
                     "Sending group-update notification");
+
+            // Send additional message with detailed info about the editor and edits
+            sendMessage(
+                    groupMember,
+                    commoContact,
+                    () -> geoChatMessageAssembler.assembleDetailedGroupUpdatedMessage(
+                            groupMemberUid,
+                            groupContact,
+                            UUID.randomUUID().toString(),
+                            detailedUpdateMessage),
+                    "Sending detailed group-update notification");
         }
     }
 

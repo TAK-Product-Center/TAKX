@@ -12,6 +12,7 @@ import gov.takx.commons.swing.RowBorderHighlighter;
 import gov.takx.core.explorer.common.CoreExplorerUtils;
 import gov.takx.core.globe.GlobePlaybackIconMapObject;
 import gov.takx.platform.ui.AStandardDialog;
+import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import org.jdesktop.swingx.JXTable;
@@ -28,7 +29,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -78,7 +78,7 @@ public class GlobeMapObjectSelectionDialog<T> extends AStandardDialog
 
         table.setShowGrid(false);
         table.addHighlighter(new RowBorderHighlighter(HighlightPredicate.ALWAYS, new EmptyBorder(1, 1, 1, 1)));
-        table.addHighlighter(new RowBorderHighlighter(HighlightPredicate.ROLLOVER_ROW, new MatteBorder(1, 1, 1, 1, Color.CYAN)));
+        table.addHighlighter(new RowBorderHighlighter(HighlightPredicate.ROLLOVER_ROW, new MatteBorder(1, 1, 1, 1, UIResources.BORDER_HIGHLIGHT_COLOR)));
         table.getColumn(0).setCellRenderer(new Renderer());
         scrollPane.setColumnHeaderView(null);
         if (title != null) setTitle(title);

@@ -49,9 +49,9 @@ import gov.takx.api.mapobject.IMapObjectManager;
 import gov.takx.api.mapobject.IMapObjectManagerListener;
 import gov.takx.api.persist.IMapObjectFinder;
 import gov.takx.commons.file.FilePath;
+import gov.takx.commons.lang.ErrorThrowingFunction;
 import gov.takx.core.project.ServiceOrdering;
 import gov.takx.dataservices.persist.MissionMapObject;
-import gov.takx.platform.utils.ErrorThrowingFunction;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.annotation.Priority;
@@ -71,6 +71,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -224,21 +225,33 @@ public class DataSyncManager implements IExtendedDataSyncManager, CotEventImport
                     // The import process triggers property updates though so we want to ignore those.
                     if (syncs().map(MissionSync::getMissionTransfers).anyMatch(transfers -> transfers.isImportingMissionItem(uid))) return;
 
+                    // Collect publishing tasks for the map item across all feeds on all connected servers.
                     logger.debug("Map-item '{}' changed, will publish update to associated missions", mapObject.getName());
+                    List<PendingPublish> serverPublishTasks = new ArrayList<>();
                     syncs().map(MissionSync::getMissionManager).forEach(manager -> {
                         // Collect which missions on this connection own the map object.
                         List<Mission> missions = manager.getMapItemUidOwners(uid);
-
+                        if (!missions.isEmpty())
+                        {
+                            serverPublishTasks.add(new PendingPublish(missions, () -> {
+                                for (Mission owningMission : missions) addMapItem(manager.getConnection(), owningMission.name(), mapObject);
+                            }));
+                        }
+                    });
+                    if (!serverPublishTasks.isEmpty())
+                    {
                         // If we are configured to prompt the user before publishing, then ask them if they want to publish to these missions first.
                         if (publishMode == PublishOption.Prompt)
                         {
-                            String message = "Publish " + mapObject.getName() + " to the following missions:\n - " + missions.stream().map(Mission::name).collect(Collectors.joining("\n - "));
+                            String message = "Publish " + mapObject.getName() + " to the following missions:\n - "
+                                    + serverPublishTasks.stream()
+                                            .flatMap(pending -> pending.destinations().stream())
+                                            .map(Mission::name)
+                                            .collect(Collectors.joining("\n - "));
                             if (JOptionPane.showConfirmDialog(JFrame.getFrames()[0], message, "Publish update", JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) return;
                         }
-
-                        // Upload the new map object contents to the missions.
-                        for (Mission owningMission : missions) addMapItem(manager.getConnection(), owningMission.name(), mapObject);
-                    });
+                        serverPublishTasks.forEach(pending -> pending.publishTask().run());
+                    }
                 };
 
                 // Register changes listener for CoT representable properties.
@@ -762,7 +775,6 @@ public class DataSyncManager implements IExtendedDataSyncManager, CotEventImport
                     {
                         // Attachment could not be found, decrement the pending counter.
                         updatePendingAttachmentCounter(mapItem, -1);
-                        logger.warn("Could not locate any data-sync resource with the given sha256 hash '{}'", sha256);
                         return;
                     }
 
@@ -1055,5 +1067,15 @@ public class DataSyncManager implements IExtendedDataSyncManager, CotEventImport
         {
             mapItem.setMetaInteger(DATA_SYNC_PENDING_ATTACHMENTS, newCounter);
         }
+    }
+
+    /**
+     * Outline of an arbitrary queued change to a list of missions.
+     * @param destinations Destination missions to publish to.
+     * @param publishTask Task to publish a change to the given missions.
+     * @since 5.8
+     */
+    private record PendingPublish(@Nonnull List<Mission> destinations, @Nonnull Runnable publishTask)
+    {
     }
 }

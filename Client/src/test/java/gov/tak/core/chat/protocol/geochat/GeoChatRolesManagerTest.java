@@ -180,7 +180,7 @@ public class GeoChatRolesManagerTest extends AIntegrationTest
         when(groupContact.getUid()).thenReturn("uid");
         assertThat(rolesManager.isManaged(groupContact)).isFalse();
 
-        final String role =  "K9";
+        final String role = "K9";
 
         when(roleContact.getParentContact()).thenReturn(null);
         when(roleContact.getName()).thenReturn(role);

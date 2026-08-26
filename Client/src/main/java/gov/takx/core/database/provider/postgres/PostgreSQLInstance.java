@@ -388,7 +388,6 @@ public class PostgreSQLInstance
         // This will initialize the database with the core user as the superuser.
         final String[] cmd = {
                 installation.getBinary("initdb"),
-                "--locale=en_US",
                 "-E UTF8",
                 "-D", dataDir.getAbsolutePath(),
                 "--username=" + credentials.username,

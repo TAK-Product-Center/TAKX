@@ -3,7 +3,6 @@ package gov.takx.core.mapobject.gui.primarydialog;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IMapObjectController;
 import gov.takx.api.mapobject.IShapeMapObject;
-import gov.takx.api.plugin.IRaptorPanel;
 import gov.takx.core.mapobject.gui.primarydialog.primarypanel.AnnotationMapObjectPrimaryPanel;
 import gov.takx.core.mapobject.gui.primarydialog.primarypanel.DeviceMapObjectPrimaryPanel;
 import gov.takx.core.mapobject.gui.primarydialog.primarypanel.FileMapObjectPrimaryPanel;
@@ -80,43 +79,6 @@ public class MapObjectDialogUtils
         }
     }
 
-    public IRaptorPanel createPrimaryPanel(IMapObjectController controller)
-    {
-        IMapObject mo = controller.getMapObject();
-        if (controller.getMapObject().isDevice())
-        {
-            return new DeviceMapObjectPrimaryPanel(controller);
-        } else if (mo instanceof AnnotationMapObject)
-        {
-            return new AnnotationMapObjectPrimaryPanel(controller);
-        } else if (mo instanceof FlatAnnotationMapObject)
-        {
-            return new FlatAnnotationMapObjectPrimaryPanel(controller);
-        } else if (mo instanceof FileMapObject)
-        {
-            return new FileMapObjectPrimaryPanel(controller);
-        } else if (mo instanceof IconMapObject)
-        {
-            return new DeviceMapObjectPrimaryPanel(controller);
-        } else if (mo instanceof RouteMapObject)
-        {
-            return new RouteMapObjectPrimaryPanel(controller);
-        } else if (mo instanceof IShapeMapObject)
-        {
-            return new ShapeMapObjectPrimaryPanel(controller);
-        } else if (mo instanceof MarkerMapObject)
-        {
-            return new MarkerMapObjectPrimaryPanel(controller);
-        } else if (mo instanceof MultiPolylineMapObject)
-        {
-            return new MultiPolylineMapObjectPanel(controller);
-        } else
-        {
-            logger.error("Unexpected map object type while trying to create map object primary dialog. Map Object: {}", mo);
-            throw new IllegalArgumentException("Unsupported MapObject type: " + mo.getClass().getSimpleName());
-        }
-    }
-
     /**
      * Create a title for a map object. type: id, type: id (display name), display name, or type (display name)
      *
@@ -147,7 +109,7 @@ public class MapObjectDialogUtils
                     //noinspection ResultOfMethodCallIgnored
                     UUID.fromString(id);
                     title.append(type).append(": ").append(name);
-                } catch (Exception e)
+                } catch (IllegalArgumentException e)
                 {
                     // The unit id was not parsable as a UUID - so display it in the title
                     title.append(type).append(": ").append(id).append(" (").append(name).append(")");
@@ -155,13 +117,11 @@ public class MapObjectDialogUtils
             }
         } else
         {
-            // I'm so glad this bizarre logic is appropriately commented with examples as to why it's here....
-            if (name.contains(type.subSequence(0, type.length() - 1)))
+            // Append type if the name doesn't contain it
+            title.append(name);
+            if (!name.contains(type.substring(0, type.length() - 1)))
             {
-                title.append(name);
-            } else
-            {
-                title.append(type).append(" (").append(name).append(")");
+                title.append(" (").append(type).append(")");
             }
         }
         return title.toString();

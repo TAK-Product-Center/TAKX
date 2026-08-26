@@ -3,39 +3,48 @@ JFDML JFormDesigner: "8.2.4.0.393" Java: "21.0.9" encoding: "UTF-8"
 new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
-		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+		add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
+			"$columnSpecs": "default:grow"
+			"$rowSpecs": "default, default, default"
+		} ) {
 			name: "this"
+			"background": new com.jformdesigner.model.SwingColor( "TableHeader.background" )
+			add( new FormComponent( "gov.takx.commons.swing.entity.ActionButtonPanel" ) {
+				name: "actionButtonPanel"
+				"background": new com.jformdesigner.model.SwingColor( "Panel.background" )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class com.jgoodies.forms.layout.FormLayout ) {
-				"$columnSpecs": "left:default:grow, labelcompgap, default"
-				"$rowSpecs": "default"
+				"$columnSpecs": "right:default:grow"
+				"$rowSpecs": "24px"
 			} ) {
-				name: "panel"
-				"background": new com.jformdesigner.model.SwingColor( "Table.background" )
-				"border": new javax.swing.border.CompoundBorder( new javax.swing.border.MatteBorder( 1, 0, 1, 0, new com.jformdesigner.model.SwingColor( "TableHeader.separatorColor" ) ), new javax.swing.border.EmptyBorder( 5, 5, 5, 5 ) )
-				auxiliary() {
-					"JavaCodeGenerator.variableLocal": true
-				}
-				add( new FormComponent( "gov.takx.commons.swing.entity.ActionButtonPanel" ) {
-					name: "actionButtonPanel"
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
-				} )
+				name: "compactHeader"
+				"border": new javax.swing.border.MatteBorder( 0, 0, 1, 0, new com.jformdesigner.model.SwingColor( "TableHeader.separatorColor" ) )
+				"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "sortButton"
 					"border": new javax.swing.border.EmptyBorder( 3, 6, 3, 9 )
 					auxiliary() {
 						"JavaCodeGenerator.customCreate": true
 					}
-				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
-					"gridX": 3
-					"gridY": 1
-				} )
-			}, new FormLayoutConstraints( class java.lang.String ) {
-				"value": "Center"
+				}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) )
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridX": 1
+				"gridY": 2
+				"hAlign": sfield com.jgoodies.forms.layout.CellConstraints FILL
+			} )
+			add( new FormComponent( "javax.swing.table.JTableHeader" ) {
+				name: "standardHeader"
+				"opaque": false
+				"background": sfield com.jformdesigner.model.FormObject NULL_VALUE
+				auxiliary() {
+					"opaque.forceValue": true
+				}
+			}, new FormLayoutConstraints( class com.jgoodies.forms.layout.CellConstraints ) {
+				"gridY": 3
 			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 0, 0 )
-			"size": new java.awt.Dimension( 400, 40 )
+			"size": new java.awt.Dimension( 400, 115 )
 		} )
 	}
 }

@@ -300,7 +300,15 @@ public class TakLayerFactory
         return config;
     }
 
-    private DatasetRasterLayer2 createRasterLayer(File config, String name)
+    /**
+     * @param config Path to config file to import.
+     * @param name   Layer name.
+     * @return New layer from the given config file.
+     * @see DatasetDescriptorFactory2
+     * @since 5.8
+     */
+    @Nonnull
+    public DatasetRasterLayer2 createRasterLayer(@Nonnull File config, @Nonnull String name)
     {
         var rasterDataStore = new RuntimeRasterDataStore();
 

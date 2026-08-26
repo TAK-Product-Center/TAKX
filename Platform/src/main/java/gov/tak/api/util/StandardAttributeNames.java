@@ -133,6 +133,16 @@ public class StandardAttributeNames
     public static final String DATA_SYNC_PENDING_ATTACHMENTS = "pending-file-attachments";
     public static final String INITIAL_BEARING = DetailConstants.INITIAL_BEARING;
     public static final String LAST_UPDATE_TIME = "lastUpdateTime";
+
+    /** @since 5.8 */
+    public static final String MODEL_COLOR = "ModelColor";
+    /** @since 5.8 */
+    public static final String MODEL_GROUP = "ModelGroup";
+    /** @since 5.8 */
+    public static final String MODEL_NAME = "ModelName";
+    /** @since 5.8 */
+    public static final String MODEL_OUTLINE_ENABLED = "ModelOutlineEnabled";
+
     public static final String MOVABLE = "movable";
     /**
      * MIL-STD symbology code
@@ -161,6 +171,23 @@ public class StandardAttributeNames
      * @since 5.6
      */
     public static final String MIL_SYM_ADAPTING = "milsym-adapt-in-progress";
+
+    /**
+     * Renderer hint to track the wasClipped state.
+     * @since 5.8
+     */
+    public static final String MIL_SYM_HINT_WAS_CLIPPED = "milsym-hint-was-clipped";
+    /**
+     * Renderer hint to track the lodAware state.
+     * @since 5.8
+     */
+    public static final String MIL_SYM_HINT_LOD_AWARE = "milsym-hint-lod-aware";
+    /**
+     * Hint for lod aware 2525 objects that indicates if the map object is off-screen.
+     * @since 5.8
+     */
+    public static final String MIL_SYM_HINT_LOD_OFFSCREEN = "milsym-hint-lod-offscreen";
+
     public static final String NAME = "name";
     public static final String NAVIGATING = "navigating";
     public static final String NEVER_COT = "nevercot"; // Indicates item should never be turned into CoT
@@ -193,6 +220,13 @@ public class StandardAttributeNames
      */
     public static final String REMOTE_DELETE = "remoteDelete";
     public static final String REMOVABLE = "removable";
+
+    /**
+     * Does this item have a Sensor/Field Of View attached?
+     * @since 5.8
+     */
+    public static final String SENSOR_FOV = "sensorFov";
+
     public static final String SPEED = DetailConstants.ATTR_SPEED;
     /**
      * {@code boolean} value. If {@code true},  the CoT marker has timed out due to inactivity.

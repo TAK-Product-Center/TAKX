@@ -5,9 +5,9 @@ import gov.tak.api.annotation.DeprecatedApi;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 
+import javax.swing.AbstractButton;
 import javax.swing.AbstractCellEditor;
 import javax.swing.Action;
-import javax.swing.JButton;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
@@ -37,7 +37,7 @@ class ActionListTableCellEditor extends AbstractCellEditor implements TableCellE
         {
             @Nonnull
             @Override
-            protected JButton createButton(@Nonnull JTable table, @Nonnull Action action)
+            AbstractButton createButton(@Nonnull JTable table, @Nonnull Action action)
             {
                 var button = super.createButton(table, action);
                 button.addActionListener(actionEvent -> {
@@ -45,7 +45,6 @@ class ActionListTableCellEditor extends AbstractCellEditor implements TableCellE
                     var event = eventCreator == null ? new ActionListActionEvent<>(actionEvent, lastEditedRow, value) : eventCreator.createActionEvent(renderer, actionEvent, lastEditedRow);
                     action.actionPerformed(event);
                     if (stopEditOnAction) table.editingStopped(null);
-                    configureButton(button, action, value.value(), lastEditedRow); // Make sure we apply any button updates
                 });
                 return button;
             }

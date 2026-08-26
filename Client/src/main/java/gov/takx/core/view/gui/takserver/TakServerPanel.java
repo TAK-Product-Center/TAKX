@@ -121,7 +121,8 @@ public class TakServerPanel extends ATitledPanel
         // is created when opening a second project in a single session.
         if (!connectionPanelsMap.containsKey(connection))
         {
-            final var connectionPanel = new ConnectionPanel((TakServerConnection) connection);
+            ITakServerConnection connectionByUuid = takServerManager.findConnectionByUuid(connection.getId());
+            final var connectionPanel = new ConnectionPanel((TakServerConnection) (connectionByUuid == null ? connection : connectionByUuid));
 
             // Determine where to place the connection panel based on the sorted order of
             // the connections creation time.

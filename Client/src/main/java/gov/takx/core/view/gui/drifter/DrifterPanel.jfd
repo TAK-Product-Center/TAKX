@@ -7,6 +7,7 @@ new FormModel {
 			name: "this"
 			add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 				name: "scrollPane"
+				"border": new javax.swing.border.EmptyBorder( 0, 0, 0, 0 )
 				auxiliary() {
 					"JavaCodeGenerator.variableLocal": true
 				}
@@ -14,6 +15,7 @@ new FormModel {
 					name: "table"
 					"focusable": false
 					"rowSelectionAllowed": false
+					"textLinesForRowHeight": 3
 					auxiliary() {
 						"JavaCodeGenerator.typeParameters": "IMapObject"
 					}

@@ -8,11 +8,13 @@ import gov.takx.api.explorer.IExplorableRuleViewComponent;
 import gov.takx.api.explorer.IGeofenceRule;
 import gov.takx.api.globe.IGlobeDelegate;
 import gov.takx.api.globe.IGlobeManager;
+import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.shapes.ICircle;
 import gov.takx.api.shapes.IPolygon;
 import gov.takx.api.shapes.IRectangle;
 import gov.takx.api.shapes.IShape;
 import gov.takx.api.shapes.IShapeServiceListener;
+import gov.takx.api.shapes.ShapeProperties;
 import gov.takx.api.state.IRestorableMap;
 import gov.takx.commons.utils.StringUtils;
 import gov.takx.core.view.gui.explorer.rules.GeofenceRulePanel;
@@ -24,7 +26,9 @@ import jakarta.inject.Inject;
 import javax.naming.OperationNotSupportedException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -39,6 +43,7 @@ public class GeofenceRule extends AExplorableRule implements IGeofenceRule
 {
     public static final String TYPE = "Geofence Rule";
 
+    private static final Set<String> SENSITIVE_PROPERTIES = Set.of(IMapObject.LOCATION, ShapeProperties.LOCATIONS, ShapeProperties.ORIENTATION);
     private static final String SELECTED_SHAPE_KEY = "selectedShape";
     private static final String INSIDE_MODE_KEY = "insideMode";
 
@@ -105,6 +110,13 @@ public class GeofenceRule extends AExplorableRule implements IGeofenceRule
         {
             return false;
         }
+    }
+
+    @Nonnull
+    @Override
+    public Collection<String> getSensitiveProperties()
+    {
+        return SENSITIVE_PROPERTIES;
     }
 
     @Nonnull

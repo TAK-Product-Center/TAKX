@@ -1,13 +1,11 @@
 package gov.takx.api.plugin.datamonitor;
 
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.filesystem.IVirtualFileSystem;
 import gov.takx.api.globe.IFavoritesService;
 import gov.takx.api.globe.IStateIconManager;
 import gov.takx.api.mapobject.IDataMonitor;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.ping.IGeoPingService;
-import gov.takx.api.propertymanager.ISystemPropertyManager;
 import gov.takx.api.query.IQueryService;
 import gov.takx.api.timer.ITimerService;
 import gov.takx.commons.constants.State;
@@ -72,17 +70,6 @@ public interface IDataMonitorDelegate
      * {@code null} if no map object is associated with the owner data monitor.
      */
     IStateIconManager getStateIconManager();
-
-    /**
-     * Return the system property manager.
-     *
-     * @return The system property manager.
-     * @deprecated Use {@link gov.takx.platform.preferences.PreferenceEntry} and
-     * {@link gov.takx.platform.preferences.UserPreferenceEntry} directly instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    ISystemPropertyManager getSystemPropertyManager();
 
     /**
      * Return an interface that will allow access to the virtual file system.

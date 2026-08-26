@@ -216,6 +216,14 @@ public interface IUISpaceManager
     void hideComponent(@Nonnull Component component);
 
     /**
+     * Scan all dockables, and if any are externalized, then re-dock them.  Their externalized location may also be
+     * updated if the current location is not within the bounds of any active screen device.
+     *
+     * @since 5.8
+     */
+    void reDockAllExternalizedComponents();
+
+    /**
      * Sets the state of a dockable component's tray button while the component is minimized.
      *
      * @param component The component to update

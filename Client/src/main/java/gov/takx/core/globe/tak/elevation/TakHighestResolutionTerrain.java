@@ -10,6 +10,7 @@ import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Sector;
 import gov.nasa.worldwind.geom.Vec4;
+import gov.nasa.worldwind.globes.ElevationModel;
 import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.terrain.CompoundElevationModel;
 import gov.tak.api.engine.map.IMapRendererEnums.DisplayOrigin;
@@ -26,7 +27,6 @@ import gov.takx.api.terrain.experimental.IHighestResolutionTerrain;
 import gov.takx.api.terrain.experimental.ITakElevationModel;
 import gov.takx.api.terrain.experimental.ITerrainListener;
 import gov.takx.api.terrain.experimental.PositionLineSegment;
-import gov.takx.api.terrain.experimental.TerrainUtils;
 import gov.takx.core.globe.ApplicationGlobe;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -240,7 +240,7 @@ public class TakHighestResolutionTerrain implements IHighestResolutionTerrain
     @Override
     public List<ITakElevationModel> getAllElevationModels()
     {
-        return new ArrayList<>(TerrainUtils.splitModels(ITakElevationModel.class, globe.getElevationModel()));
+        return new ArrayList<>(splitModels(ITakElevationModel.class, globe.getElevationModel()));
     }
 
     @Override
@@ -400,5 +400,48 @@ public class TakHighestResolutionTerrain implements IHighestResolutionTerrain
         final double dz = (p2.z - p1.z);
 
         return dx * dx + dy * dy + dz * dz;
+    }
+
+    /**
+     * Return a list of all models of type {@link Class clazz} starting from the provided {@link ElevationManager} and descending
+     * into any {@link CompoundElevationModel}.
+     * @param <T> the {@link ElevationModel}-derived class type
+     * @param clazz the class type to filter
+     * @param em the starting elevation model to examine
+     * @return a list of elevation models that match the provided class type
+     * @since 5.8
+     */
+    public static <T extends ElevationModel> List<T> splitModels(Class<T> clazz, ElevationModel em)
+    {
+        List<T> models = new ArrayList<>();
+        if (em instanceof CompoundElevationModel cem)
+        {
+            addAllElevationModels(clazz, cem, models);
+        } else if (clazz.isAssignableFrom(em.getClass()))
+        {
+            models.add(clazz.cast(em));
+        }
+        return models;
+    }
+
+    private static <T extends ElevationModel> void addAllElevationModels(Class<T> clazz, CompoundElevationModel em, List<T> models)
+    {
+        List<ElevationModel> newModels = em.getElevationModels();
+        List<CompoundElevationModel> compoundModels = new ArrayList<>();
+        for (ElevationModel model : newModels)
+        {
+            if (model instanceof CompoundElevationModel cem)
+            {
+                compoundModels.add(cem);
+            } else if (clazz.isAssignableFrom(model.getClass()))
+            {
+                models.add(clazz.cast(model));
+            }
+        }
+
+        for (CompoundElevationModel compoundModel : compoundModels)
+        {
+            addAllElevationModels(clazz, compoundModel, models);
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.formdev.flatlaf.ui.FlatCheckBoxUI;
 import gov.tak.api.annotation.IncubatingApi;
 import gov.tak.api.annotation.Nullable;
 import gov.takx.platform.ui.UIResources;
+import jakarta.annotation.Nonnull;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -76,7 +77,19 @@ public class TriStateJCheckBox extends JCheckBox
          *
          * @since 5.3 (Renamed from PARTIALLY_SELECTED in 5.7)
          */
-        INDETERMINATE
+        INDETERMINATE;
+
+        /**
+         * @param selected the selected state
+         * @return either {@link #SELECTED}, {@link #NOT_SELECTED}, or {@link #INDETERMINATE} when {@code selected} parameter is {@code true},
+         * {@code false}, or {@code null}, respectively
+         * @since 5.8
+         */
+        @Nonnull
+        public static State fromBoolean(@Nullable Boolean selected)
+        {
+            return selected == null ? INDETERMINATE : selected ? SELECTED : NOT_SELECTED;
+        }
     }
 
     private final TriStateButtonModel model;
@@ -165,6 +178,15 @@ public class TriStateJCheckBox extends JCheckBox
     public TriStateJCheckBox()
     {
         this(null);
+    }
+
+    /**
+     * @param selected {@code true} for {@link State#SELECTED}, {@code false} for {@link State#NOT_SELECTED}, or {@code null} for {@link State#INDETERMINATE}
+     * @since 5.8
+     */
+    public void setState(@Nullable Boolean selected)
+    {
+        setState(State.fromBoolean(selected));
     }
 
     /**

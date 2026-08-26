@@ -3,6 +3,7 @@ package gov.takx.core.globe;
 import com.atakmap.map.layer.raster.DatasetDescriptor;
 import com.atakmap.map.layer.raster.DatasetRasterLayer2;
 import com.atakmap.map.layer.raster.RasterDataStore;
+import com.atakmap.map.layer.raster.mobileimagery.MobileImageryRasterLayer2;
 import com.atakmap.map.layer.raster.nativeimagery.NativeImageryRasterLayer2;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
@@ -80,7 +81,6 @@ import java.io.File;
 import java.lang.invoke.MethodHandles;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -242,14 +242,16 @@ public class GlobeLayerFactory
         if (IRaptorLayer.INSTALLED_TYPE.equals(layerType))
         {
             globeLayer = getInstalledLayer(raptorLayer);
-        } else if (className.equals(NativeImageryRasterLayer2.class.getName()))
+        } else if (className.equals(ImageryLayerManager.NATIVE_IMAGERY_RASTER_CLASS) || className.equals(ImageryLayerManager.IMAGERY_LAYER_MANAGER_CLASS))
         {
             final var dataStore = imageryLayerManager.getDataStore();
+            final var filePaths = LocalImageryLayerBuilder.parseRestorableString(raptorLayer.getRestorableState());
+            final var fileList = filePaths.stream().map(File::new).toList();
             final var params = new RasterDataStore.DatasetQueryParameters();
-            params.names = Arrays.stream(raptorLayer.getRestorableState().split(LocalImageryLayerBuilder.ESCAPED_PATH_SEPARATOR))
-                    .map(s -> new File(s).getName()).toList();
-            final var nativeImageryRasterLayer = new NativeImageryRasterLayer2(name, dataStore, params);
-            globeLayer = new GlobeLayer(raptorLayer, nativeImageryRasterLayer);
+            params.names = filePaths.stream().map(s -> new File(s).getName()).toList();
+            boolean isMobileImagery = (fileList.stream().anyMatch(ImageryLayerManager::isMobileImagery));
+            var imageryRasterLayer = isMobileImagery ? new MobileImageryRasterLayer2(name, dataStore, params) : new NativeImageryRasterLayer2(name, dataStore, params);
+            globeLayer = new ImageryGlobeLayer(raptorLayer, imageryRasterLayer);
         } else if (className.equals(DatasetRasterLayer2.class.getName()) && hasRestorableState)
         {
             com.atakmap.map.layer.Layer rasterLayer = takLayerFactory.createDatasetDescriptorLayer(raptorLayer.getRestorableState(), raptorLayer.getName());

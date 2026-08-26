@@ -57,7 +57,7 @@ public class ContactsPanelGroupContactTreeControllerTest extends AIntegrationTes
         when(groupContactManager.getRootGroupContact()).thenReturn(rootGroupContact);
         when(groupContactManager.getTeamsContact()).thenReturn(teamsContact);
         when(groupContactManager.getGroupContacts()).thenReturn(new ArrayList<>());
-        
+
         controller = new ContactsPanelGroupContactTreeController(
                 contactsPanelController, timerService, groupContactManager, teamsManager, rolesManager);
     }

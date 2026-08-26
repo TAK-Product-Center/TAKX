@@ -4,16 +4,14 @@ import com.atakmap.map.layer.LegacyAdapters;
 import com.atakmap.map.layer.feature.DataStoreException;
 import com.atakmap.map.layer.feature.Feature;
 import com.atakmap.map.layer.feature.FeatureDataStore2;
-import com.atakmap.map.layer.feature.FeatureDataStore4;
 import com.atakmap.map.layer.feature.FeatureLayer3;
 import com.atakmap.map.layer.feature.FeatureSet;
 import com.atakmap.map.layer.feature.control.FeatureEditControl;
 import gov.tak.api.util.Visitor;
-import gov.tak.core.map.layer.feature.IFeatureRendererManager;
-import gov.tak.core.map.layer.feature.datastore.SharedFeatureDataStore;
 import gov.takx.api.annotation.PseudoBean;
+import gov.takx.api.layer.feature.IFeatureRendererManager;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
 import gov.takx.core.globe.ApplicationGlobeManager;
-import gov.takx.core.globe.tak.features.IFeatureProvider;
 import jakarta.inject.Inject;
 
 import java.util.Collections;
@@ -33,8 +31,7 @@ public abstract class AFeatureRenderer extends AShapeEditorRenderer
     protected ApplicationGlobeManager globeManager;
 
     @Inject
-    @SharedFeatureDataStore
-    protected FeatureDataStore4 dataStore;
+    protected ISharedFeatureDataStore dataStore;
 
     /**
      * Insert a {@link FeatureSet} to the datastore.
@@ -147,7 +144,7 @@ public abstract class AFeatureRenderer extends AShapeEditorRenderer
      */
     protected FeatureSet createFeatureSet()
     {
-        return new FeatureSet("", IFeatureProvider.ALL_GLOBES_GROUP_NAME, "", Double.MAX_VALUE, 0);
+        return new FeatureSet("", ISharedFeatureDataStore.ALL_GLOBES_FEATURE_SET_TYPE, "", Double.MAX_VALUE, 0);
     }
 
     /**

@@ -13,7 +13,10 @@ import javax.swing.AbstractButton;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.MatteBorder;
 
 /**
  * Panel to hold consistently styled action buttons above entity tables and other main panel components.
@@ -33,6 +36,17 @@ public class ActionButtonPanel extends JPanel
     {
         initComponents();
         addComponentListener(textHideResizeListener);
+    }
+
+    /**
+     * Construct a new panel with the given buttons.
+     * @param buttons the buttons to display.
+     * @since 5.8
+     */
+    public ActionButtonPanel(AbstractButton... buttons)
+    {
+        this();
+        for (AbstractButton button : buttons) addActionButton(button);
     }
 
     /**
@@ -57,8 +71,9 @@ public class ActionButtonPanel extends JPanel
 
     /**
      * @param enabled {@code true} if all buttons in this component should be enabled, {@code false} otherwise
+     * @since 5.7 (Renamed from setEnabled in 5.8)
      */
-    public void setEnabled(boolean enabled)
+    public void setButtonsEnabled(boolean enabled)
     {
         for (var component : getComponents())
         {
@@ -75,6 +90,9 @@ public class ActionButtonPanel extends JPanel
 
         //======== this ========
         setBackground(null);
+        setBorder(new CompoundBorder(
+                new MatteBorder(0, 0, 1, 0, UIManager.getColor("TableHeader.separatorColor")),
+                new EmptyBorder(5, 5, 5, 5)));
         setName("this");
         setLayout(new FormLayout(
                 "default:grow",

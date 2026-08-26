@@ -26,11 +26,6 @@ import de.micromata.opengis.kml.v_2_2_0.GroundOverlay;
 import de.micromata.opengis.kml.v_2_2_0.Model;
 import de.micromata.opengis.kml.v_2_2_0.Placemark;
 import de.micromata.opengis.kml.v_2_2_0.ScreenOverlay;
-import gov.tak.core.map.layer.IPickContext;
-import gov.tak.core.map.layer.feature.IFeatureRendererManager;
-import gov.tak.core.map.layer.feature.IPickedFeatureProvider;
-import gov.tak.core.map.layer.feature.datastore.SharedFeatureDataStore;
-import gov.tak.core.map.layer.feature.datastore.memory.InMemoryFeatureDataStore;
 import gov.takx.api.annotation.InvokeAndWaitOnEDT;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.UseClientClassLoader;
@@ -41,12 +36,15 @@ import gov.takx.api.globe.IWidgetInstance;
 import gov.takx.api.globe.IWidgetLayerManager.IWidgetFactory;
 import gov.takx.api.globe.WidgetLayoutPosition;
 import gov.takx.api.layer.LayerGroup;
+import gov.takx.api.layer.feature.IFeatureRendererManager;
+import gov.takx.api.layer.feature.ISharedFeatureDataStore;
+import gov.takx.api.layer.pick.IPickContext;
+import gov.takx.api.layer.pick.IPickedFeatureProvider;
 import gov.takx.api.tasks.ITaskStatusHandler;
 import gov.takx.core.configuration.KernelConfigOptionConstants;
 import gov.takx.core.globe.tak.ModelLayerManager;
 import gov.takx.core.globe.tak.TakLayerManager;
 import gov.takx.core.globe.tak.WidgetLayerManager;
-import gov.takx.core.globe.tak.features.IFeatureProvider;
 import gov.takx.core.globe.widgets.KmlScreenOverlayWidget;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
@@ -80,7 +78,7 @@ public class KmlVisualManager implements IPickedFeatureProvider
     private final LongObjMap<KmlModelAndFeature> fidToKmlFeature = HashLongObjMaps.newMutableMap();
     private final LongObjMap<HashLongSet> featureIdsByFeatureSet = HashLongObjMaps.newMutableMap();
 
-    private final InMemoryFeatureDataStore dataStore;
+    private final ISharedFeatureDataStore dataStore;
     private final WidgetLayerManager widgetLayerManager;
     private final TakLayerManager takLayerManager;
 
@@ -97,7 +95,7 @@ public class KmlVisualManager implements IPickedFeatureProvider
     }
 
     @Inject
-    KmlVisualManager(@SharedFeatureDataStore InMemoryFeatureDataStore dataStore, IFeatureRendererManager featureRendererManager,
+    KmlVisualManager(ISharedFeatureDataStore dataStore, IFeatureRendererManager featureRendererManager,
                      WidgetLayerManager widgetLayerManager, TakLayerManager takLayerManager)
     {
         this.dataStore = dataStore;
@@ -240,7 +238,7 @@ public class KmlVisualManager implements IPickedFeatureProvider
 
                 final String featureSetName = content.getFeatureSetName();
 
-                final var featureSet = new FeatureSet(content.getProvider(), IFeatureProvider.ALL_GLOBES_GROUP_NAME, featureSetName, content.getMinResolution(), content.getMaxResolution());
+                final var featureSet = new FeatureSet(content.getProvider(), ISharedFeatureDataStore.ALL_GLOBES_FEATURE_SET_TYPE, featureSetName, content.getMinResolution(), content.getMaxResolution());
                 final long featureSetId = dataStore.insertFeatureSet(featureSet);
                 logger.debug("FEATURE SET: id {}, name '{}'", featureSetId, featureSetName);
 

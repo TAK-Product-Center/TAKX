@@ -18,8 +18,8 @@
         <xi:include href="log4j-release-filters.xml" xmlns:xi="http://www.w3.org/2001/XInclude" />
     </Console>
 
-    <RollingFile name="Roller" fileName="takx${sys:takx.instance.suffix}.log"
-                 filePattern="takx${sys:takx.instance.suffix}.log.%i">
+    <RollingFile name="Roller" fileName="${sys:takx.logFileDir}/takx${sys:takx.instance.suffix}.log"
+                 filePattern="${sys:takx.logFileDir}/takx${sys:takx.instance.suffix}.log.%i">
         <PatternLayout pattern="${LOG_PATTERN}"/>
         <Policies>
             <SizeBasedTriggeringPolicy size="5 MB"/>

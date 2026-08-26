@@ -1,5 +1,6 @@
 package gov.takx.dataservices.persist;
 
+import gov.tak.api.util.StandardAttributeNames;
 import gov.takx.api.mapobject.IAnnotationMapObject;
 import gov.takx.api.mapobject.MapObjectSpec;
 import gov.takx.api.plugin.IPluginDefinition;
@@ -47,6 +48,8 @@ public class AnnotationMapObject extends MapObject implements IAnnotationMapObje
     public AnnotationMapObject(MapObjectSpec mapObjectSpec, IPluginDefinition<? extends IRaptorPlugin> pluginDefinition)
     {
         super(mapObjectSpec, pluginDefinition);
+
+        setMetaBoolean(StandardAttributeNames.NEVER_COT, true);
     }
 
     @Override

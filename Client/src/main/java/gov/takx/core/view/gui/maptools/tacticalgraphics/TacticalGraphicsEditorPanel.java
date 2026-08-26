@@ -1,9 +1,9 @@
 package gov.takx.core.view.gui.maptools.tacticalgraphics;
 
-import com.jgoodies.forms.factories.Borders;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.forms.layout.RowSpec;
+import gov.tak.api.cot.CotTypes;
 import gov.tak.api.symbology.ISymbologyProvider;
 import gov.tak.api.symbology.Modifier;
 import gov.tak.api.util.AttributeSet;
@@ -12,12 +12,14 @@ import gov.tak.platform.symbology.milstd2525.MilSymStandardAttributes;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.mapobject.IShapeMapObject;
+import gov.takx.api.milsym.CotSidcAdapter;
 import gov.takx.api.milsym.IMilStd2525Service;
 import gov.takx.api.milsym.IMilStd2525ServiceProvider;
 import gov.takx.api.milsym.ISymbolChooser;
 import gov.takx.api.milsym.SymbolWrapper;
 import gov.takx.api.ui.IResourceCleaner;
 import gov.takx.commons.utils.StringUtils;
+import gov.takx.core.mapobject.gui.MapObjectVisualAttributesPanel;
 import gov.takx.core.view.gui.CoreComponentType;
 import gov.takx.core.view.gui.UISpaceManager;
 import jakarta.annotation.Nonnull;
@@ -109,12 +111,32 @@ public class TacticalGraphicsEditorPanel extends JPanel implements IResourceClea
      * Clears this panel's contents and re-initializes it with the new symbol code.
      *
      * @param symbolCode The new symbol code, or {@code null} when removing a symbol code.
+     * @throws IllegalStateException When the associated map object is not assigned.
      */
     public void updateSymbolCode(@Nullable String symbolCode)
     {
+        updateSymbolCode(symbolCode, false);
+    }
+
+    /**
+     * Clears this panel's contents and re-initializes it with the new symbol code.
+     *
+     * @param symbolCode The new symbol code, or {@code null} when removing a symbol code.
+     * @param forceRefresh {@code true} to force UI regeneration. {@code false} to only regenerate when the symbol code changes.
+     * @throws IllegalStateException When the associated map object is not assigned.
+     */
+    private void updateSymbolCode(@Nullable String symbolCode, boolean forceRefresh)
+    {
+        // Sanity check, should not happen in practice.
         if (mapObject == null) throw new IllegalStateException("A map object must be set before this panel can be used");
 
-        if (Objects.equals(this.symbolCode, symbolCode)) return;
+        // Don't care about changes that are semantically the same like:
+        //  - SHGP-----------
+        //  - SHGP------*-***
+        // Only applies to 2525C, such same-intent-different-code patterns don't exist in 2525D/E with their numeric representations.
+        String normalizedNewSymbolCode = symbolCode == null ? null : symbolCode.replace('*', '-');
+        String normalizedOldSymbolCode = this.symbolCode == null ? null : this.symbolCode.replace('*', '-');
+        if (Objects.equals(normalizedOldSymbolCode, normalizedNewSymbolCode) && !forceRefresh) return;
 
         clearUI();
         setSymbolCode(symbolCode);
@@ -284,6 +306,14 @@ public class TacticalGraphicsEditorPanel extends JPanel implements IResourceClea
             mapObject.setName(symbol.getName());
         }
 
+        // TODO TAKX-4620: Optimize the modifier commit logic.
+        //  - The local for-each :: commit isn't a bad idea per-say. The problem is the downstream property change logic.
+        //  - Any 2525 property change -->
+        //     - Re-render the symbol (will be cached if no effective changes are made)
+        //     - Re-assign the new icon to the MO
+        //  - On any decent system this isn't a big deal, but its very annoying when debugging icon updates and you have
+        //    to sift through 16 or so redundant updates to get to the one you want.
+
         // Update the modifiers
         panels.forEach(AModifierPanel::commit);
 
@@ -321,6 +351,26 @@ public class TacticalGraphicsEditorPanel extends JPanel implements IResourceClea
     }
 
     /**
+     * Called by {@link MapObjectVisualAttributesPanel} when the <i>"Restore Icon Defaults"</i> button is clicked.
+     * @since 5.8
+     */
+    public void restoreDefaults()
+    {
+        // If the map object doesn't have a symbol code we have nothing to do here.
+        String existingSymbol = milStd2525Service.getSymbolCode(mapObject);
+        if (existingSymbol == null) return;
+
+        // Normalize back to the CoT type.
+        String defaultSymbolC = CotSidcAdapter.mil2525CFromCotType(mapObject.getCotType());
+        String defaultSymbol = milStd2525Service.convertFromOther2525Variant(Objects.requireNonNullElse(defaultSymbolC, CotTypes.UNKNOWN_GROUND));
+
+        // Clear any modifiers and update the symbol to match the normalized one.
+        // This will refresh the UI so all modifiers will be cleared from the input fields.
+        clearMapObjectModifiers();
+        updateSymbolCode(defaultSymbol, true);
+    }
+
+    /**
      * Clears the values for all modifiers associated with the map object's symbol code.
      */
     private void clearMapObjectModifiers()
@@ -331,6 +381,13 @@ public class TacticalGraphicsEditorPanel extends JPanel implements IResourceClea
 
         // Clear the old values
         milStd2525Service.getModifiers(symbolCode).forEach(modifier -> milStd2525Service.removeModifier(mapObject, modifier.getId()));
+
+        // Without modifiers there is no reason for a symbol to be off-center, so
+        // we can clear any old center position attributes and let any following
+        // user changes to assign new modifiers re-assign it.
+        AttributeSet attributeSet = mapObject.getAttributeSet();
+        attributeSet.removeAttribute(StandardAttributeNames.MIL_SYM_CENTER_X);
+        attributeSet.removeAttribute(StandardAttributeNames.MIL_SYM_CENTER_Y);
     }
 
     /**
@@ -527,7 +584,6 @@ public class TacticalGraphicsEditorPanel extends JPanel implements IResourceClea
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents  @formatter:off
 
         //======== this ========
-        setBorder(Borders.DLU2_BORDER);
         setName("this");
         setLayout(new FormLayout(
                 "default:grow",

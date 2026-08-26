@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JTable;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class ActionListTableCellRendererEditorTest
 
         Icon icon = new ImageIcon();
         var action = new SimpleAction("Test Action", icon, null);
-        var action2 = new ActionListToggleAction<>("Test Action", icon, o -> true);
+        var action2 = new ActionListAction<>("Test Action", icon);
         var actionList = new ActionList<>(List.of(action, action2), null);
         var table = new JTable();
         renderer.getTableCellRendererComponent(table, actionList, false, false, 0, 0);
@@ -41,7 +42,7 @@ public class ActionListTableCellRendererEditorTest
             Assertions.assertThat(button.getIcon()).isEqualTo(simpleAction.getIcon());
         }
         var button2 = renderer.getOrCreateButton(table, action2);
-        Assertions.assertThat(button2.isSelected()).isTrue();
+        Assertions.assertThat(button2.isSelected()).isFalse();
     }
 
     @Test
@@ -60,21 +61,23 @@ public class ActionListTableCellRendererEditorTest
 
         var action1 = new SimpleAction("Test Action", icon, e -> {
             var event = (ActionListActionEvent<?>) e;
+            var sourceEvent = event.getSourceEvent();
+            Assertions.assertThat(sourceEvent.getSource()).isInstanceOf(JButton.class);
             triggered.setTrue();
             Assertions.assertThat(event.getActionList()).isEqualTo(actionList);
         });
-        var action2 = new ActionListToggleAction<>("Test Action", icon, o -> true);
-        var action3 = new ActionListAction<>("Test Action", icon).withValueConsumer(consumed::setValue);
-        actions.addAll(List.of(action1, action2, action3));
+        var action2 = new ActionListAction<>("Test Action", icon, consumed::setValue, null);
+        actions.addAll(List.of(action1, action2));
         var table = new JTable();
         editor.getTableCellEditorComponent(table, actionList, false, 0, 0);
 
         // Click all buttons
         for (var action : actionList.actions())
         {
-            editor.renderer.getOrCreateButton(table, action).doClick();
+            var button = editor.renderer.getOrCreateButton(table, action);
+            button.doClick();
         }
-        Assertions.assertThat(triggered.getValue()).isTrue();
-        Assertions.assertThat(consumed.getValue()).isEqualTo(value);
+        Assertions.assertThat(triggered.get()).isTrue();
+        Assertions.assertThat(consumed.get()).isEqualTo(value);
     }
 }

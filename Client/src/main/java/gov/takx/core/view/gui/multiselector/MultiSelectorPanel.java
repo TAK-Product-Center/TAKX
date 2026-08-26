@@ -3,6 +3,7 @@ package gov.takx.core.view.gui.multiselector;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 import gov.tak.api.cot.event.CotEvent;
+import gov.tak.api.util.StandardAttributeNames;
 import gov.tak.core.comms.cot.CotExporterManager;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.PseudoBean;
@@ -163,14 +164,18 @@ public class MultiSelectorPanel extends ATitledPanel implements IResourceCleaner
 
     private List<CotEvent> getMapObjectsAsCotEvents(List<IMapObject> mapObjects)
     {
-        return mapObjects.stream().map(x -> cotExporterManager.export(x)).filter(Objects::nonNull).toList();
+        // filter out NEVER_COT, convert to CoT, and filter out the nulls
+        return mapObjects.stream()
+                .filter(x -> !x.getMetaBoolean(StandardAttributeNames.NEVER_COT, false))
+                .map(x -> cotExporterManager.export(x))
+                .filter(Objects::nonNull).toList();
     }
 
     private void exportAsCoT(List<IMapObject> mapObjects)
     {
         new SendAsCotDialog("Multiselector Export",
                 () -> getMapObjectsAsCotEvents(mapObjects),
-                () -> logger.warn("Error sending Multiselector elements as CoT"))
+                () -> logger.warn("Error sending MultiSelector elements as CoT, no items that can be converted to CoT selected."))
                 .setVisible(true);
     }
 

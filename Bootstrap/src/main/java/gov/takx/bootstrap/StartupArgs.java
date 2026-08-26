@@ -34,9 +34,9 @@ public class StartupArgs extends HashMap<String, String>
      *
      * @param args Args to parse
      */
-    public StartupArgs(String[] args)
+    public StartupArgs(String... args)
     {
-        originalArgs = args;
+        originalArgs = args.clone();
 
         for (int i = 0; i < args.length; i++)
         {
@@ -49,17 +49,14 @@ public class StartupArgs extends HashMap<String, String>
                 final int startIndex = arg.charAt(1) == '-' ? 2 : 1; // Strip up to 2 dashes
                 final String argName = arg.substring(startIndex);
 
-                if (i < args.length - 1)
+                // See if next arg is a value or another option
+                if (i < args.length - 1 && !args[i + 1].startsWith("-"))
                 {
-                    // See if next arg is a value or another option
-                    if (!args[i + 1].startsWith("-"))
-                    {
-                        value = args[i + 1];
-                        i++; // Skip value we just grabbed
-                    }
+                    value = args[i + 1];
+                    i++; // Skip value we just grabbed
                 }
 
-                put(argName, value);
+                put(argName, value); // NOPMD
             } else
             {
                 logger.warn("Ignored unexpected argument '{}'", arg);
@@ -73,7 +70,7 @@ public class StartupArgs extends HashMap<String, String>
      */
     public String[] getOriginalArgs()
     {
-        return originalArgs;
+        return originalArgs.clone();
     }
 
     /**

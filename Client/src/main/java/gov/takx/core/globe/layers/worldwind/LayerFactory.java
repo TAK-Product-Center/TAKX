@@ -14,8 +14,7 @@ import gov.nasa.worldwind.ogc.wms.WMSCapabilities;
 import gov.nasa.worldwind.ogc.wms.WMSLayerCapabilities;
 import gov.nasa.worldwind.util.WWXML;
 import gov.takx.api.annotation.PseudoBean;
-import gov.takx.core.layer.MobacLayerManager;
-import jakarta.inject.Inject;
+import gov.takx.core.globe.layers.mobac.CustomMobacTiledImageLayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
@@ -43,9 +42,6 @@ public class LayerFactory extends BasicLayerFactory
 
     public static final String CUSTOM_MAP_SOURCE = "customMapSource";
 
-    @Inject
-    private MobacLayerManager mobacLayerManager;
-
     /**
      * Overridden to add support for custom map sources defined in XML, assuming MOBAC compliant tile servers.
      * <p>
@@ -63,7 +59,7 @@ public class LayerFactory extends BasicLayerFactory
         // Support for simplified "custom" map sources XML as supported by ATAK.
 
         return CUSTOM_MAP_SOURCE.equals(domElement.getLocalName())
-                ? mobacLayerManager.makeImageryLayer(getStringFromDocument(domElement), domElement, params)
+                ? new CustomMobacTiledImageLayer(getStringFromDocument(domElement), domElement, params)
                 : null;
     }
 

@@ -6,7 +6,6 @@ import gov.tak.api.location.ILocationTracker;
 import gov.takx.api.annotation.InvokeOnEDT;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.annotation.UiEventBus;
-import gov.takx.api.event.project.ProjectClosing;
 import gov.takx.api.mapobject.IPointMapObject;
 import gov.takx.api.preferences.IPreferenceMonitor;
 import gov.takx.api.ui.event.MapObjectTrackingEvent;
@@ -24,7 +23,6 @@ import gov.takx.platform.utils.units.BearingUnits;
 import gov.takx.platform.utils.units.RangeUnits;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
-import jakarta.enterprise.event.Observes;
 import jakarta.inject.Inject;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -120,10 +118,10 @@ public class BloodhoundPanel extends ATitledPanel implements NavigationManager.N
         table.requireColumn(entityDefinition.toColumn).setVisible(false);
         table.requireColumn(entityDefinition.fromColumn).setVisible(false);
         table.requireColumn(entityDefinition.toIconColumn).setVisible(false);
+        table.toggleSortOrder(entityDefinition.fromColumn);
 
         stateColumn.setCellRenderer(new IconTableCellRenderer<>(this::getEtaIcon));
 
-        table.setRowHeight(75);
         table.moveColumn(table.getActionsColumn(), table.getColumnCount() - 1);
         table.moveColumn(stateColumn, 0);
         GUIUtils.setColumnWidths(CommonEntityTable.ICON_COLUMN_SIZE, stateColumn);
@@ -146,6 +144,7 @@ public class BloodhoundPanel extends ATitledPanel implements NavigationManager.N
         northReferenceMonitor.dispose();
         rangeUnitsMonitor.dispose();
         bearingUnitsMonitor.dispose();
+        navigationManager.removeConfigurationListener(this);
         uiEventBus.unregister(this);
     }
 
@@ -202,13 +201,6 @@ public class BloodhoundPanel extends ATitledPanel implements NavigationManager.N
         model.fireTableColumnUpdated(entityDefinition.getSummaryColumn());
     }
 
-    @SuppressWarnings("unused")
-    @InvokeOnEDT
-    private void onProjectClosing(@Observes ProjectClosing ignored)
-    {
-        model.clear();
-    }
-
     private void generateEtaIcons()
     {
         innerIcon = new ImageIcon(GraphicsUtils.createGlossyCircle(ImageUtils.MEDIUM_ICON_WIDTH, innerColor.getCurrentValue().getColor()));
@@ -255,6 +247,7 @@ public class BloodhoundPanel extends ATitledPanel implements NavigationManager.N
             //---- table ----
             table.setRowSelectionAllowed(false);
             table.setFocusable(false);
+            table.setTextLinesForRowHeight(4);
             table.setName("table");
             scrollPane.setViewportView(table);
         }

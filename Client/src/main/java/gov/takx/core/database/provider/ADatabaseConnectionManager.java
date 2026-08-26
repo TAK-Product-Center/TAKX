@@ -1,10 +1,28 @@
 package gov.takx.core.database.provider;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import gov.tak.api.engine.map.coords.IGeoPoint;
+import gov.tak.api.maps.coords.GeoPoint;
+import gov.tak.api.util.AttributeSet;
+import gov.takx.api.coordinatesystem.ILocation;
+import gov.takx.api.coordinatesystem.RaptorLocation;
 import gov.takx.api.messages.IPrePersistRaptorDataMessage;
 import gov.takx.api.messages.IStructure;
 import gov.takx.api.persist.IDatabaseConnectionManager;
 import gov.takx.core.database.DatabaseManager;
 import gov.takx.dataservices.upgrade.UpgradeStatement;
+import gov.takx.platform.utils.json.AttributeSetDeserializer;
+import gov.takx.platform.utils.json.AttributeSetSerializer;
+import gov.takx.platform.utils.json.ColorDeserializer;
+import gov.takx.platform.utils.json.ColorSerializer;
+import gov.takx.platform.utils.json.GeoPointDeserializer;
+import gov.takx.platform.utils.json.IGeoPointDeserializer;
+import gov.takx.platform.utils.json.IGeoPointSerializer;
+import gov.takx.platform.utils.json.LocationDeserializer;
+import gov.takx.platform.utils.json.RaptorLocationSerializer;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -15,15 +33,18 @@ import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.BootstrapServiceRegistry;
 import org.hibernate.boot.registry.BootstrapServiceRegistryBuilder;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.dialect.Dialect;
 import org.hibernate.engine.jdbc.connections.spi.ConnectionProvider;
 import org.hibernate.engine.jdbc.spi.JdbcServices;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
 import org.hibernate.tool.schema.TargetType;
+import org.hibernate.type.jackson.JacksonJsonFormatMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.Color;
 import java.lang.invoke.MethodHandles;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -51,6 +72,7 @@ public abstract class ADatabaseConnectionManager implements IDatabaseConnectionM
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
     private static final Map<String, Object> HIBERNATE_SETTINGS = new HashMap<>();
+    private static final ObjectMapper customObjectMapper = new ObjectMapper();
 
     static
     {
@@ -91,6 +113,23 @@ public abstract class ADatabaseConnectionManager implements IDatabaseConnectionM
         HIBERNATE_SETTINGS.put("hibernate.connection.provider_class", "org.hibernate.hikaricp.internal.HikariCPConnectionProvider");
         HIBERNATE_SETTINGS.put("hibernate.hikari.minimumIdle", "2");
         HIBERNATE_SETTINGS.put("hibernate.hikari.maximumPoolSize", "50");
+
+        final SimpleModule module = new SimpleModule();
+        module.addSerializer(GeoPoint.class, new IGeoPointSerializer());
+        module.addDeserializer(GeoPoint.class, new GeoPointDeserializer());
+        module.addSerializer(IGeoPoint.class, new IGeoPointSerializer());
+        module.addDeserializer(IGeoPoint.class, new IGeoPointDeserializer());
+        module.addSerializer(Color.class, new ColorSerializer());
+        module.addDeserializer(Color.class, new ColorDeserializer());
+        module.addSerializer(RaptorLocation.class, new RaptorLocationSerializer());
+        module.addDeserializer(ILocation.class, new LocationDeserializer());
+        module.addSerializer(AttributeSet.class, new AttributeSetSerializer());
+        module.addDeserializer(AttributeSet.class, new AttributeSetDeserializer());
+
+        customObjectMapper.registerModule(module);
+        customObjectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.NONE);
+        customObjectMapper.setVisibility(PropertyAccessor.FIELD, JsonAutoDetect.Visibility.ANY);
+        HIBERNATE_SETTINGS.put(AvailableSettings.JSON_FORMAT_MAPPER, new JacksonJsonFormatMapper(customObjectMapper));
     }
 
     // All open sessions

@@ -73,9 +73,9 @@ public class ShapeRectangleMapObject extends ARegularShapeMapObject<IMutableRect
     }
 
     @Override
-    public List<ILocation> getVertices()
+    public List<ILocation> getVertices(boolean takOrder)
     {
-        return shape.getVertices();
+        return shape.getVertices(takOrder);
     }
 
     @Override

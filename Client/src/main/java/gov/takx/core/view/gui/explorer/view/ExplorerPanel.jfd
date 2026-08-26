@@ -139,6 +139,10 @@
                  <string>rowSelectionAllowed</string>
                  <boolean>false</boolean>
                 </void>
+                <void method="setProperty">
+                 <string>actionButtonPanelVisible</string>
+                 <boolean>false</boolean>
+                </void>
                 <void property="name">
                  <string>explorerTable</string>
                 </void>

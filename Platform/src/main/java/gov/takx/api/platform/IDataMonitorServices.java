@@ -7,19 +7,21 @@ import gov.takx.api.plugin.datamonitor.DataMonitorBuilder;
 import gov.takx.api.plugin.datamonitor.DataMonitorEvent;
 import gov.takx.api.plugin.datamonitor.StandardDataMonitorType;
 import gov.takx.commons.constants.State;
+import gov.takx.commons.lang.IPropertyChangeListenerSupport;
 import jakarta.annotation.Nonnull;
 
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeListener;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * @implNote Adding a PCL on this services instance will also provide change notifications for all individual data monitors managed by this services
+ * instance. This minimizes the burden of watching for all/any DM related changes.
  * @since 1.4
  */
 @NoPluginImplementations
-public interface IDataMonitorServices
+public interface IDataMonitorServices extends IPropertyChangeListenerSupport
 {
     /**
      * Event name used to notify listeners that a data monitor has been added.
@@ -41,21 +43,6 @@ public interface IDataMonitorServices
      * @since 2.37
      */
     String DATA_MONITOR_SORT_ORDER_CHANGED = "DATA_MONITOR_SORT_ORDER_CHANGED";
-
-    /**
-     * Add a property change listener.  Note, adding a PCL on this services instance will also provide change
-     * notifications for all individual data monitors managed by this services instance. This minimizes the
-     * burden of watching for all/any DM related changes.
-     *
-     * @since 3.4
-     */
-    void addPropertyChangeListener(@Nonnull PropertyChangeListener listener);
-
-    /**
-     * Remove a property change listener.
-     * @since 3.4
-     */
-    void removePropertyChangeListener(@Nonnull PropertyChangeListener listener);
 
     /**
      * Add a custom data monitor.  Can optionally extend the ADataMonitor class, or create a custom

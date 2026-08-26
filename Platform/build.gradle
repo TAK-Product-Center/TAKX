@@ -56,7 +56,11 @@ tasks.named('compileAspectj').configure {
     }
 }
 
-ext {
+def platformBomConfigs = project(':platform-bom').configurations
+def projectExt = project.ext
+def projectDependencies = project.dependencies
+
+tasks.copyJavaTemplates.doFirst {
     def moduleMapping = [
             'com.formdev.flatlaf-swingx'     : 'com.formdev.flatlaf-swingx',
             'com.koloboke'                   : 'com.koloboke',
@@ -78,17 +82,20 @@ ext {
     def excludedApiGroups = ['gov.nasa', 'gov.tak.kernel', 'jakarta.enterprise', 'jcommoncommo', 'org.slf4j']
     def excludedRuntimeGroups = ['com.google.auto.value', 'org.aspectj', 'com.zaxxer']
 
+    // Collect all the 'api' dependency constraints applied by platform-bom, and use those to generate our library version list
+    def apiDependencies = platformBomConfigs.api.dependencyConstraints.collect { dep ->
+        projectDependencies.create("${dep.group}:${dep.name}:${dep.version}")
+    } as Set
+
     def allRuntimeDependencies = [] as Set
-    allRuntimeDependencies.addAll(configurations.implementation.dependencies)
+    allRuntimeDependencies.addAll(apiDependencies)
     allRuntimeDependencies.addAll(configurations.runtimeOnly.dependencies)
 
     // The properties below are used in the JavaDocs for gov.takx.bom in java-templates.
-    templateProperties = [
+    projectExt.templateProperties = [
             'constants'                : generateVersionConstants(),
-            'runtimeLibraryVersionList':
-                    generateLibraryVersionList(allRuntimeDependencies, excludedRuntimeGroups, moduleMapping),
-            'apiLibraryVersionList'    :
-                    generateLibraryVersionList(configurations.api.dependencies, excludedApiGroups, moduleMapping),
+            'runtimeLibraryVersionList': generateLibraryVersionList(allRuntimeDependencies, excludedRuntimeGroups, moduleMapping),
+            'apiLibraryVersionList'    : generateLibraryVersionList(apiDependencies, excludedApiGroups, moduleMapping),
     ]
 }
 

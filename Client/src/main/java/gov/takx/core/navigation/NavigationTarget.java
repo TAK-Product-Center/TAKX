@@ -264,7 +264,7 @@ public class NavigationTarget implements IPropertyChangeDelegateSupport, IResour
         if (Double.isNaN(toSpeed)) toSpeed = to.getMetaDouble(StandardAttributeNames.EST_SPEED, Double.NaN);
         var toHeading = to.getHeading();
         if (Double.isNaN(toHeading)) toHeading = to.getMetaDouble(StandardAttributeNames.EST_COURSE, Double.NaN);
-        var directEtaSec = targetArrow.getRange() / fromSpeed;
+        var directEtaSec = fromSpeed > 0.0 ? targetArrow.getRange() / fromSpeed : Double.NaN;
         var interceptEtaSec = ShapeUtils.interceptEta(fromLocation, fromSpeed, toLocation, toSpeed, toHeading);
 
         propertyChangeSupport.updateAndFire(ETA, this.directEtaSec, directEtaSec, () -> {

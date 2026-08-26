@@ -15,8 +15,9 @@ new FormModel {
 					name: "table"
 					"rowSelectionAllowed": false
 					"focusable": false
+					"textLinesForRowHeight": 4
 					auxiliary() {
-						"JavaCodeGenerator.typeParameters": "Navigation"
+						"JavaCodeGenerator.typeParameters": "NavigationConfiguration"
 					}
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {

@@ -2,6 +2,7 @@ package gov.takx.core.milsym;
 
 import ArmyC2.C2SD.Utilities.SymbolUtilities;
 import com.atakmap.map.layer.feature.Feature;
+import gov.tak.api.annotation.DeprecatedApi;
 import gov.tak.api.engine.map.coords.IGeoPoint;
 import gov.tak.api.symbology.Affiliation;
 import gov.tak.api.symbology.Amplifier;
@@ -14,10 +15,12 @@ import gov.tak.api.symbology.Status;
 import gov.tak.api.util.AttributeSet;
 import gov.tak.api.util.StandardAttributeNames;
 import gov.tak.platform.symbology.SymbologyProvider;
+import gov.tak.platform.symbology.milstd2525.APP6dSymbologyProvider;
 import gov.tak.platform.symbology.milstd2525.MilStd2525;
 import gov.tak.platform.symbology.milstd2525.MilStd2525cSymbologyProvider;
 import gov.tak.platform.symbology.milstd2525.MilStd2525dSymbologyProvider;
 import gov.tak.platform.symbology.milstd2525.MilStd2525eSymbologyProvider;
+import gov.tak.platform.symbology.milstd2525.MilStd2525ech1SymbologyProvider;
 import gov.tak.platform.symbology.milstd2525.MilSymStandardAttributes;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.globe.IApplicationGlobe;
@@ -94,6 +97,7 @@ public class MilStd2525Service implements IExtendedMilStd2525Service
     private final MilSymIconCache symbolCache = new MilSymIconCache();
     private final IMilStd2525ServiceProvider milSymServiceProvider;
     private final ISymbologyProvider2 symProvider;
+    private MilStd2525Variant variant = null;
 
     private volatile Map<String, Modifier> allModifiers;
     private volatile Map<String, SymbolWrapper> allSymbols;
@@ -131,10 +135,44 @@ public class MilStd2525Service implements IExtendedMilStd2525Service
      * @param milSymServiceProvider Provider for all 2525 service implementations.
      * @param symProvider Provider for 2525 graphics.
      */
+    @Deprecated(since = "5.8", forRemoval = true)
+    @DeprecatedApi(since = "5.8", forRemoval = true, removeAt = "5.10")
     MilStd2525Service(@Nonnull IMilStd2525ServiceProvider milSymServiceProvider, @Nonnull ISymbologyProvider2 symProvider)
     {
         this.milSymServiceProvider = milSymServiceProvider;
         this.symProvider = symProvider;
+        SymbologyProvider.registerProvider(symProvider, 0);
+        if (symProvider instanceof MilStd2525cSymbologyProvider)
+        {
+            this.variant = MilStd2525Variant.CHARLIE;
+        } else if (symProvider instanceof MilStd2525dSymbologyProvider)
+        {
+            this.variant = MilStd2525Variant.DELTA;
+        } else if (symProvider instanceof MilStd2525eSymbologyProvider)
+        {
+            this.variant = MilStd2525Variant.ECHO;
+        } else if (symProvider instanceof MilStd2525ech1SymbologyProvider)
+        {
+            this.variant = MilStd2525Variant.ECHOCH1;
+        } else if (symProvider instanceof APP6dSymbologyProvider)
+        {
+            this.variant = MilStd2525Variant.APP6D;
+        } else
+            this.variant = MilStd2525Variant.CHARLIE;
+    }
+
+    /**
+     * Constructor for a specified symbology provider.  Registers the given provider with the kernel {@link SymbologyProvider}.
+     *
+     * @param milSymServiceProvider Provider for all 2525 service implementations.
+     * @param symProvider Provider for 2525 graphics.
+     * @param variant Symbology standard version.
+     */
+    MilStd2525Service(@Nonnull IMilStd2525ServiceProvider milSymServiceProvider, @Nonnull ISymbologyProvider2 symProvider, @Nonnull MilStd2525Variant variant)
+    {
+        this.milSymServiceProvider = milSymServiceProvider;
+        this.symProvider = symProvider;
+        this.variant = variant;
         SymbologyProvider.registerProvider(symProvider, 0);
     }
 
@@ -402,17 +440,7 @@ public class MilStd2525Service implements IExtendedMilStd2525Service
     @Override
     public MilStd2525Variant getVariant()
     {
-        if (symProvider instanceof MilStd2525cSymbologyProvider)
-        {
-            return MilStd2525Variant.CHARLIE;
-        } else if (symProvider instanceof MilStd2525dSymbologyProvider)
-        {
-            return MilStd2525Variant.DELTA;
-        } else if (symProvider instanceof MilStd2525eSymbologyProvider)
-        {
-            return MilStd2525Variant.ECHO;
-        }
-        return MilStd2525Variant.CHARLIE;
+        return this.variant;
     }
 
     @Nullable
@@ -428,22 +456,28 @@ public class MilStd2525Service implements IExtendedMilStd2525Service
 
         // Convert using the base symbol (kernel lookups can fail if you have amplifier/status present...)
         char c = symbolCode.charAt(1);
-        String symbolCodeC;
-        String symbolCodeD;
-        String symbolCodeE;
+        String symbolCodeC = null;
+        String symbolCodeD = null;
+        String symbolCode6D = null;
+        String symbolCodeE = null;
+        String symbolCodeEch1 = null;
         if (Character.isDigit(c))
         {
-            if (c == '0')
+            if (c == '0' || c == '1')//APP6D or Dch1
             {
-                // Incoming is delta
+                // Incoming is delta change 1
                 symbolCodeD = symbolCodeBase;
+                symbolCode6D = symbolCodeD == null ? null : "10" + symbolCodeD.substring(2);
                 symbolCodeC = MilStd2525.get2525CFrom2525D(symbolCodeD);
-                symbolCodeE = MilStd2525.get2525DFrom2525E(symbolCodeD);
-            } else
+                symbolCodeE = MilStd2525.get2525EFrom2525D(symbolCodeD);
+                symbolCodeEch1 = symbolCodeE == null ? null : "15" + symbolCodeE.substring(2);
+            } else if (c == '3' || c == '5' || c == '6')
             {
-                // Incoming is echo
+                // Incoming is echo or echo change 1 or APP6Ev2
                 symbolCodeE = symbolCodeBase;
+                symbolCodeEch1 = symbolCodeE == null ? null : "15" + symbolCodeE.substring(2);
                 symbolCodeD = MilStd2525.get2525DFrom2525E(symbolCodeE);
+                symbolCode6D = "10" + symbolCodeD.substring(2);
                 symbolCodeC = symbolCodeD == null ? null : MilStd2525.get2525CFrom2525D(symbolCodeD);
             }
         } else
@@ -451,7 +485,9 @@ public class MilStd2525Service implements IExtendedMilStd2525Service
             // Incoming is charlie
             symbolCodeC = symbolCodeBase;
             symbolCodeD = MilStd2525.get2525DFrom2525C(symbolCodeC);
+            symbolCode6D = symbolCodeD == null ? null : "10" + symbolCodeD.substring(2);
             symbolCodeE = symbolCodeD == null ? null : MilStd2525.get2525EFrom2525D(symbolCodeD);
+            symbolCodeEch1 = symbolCodeE == null ? null : "15" + symbolCodeE.substring(2);
         }
 
         // Return the appropriate code variant if it is valid.
@@ -462,6 +498,8 @@ public class MilStd2525Service implements IExtendedMilStd2525Service
             case CHARLIE -> symbolCodeC;
             case DELTA -> symbolCodeD;
             case ECHO -> symbolCodeE;
+            case ECHOCH1 -> symbolCodeEch1;
+            case APP6D -> symbolCode6D;
         };
 
         // If we have a mapped code given back to us, put the amplifier/status back into it.

@@ -72,16 +72,18 @@ public class ViewshedLayer extends HeatMapLayer
 
     /**
      * Sets the Viewshed's marker location.  This location will be used to calculate the POI by adding in the
-     * "height above marker" value, and converting it to an AGL reference.
+     * "height above marker" value, and converting it to an AGL reference. If {@code updating} is true then the
+     * viewshed will produce a quicker low-resolution result suitable for viewing while dragging.
      *
      * @param location The location to set
+     * @param updating {@code true} if the viewshed is being actively updated/dragged, {@code false} otherwise.
      */
-    public void setMarkerLocation(@Nonnull ILocation location)
+    public void setMarkerLocation(@Nonnull ILocation location, boolean updating)
     {
         if (!Objects.equals(markerLocation, location))
         {
             markerLocation = location;
-            setPointOfInterest(new GeoPoint(location), false);
+            setPointOfInterest(new GeoPoint(location), updating);
         }
     }
 

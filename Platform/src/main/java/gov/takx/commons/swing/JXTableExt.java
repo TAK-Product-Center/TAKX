@@ -30,6 +30,7 @@ import java.util.List;
  *  <li>Editors are re-rendered if their model data changes.</li>
  *  <li>Columns can be configured to be hidden automatically when they contain only {@code null} values. See {@link #setAutoHideColumns(boolean, int...)}.</li>
  *  <li>Columns can be configured to resize automatically when content changes. See {@link #setAutoSizeColumns(boolean, int...)}.</li>
+ *  <li>Row height can be derived from a known number of text lines. See {@link #setTextLinesForRowHeight(int)}</li>
  * </ul>
  *
  * @since 5.6
@@ -38,9 +39,10 @@ import java.util.List;
 public class JXTableExt extends JXTable
 {
     protected boolean editorHighlightsEnabled;
-    protected boolean restartEditingOnChange = true;
     private List<Integer> autoHideColumns;
     private List<Integer> autoSizeColumns;
+    private ToolTipProvider toolTipProvider;
+    private int textLinesForRowHeight;
 
     /**
      * Construct a new instance with defaults.
@@ -76,21 +78,10 @@ public class JXTableExt extends JXTable
     @Override
     public void tableChanged(@Nonnull TableModelEvent event)
     {
-        var tableEditRow = -1;
-        var tableEditColumn = -1;
-        var restartEdit = false;
-        // If we are editing when model changes then stop and restart it so the editor is re-rendered
-        if (restartEditingOnChange && isEditing())
-        {
-            tableEditRow = getEditingRow();
-            tableEditColumn = getEditingColumn();
-            getCellEditor().stopCellEditing();
-            restartEdit = true;
-        }
-
         super.tableChanged(event);
         List<TableColumn> columns = null;
         var eventColumn = event.getColumn();
+
         if (!autoHideColumns.isEmpty())
         {
             List<Integer> check = eventColumn == TableModelEvent.ALL_COLUMNS ? autoHideColumns : autoHideColumns.contains(eventColumn) ? List.of(eventColumn) : Collections.emptyList();
@@ -109,12 +100,6 @@ public class JXTableExt extends JXTable
             {
                 autoSize(columns.get(modelColumn));
             }
-        }
-
-        // Make sure row and column are still valid after change
-        if (restartEdit && tableEditRow < getRowCount() && tableEditColumn < getColumnCount())
-        {
-            editCellAt(tableEditRow, tableEditColumn);
         }
     }
 
@@ -179,6 +164,18 @@ public class JXTableExt extends JXTable
                 autoSizeColumns.remove(column);
             }
         }
+    }
+
+    /**
+     * Setting a tool tip provider allows overriding renderer generated tool tips with those from a single provider. If the
+     * provider returns {@code null} then the normal tooltip logic will apply.
+     * 
+     * @param toolTipProvider the provider to generate tool tip text for cells
+     * @since 5.8
+     */
+    public void setToolTipProvider(@Nonnull ToolTipProvider toolTipProvider)
+    {
+        this.toolTipProvider = toolTipProvider;
     }
 
     /**
@@ -265,6 +262,57 @@ public class JXTableExt extends JXTable
         return comp;
     }
 
+    /**
+     * This implementation first checks the tables {@link ToolTipProvider} before falling back to the cell renderer tooltip.
+     *
+     * @param event the {@code MouseEvent} that initiated the {@code ToolTip} display
+     * @return the tooltip for the given mouse location
+     * @since 5.8
+     */
+    @Override
+    public String getToolTipText(@Nonnull MouseEvent event)
+    {
+        String tooltip = null;
+        if (toolTipProvider != null)
+        {
+            var point = event.getPoint();
+            var row = rowAtPoint(point);
+            if (row > -1)
+            {
+                var col = columnAtPoint(point);
+                if (col > -1)
+                {
+                    tooltip = toolTipProvider.getToolTipText(row, col);
+                }
+            }
+        }
+        if (tooltip == null) tooltip = super.getToolTipText(event);
+        return tooltip;
+    }
+
+    /**
+     * Sets the row height based on the maximum expected lines of text in a row and font metrics for the component.
+     *
+     * @param numLines the number of expected lines of text
+     * @since 5.8
+     */
+    public void setTextLinesForRowHeight(int numLines)
+    {
+        textLinesForRowHeight = numLines;
+        var metrics = getFontMetrics(getFont());
+        setRowHeight((metrics.getHeight() * numLines) + (metrics.getDescent() * 2)); // each row + descent sized padding above and below
+    }
+
+    /**
+     * @see #setTextLinesForRowHeight(int)
+     * @return the number of expected lines of text
+     * @since 5.8
+     */
+    public int getTextLinesForRowHeight()
+    {
+        return textLinesForRowHeight;
+    }
+
     @Override
     protected RolloverProducer createRolloverProducer()
     {
@@ -340,5 +388,22 @@ public class JXTableExt extends JXTable
                 mouseMoved(e);
             }
         }
+    }
+
+    /**
+     * A provider interface for providing tool tips for cells in a table. See {@link #setToolTipProvider(ToolTipProvider)}.
+     *
+     * @since 5.8
+     */
+    @FunctionalInterface
+    public interface ToolTipProvider
+    {
+        /**
+         * @param row a valid table row
+         * @param column a valid table column
+         * @return the text to be used as the tooltip
+         */
+        @Nullable
+        String getToolTipText(int row, int column);
     }
 }

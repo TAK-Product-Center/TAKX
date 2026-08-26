@@ -1,7 +1,6 @@
 package gov.takx.platform.io.csv;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import gov.tak.api.annotation.DeprecatedApi;
 import gov.takx.api.messages.DataFieldEncoding;
 import gov.takx.api.messages.IDataField;
 import gov.takx.api.messages.IRaptorDataMessage;
@@ -9,10 +8,8 @@ import gov.takx.api.messages.IRaptorDataStructure;
 import gov.takx.api.messages.IStructure;
 import gov.takx.commons.date.DateTimeParser;
 import gov.takx.platform.io.DefaultEmitter;
-import gov.takx.platform.utils.UnitsFormat;
 import gov.takx.platform.utils.units.AltitudeUnits;
 import gov.takx.platform.utils.units.SpeedUnits;
-import gov.takx.platform.utils.units.UnitsFormatUtils;
 import jakarta.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,17 +66,6 @@ public class CsvEmitter extends DefaultEmitter
         // than requiring the user to intervene.
         altitudeUnits = AltitudeUnits.METERS;
         speedUnits = SpeedUnits.KMPH;
-    }
-
-    /**
-     * @deprecated Use {@link #setAltitudeUnits(AltitudeUnits)} and {@link #setSpeedUnits(SpeedUnits)} instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    public void setUnitsFormat(UnitsFormat format)
-    {
-        setAltitudeUnits(UnitsFormatUtils.toAltitudeUnits(format));
-        setSpeedUnits(UnitsFormatUtils.toSpeedUnits(format));
     }
 
     /**

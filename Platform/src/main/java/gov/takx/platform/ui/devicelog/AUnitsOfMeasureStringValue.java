@@ -1,8 +1,5 @@
 package gov.takx.platform.ui.devicelog;
 
-import gov.tak.api.annotation.DeprecatedApi;
-import gov.takx.api.annotation.Internal;
-import gov.takx.platform.utils.UnitsFormat;
 import org.jdesktop.swingx.renderer.StringValue;
 
 import java.text.DecimalFormat;
@@ -32,15 +29,6 @@ public abstract class AUnitsOfMeasureStringValue<T> implements StringValue
     protected T units;
 
     /**
-     * The current units of measure data.
-     *
-     * @deprecated Use {@link #units} instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    protected UnitsFormat uf;
-
-    /**
      * @param units The units to use
      * @param df The format to use when rendering decimals
      * @since 5.5
@@ -49,33 +37,6 @@ public abstract class AUnitsOfMeasureStringValue<T> implements StringValue
     {
         this.units = units;
         this.df = df;
-    }
-
-    /**
-     * @param uf The initial units of measure data
-     * @param df The format to use when rendering decimals
-     * @see #toNewUnits(UnitsFormat) 
-     * @deprecated Use {@link #AUnitsOfMeasureStringValue(T, DecimalFormat)} instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    public AUnitsOfMeasureStringValue(UnitsFormat uf, DecimalFormat df)
-    {
-        this.units = toNewUnits(uf);
-        this.df = df;
-    }
-
-    /**
-     * Update the current units of measure data.
-     *
-     * @param uf The current units of measure data
-     * @deprecated Use {@link #updateUnitsOfMeasure(Object)} instead
-     */
-    @Deprecated(since = "5.5", forRemoval = true)
-    @DeprecatedApi(since = "5.5", forRemoval = true, removeAt = "5.8")
-    public void updateUnitsOfMeasure(UnitsFormat uf)
-    {
-        updateUnitsOfMeasure(toNewUnits(uf));
     }
 
     /**
@@ -113,14 +74,4 @@ public abstract class AUnitsOfMeasureStringValue<T> implements StringValue
      * @return The symbol corresponding to the current units of measure being used
      */
     public abstract String getSymbol();
-
-    /**
-     * Temp method to support deprecated constructor. For internal use only.
-     *
-     * @param unitsFormat the old units format
-     * @return The new equivalent units
-     * @since 5.5
-     */
-    @Internal // temp method to support deprecated methods
-    abstract T toNewUnits(UnitsFormat unitsFormat);
 }

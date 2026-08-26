@@ -70,7 +70,7 @@ public class DrawToolbarTabWrapper extends AToolbarTabWrapper
 
     private IToolEditorPanel currentEditorPanel;
     private DrawingTools currentDrawingTool = DrawingTools.SELECTOR;
-    private boolean ignoreSelectionChange = false;
+    private boolean ignoreSelectionChange;
 
     @PostConstruct
     private void postConstruct()

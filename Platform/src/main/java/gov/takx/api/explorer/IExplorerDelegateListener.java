@@ -1,5 +1,7 @@
 package gov.takx.api.explorer;
 
+import gov.tak.api.annotation.DeprecatedApi;
+
 /**
  * A general-purpose event listener interface for plugins interested in receiving Explorer Delegate events.
  *
@@ -56,17 +58,33 @@ public interface IExplorerDelegateListener
 
     /**
      * A general-purpose method for Explorer Delegate listeners.
-     * TODO TAKX-3333 the isGroupTreeSource is no longer relevant, should deprecate this method and add a default method that redirects to it
      *
      * @param eventName          Name of the event.  This string will always be non-null and non-empty.
      * @param affectedExplorable the affect explorable (if one was affected).  If no specific explorable was affected
      *                           by this event, this value will be {@code null}.
      * @param oldValue           The 'old' value replaced by this event.  Depending on the event, this may be {@code null}.
      * @param newValue           The 'new' replacement value for this event.  Depending on the event, this may be {@code null}.
-     * @param isGroupTreeSource  True if the event occurred in the group tree and false if it occurred in the
-     *                           standard/default tree
+     * @param isGroupTreeSource  Always {@code false}
+     * @deprecated {@code isGroupTreeSource} parameter is no longer used. Use {@link #onExplorerEvent(String, IExplorable, Object, Object)}
      */
+    @Deprecated(since = "5.8", forRemoval = true)
+    @DeprecatedApi(since = "5.8", forRemoval = true, removeAt = "5.11")
     void onExplorerEvent(String eventName, IExplorable affectedExplorable, Object oldValue, Object newValue, boolean isGroupTreeSource);
+
+    /**
+     * A general-purpose method for Explorer Delegate listeners.
+     *
+     * @param eventName Name of the event.  This string will always be non-null and non-empty.
+     * @param affectedExplorable the affect explorable (if one was affected).  If no specific explorable was affected by this
+     * event, this value will be {@code null}.
+     * @param oldValue The 'old' value replaced by this event.  Depending on the event, this may be {@code null}.
+     * @param newValue The 'new' replacement value for this event.  Depending on the event, this may be {@code null}.
+     * @since 5.8
+     */
+    default void onExplorerEvent(String eventName, IExplorable affectedExplorable, Object oldValue, Object newValue)
+    {
+        onExplorerEvent(eventName, affectedExplorable, oldValue, newValue, false);
+    }
 
     /**
      * The selection state of an explorer node in an explorer event.

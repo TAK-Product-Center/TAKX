@@ -5,8 +5,6 @@ import gov.takx.commons.constants.State;
 import gov.takx.commons.utils.Threshold;
 import gov.takx.platform.ui.UIResources;
 
-import static gov.takx.platform.ui.ResourceDirectory.PLATFORM_ICONS;
-
 /**
  * A pre-defined battery data monitor. The display name and icon cannot be customized by the user.
  * The field name to analyze defaults to {@code Battery} and it is expected to be of type {@link FieldType#DOUBLE}.
@@ -40,7 +38,7 @@ final class BatteryDataMonitor extends AStockDataMonitor
      */
     public BatteryDataMonitor(String family, String type)
     {
-        super(family, type, "Battery", UIResources.getUrl(PLATFORM_ICONS, "battery_black.png"));
+        super(family, type, "Battery", UIResources.BATTERY_BLACK_ICON_URL);
 
         setFieldName("Battery");
         setFieldType(FieldType.DOUBLE);

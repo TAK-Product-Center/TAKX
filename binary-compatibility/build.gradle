@@ -1,12 +1,12 @@
 plugins {
     id 'java-library'
-    id 'gov.raptor.gradle.plugins.binary-compatibility' version '2.1.0'
+    id 'gov.raptor.gradle.plugins.binary-compatibility' version '2.2.0'
 }
 
 binaryCompatibility {
     projectName = 'TAKX'
     apiProjects = [project(':platform')]
-    compatibilityBaselineVersion = '5.6.0'
+    compatibilityBaselineVersion = '5.7.0'
 
     // Additional classes needed because they are visible from our API
     // For now we're using the same versions for baseline and current, but this may need to change
@@ -17,7 +17,8 @@ binaryCompatibility {
             "com.formdev:flatlaf:$flatLafVersion",
             "gov.nasa:worldwind:$worldwindVersion",
             "jakarta.enterprise:jakarta.enterprise.cdi-api:$jakartaCdiApiVersion",
-            "org.swinglabs.swingx:swingx-all:$swingxVersion"
+            "org.swinglabs.swingx:swingx-all:$swingxVersion",
+            "org.bytedeco:ffmpeg:$ffmpegVersion"
     ]
 
     additionalBaselineDependencies = additionalDeps

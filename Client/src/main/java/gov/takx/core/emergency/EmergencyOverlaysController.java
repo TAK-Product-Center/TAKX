@@ -59,10 +59,9 @@ public class EmergencyOverlaysController
     private final IExtendedUISpaceManager uiSpaceManager;
     private final EmergencyAlertManager alertManager;
 
-    @SuppressWarnings("DataFlowIssue") // getValue() is never null
-    private final Action deleteAction = new ActionListAction<AlertExplorable>("Delete", DELETE_ICON)
-            .withEventConsumer(e -> ActionPopupFactory
-                    .yesNo("Remove this alert?", (Component) e.getSource(), () -> removeAlertExplorable(e.getValue()))
+    private final Action deleteAction = new ActionListAction<AlertExplorable>("Delete", DELETE_ICON,
+            e -> ActionPopupFactory
+                    .yesNo("Remove this alert?", (Component) e.getSource(), () -> removeAlertExplorable(e.requireValue()))
                     .show());
     private final List<Action> alertActions = List.of(deleteAction);
 

@@ -66,10 +66,6 @@ public class ChatsPanelController
         this.contactsIconUpdater = contactsIconUpdater;
 
         chatsPanel = new ChatsPanel(
-                () -> {
-                    uiSpaceManager.showComponent(CoreComponentType.CONTACTS_PANEL);
-                    contactsPanelController.showPrimaryContactsPanel();
-                },
                 conversation -> {
                     uiSpaceManager.showComponent(CoreComponentType.CONTACTS_PANEL);
                     contactsPanelController.showConversation(conversation);

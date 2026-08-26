@@ -1,5 +1,6 @@
 package gov.takx.api.globe;
 
+import com.atakmap.map.layer.feature.geometry.Envelope;
 import gov.nasa.worldwind.geom.Sector;
 import gov.tak.api.annotation.IncubatingApi;
 import gov.takx.api.annotation.NoPluginImplementations;
@@ -140,6 +141,14 @@ public interface IGlobeViewController
      * @since 5.7
      */
     void goTo(@Nonnull ICameraEye cameraEye, boolean useMidZoom);
+
+    /**
+     * Navigate the globe view to show the given envelope.
+     * The heading and tilt are reset to 0.  This change is animated.
+     *
+     * @param envelope Envelope whose extent should be shown in the view
+     */
+    void goTo(@Nonnull Envelope envelope);
 
     /**
      * Navigate the globe view to show the given sector.

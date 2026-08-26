@@ -10,13 +10,13 @@ import gov.takx.api.globe.IMultiSelector;
 import gov.takx.api.notification.INotificationService;
 import gov.takx.api.notification.Notification;
 import gov.takx.api.shapes.ShapeType;
+import gov.takx.commons.lang.ErrorThrowingBiConsumer;
 import gov.takx.commons.swing.AlwaysOnTopFileChooser;
 import gov.takx.commons.swing.ImageFileChooserFilter;
 import gov.takx.core.chat.ChatDataPackageService;
 import gov.takx.core.chat.ChatLink;
 import gov.takx.platform.ui.AStandardDialog;
 import gov.takx.platform.ui.UIResources;
-import gov.takx.platform.utils.ErrorThrowingBiConsumer;
 import jakarta.annotation.Nonnull;
 import jakarta.inject.Inject;
 

@@ -7,10 +7,12 @@ import gov.tak.platform.datapackage.content.DataPackageEntry;
 import gov.takx.api.annotation.PseudoBean;
 import gov.takx.api.globe.IGlobeManager;
 import gov.takx.api.kml.IKmlLayerService;
-import gov.takx.api.layer.IMobacLayerManager;
+import gov.takx.api.layer.ILayerService;
 import gov.takx.api.layer.IRaptorLayer;
 import gov.takx.api.layer.IRaptorLayerManager;
 import gov.takx.api.layer.IRaptorLayerManagerListener;
+import gov.takx.api.layer.LayerConfiguration;
+import gov.takx.api.layer.builder.OnlineImageryLayerBuilder;
 import gov.takx.api.media.IMedia;
 import gov.takx.api.media.IMediaManager;
 import gov.takx.api.media.IMediaPlayerManager;
@@ -22,13 +24,13 @@ import gov.takx.commons.swing.ButtonTableCellEditor;
 import gov.takx.commons.swing.ButtonTableCellRenderer;
 import gov.takx.core.globe.layers.LayerImportParameters;
 import gov.takx.core.globe.layers.ShapefileImportHandler;
+import gov.takx.core.layer.MobacLayerUtils;
 import gov.takx.core.view.gui.maps.AddShapeOverlayController;
 import gov.takx.core.view.gui.maps.importers.OverlayImageImporter;
 import gov.takx.core.view.gui.maps.importers.SurfaceImageryFileImporter;
 import gov.takx.platform.ui.UIResources;
 import jakarta.inject.Inject;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,13 +44,10 @@ import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
 import java.awt.Component;
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -103,13 +102,13 @@ public class PackageEntryTable extends JTable
     private IKmlLayerService kmlLayerService;
 
     @Inject
-    private IMobacLayerManager mobacLayerManager;
-
-    @Inject
     private IRaptorLayerManager layerManager;
 
     @Inject
     private ICoreExecutorService executorService;
+
+    @Inject
+    private ILayerService layerService;
 
     /**
      * Construct on the entries in the given package contents.
@@ -278,24 +277,16 @@ public class PackageEntryTable extends JTable
                 {
                     // Check the file for the mobac header, and then parse it in full if found.
                     // If no such header is found we'll move on to standard handling.
-                    try (InputStream inputStream = new BufferedInputStream(new FileInputStream(extractedFile)))
+                    if (MobacLayerUtils.isMapSourceXml(extractedFile))
                     {
-                        inputStream.mark(Integer.MAX_VALUE);
-                        if (mobacLayerManager.isMapSourceXml(inputStream))
-                        {
-                            inputStream.reset();
-                            String configXml = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-                            if (!configXml.isEmpty())
-                            {
-                                mobacLayerManager.makeLayerFromConfigXml(FilenameUtils.getName(entry.name), configXml);
-                            }
+                        LayerConfiguration layerConfiguration = OnlineImageryLayerBuilder.builder()
+                                .setName(FilenameUtils.getName(FilenameUtils.getName(entry.name)))
+                                .setConfigurationFile(extractedFile)
+                                .build();
+                        layerService.addLayer(layerConfiguration);
 
-                            // Should be a mobac layer, do not continue to default handling below.
-                            return;
-                        }
-                    } catch (IOException ex)
-                    {
-                        logger.error("Failed to read Mobac layer from package entry '{}'", zipEntryPath, ex);
+                        // Should be a mobac layer, do not continue to default handling below.
+                        return;
                     }
                 }
 

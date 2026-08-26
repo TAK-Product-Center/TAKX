@@ -27,8 +27,8 @@ public class ImageryGlobeLayer extends GlobeLayer
     @Override
     public void setEnabled(boolean enabled)
     {
+        super.setEnabled(enabled);
         // Encourage TAK kernel to redraw surface
         globeManager.repaintAllGlobes();
-        super.setEnabled(enabled);
     }
 }

@@ -8,8 +8,9 @@ import gov.takx.api.explorer.IExplorableRule;
 import gov.takx.api.explorer.IExplorableRuleFactory;
 import gov.takx.api.explorer.IRuleGroupController;
 import gov.takx.api.globe.IExtendedGlobeManager;
+import gov.takx.api.mapobject.IMapObject;
 import gov.takx.api.state.IRestorableMap;
-import gov.takx.core.explorer.common.ControllerExplorableGroup;
+import gov.takx.core.explorer.common.AUserExplorableGroup;
 import gov.takx.core.explorer.common.ExplorerStateKeys;
 import gov.takx.core.explorer.model.IRuleGroupModel;
 import gov.takx.core.explorer.model.RuleGroupModel;
@@ -35,7 +36,7 @@ import java.util.List;
  */
 @SuppressWarnings("CdiManagedBeanInconsistencyInspection")
 @PseudoBean
-public class RuleGroupController extends ControllerExplorableGroup implements IRuleGroupController, PropertyChangeListener
+public class RuleGroupController extends AUserExplorableGroup implements IRuleGroupController, PropertyChangeListener
 {
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
 
@@ -73,13 +74,19 @@ public class RuleGroupController extends ControllerExplorableGroup implements IR
     @Override
     public boolean hasLocationSensitiveRules()
     {
-        return model.hasLocationSensitiveRules();
+        return model.getSensitiveProperties().contains(IMapObject.LOCATION);
     }
 
     @Override
     public boolean hasNameSensitiveRules()
     {
-        return model.hasNameSensitiveRules();
+        return model.getSensitiveProperties().contains(IMapObject.NAME);
+    }
+
+    @Override
+    public boolean isSensitiveTo(@Nonnull String property)
+    {
+        return model.getSensitiveProperties().contains(property);
     }
 
     @Override
