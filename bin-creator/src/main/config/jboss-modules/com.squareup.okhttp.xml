@@ -1,0 +1,18 @@
+<modules xmlns="http://smartics.de/ns/jboss-modules-descriptor/1">
+    <module name="com.squareup.okhttp3">
+        <match>
+            <includes>
+                <include>
+                    <groupId>com.squareup.okhttp3</groupId>
+                </include>
+            </includes>
+        </match>
+
+        <!-- See comments in com.squareup.okio.xml for details -->
+        <apply-to-module>
+            <dependencies>
+                <module name="org.jetbrains.kotlin.kotlin-stdlib"/>
+            </dependencies>
+        </apply-to-module>
+    </module>
+</modules>
