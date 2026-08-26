@@ -82,6 +82,9 @@ dependencies {
     implementation "org.bouncycastle:bcprov-jdk18on:$bouncyCastleVersion"
     implementation "org.bouncycastle:bcpkix-jdk18on:$bouncyCastleVersion"
 
+    // Force update okhttp (to resolves CVEs against okio)
+    implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
+
     // Include all the platform variants for takkernel runtimes.
     //
     // If environment variable 'TAKKERNEL_LOCAL' is defined, then only declare a dependency for the current platform.
