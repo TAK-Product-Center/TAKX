@@ -4,6 +4,7 @@ import gov.takx.api.configuration.IProgramEnvironment;
 import gov.takx.commons.file.FileUtils;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.slf4j.Logger;
@@ -56,7 +57,7 @@ public class BareProgramEnvironment
      * Value of {@link #SYSPROP_PROJECTDATA_DIR} indicating to place ProjectData in the user's home directory.
      * @since 5.8
      */
-    public static final String USE_USER_DIR = "$user_home";
+    private static final String USE_USER_DIR = "user_home";
 
     /**
      * The local program properties file, within ProjectData.
@@ -310,6 +311,7 @@ public class BareProgramEnvironment
         programRoot = System.getProperty(SYSPROP_PROJECTDATA_DIR);
         if (programRoot == null) programRoot = System.getenv(SYSPROP_PROJECTDATA_DIR);
 
+        programRoot = StringUtils.strip(programRoot, "\"'$");
         if (USE_USER_DIR.equalsIgnoreCase(programRoot))
         {
             programRoot = getUserHomeDir();

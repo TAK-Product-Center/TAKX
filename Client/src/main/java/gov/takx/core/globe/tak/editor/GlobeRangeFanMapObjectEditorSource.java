@@ -15,6 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static gov.takx.core.globe.tak.editor.AControlPointProvider.wrapIdl;
+
 /**
  * An implementation of {@link IShapeEditorSource} for {@link IGlobeShapeMapObject} that represent a range fan via an underlying {@link RangeFan} object.
  *
@@ -46,6 +48,7 @@ public class GlobeRangeFanMapObjectEditorSource extends AShapeEditorSource<IGlob
     }
 
     @Override
+    @Nonnull
     public List<ControlPointDefinition> createControlPointDefinitions()
     {
         RangeFan rangeFan = getSource().requireShapeModel();

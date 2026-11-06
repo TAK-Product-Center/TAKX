@@ -10,6 +10,6 @@ public class ArrowControlPointController extends ARubberBandControlPointControll
     @Override
     String getInitialControlPointType()
     {
-        return "1";
+        return IControlPoint.toVertexControlPointType(1);
     }
 }

@@ -114,6 +114,18 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
             {
                 unitModifiers.put(attributeName, attributeSet.getStringAttribute(attributeName));
             }
+            if (attributeName.equals("milsym.drawversion"))
+            {
+                unitModifiers.put(attributeName, attributeSet.getStringAttribute(attributeName));
+            }
+        }
+        GeoPoint controlPoint = null;
+        if (attributeSet.containsAttribute(MilSymStandardAttributes.MILSYM_CP_LAT) && attributeSet.containsAttribute(MilSymStandardAttributes.MILSYM_CP_LON))
+        {
+            double lat = attributeSet.getDoubleAttribute(MilSymStandardAttributes.MILSYM_CP_LAT);
+            double lon = attributeSet.getDoubleAttribute(MilSymStandardAttributes.MILSYM_CP_LON);
+            double alt = attributeSet.getDoubleAttribute(MilSymStandardAttributes.MILSYM_CP_ALT, 0);
+            controlPoint = new GeoPoint(lat, lon, alt);
         }
 
         boolean wasClipped = attributeSet.getBooleanAttribute(StandardAttributeNames.MIL_SYM_HINT_WAS_CLIPPED, false);
@@ -127,7 +139,7 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
         List<ILocation> geoPoints = getGeoPoints(gmoState.geometryState());
         gov.tak.api.symbology.ShapeType shapeType = getShapeType(globeShapeMapObject);
         String moKey = mapObject.getKey();
-        return new MilStdShapeState(symbolCode, geoPoints, unitModifiers, gmoState.outlineColor(), gmoState.outlineWidth(), shapeModel.isVisible(), altitudeMode, milStdSceneBoundsHintMap, milStdGsdHintMap, wasClipped, lodAware, shapeType, moKey);
+        return new MilStdShapeState(symbolCode, geoPoints, unitModifiers, gmoState.outlineColor(), gmoState.outlineWidth(), shapeModel.isVisible(), altitudeMode, milStdSceneBoundsHintMap, milStdGsdHintMap, wasClipped, lodAware, shapeType, controlPoint, moKey);
     }
 
     @Override
@@ -197,6 +209,7 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
             hints.fontSize = 10;
             hints.boundingBox = null;
             hints.shapeType = state.shapeType();
+            hints.controlPoint = state.controlPoint();
             // compute the minimum resolution for the symbol based on source points. If the current globe resolution is
             // lower than the minimum, use the minimum resolution and discard any bounding box; else if the current
             // globe resolution is higher than the minimum, use actual resolution and apply the bounding box.
@@ -236,6 +249,12 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
             AttributeSet attributeSet = gmo.getMapObject().getAttributeSet();
             attributeSet.setAttribute(StandardAttributeNames.MIL_SYM_HINT_WAS_CLIPPED, hints.wasClipped);
             attributeSet.setAttribute(StandardAttributeNames.MIL_SYM_HINT_LOD_AWARE, hints.lodAware);
+            if (hints.controlPoint != null)
+            {
+                attributeSet.setAttribute(MilSymStandardAttributes.MILSYM_CP_LAT, hints.controlPoint.getLatitude());
+                attributeSet.setAttribute(MilSymStandardAttributes.MILSYM_CP_LON, hints.controlPoint.getLongitude());
+                attributeSet.setAttribute(MilSymStandardAttributes.MILSYM_CP_ALT, hints.controlPoint.getAltitude());
+            }
         }
     }
 
@@ -334,7 +353,7 @@ public final class MilStdGlobeShapeFeatureProvider implements IFeatureProvider<I
      * State object for {@link MilStdGlobeShapeFeatureProvider}.
      * @since 5.1
      */
-    public record MilStdShapeState(@Nonnull String symbolCode, @Nonnull List<ILocation> geoPoints, @Nonnull Map<String, String> unitModifiers, int strokeColor, double strokeWidth, boolean isVisible, @Nonnull AltitudeMode altitudeMode, @Nullable Map<Integer, GeoBounds> hintSceneBounds, @Nullable Map<Integer, Double> hintGsd, boolean wasClipped, boolean isLodAware, @Nullable gov.tak.api.symbology.ShapeType shapeType, @Nonnull String moKey)
+    public record MilStdShapeState(@Nonnull String symbolCode, @Nonnull List<ILocation> geoPoints, @Nonnull Map<String, String> unitModifiers, int strokeColor, double strokeWidth, boolean isVisible, @Nonnull AltitudeMode altitudeMode, @Nullable Map<Integer, GeoBounds> hintSceneBounds, @Nullable Map<Integer, Double> hintGsd, boolean wasClipped, boolean isLodAware, @Nullable gov.tak.api.symbology.ShapeType shapeType, @Nullable GeoPoint controlPoint, @Nonnull String moKey)
     {
     }
 }

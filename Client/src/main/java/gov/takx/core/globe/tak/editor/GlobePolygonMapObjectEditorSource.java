@@ -1,8 +1,6 @@
 package gov.takx.core.globe.tak.editor;
 
-import gov.takx.api.coordinatesystem.ILocation;
 import gov.takx.api.globe.IGlobeShapeMapObject;
-import gov.takx.api.shapes.IShape.AltitudeMode;
 import gov.takx.dataservices.shapes.Polygon;
 import jakarta.annotation.Nonnull;
 
@@ -14,32 +12,13 @@ import java.util.List;
  *
  * @since 5.4
  */
-public class GlobePolygonMapObjectEditorSource extends AMultipointEditorSource<IGlobeShapeMapObject> implements IControlPointTextProvider
+public class GlobePolygonMapObjectEditorSource extends ACompositeEditorSource<IGlobeShapeMapObject>
 {
     public GlobePolygonMapObjectEditorSource(IGlobeShapeMapObject source)
     {
-        super(source, true);
-    }
-
-    @Override
-    protected List<ILocation> getLocations(IGlobeShapeMapObject source)
-    {
-        Polygon polygon = source.requireShapeModel();
-        return polygon.getVertices();
-    }
-
-    @Override
-    protected void setLocations(IGlobeShapeMapObject source, List<ILocation> locations)
-    {
-        Polygon polygon = source.requireShapeModel();
-        polygon.setVertices(locations, false);
-    }
-
-    @Override
-    protected AltitudeMode getAltitudeMode(IGlobeShapeMapObject source)
-    {
-        Polygon polygon = source.requireShapeModel();
-        return polygon.getAltitudeMode();
+        super(source, List.of(
+                new PolygonControlPointProvider(source, true),
+                new MilStdControlPointProvider<>(source)));
     }
 
     @Override
@@ -48,18 +27,6 @@ public class GlobePolygonMapObjectEditorSource extends AMultipointEditorSource<I
         Polygon polygon = getSource().requireShapeModel();
         // Make sure we validate the edited vertices
         polygon.setVertices(polygon.getVertices());
-    }
-
-    @Override
-    public String getControlPointText(@Nonnull IControlPoint controlPoint)
-    {
-        return controlPoint.isSelected() ? MeasureHelper.formatGlobeShapeMeasurements(getSource().requireShapeModel(), controlPoint) : null;
-    }
-
-    @Override
-    protected boolean isEditable()
-    {
-        return getSource().requireShapeModel().isEditable();
     }
 
     @Override

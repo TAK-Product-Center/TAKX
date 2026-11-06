@@ -1607,7 +1607,7 @@ public class ShapeUtils
      * @return {@code true} if closed, {@code false} if not
      * @since 5.5
      */
-    public static boolean isClosed(List<ILocation> locations)
+    public static boolean isClosed(@Nonnull List<ILocation> locations)
     {
         return (locations.size() < 2) || (locations.get(0).equals(locations.get(locations.size() - 1)));
     }
@@ -1618,7 +1618,8 @@ public class ShapeUtils
      * @return a closed list of locations
      * @since 5.5
      */
-    public static List<ILocation> closeLocations(List<ILocation> locations)
+    @Nonnull
+    public static List<ILocation> closeLocations(@Nonnull List<ILocation> locations)
     {
         if (isClosed(locations)) return locations;
         ArrayList<ILocation> result = new ArrayList<>(locations);
@@ -1632,7 +1633,8 @@ public class ShapeUtils
      * @return an unclosed list of locations\
      * @since 5.5
      */
-    public static List<ILocation> uncloseLocations(List<ILocation> locations)
+    @Nonnull
+    public static List<ILocation> uncloseLocations(@Nonnull List<ILocation> locations)
     {
         if (!isClosed(locations) || locations.size() <= 2) return locations;
         ArrayList<ILocation> result = new ArrayList<>(locations);

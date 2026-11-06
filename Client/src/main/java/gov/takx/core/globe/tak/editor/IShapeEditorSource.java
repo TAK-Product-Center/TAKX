@@ -47,9 +47,10 @@ public interface IShapeEditorSource<T>
     T getSource();
 
     /**
-     * Create a list of {@link ControlPointDefinition} that represent the shape.
+     * Create a list of {@link ControlPointDefinition} that represent editable control points for a shape.
      * @return a list of control point definitions
      */
+    @Nonnull
     List<ControlPointDefinition> createControlPointDefinitions();
 
     /**

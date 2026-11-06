@@ -45,6 +45,7 @@ public class GlobeFlatAnnotationMapObjectEditorSource extends AShapeEditorSource
     }
 
     @Override
+    @Nonnull
     public List<ControlPointDefinition> createControlPointDefinitions()
     {
         IGlobeFlatAnnotationMapObject globeMapObject = getSource();

@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static gov.takx.core.globe.tak.editor.AControlPointProvider.wrapIdl;
+
 /**
  * An implementation of {@link IShapeEditorSource} for {@link IGlobeShapeMapObject} that represent an {@link Arrow} object.
  *
@@ -27,6 +29,7 @@ public class GlobeArrowMapObjectEditorSource extends AShapeEditorSource<IGlobeSh
     }
 
     @Override
+    @Nonnull
     public List<ControlPointDefinition> createControlPointDefinitions()
     {
         ArrayList<ControlPointDefinition> controlPointDefinitions = new ArrayList<>();
@@ -38,10 +41,10 @@ public class GlobeArrowMapObjectEditorSource extends AShapeEditorSource<IGlobeSh
         AltitudeMode altitudeMode = arrow.getAltitudeMode();
         if (firstLocation != null)
         {
-            controlPointDefinitions.add(new ControlPointDefinition(firstLocation, "0", isEditable, altitudeMode));
+            controlPointDefinitions.add(new ControlPointDefinition(firstLocation, IControlPoint.toVertexControlPointType(0), isEditable, altitudeMode));
             if (secondLocation != null)
             {
-                controlPointDefinitions.add(new ControlPointDefinition(secondLocation, "1", isEditable, altitudeMode));
+                controlPointDefinitions.add(new ControlPointDefinition(secondLocation, IControlPoint.toVertexControlPointType(1), isEditable, altitudeMode));
             }
         }
         return controlPointDefinitions;
@@ -60,7 +63,8 @@ public class GlobeArrowMapObjectEditorSource extends AShapeEditorSource<IGlobeSh
     public void onControlPointDragged(@Nonnull String controlPointType, @Nonnull ILocation location)
     {
         Arrow arrow = getSource().requireShapeModel();
-        int index = Integer.parseInt(controlPointType);
+        Integer index = IControlPoint.getVertexIndex(controlPointType);
+        if (index == null) return;
         List<ILocation> locations = arrow.getVertices();
         ILocation firstPathLocation = !locations.isEmpty() ? locations.get(0) : null;
         ILocation secondPathLocation = locations.size() > 1 ? locations.get(1) : null;

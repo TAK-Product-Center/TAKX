@@ -24,6 +24,7 @@ public class SurfaceImageEditorSource extends AShapeEditorSource<SurfaceImage>
     }
 
     @Override
+    @Nonnull
     public List<ControlPointDefinition> createControlPointDefinitions()
     {
         // We want a list of Position, not LatLon, so that there is at least some altitude for the feature renderer

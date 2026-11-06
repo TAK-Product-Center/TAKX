@@ -50,6 +50,7 @@ public class GlobeRouteMapObjectEditorSource extends AShapeEditorSource<IGlobeSh
     }
 
     @Override
+    @Nonnull
     public List<ControlPointDefinition> createControlPointDefinitions()
     {
         Route route = getSource().requireShapeModel();

@@ -37,6 +37,7 @@ import gov.takx.core.globe.tak.TakLabelManager.LabelRegistration;
 import gov.takx.core.globe.tak.editor.IShapeEditorSource.ShapeEditorSourceListener;
 import gov.takx.core.globe.tak.features.FrameFactory;
 import gov.takx.platform.globe.GlobeTextUtils;
+import gov.takx.platform.ui.UIResources;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
@@ -52,6 +53,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 
+import static gov.takx.core.globe.tak.editor.AControlPointProvider.wrapIdl;
+import static gov.takx.platform.ui.ResourceDirectory.PLATFORM_ICONS;
+
 /**
  * An implementation of {@link IShapeEditorRenderer} that renders control points using the TAK feature renderer.
  *
@@ -61,6 +65,8 @@ import java.util.Queue;
 public class ControlPointRenderer extends AFeatureRenderer implements IPickedFeatureProvider, ShapeEditorSourceListener, PropertyChangeListener, IPickedObjectDeconflictor
 {
     private static final int PROPERTY_MASK = FeatureDataStore2.PROPERTY_FEATURE_GEOMETRY | FeatureDataStore2.PROPERTY_FEATURE_STYLE;
+
+    private static String MILSTD_CONTROL_POINT_ICON_URI = UIResources.getUrl(PLATFORM_ICONS, "middlepoint.png").toString();
 
     @Inject
     FeatureRendererManager featureRendererManager;
@@ -198,7 +204,7 @@ public class ControlPointRenderer extends AFeatureRenderer implements IPickedFea
                 IGeoPoint midpoint = GeoCalculations.midpoint(northWestControlPoint.getLocation(), northEastControlPoint.getLocation());
                 double altitude = (northWestControlPoint.getLocation().getAltitude() + northEastControlPoint.getLocation().getAltitude()) / 2;
                 line = new LineString(3);
-                line.addPoint(AShapeEditorSource.wrapIdl(midpoint.getLongitude()), midpoint.getLatitude(), altitude);
+                line.addPoint(wrapIdl(midpoint.getLongitude()), midpoint.getLatitude(), altitude);
                 line.addPoint(cpLocation.getLongitude(), cpLocation.getLatitude(), cpLocation.getAltitude());
                 geometries.addGeometry(line);
             }
@@ -215,8 +221,17 @@ public class ControlPointRenderer extends AFeatureRenderer implements IPickedFea
     protected Style createStyle(IControlPoint controlPoint)
     {
         ArrayList<Style> styles = new ArrayList<>();
-        int size = controlPoint.getPointSize() / 4;
-        String uri = getGraphicShapeUrl(FrameFactory.ShapeType.Ellipse, size, size);
+        int size;
+        String uri;
+        if (controlPoint.getControlPointType().equals(IControlPoint.CONTROL_POINT_2525))
+        {
+            size = controlPoint.getPointSize() / 2;
+            uri = MILSTD_CONTROL_POINT_ICON_URI;
+        } else
+        {
+            size = controlPoint.getPointSize() / 4;
+            uri = getGraphicShapeUrl(FrameFactory.ShapeType.Ellipse, size, size);
+        }
         int color = controlPoint.isSelected() ? controlPoint.getHighlightColor() : controlPoint.getColor();
         IconPointStyle iconPointStyle = new IconPointStyle(color, uri, size, size, 0, 0, 0, 0, 0, true);
         styles.add(iconPointStyle);
