@@ -41,6 +41,10 @@ public interface IControlPoint
     String CONTROL_POINT_SOUTHWEST = "CONTROL_POINT_SOUTHWEST";
     String CONTROL_POINT_SOUTHEAST = "CONTROL_POINT_SOUTHEAST";
     String CONTROL_POINT_ORIENTATION = "CONTROL_POINT_ORIENTATION";
+    /** @since 5.9 */
+    String CONTROL_POINT_2525 = "CONTROL_POINT_2525";
+    /** @since 5.9 */
+    String CONTROL_POINT_VERTEX_PREFIX = "CONTROL_POINT_VERTEX_";
 
     String MODIFIER_CTRL = "MODIFIER_CTRL";
 
@@ -212,5 +216,35 @@ public interface IControlPoint
             case IControlPoint.CONTROL_POINT_SOUTHEAST -> IControlPoint.CONTROL_POINT_NORTHWEST;
             default -> null;
         };
+    }
+
+    /**
+     * Given a {@code controlPointType}, return the vertex point index that it represents, or {@code null} if it doesn't represent a vertex control point.
+     * @param controlPointType the control point type
+     * @return the vertex index of the control point, or {@code null} if it is not a vertex control point
+     * @since 5.8.1 (backported from 5.9)
+     */
+    static Integer getVertexIndex(@Nonnull String controlPointType)
+    {
+        if (!controlPointType.startsWith(IControlPoint.CONTROL_POINT_VERTEX_PREFIX)) return null;
+        String intValue = controlPointType.substring(IControlPoint.CONTROL_POINT_VERTEX_PREFIX.length());
+        try
+        {
+            return Integer.parseInt(intValue);
+        } catch (NumberFormatException e)
+        {
+            return null;
+        }
+    }
+
+    /**
+     * Given a control point index, return the control point type that it represents.
+     * @param index the control point index
+     * @return the control point type
+     * @since 5.8.1 (backported from 5.9)
+     */
+    static String toVertexControlPointType(int index)
+    {
+        return CONTROL_POINT_VERTEX_PREFIX + index;
     }
 }

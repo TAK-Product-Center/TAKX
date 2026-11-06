@@ -125,11 +125,14 @@ final class MeasureHelper
 
     private static void formatLineMeasurements(List<ILocation> locations, IControlPoint controlPoint, StringBuilder sb)
     {
+        Integer index = IControlPoint.getVertexIndex(controlPoint.getControlPointType());
+        if (index == null) return;
         final var rangeUnits = MONITORS.rangeUnitsMonitor.getCurrentValue();
-        int index = Integer.parseInt(controlPoint.getControlPointType());
         double length = computeAccumulatedLength(locations);
         sb.append("Length ").append(rangeUnits.format(length, 1)).append('\n');
-        double accumLength = computeAccumulatedLength(locations.subList(0, index + 1));
+        // This is a 5.8.1 only fix
+        int toIndex = Math.min(index + 1, locations.size());
+        double accumLength = computeAccumulatedLength(locations.subList(0, toIndex));
         if (accumLength >= 1 && !lengthsEssentiallyEqual(length, accumLength))
         {
             sb.append("Accumulated ").append(rangeUnits.format(accumLength, 1)).append('\n');

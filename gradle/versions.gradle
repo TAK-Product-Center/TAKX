@@ -62,7 +62,7 @@ ext {
     swingToastVersion = '1.0.3'
     swingxVersion = '1.6.5-1'
     takAssetsVersion = '1.2'
-    takKernelVersion = '9.11.5'
+    takKernelVersion = '9.12.6'
     uuidGeneratorVersion = '4.0.1'
     webviewVersion = '2.0'
     weldApiVersion = '5.0.SP3'

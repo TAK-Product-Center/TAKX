@@ -31,6 +31,7 @@ public class GlobeBullseyeMapObjectEditorSource extends AShapeEditorSource<IGlob
     }
 
     @Override
+    @Nonnull
     public List<ControlPointDefinition> createControlPointDefinitions()
     {
         if (!getShapeEditor().isArmed()) return Collections.emptyList();

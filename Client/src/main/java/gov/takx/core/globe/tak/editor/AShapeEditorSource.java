@@ -173,17 +173,4 @@ public abstract class AShapeEditorSource<T> implements IShapeEditorSource<T>, Co
         }
         return index;
     }
-
-    /**
-     * Wrap a longitude value that has potentially crossed the IDL. Resulting value will be -180 <= lon <= 180.
-     * @param longitude the unwrapped longitude value
-     * @return the wrapped longitude value if it crossed the IDL, or the original longitude value
-     * @since 5.6
-     */
-    static double wrapIdl(double longitude)
-    {
-        longitude = longitude < -180d ? longitude + 360 : longitude;
-        longitude = longitude > 180d ? longitude - 360 : longitude;
-        return longitude;
-    }
 }
