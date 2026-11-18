@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
@@ -160,8 +161,9 @@ public class ChatDataPackageService
         //  - But if we do go with the timestamp, we need a way to have multiple of the same named file.
         //    We could differentiate by subfolders but that means more annoying IO work.
         //  - Or we can keep the existing logic and just overwrite files by the same name.
-        File attachment = new File(getAttachmentsDirectory(), name);
-        return attachment.exists() ? attachment : null;
+        final File attachmentsDirectory = getAttachmentsDirectory();
+        final File attachment = new File(attachmentsDirectory, name);
+        return attachment.exists() && isInDirectory(attachmentsDirectory, attachment) ? attachment : null;
     }
 
     /**
@@ -197,6 +199,12 @@ public class ChatDataPackageService
                 String ext = Objects.requireNonNullElse(FileUtils.getExtension(zipEntryName), "").toLowerCase();
                 if (FileTypeManager.getTypeFromExtension(ext) == null) continue;
                 File attachmentDest = new File(root, zipEntryName);
+                if (!isInDirectory(root, attachmentDest))
+                {
+                    logger.warn("Skipping '{}' in package from '{}', it resolves outside {}",
+                            zipEntryPath, contactName, root);
+                    continue;
+                }
                 try (var fos = new FileOutputStream(attachmentDest))
                 {
                     zis.transferTo(fos);
@@ -206,6 +214,24 @@ public class ChatDataPackageService
         } catch (Throwable t)
         {
             logger.error("Failed to extract received package '{}' from '{}'", packageFile.getName(), contactName, t);
+        }
+    }
+
+    /**
+     * @param directory The directory that must contain the file.
+     * @param file The file to check.
+     * @return {@code true} if the file resolves to a location inside the directory.
+     * @since 5.9
+     */
+    static boolean isInDirectory(@Nonnull File directory, @Nonnull File file)
+    {
+        try
+        {
+            final Path directoryPath = directory.toPath().toAbsolutePath().normalize();
+            return file.toPath().toAbsolutePath().normalize().startsWith(directoryPath);
+        } catch (InvalidPathException e)
+        {
+            return false;
         }
     }
 

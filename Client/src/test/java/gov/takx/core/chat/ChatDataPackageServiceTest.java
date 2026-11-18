@@ -25,10 +25,14 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.ArgumentCaptor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -218,6 +222,44 @@ public class ChatDataPackageServiceTest extends AIntegrationTest
         assertThat("chat-transfer  (1).zip").matches(isntChatPackage);
         assertThat("chat-transfer(1) .zip").matches(isntChatPackage);
         assertThat("chat-transfer(z).zip").matches(isntChatPackage);
+    }
+
+    @Test
+    public void isInDirectory_whenFileResolvesInsideDirectory_returnsTrue(@TempDir Path tempDir)
+    {
+        final File directory = tempDir.resolve("attachments").toFile();
+        final Predicate<String> isInside =
+                name -> ChatDataPackageService.isInDirectory(directory, new File(directory, name));
+
+        assertThat("photo.png").matches(isInside);
+        assertThat("sub/photo.png").matches(isInside);
+        assertThat("sub/../photo.png").matches(isInside);
+    }
+
+    @Test
+    public void isInDirectory_whenFileResolvesOutsideDirectory_returnsFalse(@TempDir Path tempDir)
+    {
+        final File directory = tempDir.resolve("attachments").toFile();
+        final Predicate<String> isInside =
+                name -> ChatDataPackageService.isInDirectory(directory, new File(directory, name));
+
+        assertThat("../photo.png").matches(Predicate.not(isInside));
+        assertThat("sub/../../photo.png").matches(Predicate.not(isInside));
+        assertThat("../attachments2/photo.png").matches(Predicate.not(isInside));
+    }
+
+    @Test
+    @EnabledOnOs(OS.WINDOWS)
+    public void isInDirectory_whenWindowsSeparatorsResolveOutsideDirectory_returnsFalse(@TempDir Path tempDir)
+    {
+        final File directory = tempDir.resolve("attachments").toFile();
+        final Predicate<String> isInside =
+                name -> ChatDataPackageService.isInDirectory(directory, new File(directory, name));
+
+        assertThat("..\\photo.png").matches(Predicate.not(isInside));
+        assertThat("sub\\..\\..\\photo.png").matches(Predicate.not(isInside));
+        assertThat("C:\\photo.png").matches(Predicate.not(isInside));
+        assertThat("sub\\photo.png").matches(isInside);
     }
 
     private void initGroupContact(@Nonnull IGroupContact groupContact, @Nullable Set<IContact> groupMembers,
