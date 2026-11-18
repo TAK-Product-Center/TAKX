@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.MessageDigest;
@@ -63,7 +65,12 @@ public class CertUtils
     private static final SimpleDateFormat DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final long CERT_EXPIRY_WARNING_DURATION = 7 * 24 * 3600 * 1000; // one week
     private static final String WINDOWS_ROOT_KEYSTORE = "Windows-ROOT";
-    private static final String LINUX_CA_CERTS_PATH = "/etc/ssl/certs/ca-certificates.crt";
+    private static final List<Path> LINUX_CA_CERTS_PATHS = List.of(
+            Path.of("/etc/ssl/certs/ca-certificates.crt"),
+            Path.of("/etc/pki/tls/certs/ca-bundle.crt"),
+            Path.of("/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"),
+            Path.of("/etc/ssl/ca-bundle.pem"),
+            Path.of("/etc/ssl/cert.pem"));
 
     public static final String INVALID_CERT = "Received fatal alert: unknown_ca";
     public static final String UNSUPPORTED_CERT = "Received fatal alert: unsupported_certificate";
@@ -706,21 +713,43 @@ public class CertUtils
     private static Stream<X509Certificate> getLinuxCaCertificates()
             throws CertificateException, IOException
     {
-        final CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
-        final List<X509Certificate> certificates = new ArrayList<>();
+        return getLinuxCaCertificates(LINUX_CA_CERTS_PATHS);
+    }
 
-        // Try to open the CA certs file and add its certs to the list
-        try (FileInputStream fis = new FileInputStream(LINUX_CA_CERTS_PATH))
+    /**
+     * @param caBundlePaths CA bundle locations to check, in order of preference
+     * @return A stream of the CA certificates in the first readable bundle, or an empty stream if none is readable.
+     * @throws CertificateException thrown on errors retrieving a CertificateFactory or generating a certificate from
+     * the bundle
+     * @throws IOException thrown on errors reading the bundle
+     * @since 5.9
+     */
+    @Nonnull
+    static Stream<X509Certificate> getLinuxCaCertificates(@Nonnull List<Path> caBundlePaths)
+            throws CertificateException, IOException
+    {
+        final Path caBundle = caBundlePaths.stream()
+                .filter(Files::isReadable)
+                .findFirst()
+                .orElse(null);
+
+        if (caBundle == null)
         {
-            X509Certificate certificate;
-
-            while (fis.available() > 0 && (certificate = (X509Certificate) certFactory.generateCertificate(fis)) != null)
-            {
-                certificates.add(certificate);
-            }
+            logger.warn("No system CA certificate bundle found, checked: {}", caBundlePaths);
+            return Stream.empty();
         }
 
-        return certificates.stream();
+        final CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
+        final Collection<? extends Certificate> certificates;
+
+        try (InputStream in = Files.newInputStream(caBundle))
+        {
+            certificates = certFactory.generateCertificates(in);
+        }
+
+        return certificates.stream()
+                .filter(X509Certificate.class::isInstance)
+                .map(X509Certificate.class::cast);
     }
 
     /**
