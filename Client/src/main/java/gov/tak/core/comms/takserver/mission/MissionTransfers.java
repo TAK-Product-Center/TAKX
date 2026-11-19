@@ -255,7 +255,7 @@ public class MissionTransfers implements IMissionSyncComponent
     public CompletableFuture<List<Mission>> updateBaseMissionModels()
     {
         if (logger.isDebugEnabled()) logger.debug("Fetching mission list from server: {}", connection.getUri());
-        return missionEndpoints.getAllMissions().asyncGet(executorService).whenComplete((missions, error) -> {
+        return missionEndpoints.getAllMissions().withDefaultRole(true).asyncGet(executorService).whenComplete((missions, error) -> {
             if (missions != null)
             {
                 for (Mission mission : missions)
@@ -302,7 +302,7 @@ public class MissionTransfers implements IMissionSyncComponent
         return missionEndpoints.getMissionByGuid(missionGuid)
                 .setAuthorizationToken(missionManager.getMissionSubscriptionTokenByGuid(missionGuid))
                 .asyncGet(executorService)
-                .exceptionallyCompose(error -> missionEndpoints.getAllMissions().asyncGet(executorService)
+                .exceptionallyCompose(error -> missionEndpoints.getAllMissions().withDefaultRole(true).asyncGet(executorService)
                         .thenApply(list -> list.stream()
                                 .filter(mission -> mission.guid().equals(missionGuid))
                                 .findFirst().orElse(null)))

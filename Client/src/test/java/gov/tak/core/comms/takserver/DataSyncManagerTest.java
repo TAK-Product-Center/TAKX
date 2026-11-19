@@ -258,6 +258,9 @@ public class DataSyncManagerTest extends AIntegrationTest
         // Connect to the first server.
         connectTo(connection1);
 
+        // Validate the mission list is always requested with default roles, so missions with any default role are included.
+        verify(missionApi1, never()).getAllMissions(any(), argThat(query -> !Boolean.TRUE.equals(query.get("defaultRole"))));
+
         // Validate the missions are tracked now.
         assertThat(dataSync.isTracked(connection1, missionName1)).isTrue();
         assertThat(dataSync.isTracked(connection1, missionName2)).isTrue();
