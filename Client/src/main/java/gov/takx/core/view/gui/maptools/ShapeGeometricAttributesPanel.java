@@ -167,7 +167,7 @@ public class ShapeGeometricAttributesPanel extends JPanel implements IResourceCl
     @InvokeOnEDT
     public void refresh()
     {
-        shapeInfoPanel.createComponents();
+        if (shapeInfoPanel != null) shapeInfoPanel.createComponents();
     }
 
     private final class ArrowPanel extends AShapePanel<IArrow>
